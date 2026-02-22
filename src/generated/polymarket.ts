@@ -1129,7 +1129,7 @@ export interface components {
             no_trades_count: number;
         };
         /** @enum {string} */
-        MetricsTimeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h";
+        MetricsTimeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
         /** @description Holder data grouped by outcome for market-level queries */
         OutcomeHolders: {
             /**
@@ -1185,6 +1185,11 @@ export interface components {
              * @default 0
              */
             sells: number;
+            /**
+             * Format: double
+             * @default 0
+             */
+            open_interest_change: number;
             /**
              * Format: double
              * @default null
@@ -1253,22 +1258,6 @@ export interface components {
             category: string | null;
             /** @default null */
             image_url: string | null;
-            /** @default true */
-            active: boolean;
-            /** @default false */
-            closed: boolean;
-            /** @default false */
-            archived: boolean;
-            /** @default false */
-            new: boolean;
-            /** @default false */
-            featured: boolean;
-            /** @default false */
-            restricted: boolean;
-            /** @default false */
-            live: boolean;
-            /** @default false */
-            ended: boolean;
             /**
              * Format: int32
              * @default 0
@@ -1284,31 +1273,10 @@ export interface components {
              * @default null
              */
             end_date: number | null;
-            /**
-             * Format: int64
-             * @default null
-             */
-            creation_date: number | null;
-            /**
-             * Format: date-time
-             * @default null
-             */
-            published_at: string | null;
             /** @default false */
             neg_risk: boolean;
             /** @default null */
             neg_risk_market_id: string | null;
-            /**
-             * Format: int32
-             * @default null
-             */
-            event_week: number | null;
-            /** @default null */
-            score: string | null;
-            /** @default null */
-            elapsed: string | null;
-            /** @default null */
-            period: string | null;
             /** @default null */
             game_status: string | null;
             /** @default {} */
@@ -1321,10 +1289,16 @@ export interface components {
             markets: components["schemas"]["EventMarket"][];
             /** @default null */
             series: null | components["schemas"]["PolymarketSeries"];
-            /** @default false */
-            show_market_images: boolean;
-            /** @default false */
-            automatically_resolved: boolean;
+            /**
+             * Format: int64
+             * @default null
+             */
+            creation_date: number | null;
+            /**
+             * Format: int64
+             * @default null
+             */
+            closed_time: number | null;
         };
         /**
          * @description A Polymarket series from the Gamma API
@@ -1349,6 +1323,8 @@ export interface components {
             layout: string | null;
             /** @default null */
             image_url: string | null;
+            /** @default null */
+            icon_url: string | null;
             /** @default false */
             active: boolean;
             /** @default false */
@@ -1598,6 +1574,11 @@ export interface components {
              * @default 0
              */
             unique_traders: number;
+            /**
+             * Format: double
+             * @default 0
+             */
+            open_interest_change: number;
         };
         /** @enum {string} */
         SortDirection: "asc" | "desc";
@@ -1698,19 +1679,15 @@ export interface operations {
                 id?: string;
                 /** @description Get single event by slug */
                 event_slug?: string;
-                /** @description Only active/non-ended events (default: true) */
-                active?: boolean;
-                /** @description Only featured events (mode=featured) */
-                featured?: boolean;
                 /** @description Search query (min 3 chars) */
                 search?: string;
-                /** @description Sort: volume, txns, unique_traders, market_count, creation_date, end_date */
+                /** @description Sort: volume, txns, unique_traders, market_count, end_date */
                 sort_by?: components["schemas"]["EventSortBy"];
                 /** @description Sort direction: asc, desc */
                 sort_dir?: components["schemas"]["SortDirection"];
-                /** @description Metrics timeframe: 1m, 5m, 30m, 1h, 6h, 24h */
+                /** @description Metrics timeframe: 1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d */
                 timeframe?: components["schemas"]["MetricsTimeframe"];
-                /** @description Event status: 'open' (active markets) or 'closed' (resolved markets) */
+                /** @description Filter by status: 'open' or 'closed' */
                 status?: string;
                 /** @description Comma-separated category filters */
                 categories?: string;
@@ -1736,7 +1713,9 @@ export interface operations {
                 include_tags?: boolean;
                 /** @description Include markets array with outcomes (default: true) */
                 include_markets?: boolean;
-                /** @description Results limit (default: 10, max: 40) */
+                /** @description Include metrics object with all timeframes (default: true) */
+                include_metrics?: boolean;
+                /** @description Results limit (default: 10, max: 100) */
                 limit?: number;
                 /** @description Offset-based pagination key (integer offset into result set) */
                 pagination_key?: string;
@@ -1763,7 +1742,7 @@ export interface operations {
             query: {
                 /** @description Event slug */
                 event_slug: string;
-                /** @description Timeframe: single (1m, 5m, 30m, 1h, 6h, 24h), comma-separated (1m,5m,1h), or 'all' */
+                /** @description Timeframe: single (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d), comma-separated (1m,5m,1h), or 'all' */
                 timeframe: string;
             };
             header?: never;
@@ -2030,7 +2009,7 @@ export interface operations {
                 condition_ids?: string;
                 /** @description Comma-separated market slugs */
                 slugs?: string;
-                /** @description Results limit (default: 10) */
+                /** @description Results limit (default: 10, max: 100) */
                 limit?: number;
                 /** @description Cursor for pagination: condition_id of the last item from the previous page */
                 pagination_key?: string;
@@ -2086,7 +2065,7 @@ export interface operations {
             query: {
                 /** @description Market condition ID */
                 condition_id: string;
-                /** @description Timeframe: single (1m, 5m, 30m, 1h, 6h, 24h), comma-separated (1m,5m,1h), or 'all' */
+                /** @description Timeframe: single (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d), comma-separated (1m,5m,1h), or 'all' */
                 timeframe: string;
             };
             header?: never;
@@ -2156,7 +2135,7 @@ export interface operations {
             query: {
                 /** @description Position/token ID */
                 position_id: string;
-                /** @description Timeframe: single (1m, 5m, 30m, 1h, 6h, 24h), comma-separated (1m,5m,1h), or 'all' */
+                /** @description Timeframe: single (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d), comma-separated (1m,5m,1h), or 'all' */
                 timeframe: string;
             };
             header?: never;
@@ -2455,6 +2434,8 @@ export interface operations {
                 include_tags?: boolean;
                 /** @description Include markets array with outcomes (default: true) */
                 include_markets?: boolean;
+                /** @description Include metrics object with all timeframes (default: true) */
+                include_metrics?: boolean;
                 /** @description Results limit (default: 10) */
                 limit?: number;
                 /** @description Offset-based pagination key (integer offset into result set) */

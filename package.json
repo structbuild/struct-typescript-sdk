@@ -1,6 +1,6 @@
 {
   "name": "@structbuild/sdk",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -22,6 +22,7 @@
   ],
   "scripts": {
     "build": "rm -rf dist && bun build ./src/index.ts --target browser --format esm --sourcemap --outdir ./dist && bun build ./src/index.ts --target browser --format cjs --sourcemap --outdir ./dist-cjs && mv ./dist-cjs/index.js ./dist/index.cjs && mv ./dist-cjs/index.js.map ./dist/index.cjs.map && rm -rf dist-cjs && tsc --emitDeclarationOnly",
+    "prep": "bun run fetch-spec:polymarket && bun run generate:polymarket && bun run build",
     "typecheck": "bun run tsc --noEmit",
     "fetch-spec:polymarket": "curl -s -o openapi/polymarket.json https://api.struct.to/api-docs/openapi.json",
     "generate:polymarket": "openapi-typescript openapi/polymarket.json -o src/generated/polymarket.ts"

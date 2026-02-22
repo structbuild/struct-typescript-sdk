@@ -118,67 +118,6 @@ for await (const market of paginate(
 }
 ```
 
-## WebSocket
-
-Stream real-time trades and alerts:
-
-```typescript
-import { StructWebSocket } from "@structbuild/sdk";
-
-const ws = new StructWebSocket({
-  apiKey: "your-api-key",
-  reconnect: { maxRetries: 10 },
-});
-
-ws.on("connected", () => {
-  ws.subscribeMarket("0x...");
-  ws.subscribeWhaleTrades();
-  ws.subscribeSmartMoneyTrades();
-  ws.subscribeInsiderTrades();
-});
-
-ws.on("market_trade", (trade) => {
-  console.log(trade);
-});
-
-ws.on("whale_trade", (trade) => {
-  console.log("Whale:", trade);
-});
-
-ws.connect();
-```
-
-### Wallet & Condition Tracking
-
-```typescript
-ws.trackWallets(["0xabc...", "0xdef..."]);
-
-ws.on("wallet_tracking_alert", (alert) => {
-  console.log(alert.trader, alert.usd_amount);
-});
-
-ws.trackConditions(["0x..."]);
-
-ws.on("conditions_tracking_alert", (trade) => {
-  console.log(trade);
-});
-```
-
-### WebSocket Events
-
-| Event | Payload | Description |
-|-------|---------|-------------|
-| `market_trade` | `PredictionTrade` | Trade on a subscribed market |
-| `whale_trade` | `EnrichedPredictionTrade` | Trade from a whale account |
-| `smart_money_trade` | `EnrichedPredictionTrade` | Trade from a smart money account |
-| `insider_trade` | `EnrichedPredictionTrade` | Trade from an insider account |
-| `wallet_tracking_alert` | `PredictionWalletTrackingAlert` | Trade from a tracked wallet |
-| `conditions_tracking_alert` | `PredictionTrade` | Trade on a tracked condition |
-| `connected` | `void` | Connection established |
-| `disconnected` | `{ code, reason }` | Connection closed |
-| `reconnecting` | `{ attempt }` | Reconnection attempt |
-| `error` | `Error` | Connection error |
-
 ## Error Handling
 
 ```typescript
