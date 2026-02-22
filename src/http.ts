@@ -188,7 +188,7 @@ export class HttpClient {
 	}
 
 	private buildUrl(path: string, params?: Record<string, string | number | boolean | undefined>): string {
-		const url = new URL(path, this.baseUrl);
+		const url = new URL(this.baseUrl + path);
 
 		if (params) {
 			for (const [key, value] of Object.entries(params)) {
