@@ -3,7 +3,6 @@ import type { Venue } from "./types/common.js";
 import type { RetryConfig, RequestHookInfo, ResponseHookInfo } from "./types/index.js";
 import {
 	HoldersNamespace,
-	ScoringNamespace,
 	TagsNamespace,
 	EventsNamespace,
 	MarketsNamespace,
@@ -11,6 +10,7 @@ import {
 	TraderNamespace,
 	BondsNamespace,
 	SearchNamespace,
+	WebhooksNamespace,
 } from "./namespaces/index.js";
 
 const DEFAULT_BASE_URL = "https://api.struct.to/v1";
@@ -28,7 +28,6 @@ export interface StructClientConfig {
 
 export class StructClient {
 	readonly holders: HoldersNamespace;
-	readonly scoring: ScoringNamespace;
 	readonly tags: TagsNamespace;
 	readonly events: EventsNamespace;
 	readonly markets: MarketsNamespace;
@@ -36,6 +35,7 @@ export class StructClient {
 	readonly trader: TraderNamespace;
 	readonly bonds: BondsNamespace;
 	readonly search: SearchNamespace;
+	readonly webhooks: WebhooksNamespace;
 
 	constructor(config: StructClientConfig) {
 		const http = new HttpClient({
@@ -52,7 +52,6 @@ export class StructClient {
 
 		const venue = config.venue ?? "polymarket";
 		this.holders = new HoldersNamespace(http, venue);
-		this.scoring = new ScoringNamespace(http, venue);
 		this.tags = new TagsNamespace(http, venue);
 		this.events = new EventsNamespace(http, venue);
 		this.markets = new MarketsNamespace(http, venue);
@@ -60,5 +59,6 @@ export class StructClient {
 		this.trader = new TraderNamespace(http, venue);
 		this.bonds = new BondsNamespace(http, venue);
 		this.search = new SearchNamespace(http, venue);
+		this.webhooks = new WebhooksNamespace(http);
 	}
 }

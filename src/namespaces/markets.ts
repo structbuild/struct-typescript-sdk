@@ -10,8 +10,6 @@ import type {
 	Trade,
 	CandlestickResponse,
 	GetMarketsParams,
-	GetMarketParams,
-	GetMarketBySlugParams,
 	GetMarketMetricsParams,
 	GetTradesParams,
 	GetCandlestickParams,
@@ -24,14 +22,6 @@ import type {
 export class MarketsNamespace extends Namespace {
 	async getMarkets(params?: GetMarketsParams, venue?: Venue): Promise<HttpResponse<MarketMetadata[]>> {
 		return this.get<MarketMetadata[]>(venue, "/market", { params: { ...params } });
-	}
-
-	async getMarket(params: GetMarketParams, venue?: Venue): Promise<HttpResponse<MarketMetadata>> {
-		return this.get<MarketMetadata>(venue, `/market/${encodeURIComponent(params.conditionId)}`);
-	}
-
-	async getMarketBySlug(params: GetMarketBySlugParams, venue?: Venue): Promise<HttpResponse<MarketMetadata>> {
-		return this.get<MarketMetadata>(venue, `/market/slug/${encodeURIComponent(params.slug)}`);
 	}
 
 	async getMarketMetrics(params: GetMarketMetricsParams, venue?: Venue): Promise<HttpResponse<ConditionMetricsResponse>> {

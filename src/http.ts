@@ -28,7 +28,19 @@ export class HttpClient {
 		return this.request<T>("GET", path, options);
 	}
 
-	private async request<T>(method: string, path: string, options?: RequestOptions): Promise<HttpResponse<T>> {
+	async post<T>(path: string, body?: unknown, options?: RequestOptions): Promise<HttpResponse<T>> {
+		return this.request<T>("POST", path, options, body);
+	}
+
+	async put<T>(path: string, body?: unknown, options?: RequestOptions): Promise<HttpResponse<T>> {
+		return this.request<T>("PUT", path, options, body);
+	}
+
+	async delete<T>(path: string, options?: RequestOptions): Promise<HttpResponse<T>> {
+		return this.request<T>("DELETE", path, options);
+	}
+
+	private async request<T>(method: string, path: string, options?: RequestOptions, body?: unknown): Promise<HttpResponse<T>> {
 		const maxRetries = this.retry
 			? (this.retry.maxRetries ?? DEFAULT_MAX_RETRIES)
 			: 0;
@@ -48,7 +60,7 @@ export class HttpClient {
 			}
 
 			try {
-				return await this.executeRequest<T>(method, path, options);
+				return await this.executeRequest<T>(method, path, options, body);
 			} catch (error) {
 				if (attempt < maxRetries && this.shouldRetry(error)) {
 					lastError = error;
@@ -64,9 +76,13 @@ export class HttpClient {
 		throw new NetworkError("Request failed after retries");
 	}
 
-	private async executeRequest<T>(method: string, path: string, options?: RequestOptions): Promise<HttpResponse<T>> {
+	private async executeRequest<T>(method: string, path: string, options?: RequestOptions, body?: unknown): Promise<HttpResponse<T>> {
 		const url = this.buildUrl(path, options?.params);
 		const headers = { ...this.defaultHeaders, ...options?.headers };
+
+		if (body !== undefined) {
+			headers["Content-Type"] = "application/json";
+		}
 
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), this.timeout);
@@ -79,7 +95,12 @@ export class HttpClient {
 			}
 
 			const startTime = performance.now();
-			const response = await fetch(url, { method, headers, signal });
+			const response = await fetch(url, {
+				method,
+				headers,
+				signal,
+				body: body !== undefined ? JSON.stringify(body) : undefined,
+			});
 
 			if (this.onResponse) {
 				try {

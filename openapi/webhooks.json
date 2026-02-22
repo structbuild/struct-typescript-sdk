@@ -1,0 +1,2504 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Polymarket Webhook API",
+    "description": "",
+    "license": {
+      "name": ""
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.struct.to/v1",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/webhooks": {
+      "get": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "List webhooks",
+        "description": "Retrieve a paginated list of your webhook subscriptions with optional filtering",
+        "operationId": "list_webhooks",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Results per page (default: 20, max: 100)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Pagination offset (default: 0)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by status: active, paused",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/WebhookStatusBody"
+            }
+          },
+          {
+            "name": "event",
+            "in": "query",
+            "description": "Filter by event type",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/PolymarketWebhookEvent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of webhooks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookListResponseBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Create webhook",
+        "description": "Create a new webhook subscription for real-time event notifications",
+        "operationId": "create_webhook",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebhookRequestBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Webhook created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request (malformed URL, invalid filters, etc.)"
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "402": {
+            "description": "Insufficient credits"
+          },
+          "429": {
+            "description": "Rate limit exceeded (max 100 webhooks per user)"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/webhooks/{webhook_id}": {
+      "get": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Get webhook",
+        "description": "Retrieve details of a specific webhook by its ID",
+        "operationId": "get_webhook",
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "description": "Webhook UUID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "description": "Webhook not found or not owned by user"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Update webhook",
+        "description": "Update an existing webhook's URL, filters, or status",
+        "operationId": "update_webhook",
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "description": "Webhook UUID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWebhookRequestBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "description": "Webhook not found or not owned by user"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Delete webhook",
+        "description": "Permanently delete a webhook subscription",
+        "operationId": "delete_webhook",
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "description": "Webhook UUID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Webhook deleted successfully"
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "description": "Webhook not found or not owned by user"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/webhooks/{webhook_id}/test": {
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Test webhook",
+        "description": "Send a test payload to the webhook URL to verify connectivity",
+        "operationId": "test_webhook",
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "description": "Webhook UUID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Test delivery completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookTestResponseBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "description": "Webhook not found or not owned by user"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConditionMetricsPayload": {
+        "type": "object",
+        "description": "Condition metrics webhook payload (Arc-optimized, no internal metadata)",
+        "properties": {
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "CreateWebhookRequestBody": {
+        "type": "object",
+        "description": "Request body for creating a webhook",
+        "required": [
+          "url",
+          "events"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Destination URL for webhook deliveries (must be HTTPS)"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PolymarketWebhookEvent"
+            },
+            "description": "Events to subscribe to"
+          },
+          "secret": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional secret for HMAC signature verification"
+          },
+          "filters": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/WebhookFiltersBody",
+                "description": "Optional filters for event matching"
+              }
+            ]
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional description/name"
+          }
+        }
+      },
+      "EventMetricsPayload": {
+        "type": "object",
+        "description": "Event metrics webhook payload (Arc-optimized, no internal metadata)",
+        "properties": {
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "EventPnlPayload": {
+        "type": "object",
+        "description": "Event PnL webhook payload (Arc-optimized)",
+        "properties": {
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "outcomes_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "sell_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "redemption_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "merge_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "winning_markets": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "losing_markets": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "EventVolumeMilestonePayload": {
+        "type": "object",
+        "description": "Event volume milestone webhook payload",
+        "required": [
+          "event_slug",
+          "timeframe",
+          "milestone_usd",
+          "current_volume_usd",
+          "fees",
+          "txns"
+        ],
+        "properties": {
+          "event_slug": {
+            "type": "string"
+          },
+          "timeframe": {
+            "type": "string"
+          },
+          "milestone_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Milestone amount reached (USD)"
+          },
+          "current_volume_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Current volume (USD) that triggered the milestone"
+          },
+          "fees": {
+            "type": "number",
+            "format": "double",
+            "description": "Total fees collected in this timeframe"
+          },
+          "txns": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Total transactions in this timeframe"
+          }
+        }
+      },
+      "FirstTradePayload": {
+        "type": "object",
+        "description": "First trade webhook payload with zero-copy Arc<str> for string sharing",
+        "required": [
+          "event_type",
+          "trader",
+          "taker",
+          "position_id",
+          "market_id",
+          "trade_id",
+          "hash",
+          "block",
+          "confirmed_at",
+          "timestamp",
+          "amount_usd",
+          "shares_amount",
+          "fee",
+          "side",
+          "price",
+          "exchange",
+          "trade_type"
+        ],
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "description": "Event type identifier"
+          },
+          "trader": {
+            "type": "string",
+            "description": "Trader/taker address (zero-copy Arc)"
+          },
+          "taker": {
+            "type": "string",
+            "description": "Taker address (same as trader, zero-copy Arc)"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Position ID (ERC1155 token ID, zero-copy Arc)"
+          },
+          "market_id": {
+            "type": "string",
+            "description": "Market ID (same as position_id for compatibility, zero-copy Arc)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Condition ID (market condition, zero-copy Arc)"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market outcome (e.g., \"Yes\", \"No\", zero-copy Arc)"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Outcome index (0 = Yes, 1 = No)",
+            "minimum": 0
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question (zero-copy Arc)"
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug (zero-copy Arc)"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug (parent event, zero-copy Arc)"
+          },
+          "trade_id": {
+            "type": "string",
+            "description": "Trade ID (zero-copy Arc)"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash (zero-copy Arc)"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Block number",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Confirmed timestamp (Unix seconds)",
+            "minimum": 0
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Timestamp (same as confirmed_at for compatibility)",
+            "minimum": 0
+          },
+          "amount_usd": {
+            "type": "string"
+          },
+          "shares_amount": {
+            "type": "string"
+          },
+          "fee": {
+            "type": "string"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side (Buy/Sell, zero-copy Arc)"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "description": "Price per share (0.0 - 1.0)"
+          },
+          "probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Implied probability (0.0 - 1.0)"
+          },
+          "exchange": {
+            "type": "string"
+          },
+          "trade_type": {
+            "type": "string"
+          }
+        }
+      },
+      "GlobalPnlPayload": {
+        "type": "object",
+        "description": "Global PnL webhook payload (Arc-optimized)",
+        "properties": {
+          "trader": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "events_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "positions_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "buy_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "sell_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "redemption_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "merge_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "winning_positions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "losing_positions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "win_rate_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "markets_won": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "markets_lost": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "market_win_rate_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "open_positions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "avg_pnl_per_position": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_pnl_per_trade": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_hold_time_seconds": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "MarketPnlPayload": {
+        "type": "object",
+        "description": "Market PnL webhook payload (Arc-optimized)",
+        "properties": {
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcomes_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "sell_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "redemption_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "merge_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "has_open_position": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "net_yes_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "net_no_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "winning_outcomes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "losing_outcomes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "PnlTimeframeFilter": {
+        "type": "string",
+        "description": "PnL timeframe enum for webhook filtering",
+        "enum": [
+          "1d",
+          "7d",
+          "30d",
+          "lifetime"
+        ]
+      },
+      "PolymarketWebhookEvent": {
+        "type": "string",
+        "description": "Polymarket webhook event types",
+        "enum": [
+          "first_trade",
+          "global_pnl",
+          "market_pnl",
+          "event_pnl",
+          "position_pnl",
+          "condition_metrics",
+          "event_metrics",
+          "position_metrics",
+          "volume_milestone",
+          "event_volume_milestone",
+          "position_volume_milestone",
+          "probability_spike",
+          "volume_spike",
+          "*"
+        ]
+      },
+      "PolymarketWebhookFilter": {
+        "type": "object",
+        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, has_open_position\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- position_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, min_net_shares, max_net_shares, position_ids, condition_ids, event_slugs, outcomes\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
+        "properties": {
+          "wallet_addresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by wallet addresses (for first_trade, normalized to lowercase)"
+          },
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by trader addresses (for PnL webhooks, normalized to lowercase)"
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by market/condition IDs"
+          },
+          "min_usd_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Filter by minimum USD value (for trades)"
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by event slugs"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by tags"
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum probability threshold (0.0 - 1.0)"
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum probability threshold (0.0 - 1.0)"
+          },
+          "min_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum realized PnL (USD) - for PnL webhooks"
+          },
+          "max_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum realized PnL (USD) - for PnL webhooks"
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum volume (USD) - for PnL and metrics webhooks"
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum volume (USD) - for metrics webhooks"
+          },
+          "min_buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum buy volume (USD) - for PnL and metrics webhooks"
+          },
+          "min_win_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum win rate (0.0 - 100.0) - for global PnL webhooks"
+          },
+          "min_markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum markets traded - for PnL webhooks"
+          },
+          "min_net_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum net shares - for position PnL webhooks"
+          },
+          "max_net_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum net shares - for position PnL webhooks"
+          },
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by position IDs - for position PnL webhooks"
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by outcomes (e.g., \"Yes\", \"No\") - for position PnL webhooks"
+          },
+          "has_open_position": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Only markets with open positions - for market PnL webhooks"
+          },
+          "min_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum fees - for metrics webhooks"
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum transaction count - for metrics webhooks"
+          },
+          "min_sell_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum sell volume (USD) - for position metrics webhooks"
+          },
+          "min_price_change_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum price change percentage - for position metrics webhooks"
+          },
+          "min_probability_change_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum probability change percentage - for position metrics webhooks"
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h)"
+          },
+          "milestone_amounts": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Milestone amounts to track - for volume milestone webhooks (e.g., 10000, 100000, 1000000)"
+          },
+          "baseline_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "User's baseline volume for spike detection (USD) - for volume spike webhooks\nExample: 50000.0 for $50k baseline"
+          },
+          "spike_ratio": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Spike ratio multiplier (must be > 1.0) - for volume spike webhooks\nExample: 2.0 for 2x, 5.0 for 5x, 10.0 for 10x"
+          },
+          "exclude_shortterm_market_timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Exclude short-term trading markets by timeframe (e.g., [\"5m\", \"15m\", \"30m\", \"1h\"])\nFilters out event slugs containing these timeframe patterns (auto-wrapped: \"5m\" → \"-5m-\")\nExample: Excludes \"btc-updown-5m-1771678800\" when \"5m\" is in the list"
+          }
+        }
+      },
+      "PositionMetricsPayload": {
+        "type": "object",
+        "description": "Position metrics webhook payload (Arc-optimized, no internal metadata)",
+        "properties": {
+          "position_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "buy_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "sell_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "price_open": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "price_close": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "price_high": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "price_low": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "probability_open": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "probability_close": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "probability_high": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "probability_low": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "PositionPnlPayload": {
+        "type": "object",
+        "description": "Position PnL webhook payload (Arc-optimized)",
+        "properties": {
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "buy_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "sell_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "redemption_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "merge_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_shares_bought": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_shares_sold": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_shares_redeemed": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_shares_merged": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "net_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "sell_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "redemption_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "merge_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "cost_basis": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          }
+        }
+      },
+      "PositionVolumeMilestonePayload": {
+        "type": "object",
+        "description": "Position volume milestone webhook payload",
+        "required": [
+          "position_id",
+          "timeframe",
+          "milestone_usd",
+          "current_volume_usd",
+          "buy_volume_usd",
+          "sell_volume_usd",
+          "fees",
+          "txns",
+          "buys",
+          "sells"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position_id": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "timeframe": {
+            "type": "string"
+          },
+          "milestone_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Milestone amount reached (USD)"
+          },
+          "current_volume_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Current volume (USD) that triggered the milestone"
+          },
+          "buy_volume_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Buy volume (USD)"
+          },
+          "sell_volume_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Sell volume (USD)"
+          },
+          "fees": {
+            "type": "number",
+            "format": "double",
+            "description": "Total fees collected in this timeframe"
+          },
+          "txns": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Total transactions in this timeframe"
+          },
+          "buys": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Buy transactions"
+          },
+          "sells": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Sell transactions"
+          }
+        }
+      },
+      "ProbabilitySpikePayload": {
+        "type": "object",
+        "description": "Position probability spike webhook payload",
+        "required": [
+          "position_id",
+          "timeframe",
+          "probability_open",
+          "probability_close",
+          "probability_change",
+          "probability_change_pct",
+          "price_open",
+          "price_close",
+          "volume_usd",
+          "txns"
+        ],
+        "properties": {
+          "position_id": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "timeframe": {
+            "type": "string"
+          },
+          "probability_open": {
+            "type": "number",
+            "format": "double",
+            "description": "Probability at the start of the timeframe (0.0 - 1.0)"
+          },
+          "probability_close": {
+            "type": "number",
+            "format": "double",
+            "description": "Probability at the end of the timeframe (0.0 - 1.0)"
+          },
+          "probability_change": {
+            "type": "number",
+            "format": "double",
+            "description": "Absolute probability change (e.g., 0.25 for 25 percentage points)"
+          },
+          "probability_change_pct": {
+            "type": "number",
+            "format": "double",
+            "description": "Percentage change relative to open (e.g., 83.33 for 30% -> 55%)"
+          },
+          "price_open": {
+            "type": "number",
+            "format": "double",
+            "description": "Price at open (0.0 - 1.0)"
+          },
+          "price_close": {
+            "type": "number",
+            "format": "double",
+            "description": "Price at close (0.0 - 1.0)"
+          },
+          "volume_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Volume during the timeframe (USD)"
+          },
+          "txns": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of transactions"
+          }
+        }
+      },
+      "UpdateWebhookRequestBody": {
+        "type": "object",
+        "description": "Request body for updating a webhook",
+        "properties": {
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Destination URL for webhook deliveries (must be HTTPS)"
+          },
+          "events": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/PolymarketWebhookEvent"
+            },
+            "description": "Events to subscribe to"
+          },
+          "secret": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "New secret for HMAC signature verification"
+          },
+          "filters": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/WebhookFiltersBody",
+                "description": "Filters for event matching"
+              }
+            ]
+          },
+          "status": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/WebhookStatusBody",
+                "description": "Webhook status"
+              }
+            ]
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Description/name"
+          }
+        }
+      },
+      "VolumeMilestonePayload": {
+        "type": "object",
+        "description": "Volume milestone webhook payload",
+        "required": [
+          "condition_id",
+          "timeframe",
+          "milestone_usd",
+          "current_volume_usd",
+          "fees",
+          "txns"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": "string"
+          },
+          "timeframe": {
+            "type": "string"
+          },
+          "milestone_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Milestone amount reached (USD)"
+          },
+          "current_volume_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Current volume (USD) that triggered the milestone"
+          },
+          "fees": {
+            "type": "number",
+            "format": "double",
+            "description": "Total fees collected in this timeframe"
+          },
+          "txns": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Total transactions in this timeframe"
+          }
+        }
+      },
+      "WebhookFiltersBody": {
+        "type": "object",
+        "description": "Webhook filters request body",
+        "properties": {
+          "wallet_addresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by wallet addresses"
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by market/condition IDs"
+          },
+          "min_usd_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Filter by minimum USD value"
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by event slugs"
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum probability threshold (0.0 - 1.0)"
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum probability threshold (0.0 - 1.0)"
+          },
+          "exclude_shortterm_market_timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Exclude short-term trading markets by timeframe (e.g., [\"5m\", \"15m\"])"
+          }
+        }
+      },
+      "WebhookListResponseBody": {
+        "type": "object",
+        "description": "List webhooks response",
+        "required": [
+          "webhooks",
+          "total"
+        ],
+        "properties": {
+          "webhooks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookResponse"
+            },
+            "description": "List of webhooks"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total count",
+            "minimum": 0
+          }
+        }
+      },
+      "WebhookResponse": {
+        "type": "object",
+        "description": "Webhook response (returned from API)",
+        "required": [
+          "id",
+          "url",
+          "events",
+          "filters",
+          "status",
+          "failure_count",
+          "created_at",
+          "updated_at",
+          "has_secret"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique webhook ID"
+          },
+          "url": {
+            "type": "string",
+            "description": "Destination URL"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PolymarketWebhookEvent"
+            },
+            "description": "Subscribed events"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/WebhookFiltersBody",
+            "description": "Filters"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status"
+          },
+          "failure_count": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Consecutive failure count",
+            "minimum": 0
+          },
+          "last_success_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Last successful delivery timestamp"
+          },
+          "last_failure_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Last failed delivery timestamp"
+          },
+          "last_failure_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Last failure reason"
+          },
+          "created_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Created timestamp"
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Updated timestamp"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Description"
+          },
+          "has_secret": {
+            "type": "boolean",
+            "description": "Whether a secret is configured"
+          }
+        }
+      },
+      "WebhookStatusBody": {
+        "type": "string",
+        "description": "Webhook status",
+        "enum": [
+          "active",
+          "paused"
+        ]
+      },
+      "WebhookTestResponseBody": {
+        "type": "object",
+        "description": "Test webhook response",
+        "required": [
+          "success",
+          "duration_ms"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the test delivery succeeded"
+          },
+          "status_code": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "HTTP status code from the endpoint",
+            "minimum": 0
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Error message if failed"
+          },
+          "duration_ms": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Delivery duration in milliseconds",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Webhooks",
+      "description": "Webhook subscription management (CRUD operations)"
+    },
+    {
+      "name": "Webhook Callbacks",
+      "description": "Outgoing HTTP calls to your endpoints when subscribed events occur"
+    }
+  ],
+  "webhooks": {
+    "first-trade": {
+      "post": {
+        "summary": "First trade callback",
+        "description": "Fired when a tracked trader executes their first trade on a market",
+        "operationId": "first-trade",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FirstTradePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "global-pnl": {
+      "post": {
+        "summary": "Global PnL callback",
+        "description": "Fired when a trader's global PnL crosses a configured threshold",
+        "operationId": "global-pnl",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalPnlPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "market-pnl": {
+      "post": {
+        "summary": "Market PnL callback",
+        "description": "Fired when a trader's market-level PnL crosses a configured threshold",
+        "operationId": "market-pnl",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketPnlPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "event-pnl": {
+      "post": {
+        "summary": "Event PnL callback",
+        "description": "Fired when a trader's event-level PnL crosses a configured threshold",
+        "operationId": "event-pnl",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventPnlPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "position-pnl": {
+      "post": {
+        "summary": "Position PnL callback",
+        "description": "Fired when a trader's position-level PnL crosses a configured threshold",
+        "operationId": "position-pnl",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionPnlPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "market-metrics": {
+      "post": {
+        "summary": "Market metrics callback",
+        "description": "Fired when a market's volume or transaction metrics cross a configured threshold",
+        "operationId": "market-metrics",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConditionMetricsPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "event-metrics": {
+      "post": {
+        "summary": "Event metrics callback",
+        "description": "Fired when an event's volume or transaction metrics cross a configured threshold",
+        "operationId": "event-metrics",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventMetricsPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "position-metrics": {
+      "post": {
+        "summary": "Position metrics callback",
+        "description": "Fired when a position's volume or transaction metrics cross a configured threshold",
+        "operationId": "position-metrics",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionMetricsPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "market-volume-milestone": {
+      "post": {
+        "summary": "Market volume milestone callback",
+        "description": "Fired when a market's trading volume reaches a milestone threshold",
+        "operationId": "market-volume-milestone",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VolumeMilestonePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "event-volume-milestone": {
+      "post": {
+        "summary": "Event volume milestone callback",
+        "description": "Fired when an event's trading volume reaches a milestone threshold",
+        "operationId": "event-volume-milestone",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventVolumeMilestonePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "position-volume-milestone": {
+      "post": {
+        "summary": "Position volume milestone callback",
+        "description": "Fired when a position's trading volume reaches a milestone threshold",
+        "operationId": "position-volume-milestone",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionVolumeMilestonePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "probability-spike": {
+      "post": {
+        "summary": "Probability spike callback",
+        "description": "Fired when a position's probability changes by more than a configured percentage",
+        "operationId": "probability-spike",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProbabilitySpikePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    }
+  }
+}

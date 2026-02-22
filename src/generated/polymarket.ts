@@ -1029,7 +1029,15 @@ export interface components {
             image_url?: string | null;
             tags: string[];
             /** Format: int64 */
-            end_date?: number | null;
+            created_time?: number | null;
+            /** Format: int64 */
+            start_time?: number | null;
+            /** Format: int64 */
+            game_start_time?: number | null;
+            /** Format: int64 */
+            closed_time?: number | null;
+            /** Format: int64 */
+            end_time?: number | null;
             title?: string | null;
             id?: string | null;
             /** Format: double */
@@ -1071,7 +1079,7 @@ export interface components {
         /** @enum {string} */
         MarketPnlSortBy: "realized_pnl_usd" | "buy_usd" | "total_buys" | "total_fees" | "outcomes_traded";
         /** @enum {string} */
-        MarketSortBy: "volume" | "txns" | "unique_traders" | "liquidity" | "holders" | "end_date" | "created_at" | "relevance";
+        MarketSortBy: "volume" | "txns" | "unique_traders" | "liquidity" | "holders" | "end_time" | "start_time" | "created_time" | "created_at" | "relevance";
         /** @enum {string} */
         MarketStatus: "open" | "closed";
         MarketVolumeChartResponse: {
@@ -1245,6 +1253,8 @@ export interface components {
             neg_risk_market_id: string | null;
             /** @default null */
             game_status: string | null;
+            /** @default false */
+            show_market_images: boolean;
             /**
              * @description Event status: "open" or "closed"
              * @default null
@@ -1966,11 +1976,11 @@ export interface operations {
                 event_slugs?: string;
                 /** @description Filter by position ID(s) - comma-separated (max 50), resolved via market_outcomes table */
                 position_ids?: string;
-                /** @description Search in title and description (3-100 characters) */
+                /** @description Search in title (3-100 characters) */
                 search?: string;
                 /** @description Filter by status: open or closed */
                 status?: components["schemas"]["MarketStatus"];
-                /** @description Sort: volume, txns, unique_traders, liquidity, holders, end_date, created_at, relevance */
+                /** @description Sort: volume, txns, unique_traders, liquidity, holders, end_time, start_time, created_time, created_at, relevance */
                 sort_by?: components["schemas"]["MarketSortBy"];
                 /** @description Sort direction: asc, desc (default: desc) */
                 sort_dir?: components["schemas"]["SortDirection"];
@@ -2004,9 +2014,9 @@ export interface operations {
                 tags?: string;
                 /** @description Comma-separated tags to exclude */
                 exclude_tags?: string;
-                /** @description Filter markets with end_date >= start_time (Unix timestamp) */
+                /** @description Filter markets with end_time >= start_time (Unix timestamp) */
                 start_time?: number;
-                /** @description Filter markets with end_date <= end_time (Unix timestamp) */
+                /** @description Filter markets with end_time <= end_time (Unix timestamp) */
                 end_time?: number;
                 /** @description Include tags array (default: true) */
                 include_tags?: boolean;
@@ -2016,10 +2026,8 @@ export interface operations {
                 include_metrics?: boolean;
                 /** @description Results limit (default: 50, max: 100) */
                 limit?: number;
-                /** @description Cursor value for pagination (sort column value) */
-                cursor_value?: string;
-                /** @description Cursor ID for pagination (condition_id) */
-                cursor_id?: string;
+                /** @description Cursor-based pagination key (base64-encoded, obtained from previous response's pagination.pagination_key) */
+                pagination_key?: string;
             };
             header?: never;
             path?: never;

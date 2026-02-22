@@ -1,7 +1,20 @@
 export type { components, operations, paths } from "../generated/polymarket.js";
-export type { Schemas, OperationQuery, OperationPath, OperationResponse } from "./helpers.js";
+export type { Schemas, OperationQuery, OperationPath, OperationResponse, OperationQueryOf, OperationPathOf, OperationResponseOf, OperationRequestBodyOf } from "./helpers.js";
+export type {
+	WebhookSchemas,
+	WebhookOperationQuery,
+	WebhookOperationPath,
+	WebhookOperationResponse,
+	WebhookOperationRequestBody,
+} from "./webhook-helpers.js";
+export type {
+	components as WebhookComponents,
+	operations as WebhookOperations,
+	paths as WebhookPaths,
+} from "../generated/webhooks.js";
 
 import type { Schemas, OperationQuery } from "./helpers.js";
+import type { WebhookSchemas, WebhookOperationQuery, WebhookOperationRequestBody } from "./webhook-helpers.js";
 
 export type BondMarket = Schemas["BondMarket"];
 export type BondOutcome = Schemas["BondOutcome"];
@@ -68,52 +81,6 @@ export type GlobalPnlTimeframe = Schemas["PnlTimeframe"];
 export type TradeSide = "Buy" | "Sell";
 export type EventStatus = "active" | "resolved" | "ended" | "archived";
 export type HolderSortBy = "shares_held" | "total_cost_usd" | "unrealized_pnl_usd";
-
-export interface TraderScore {
-	trader: TraderInfo;
-	is_bot: boolean;
-	bot_confidence: number;
-	bot_reasons: string[];
-	smart_money_score: number;
-	insider_score: number;
-	insider_score_permanent: boolean;
-	market_count: number;
-	avg_trade_size_usd: string;
-	total_trades: number;
-	total_volume_usd: string;
-	first_trade_at: number | null;
-	last_trade_at: number;
-}
-
-export interface SmartMoneyEntry {
-	trader: TraderInfo;
-	smart_money_score: number;
-	total_trades: number;
-	total_volume_usd: string;
-	market_count: number;
-	last_trade_at: number;
-}
-
-export interface InsiderEntry {
-	trader: TraderInfo;
-	insider_score: number;
-	insider_score_permanent: boolean;
-	market_count: number;
-	avg_trade_size_usd: string;
-	total_trades: number;
-	first_trade_at: number | null;
-	last_trade_at: number;
-}
-
-export interface BotEntry {
-	trader: TraderInfo;
-	is_bot: boolean;
-	bot_confidence: number;
-	bot_reasons: string[];
-	total_trades: number;
-	total_volume_usd: string;
-	last_trade_at: number;
-}
 
 export type PortfolioTimeframe = "7d" | "30d" | "lifetime";
 
@@ -437,14 +404,6 @@ export interface GetPositionHoldersHistoryParams {
 
 export interface GetMarketsParams extends OperationQuery<"list_markets"> {}
 
-export interface GetMarketParams {
-	conditionId: string;
-}
-
-export interface GetMarketBySlugParams {
-	slug: string;
-}
-
 export interface GetCandlestickParams extends OperationQuery<"get_market_candlestick"> {}
 
 export interface GetPositionCandlestickParams extends OperationQuery<"get_position_candlestick"> {}
@@ -524,24 +483,48 @@ export interface GetTraderVolumeChartParams extends OperationQuery<"get_trader_v
 	address: string;
 }
 
-export interface GetTraderScoreParams {
-	address: string;
+export type WebhookResponse = WebhookSchemas["WebhookResponse"];
+export type WebhookListResponseBody = WebhookSchemas["WebhookListResponseBody"];
+export type WebhookTestResponseBody = WebhookSchemas["WebhookTestResponseBody"];
+export type CreateWebhookRequestBody = WebhookSchemas["CreateWebhookRequestBody"];
+export type UpdateWebhookRequestBody = WebhookSchemas["UpdateWebhookRequestBody"];
+export type WebhookFiltersBody = WebhookSchemas["WebhookFiltersBody"];
+export type WebhookStatusBody = WebhookSchemas["WebhookStatusBody"];
+export type PolymarketWebhookEvent = WebhookSchemas["PolymarketWebhookEvent"];
+export type PolymarketWebhookFilter = WebhookSchemas["PolymarketWebhookFilter"];
+export type PnlTimeframeFilter = WebhookSchemas["PnlTimeframeFilter"];
+
+export type FirstTradePayload = WebhookSchemas["FirstTradePayload"];
+export type GlobalPnlPayload = WebhookSchemas["GlobalPnlPayload"];
+export type MarketPnlPayload = WebhookSchemas["MarketPnlPayload"];
+export type EventPnlPayload = WebhookSchemas["EventPnlPayload"];
+export type PositionPnlPayload = WebhookSchemas["PositionPnlPayload"];
+export type ConditionMetricsPayload = WebhookSchemas["ConditionMetricsPayload"];
+export type EventMetricsPayload = WebhookSchemas["EventMetricsPayload"];
+export type PositionMetricsPayload = WebhookSchemas["PositionMetricsPayload"];
+export type VolumeMilestonePayload = WebhookSchemas["VolumeMilestonePayload"];
+export type EventVolumeMilestonePayload = WebhookSchemas["EventVolumeMilestonePayload"];
+export type PositionVolumeMilestonePayload = WebhookSchemas["PositionVolumeMilestonePayload"];
+export type ProbabilitySpikePayload = WebhookSchemas["ProbabilitySpikePayload"];
+
+export interface ListWebhooksParams extends WebhookOperationQuery<"list_webhooks"> {}
+
+export interface GetWebhookParams {
+	webhookId: string;
 }
 
-export interface LeaderboardParams {
-	limit?: number;
+export interface CreateWebhookParams extends WebhookOperationRequestBody<"create_webhook"> {}
+
+export interface UpdateWebhookParams extends WebhookOperationRequestBody<"update_webhook"> {
+	webhookId: string;
 }
 
-export interface GetEventParams {
-	id: string;
-	include_tags?: boolean;
-	include_markets?: boolean;
+export interface DeleteWebhookParams {
+	webhookId: string;
 }
 
-export interface GetEventBySlugParams {
-	slug: string;
-	include_tags?: boolean;
-	include_markets?: boolean;
+export interface TestWebhookParams {
+	webhookId: string;
 }
 
 export type { RetryConfig, HttpClientConfig, RequestOptions, HttpResponse, RequestHookInfo, ResponseHookInfo, ApiResponseInfo } from "./http.js";

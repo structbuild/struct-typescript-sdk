@@ -22,10 +22,13 @@
   ],
   "scripts": {
     "build": "rm -rf dist && bun build ./src/index.ts --target browser --format esm --sourcemap --outdir ./dist && bun build ./src/index.ts --target browser --format cjs --sourcemap --outdir ./dist-cjs && mv ./dist-cjs/index.js ./dist/index.cjs && mv ./dist-cjs/index.js.map ./dist/index.cjs.map && rm -rf dist-cjs && tsc --emitDeclarationOnly",
-    "prep": "bun run fetch-spec:polymarket && bun run generate:polymarket && bun run build",
+    "check-routes": "bun run scripts/check-routes.ts",
+    "prep": "bun run fetch-spec:polymarket && bun run generate:polymarket && bun run fetch-spec:webhooks && bun run generate:webhooks && bun run check-routes && bun run build",
     "typecheck": "bun run tsc --noEmit",
     "fetch-spec:polymarket": "curl -s -o openapi/polymarket.json https://api.struct.to/api-docs/openapi.json",
-    "generate:polymarket": "openapi-typescript openapi/polymarket.json -o src/generated/polymarket.ts"
+    "generate:polymarket": "openapi-typescript openapi/polymarket.json -o src/generated/polymarket.ts",
+    "fetch-spec:webhooks": "curl -s -o openapi/webhooks.json https://api.struct.to/webhookopenapi.json",
+    "generate:webhooks": "openapi-typescript openapi/webhooks.json -o src/generated/webhooks.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",

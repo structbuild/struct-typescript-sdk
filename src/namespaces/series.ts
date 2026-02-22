@@ -1,14 +1,7 @@
 import { Namespace } from "./base.js";
 import type { HttpResponse } from "../types/http.js";
 import type { Venue } from "../types/common.js";
-import type {
-	Series,
-	SeriesDetail,
-	Event,
-	GetSeriesListParams,
-	GetSeriesDetailParams,
-	GetSeriesEventsParams,
-} from "../types/index.js";
+import type { Series, SeriesDetail, Event, GetSeriesListParams, GetSeriesDetailParams, GetSeriesEventsParams } from "../types/index.js";
 
 export class SeriesNamespace extends Namespace {
 	async getSeriesList(params?: GetSeriesListParams, venue?: Venue): Promise<HttpResponse<Series[]>> {

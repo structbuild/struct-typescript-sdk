@@ -101,6 +101,45 @@ const tags = await client.tags.getTags();
 const bonds = await client.bonds.getBonds();
 ```
 
+### Webhooks
+
+Manage webhook subscriptions for real-time event notifications. Webhook endpoints are platform-level (not venue-scoped).
+
+```typescript
+const webhooks = await client.webhooks.list();
+const webhook = await client.webhooks.create({
+  url: "https://example.com/webhook",
+  events: ["first_trade", "probability_spike"],
+  filters: {
+    condition_ids: ["0x..."],
+    min_usd_value: 100,
+  },
+});
+const detail = await client.webhooks.getWebhook({ webhookId: webhook.data.id });
+await client.webhooks.update({ webhookId: webhook.data.id, events: ["first_trade"] });
+await client.webhooks.test({ webhookId: webhook.data.id });
+await client.webhooks.deleteWebhook({ webhookId: webhook.data.id });
+```
+
+#### Webhook Payload Types
+
+The SDK exports typed payload schemas for building webhook receivers:
+
+```typescript
+import type {
+  FirstTradePayload,
+  ProbabilitySpikePayload,
+  GlobalPnlPayload,
+  VolumeMilestonePayload,
+} from "@structbuild/sdk";
+
+function handleWebhook(payload: FirstTradePayload) {
+  console.log(payload.trader, payload.price, payload.side);
+}
+```
+
+Available payload types: `FirstTradePayload`, `GlobalPnlPayload`, `MarketPnlPayload`, `EventPnlPayload`, `PositionPnlPayload`, `ConditionMetricsPayload`, `EventMetricsPayload`, `PositionMetricsPayload`, `VolumeMilestonePayload`, `EventVolumeMilestonePayload`, `PositionVolumeMilestonePayload`, `ProbabilitySpikePayload`.
+
 ## Pagination
 
 Use the `paginate` helper to iterate through all results:

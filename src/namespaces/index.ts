@@ -1,6 +1,5 @@
-export { Namespace } from "./base.js";
+export { Namespace, PlatformNamespace } from "./base.js";
 export { HoldersNamespace } from "./holders.js";
-export { ScoringNamespace } from "./scoring.js";
 export { TagsNamespace } from "./tags.js";
 export { EventsNamespace } from "./events.js";
 export { MarketsNamespace } from "./markets.js";
@@ -8,3 +7,4 @@ export { SeriesNamespace } from "./series.js";
 export { TraderNamespace } from "./trader.js";
 export { BondsNamespace } from "./bonds.js";
 export { SearchNamespace } from "./search.js";
+export { WebhooksNamespace } from "./webhooks.js";
