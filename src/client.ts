@@ -41,7 +41,7 @@ export class StructClient {
 		const http = new HttpClient({
 			baseUrl: config.baseUrl ?? DEFAULT_BASE_URL,
 			defaultHeaders: {
-				Authorization: `Bearer ${config.apiKey}`,
+				"X-API-Key": config.apiKey,
 				...config.headers,
 			},
 			timeout: config.timeout,
