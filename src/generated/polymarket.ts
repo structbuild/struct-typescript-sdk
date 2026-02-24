@@ -1408,8 +1408,6 @@ export interface components {
             /** Format: double */
             price_close: number;
         };
-        /** @enum {string} */
-        PositionStatus: "active" | "resolved" | "all";
         PositionVolumeChartResponse: {
             volumes: components["schemas"]["PositionVolumeDataPoint"][];
             has_more: boolean;
@@ -1546,7 +1544,7 @@ export interface components {
         /** @enum {string} */
         TradeSide: "0" | "1";
         /** @enum {string} */
-        TradeType: "0" | "1" | "2";
+        TradeType: "0" | "1" | "2" | "4";
         /**
          * @description Trader profile info embedded in API responses
          *
@@ -1657,7 +1655,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of Polymarket events with nested tags, markets, and series */
+            /** @description List of Polymarket events with nested tags, markets, and series. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1737,7 +1735,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Event holders aggregated across markets (sorted by total_shares DESC) */
+            /** @description Event holders aggregated across markets (sorted by total_shares DESC). Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1881,7 +1879,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Position holders (sorted by shares DESC) */
+            /** @description Position holders (sorted by shares DESC). Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1995,7 +1993,7 @@ export interface operations {
                 include_event?: boolean;
                 /** @description Include all timeframe metrics (default: true) */
                 include_metrics?: boolean;
-                /** @description Results limit (default: 50, max: 100) */
+                /** @description Results limit (default: 10, max: 100) */
                 limit?: number;
                 /** @description Cursor-based pagination key (base64-encoded, obtained from previous response's pagination.pagination_key) */
                 pagination_key?: string;
@@ -2006,7 +2004,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of markets with metadata, outcomes, tags, event, and metrics */
+            /** @description List of markets with metadata, outcomes, tags, event, and metrics. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2029,7 +2027,7 @@ export interface operations {
                 min_probability?: number;
                 /** @description Maximum hours until market end */
                 max_hours?: number;
-                /** @description Number of results (default: 10, max: 200) */
+                /** @description Number of results (default: 10, max: 250) */
                 limit?: number;
                 /** @description Cursor for pagination: end_date (unix epoch) of the last item from the previous page */
                 pagination_key?: number;
@@ -2516,7 +2514,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Global PnL leaderboard with trader stats */
+            /** @description Global PnL leaderboard with trader stats. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2547,7 +2545,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["GlobalPnlTrader"];
+                };
             };
             /** @description Trader not found */
             404: {
@@ -2613,7 +2613,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Event-level PnL entries for this trader */
+            /** @description Event-level PnL entries for this trader. Response includes `pagination: { has_more, pagination_key }` for offset-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2649,7 +2649,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Market-level PnL entries for this trader */
+            /** @description Market-level PnL entries for this trader. Response includes `pagination: { has_more, pagination_key }` for offset-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2673,7 +2673,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Full portfolio with stats, positions, and PnL chart */
+            /** @description Full portfolio with stats, positions, and PnL chart. Positions include `pagination: { has_more, pagination_key }` for offset-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2707,7 +2707,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Trader positions with market metadata and PnL */
+            /** @description Trader positions with market metadata and PnL. Response includes `pagination: { has_more, pagination_key }` for offset-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2733,7 +2733,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PolymarketUserProfile"];
+                };
             };
             /** @description Profile not found */
             404: {
@@ -2761,7 +2763,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PolymarketUserProfile"][];
+                };
             };
             /** @description Invalid request (empty addresses or more than 20) */
             400: {

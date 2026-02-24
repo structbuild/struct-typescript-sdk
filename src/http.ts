@@ -1,5 +1,5 @@
 import { HttpError, NetworkError, StructError, TimeoutError } from "./errors.js";
-import type { HttpClientConfig, HttpResponse, RequestOptions, RequestHookInfo, ResponseHookInfo, RetryConfig, ApiResponseInfo } from "./types/http.js";
+import type { HttpClientConfig, HttpResponse, RequestOptions, RequestHookInfo, ResponseHookInfo, RetryConfig, ApiResponseInfo, PaginationInfo } from "./types/http.js";
 
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 3;
@@ -172,6 +172,7 @@ export class HttpClient {
 				message: body.message ?? null,
 				success: body.success,
 				info: body.info as ApiResponseInfo | undefined,
+				pagination: body.pagination as PaginationInfo | undefined,
 			};
 		}
 

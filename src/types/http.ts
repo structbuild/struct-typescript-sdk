@@ -40,9 +40,15 @@ export interface ApiResponseInfo {
 	compute_time_ms: number;
 }
 
+export interface PaginationInfo {
+	has_more: boolean;
+	pagination_key: string | number | null;
+}
+
 export interface HttpResponse<T> {
 	data: T;
 	message: string | null;
 	success: boolean;
 	info?: ApiResponseInfo;
+	pagination?: PaginationInfo;
 }

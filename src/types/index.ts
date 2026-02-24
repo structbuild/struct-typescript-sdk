@@ -53,7 +53,6 @@ export type UserProfile = Schemas["PolymarketUserProfile"];
 export type PositionHolderPnl = Schemas["PositionHolderPnl"];
 export type PositionHoldersResponse = Schemas["PositionHoldersResponse"];
 export type PositionMetricsResponse = Schemas["PositionMetricsResponse"];
-export type PositionStatus = Schemas["PositionStatus"];
 export type PositionVolumeChartResponse = Schemas["PositionVolumeChartResponse"];
 export type PositionVolumeDataPoint = Schemas["PositionVolumeDataPoint"];
 export type PredictionCandlestickBar = Schemas["PredictionCandlestickBar"];
@@ -215,57 +214,6 @@ export interface PositionsResponse {
 	offset: number;
 }
 
-export interface TradeEntry {
-	id: string;
-	hash: string | null;
-	condition_id: string | null;
-	side: number | null;
-	outcome: string | null;
-	outcome_index: number | null;
-	usd_amount: number | null;
-	shares_amount: number | null;
-	price: number | null;
-	probability: number | null;
-	confirmed_at: number | null;
-	market: PositionMarketMetadata | null;
-}
-
-export interface TradesResponse {
-	trades: TradeEntry[];
-	total_count: number | null;
-	limit: number;
-	offset: number;
-}
-
-export interface TraderPnlSummary {
-	realized_pnl_usd: number | null;
-	events_traded: number | null;
-	markets_traded: number | null;
-	positions_traded: number | null;
-	total_buys: number | null;
-	total_sells: number | null;
-	total_redemptions: number | null;
-	total_merges: number | null;
-	total_volume_usd: number | null;
-	buy_volume_usd: number | null;
-	sell_volume_usd: number | null;
-	redemption_volume_usd: number | null;
-	merge_volume_usd: number | null;
-	winning_positions: number | null;
-	losing_positions: number | null;
-	win_rate_pct: number | null;
-	markets_won: number | null;
-	markets_lost: number | null;
-	market_win_rate_pct: number | null;
-	open_positions: number | null;
-	avg_pnl_per_position: number | null;
-	avg_pnl_per_trade: number | null;
-	avg_hold_time_seconds: number | null;
-	total_fees: number | null;
-	first_trade_at: number | null;
-	last_trade_at: number | null;
-}
-
 export interface TraderPositionPnlEntry {
 	condition_id: string | null;
 	position_id: string | null;
@@ -348,11 +296,6 @@ export interface PnlListResponse<T> {
 
 export interface PnlCandlesResponse {
 	data: PnlCandleEntry[];
-}
-
-export interface GlobalPnlResponse {
-	traders: GlobalPnlTrader[];
-	total_count: number;
 }
 
 export interface TraderSearchResult {
@@ -525,7 +468,7 @@ export interface TestWebhookParams {
 	webhookId: string;
 }
 
-export type { RetryConfig, HttpClientConfig, RequestOptions, HttpResponse, RequestHookInfo, ResponseHookInfo, ApiResponseInfo } from "./http.js";
+export type { RetryConfig, HttpClientConfig, RequestOptions, HttpResponse, RequestHookInfo, ResponseHookInfo, ApiResponseInfo, PaginationInfo } from "./http.js";
 export type { Address, PaginationParams, SortParams, Venue } from "./common.js";
 export type {
 	ConnectionState,
