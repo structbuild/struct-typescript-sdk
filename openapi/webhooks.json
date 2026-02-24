@@ -800,13 +800,6 @@
             ],
             "format": "int64"
           },
-          "positions_traded": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
           "total_buys": {
             "type": [
               "integer",
@@ -870,27 +863,6 @@
             ],
             "format": "double"
           },
-          "winning_positions": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "losing_positions": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "win_rate_pct": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
           "markets_won": {
             "type": [
               "integer",
@@ -912,14 +884,7 @@
             ],
             "format": "double"
           },
-          "open_positions": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "avg_pnl_per_position": {
+          "avg_pnl_per_market": {
             "type": [
               "number",
               "null"
@@ -946,6 +911,32 @@
               "null"
             ],
             "format": "double"
+          },
+          "best_trade_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "best_trade_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worst_trade_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "worst_trade_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "first_trade_at": {
             "type": [
@@ -1049,34 +1040,7 @@
             ],
             "format": "double"
           },
-          "has_open_position": {
-            "type": [
-              "boolean",
-              "null"
-            ]
-          },
-          "net_yes_shares": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "net_no_shares": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
           "winning_outcomes": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "losing_outcomes": {
             "type": [
               "integer",
               "null"
@@ -1124,7 +1088,6 @@
           "global_pnl",
           "market_pnl",
           "event_pnl",
-          "position_pnl",
           "condition_metrics",
           "event_metrics",
           "position_metrics",
@@ -1138,7 +1101,7 @@
       },
       "PolymarketWebhookFilter": {
         "type": "object",
-        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, has_open_position\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- position_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, min_net_shares, max_net_shares, position_ids, condition_ids, event_slugs, outcomes\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
+        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
         "properties": {
           "wallet_addresses": {
             "type": "array",
@@ -1284,13 +1247,6 @@
               "type": "string"
             },
             "description": "Filter by outcomes (e.g., \"Yes\", \"No\") - for position PnL webhooks"
-          },
-          "has_open_position": {
-            "type": [
-              "boolean",
-              "null"
-            ],
-            "description": "Only markets with open positions - for market PnL webhooks"
           },
           "min_fees": {
             "type": [
@@ -1512,169 +1468,6 @@
               "null"
             ],
             "format": "double"
-          }
-        }
-      },
-      "PositionPnlPayload": {
-        "type": "object",
-        "description": "Position PnL webhook payload (Arc-optimized)",
-        "properties": {
-          "condition_id": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "position_id": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "outcome": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "outcome_index": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "buy_count": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "sell_count": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "redemption_count": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "merge_count": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_shares_bought": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "total_shares_sold": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "total_shares_redeemed": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "total_shares_merged": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "net_shares": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "buy_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "sell_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "redemption_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "merge_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "realized_pnl_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "cost_basis": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "total_fees": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "first_trade_at": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "last_trade_at": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
           }
         }
       },
@@ -2262,34 +2055,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/EventPnlPayload"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Webhook delivery acknowledged"
-          },
-          "500": {
-            "description": "Server error (will retry)"
-          }
-        }
-      }
-    },
-    "position-pnl": {
-      "post": {
-        "summary": "Position PnL callback",
-        "description": "Fired when a trader's position-level PnL crosses a configured threshold",
-        "operationId": "position-pnl",
-        "tags": [
-          "Webhook Callbacks"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PositionPnlPayload"
               }
             }
           }

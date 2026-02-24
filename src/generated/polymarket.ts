@@ -564,26 +564,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/trader/pnl/{address}/positions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get trader position PnL
-         * @description Retrieve position-level PnL breakdown for a trader
-         */
-        get: operations["get_trader_position_pnl"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/polymarket/trader/portfolio/{address}": {
         parameters: {
             query?: never;
@@ -613,7 +593,7 @@ export interface paths {
         };
         /**
          * Get trader positions
-         * @description Retrieve a trader's active or closed positions with optional PnL data
+         * @description Retrieve a trader's active positions with PnL data, sorted by the specified field
          */
         get: operations["get_portfolio_positions"];
         put?: never;
@@ -753,7 +733,8 @@ export interface components {
         ConditionMetricsResponse: {
             condition_id: string;
             timeframe: string;
-            volume_usd: string;
+            /** Format: double */
+            volume_usd: number;
             /** Format: double */
             fees: number;
             /** Format: int32 */
@@ -767,6 +748,8 @@ export interface components {
             trader: components["schemas"]["Trader"];
             /** @description Total shares across all positions in this event */
             total_shares: string;
+            /** @description USD value of all shares (sum of shares * price per position) */
+            shares_usd?: string | null;
             /**
              * Format: int32
              * @description Number of distinct positions held
@@ -774,7 +757,11 @@ export interface components {
             position_count: number;
             /** @description USD balance (USDe on Polygon) */
             usd_balance?: string | null;
-            pnl?: null | components["schemas"]["EventHolderPnl"];
+            /**
+             * Format: double
+             * @description Lifetime realized PnL in USD
+             */
+            realized_pnl_usd?: number | null;
         };
         /** @description Event-level PnL data for a holder */
         EventHolderPnl: {
@@ -812,8 +799,6 @@ export interface components {
             total_holders: number;
             /** @description Top holders across all markets */
             holders: components["schemas"]["EventHolder"][];
-            /** @description Pagination info */
-            has_more: boolean;
         };
         /** @description Enriched market data for event API responses */
         EventMarket: {
@@ -859,10 +844,6 @@ export interface components {
             category: string | null;
             /** @default [] */
             clob_rewards: components["schemas"]["ClobReward"][];
-            /** @default {} */
-            metrics: {
-                [key: string]: components["schemas"]["SimpleTimeframeMetrics"];
-            };
             /** @default [] */
             outcomes: components["schemas"]["EventMarketOutcome"][];
         };
@@ -877,7 +858,8 @@ export interface components {
         EventMetricsResponse: {
             event_slug: string;
             timeframe: string;
-            volume_usd: string;
+            /** Format: double */
+            volume_usd: number;
             /** Format: double */
             fees: number;
             /** Format: int32 */
@@ -890,7 +872,7 @@ export interface components {
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
         /** @enum {string} */
-        GlobalPnlSortBy: "pnl_usd" | "win_rate" | "wins" | "losses" | "buys" | "sells" | "redemptions" | "merges" | "avg_hold_time" | "positions_traded" | "markets_traded" | "events_traded" | "markets_won" | "volume_usd" | "fees";
+        GlobalPnlSortBy: "pnl_usd" | "buys" | "sells" | "redemptions" | "merges" | "avg_hold_time" | "markets_traded" | "events_traded" | "markets_won" | "volume_usd" | "fees" | "best_trade" | "worst_trade";
         /** @description Individual trader entry in the global PnL leaderboard */
         GlobalPnlTrader: {
             trader: components["schemas"]["TraderInfo"];
@@ -899,15 +881,7 @@ export interface components {
             /** Format: int64 */
             events_traded?: number | null;
             /** Format: int64 */
-            positions_traded?: number | null;
-            /** Format: int64 */
             markets_traded?: number | null;
-            /** Format: int64 */
-            winning_positions?: number | null;
-            /** Format: int64 */
-            losing_positions?: number | null;
-            /** Format: double */
-            win_rate_pct?: number | null;
             /** Format: int64 */
             markets_won?: number | null;
             /** Format: int64 */
@@ -934,16 +908,20 @@ export interface components {
             total_merges?: number | null;
             /** Format: int64 */
             total_trades?: number | null;
-            /** Format: int64 */
-            open_positions?: number | null;
             /** Format: double */
             total_fees?: number | null;
             /** Format: double */
-            avg_pnl_per_position?: number | null;
+            avg_pnl_per_market?: number | null;
             /** Format: double */
             avg_pnl_per_trade?: number | null;
             /** Format: double */
             avg_hold_time_seconds?: number | null;
+            /** Format: double */
+            best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
+            /** Format: double */
+            worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -959,20 +937,18 @@ export interface components {
             shares_usd?: string | null;
             /** @description USD balance of wallet (USDe on Polygon) */
             usd_balance?: string | null;
-            pnl?: null | components["schemas"]["PositionHolderPnl"];
+            /**
+             * Format: double
+             * @description Lifetime realized PnL in USD
+             */
+            realized_pnl_usd?: number | null;
         };
         /** @description Holder statistics data point (single time bucket) */
         HolderHistoryCandle: {
-            /** Format: date-time */
-            bucket: string;
+            /** Format: int64 */
+            timestamp: number;
             /** Format: int64 */
             total_holders?: number | null;
-            /** Format: int64 */
-            bot_holders?: number | null;
-            /** Format: int64 */
-            insider_holders?: number | null;
-            /** Format: int64 */
-            smart_money_holders?: number | null;
         };
         /** @description Market-level PnL data for a holder */
         MarketHolderPnl: {
@@ -992,8 +968,6 @@ export interface components {
             total_sells?: number | null;
             /** Format: int64 */
             winning_outcomes?: number | null;
-            /** Format: int64 */
-            losing_outcomes?: number | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -1119,7 +1093,7 @@ export interface components {
              * Format: double
              * @description Current price/probability
              */
-            last_price?: number | null;
+            price?: number | null;
             /**
              * Format: int64
              * @description Total holders count from holder_stats
@@ -1128,6 +1102,8 @@ export interface components {
             /** @description Top holders for this outcome */
             holders: components["schemas"]["Holder"][];
         };
+        /** @enum {string} */
+        OutcomeIndex: "0" | "1";
         OutcomeTimeframeMetrics: {
             /**
              * Format: double
@@ -1393,7 +1369,7 @@ export interface components {
              * Format: double
              * @description Current price
              */
-            last_price?: number | null;
+            price?: number | null;
             /**
              * Format: int64
              * @description Total holders count from holder_stats
@@ -1401,17 +1377,18 @@ export interface components {
             total_holders: number;
             /** @description Top holders */
             holders: components["schemas"]["Holder"][];
-            /** @description Pagination info */
-            has_more: boolean;
         };
         /** @description Response type for position metrics query */
         PositionMetricsResponse: {
             position_id: string;
             condition_id: string;
             timeframe: string;
-            volume_usd: string;
-            buy_volume_usd: string;
-            sell_volume_usd: string;
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
             /** Format: double */
             fees: number;
             /** Format: int32 */
@@ -1431,8 +1408,6 @@ export interface components {
             /** Format: double */
             price_close: number;
         };
-        /** @enum {string} */
-        PositionPnlSortBy: "realized_pnl_usd" | "buy_usd" | "net_shares" | "cost_basis" | "total_fees";
         /** @enum {string} */
         PositionStatus: "active" | "resolved" | "all";
         PositionVolumeChartResponse: {
@@ -1568,6 +1543,10 @@ export interface components {
             token_id: string;
             outcome: string;
         };
+        /** @enum {string} */
+        TradeSide: "0" | "1";
+        /** @enum {string} */
+        TradeType: "0" | "1" | "2";
         /**
          * @description Trader profile info embedded in API responses
          *
@@ -1639,8 +1618,8 @@ export interface operations {
                 sort_dir?: components["schemas"]["SortDirection"];
                 /** @description Metrics timeframe: 1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d */
                 timeframe?: components["schemas"]["MetricsTimeframe"];
-                /** @description Filter by status: 'open' or 'closed' */
-                status?: string;
+                /** @description Filter by status: open or closed */
+                status?: components["schemas"]["MarketStatus"];
                 /** @description Comma-separated category filters */
                 categories?: string;
                 /** @description Comma-separated categories to exclude */
@@ -1746,9 +1725,7 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum total shares held (decimal string) */
                 max_shares?: string;
-                /** @description Include event-level PnL data (costs extra credits, default: false) */
-                include_pnl?: boolean;
-                /** @description PnL timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
+                /** @description PnL timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
             };
             header?: never;
@@ -1820,9 +1797,7 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
-                /** @description Include position-level PnL data (costs extra credits, default: false) */
-                include_pnl?: boolean;
-                /** @description PnL timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
+                /** @description PnL timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
             };
             header?: never;
@@ -1896,10 +1871,6 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
-                /** @description Include position-level PnL data (costs extra credits, default: false) */
-                include_pnl?: boolean;
-                /** @description PnL timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
-                timeframe?: components["schemas"]["PnlTimeframe"];
             };
             header?: never;
             path: {
@@ -2262,14 +2233,14 @@ export interface operations {
                 position_ids?: string;
                 /** @description Comma-separated trader addresses (max 25) */
                 traders?: string;
-                /** @description 0 = Buy, 1 = Sell */
-                side?: number;
+                /** @description Trade side: 0 (Buy), 1 (Sell) */
+                side?: components["schemas"]["TradeSide"];
                 /** @description Outcome name filter (e.g. Yes, No) */
                 outcome?: string;
-                /** @description Outcome index (0 or 1) */
-                outcome_index?: number;
-                /** @description 0 = OrderFilled, 1 = Redemption, 2 = Merge */
-                trade_type?: number;
+                /** @description Outcome index: 0 (Yes), 1 (No) */
+                outcome_index?: components["schemas"]["OutcomeIndex"];
+                /** @description Trade type: 0 (OrderFilled), 1 (Redemption), 2 (Merge) */
+                trade_type?: components["schemas"]["TradeType"];
                 /** @description Min USD amount */
                 min_usd_amount?: number;
                 /** @description Max USD amount */
@@ -2528,9 +2499,9 @@ export interface operations {
     get_global_pnl: {
         parameters: {
             query?: {
-                /** @description Timeframe: 1d, 7d, 30d (default: 7d) */
+                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Sort: pnl_usd, win_rate, wins, losses, buys, sells, redemptions, merges, avg_hold_time, positions_traded, markets_traded, events_traded, markets_won, volume_usd, fees (default: pnl_usd) */
+                /** @description Sort: pnl_usd, buys, sells, redemptions, merges, avg_hold_time, markets_traded, events_traded, markets_won, volume_usd, fees, best_trade, worst_trade (default: pnl_usd) */
                 sort_by?: components["schemas"]["GlobalPnlSortBy"];
                 /** @description Sort direction: asc, desc (default: desc) */
                 sort_direction?: components["schemas"]["SortDirection"];
@@ -2687,42 +2658,6 @@ export interface operations {
             };
         };
     };
-    get_trader_position_pnl: {
-        parameters: {
-            query?: {
-                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
-                timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Sort: realized_pnl_usd, buy_usd, net_shares, cost_basis, total_fees (default: realized_pnl_usd) */
-                sort_by?: components["schemas"]["PositionPnlSortBy"];
-                /** @description Sort direction: asc, desc (default: desc) */
-                sort_direction?: components["schemas"]["SortDirection"];
-                /** @description Results limit (default: 10, max: 200) */
-                limit?: number;
-                /** @description Offset-based pagination key */
-                pagination_key?: number;
-                /** @description Filter by condition ID */
-                condition_id?: string;
-                /** @description Filter by event slug */
-                event_slug?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Trader wallet address */
-                address: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Position-level PnL entries for this trader */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     get_portfolio: {
         parameters: {
             query?: {
@@ -2750,15 +2685,15 @@ export interface operations {
     get_portfolio_positions: {
         parameters: {
             query?: {
-                /** @description Position status: active, resolved, all (default: all) */
-                status?: components["schemas"]["PositionStatus"];
+                /** @description Sort field: shares_usd (default), shares, realized_pnl_usd, price, buy_usd */
+                sort_by?: string;
+                /** @description Sort direction: asc, desc (default: desc) */
+                sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Filter by condition ID */
                 condition_id?: string;
-                /** @description Filter by market slug */
-                market_slug?: string;
-                /** @description Search by question text */
-                question?: string;
-                /** @description Results limit (default: 10, max: 100) */
+                /** @description Filter by event slug */
+                event_slug?: string;
+                /** @description Results limit (default: 50, max: 200) */
                 limit?: number;
                 /** @description Offset-based pagination key (integer offset into result set) */
                 pagination_key?: number;
@@ -2772,7 +2707,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Trader positions with market metadata */
+            /** @description Trader positions with market metadata and PnL */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2846,14 +2781,14 @@ export interface operations {
                 slugs?: string;
                 /** @description Comma-separated position IDs */
                 position_ids?: string;
-                /** @description 0 = Buy, 1 = Sell */
-                side?: number;
+                /** @description Trade side: 0 (Buy), 1 (Sell) */
+                side?: components["schemas"]["TradeSide"];
                 /** @description Outcome name filter (e.g. Yes, No) */
                 outcome?: string;
-                /** @description Outcome index (0 or 1) */
-                outcome_index?: number;
-                /** @description 0 = OrderFilled, 1 = Redemption, 2 = Merge */
-                trade_type?: number;
+                /** @description Outcome index: 0 (Yes), 1 (No) */
+                outcome_index?: components["schemas"]["OutcomeIndex"];
+                /** @description Trade type: 0 (OrderFilled), 1 (Redemption), 2 (Merge) */
+                trade_type?: components["schemas"]["TradeType"];
                 /** @description Min USD amount */
                 min_usd_amount?: number;
                 /** @description Max USD amount */

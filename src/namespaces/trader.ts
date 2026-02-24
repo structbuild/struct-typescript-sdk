@@ -62,7 +62,7 @@ export class TraderNamespace extends Namespace {
 
 	async getTraderPositionPnl(params: GetTraderPnlBreakdownParams, venue?: Venue): Promise<HttpResponse<PnlListResponse<TraderPositionPnlEntry>>> {
 		const { address, ...query } = params;
-		return this.get<PnlListResponse<TraderPositionPnlEntry>>(venue, `/trader/pnl/${encodeURIComponent(address)}/positions`, { params: query });
+		return this.get<PnlListResponse<TraderPositionPnlEntry>>(venue, `/trader/positions/${encodeURIComponent(address)}`, { params: query });
 	}
 
 	async getTraderMarketPnl(params: GetTraderPnlBreakdownParams, venue?: Venue): Promise<HttpResponse<PnlListResponse<TraderMarketPnlEntry>>> {

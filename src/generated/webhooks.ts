@@ -158,26 +158,6 @@ export interface webhooks {
         patch?: never;
         trace?: never;
     };
-    "position-pnl": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Position PnL callback
-         * @description Fired when a trader's position-level PnL crosses a configured threshold
-         */
-        post: operations["position-pnl"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "market-metrics": {
         parameters: {
             query?: never;
@@ -496,8 +476,6 @@ export interface components {
             /** Format: int64 */
             markets_traded?: number | null;
             /** Format: int64 */
-            positions_traded?: number | null;
-            /** Format: int64 */
             total_buys?: number | null;
             /** Format: int64 */
             total_sells?: number | null;
@@ -516,27 +494,25 @@ export interface components {
             /** Format: double */
             merge_volume_usd?: number | null;
             /** Format: int64 */
-            winning_positions?: number | null;
-            /** Format: int64 */
-            losing_positions?: number | null;
-            /** Format: double */
-            win_rate_pct?: number | null;
-            /** Format: int64 */
             markets_won?: number | null;
             /** Format: int64 */
             markets_lost?: number | null;
             /** Format: double */
             market_win_rate_pct?: number | null;
-            /** Format: int64 */
-            open_positions?: number | null;
             /** Format: double */
-            avg_pnl_per_position?: number | null;
+            avg_pnl_per_market?: number | null;
             /** Format: double */
             avg_pnl_per_trade?: number | null;
             /** Format: double */
             avg_hold_time_seconds?: number | null;
             /** Format: double */
             total_fees?: number | null;
+            /** Format: double */
+            best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
+            /** Format: double */
+            worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -566,15 +542,8 @@ export interface components {
             merge_usd?: number | null;
             /** Format: double */
             realized_pnl_usd?: number | null;
-            has_open_position?: boolean | null;
-            /** Format: double */
-            net_yes_shares?: number | null;
-            /** Format: double */
-            net_no_shares?: number | null;
             /** Format: int64 */
             winning_outcomes?: number | null;
-            /** Format: int64 */
-            losing_outcomes?: number | null;
             /** Format: double */
             total_fees?: number | null;
             /** Format: int64 */
@@ -591,16 +560,15 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "first_trade" | "global_pnl" | "market_pnl" | "event_pnl" | "position_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "volume_spike" | "*";
+        PolymarketWebhookEvent: "first_trade" | "global_pnl" | "market_pnl" | "event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "volume_spike" | "*";
         /**
          * @description Polymarket-specific webhook filters
          *
          *     Different webhook handlers use different subsets of these fields:
          *     - first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags
          *     - global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded
-         *     - market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, has_open_position
+         *     - market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs
          *     - event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded
-         *     - position_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, min_net_shares, max_net_shares, position_ids, condition_ids, event_slugs, outcomes
          *     - condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes
          *     - event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes
          *     - position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes
@@ -683,8 +651,6 @@ export interface components {
             position_ids?: string[];
             /** @description Filter by outcomes (e.g., "Yes", "No") - for position PnL webhooks */
             outcomes?: string[];
-            /** @description Only markets with open positions - for market PnL webhooks */
-            has_open_position?: boolean | null;
             /**
              * Format: double
              * @description Minimum fees - for metrics webhooks
@@ -772,51 +738,6 @@ export interface components {
             probability_high?: number | null;
             /** Format: double */
             probability_low?: number | null;
-        };
-        /** @description Position PnL webhook payload (Arc-optimized) */
-        PositionPnlPayload: {
-            condition_id?: string | null;
-            position_id?: string | null;
-            outcome?: string | null;
-            /** Format: int64 */
-            outcome_index?: number | null;
-            event_slug?: string | null;
-            /** Format: int64 */
-            buy_count?: number | null;
-            /** Format: int64 */
-            sell_count?: number | null;
-            /** Format: int64 */
-            redemption_count?: number | null;
-            /** Format: int64 */
-            merge_count?: number | null;
-            /** Format: double */
-            total_shares_bought?: number | null;
-            /** Format: double */
-            total_shares_sold?: number | null;
-            /** Format: double */
-            total_shares_redeemed?: number | null;
-            /** Format: double */
-            total_shares_merged?: number | null;
-            /** Format: double */
-            net_shares?: number | null;
-            /** Format: double */
-            buy_usd?: number | null;
-            /** Format: double */
-            sell_usd?: number | null;
-            /** Format: double */
-            redemption_usd?: number | null;
-            /** Format: double */
-            merge_usd?: number | null;
-            /** Format: double */
-            realized_pnl_usd?: number | null;
-            /** Format: double */
-            cost_basis?: number | null;
-            /** Format: double */
-            total_fees?: number | null;
-            /** Format: int64 */
-            first_trade_at?: number | null;
-            /** Format: int64 */
-            last_trade_at?: number | null;
         };
         /** @description Position volume milestone webhook payload */
         PositionVolumeMilestonePayload: {
@@ -1403,35 +1324,6 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["EventPnlPayload"];
-            };
-        };
-        responses: {
-            /** @description Webhook delivery acknowledged */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error (will retry) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    "position-pnl": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PositionPnlPayload"];
             };
         };
         responses: {
