@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@struct/sdk",
+      "name": "@structbuild/sdk",
       "devDependencies": {
         "@types/bun": "latest",
         "openapi-typescript": "^7.13.0",

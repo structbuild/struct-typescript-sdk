@@ -44,46 +44,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/holders/events/{event_slug}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get event holders
-         * @description Retrieve holders aggregated across all markets in an event, sorted by total shares. Uses cursor-based pagination for efficient traversal.
-         */
-        get: operations["get_event_holders"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/polymarket/holders/events/{event_slug}/history": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get event holders history
-         * @description Retrieve historical holder count snapshots for an event over a time range
-         */
-        get: operations["get_event_holders_history"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/polymarket/holders/markets/{condition_id}": {
         parameters: {
             query?: never;
@@ -692,11 +652,11 @@ export interface components {
             condition_id: string;
             title?: string | null;
             question: string;
-            slug: string;
+            market_slug: string;
             event_slug?: string | null;
             image_url?: string | null;
             /** Format: int64 */
-            end_date: number;
+            end_time: number;
             /** Format: int32 */
             best_outcome_index: number;
             /** Format: double */
@@ -704,7 +664,7 @@ export interface components {
             /** Format: double */
             apy: number;
             /** Format: double */
-            usd_volume_24h?: number | null;
+            volume_24h?: number | null;
             outcomes: components["schemas"]["BondOutcome"][];
         };
         BondOutcome: {
@@ -742,64 +702,6 @@ export interface components {
             /** Format: int32 */
             unique_traders: number;
         };
-        /** @description Holder data for event-level queries (aggregated across markets) */
-        EventHolder: {
-            /** @description Trader profile information */
-            trader: components["schemas"]["Trader"];
-            /** @description Total shares across all positions in this event */
-            total_shares: string;
-            /** @description USD value of all shares (sum of shares * price per position) */
-            shares_usd?: string | null;
-            /**
-             * Format: int32
-             * @description Number of distinct positions held
-             */
-            position_count: number;
-            /** @description USD balance (USDe on Polygon) */
-            usd_balance?: string | null;
-            /**
-             * Format: double
-             * @description Lifetime realized PnL in USD
-             */
-            realized_pnl_usd?: number | null;
-        };
-        /** @description Event-level PnL data for a holder */
-        EventHolderPnl: {
-            /** Format: double */
-            realized_pnl_usd?: number | null;
-            /** Format: double */
-            total_volume_usd?: number | null;
-            /** Format: double */
-            buy_usd?: number | null;
-            /** Format: double */
-            sell_usd?: number | null;
-            /** Format: double */
-            total_fees?: number | null;
-            /** Format: int64 */
-            markets_traded?: number | null;
-            /** Format: int64 */
-            winning_markets?: number | null;
-            /** Format: int64 */
-            losing_markets?: number | null;
-            /** Format: int64 */
-            first_trade_at?: number | null;
-            /** Format: int64 */
-            last_trade_at?: number | null;
-        };
-        /** @description Response for event holders endpoint */
-        EventHoldersResponse: {
-            /** @description Event slug */
-            event_slug: string;
-            /** @description Event title */
-            title?: string | null;
-            /**
-             * Format: int64
-             * @description Total unique holders across all markets (from holder_stats)
-             */
-            total_holders: number;
-            /** @description Top holders across all markets */
-            holders: components["schemas"]["EventHolder"][];
-        };
         /** @description Enriched market data for event API responses */
         EventMarket: {
             /** @default  */
@@ -811,14 +713,19 @@ export interface components {
             /** @default  */
             question: string;
             /** @default  */
-            slug: string;
+            market_slug: string;
             /** @default  */
             status: string;
             /**
              * Format: int64
              * @default null
              */
-            end_date: number | null;
+            created_time: number | null;
+            /**
+             * Format: int64
+             * @default null
+             */
+            end_time: number | null;
             /**
              * Format: double
              * @default null
@@ -846,13 +753,17 @@ export interface components {
             clob_rewards: components["schemas"]["ClobReward"][];
             /** @default [] */
             outcomes: components["schemas"]["EventMarketOutcome"][];
+            /** @default null */
+            winning_outcome: null | components["schemas"]["EventMarketOutcome"];
         };
-        /** @description Market outcome with probability for event API responses */
+        /** @description Market outcome for event API responses */
         EventMarketOutcome: {
             name: string;
             /** Format: double */
-            probability?: number | null;
+            price?: number | null;
             position_id?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
         };
         /** @description Response type for event metrics query */
         EventMetricsResponse: {
@@ -1052,10 +963,74 @@ export interface components {
         };
         /** @enum {string} */
         MarketPnlSortBy: "realized_pnl_usd" | "buy_usd" | "total_buys" | "total_fees" | "outcomes_traded";
+        /** @description Formatted market response with structured metrics, tags, outcomes, and event */
+        MarketResponse: {
+            condition_id: string;
+            id?: string | null;
+            market_slug?: string | null;
+            question?: string | null;
+            title?: string | null;
+            description?: string | null;
+            image_url?: string | null;
+            oracle?: string | null;
+            status: string;
+            /** Format: int64 */
+            created_time?: number | null;
+            /** Format: int64 */
+            start_time?: number | null;
+            /** Format: int64 */
+            game_start_time?: number | null;
+            /** Format: int64 */
+            closed_time?: number | null;
+            /** Format: int64 */
+            end_time?: number | null;
+            accepting_orders?: boolean | null;
+            uma_resolution_status?: string | null;
+            is_neg_risk?: boolean | null;
+            market_maker_address?: string | null;
+            creator?: string | null;
+            category?: string | null;
+            /** Format: double */
+            volume_usd?: number | null;
+            /** Format: double */
+            liquidity_usd?: number | null;
+            /** Format: double */
+            highest_probability?: number | null;
+            /** Format: int64 */
+            total_holders?: number | null;
+            winning_outcome?: null | components["schemas"]["MarketOutcome"];
+            outcomes?: components["schemas"]["MarketOutcome"][];
+            rewards?: components["schemas"]["MarketReward"][];
+            clob_rewards?: components["schemas"]["ClobReward"][];
+            tags?: string[];
+            event_slug?: string | null;
+            resolution_source?: string | null;
+            metrics?: {
+                [key: string]: components["schemas"]["SimpleTimeframeMetrics"];
+            };
+        };
+        /** @description Reward info for market API responses */
+        MarketReward: {
+            /**
+             * Format: double
+             * @default null
+             */
+            min_size: number | null;
+            /**
+             * Format: double
+             * @default null
+             */
+            max_spread: number | null;
+            /**
+             * Format: double
+             * @default null
+             */
+            daily_rate: number | null;
+        };
         /** @enum {string} */
         MarketSortBy: "volume" | "txns" | "unique_traders" | "liquidity" | "holders" | "end_time" | "start_time" | "created_time" | "created_at" | "relevance";
         /** @enum {string} */
-        MarketStatus: "open" | "closed";
+        MarketStatus: "open" | "closed" | "all";
         MarketVolumeChartResponse: {
             volumes: components["schemas"]["MarketVolumeDataPoint"][];
             has_more: boolean;
@@ -1195,7 +1170,7 @@ export interface components {
             /** @default  */
             id: string;
             /** @default null */
-            slug: string | null;
+            event_slug: string | null;
             /** @default null */
             title: string | null;
             /** @default null */
@@ -1217,12 +1192,12 @@ export interface components {
              * Format: int64
              * @default null
              */
-            start_date: number | null;
+            start_time: number | null;
             /**
              * Format: int64
              * @default null
              */
-            end_date: number | null;
+            end_time: number | null;
             /** @default false */
             neg_risk: boolean;
             /** @default null */
@@ -1250,7 +1225,7 @@ export interface components {
              * Format: int64
              * @default null
              */
-            creation_date: number | null;
+            created_time: number | null;
             /**
              * Format: int64
              * @default null
@@ -1446,10 +1421,6 @@ export interface components {
             /** Format: double */
             m?: number | null;
         };
-        PredictionCandlestickResponseData: {
-            candles: components["schemas"]["PredictionCandlestickBar"][];
-            has_more: boolean;
-        };
         /** @description Response format for prediction trades */
         PredictionTradeResponse: {
             id: string;
@@ -1604,19 +1575,19 @@ export interface operations {
     get_events: {
         parameters: {
             query?: {
-                /** @description Filter by event ID(s) - comma-separated (max 50). Cannot be used with 'slug'. Example: id=99600,99601,99583 */
+                /** @description Filter by event ID(s) - comma-separated (max 50). Cannot be used with 'event_slugs'. Example: id=99600,99601,99583 */
                 id?: string;
-                /** @description Filter by event slug(s) - comma-separated (max 50). Cannot be used with 'id'. Example: slug=will-trump-win,bitcoin-100k */
-                slug?: string;
+                /** @description Filter by event slug(s) - comma-separated (max 50). Cannot be used with 'id'. Example: event_slugs=will-trump-win,bitcoin-100k */
+                event_slugs?: string;
                 /** @description Search in title and description (3-100 characters). Example: search=trump */
                 search?: string;
-                /** @description Sort: volume, txns, unique_traders, title, creation_date, start_date, end_date, relevance (relevance only works in search mode) */
+                /** @description Sort: volume, txns, unique_traders, title, creation_date, start_date, end_date, relevance (relevance only works in search mode) (default: volume) */
                 sort_by?: components["schemas"]["EventSortBy"];
-                /** @description Sort direction: asc, desc */
+                /** @description Sort direction: asc, desc (default: desc) */
                 sort_dir?: components["schemas"]["SortDirection"];
-                /** @description Metrics timeframe: 1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d */
+                /** @description Metrics timeframe: 1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d (default: 24h) */
                 timeframe?: components["schemas"]["MetricsTimeframe"];
-                /** @description Filter by status: open or closed */
+                /** @description Filter by status: open, closed, or all (default: all) */
                 status?: components["schemas"]["MarketStatus"];
                 /** @description Comma-separated category filters */
                 categories?: string;
@@ -1704,80 +1675,6 @@ export interface operations {
                 content?: never;
             };
             /** @description Event metrics not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    get_event_holders: {
-        parameters: {
-            query?: {
-                /** @description Results limit (default: 10, max: 100) */
-                limit?: number;
-                /** @description Cursor-based pagination key (base64-encoded, obtained from previous response's pagination.pagination_key) */
-                pagination_key?: string;
-                /** @description Minimum total shares held (decimal string) */
-                min_shares?: string;
-                /** @description Maximum total shares held (decimal string) */
-                max_shares?: string;
-                /** @description PnL timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
-                timeframe?: components["schemas"]["PnlTimeframe"];
-            };
-            header?: never;
-            path: {
-                /** @description Event slug */
-                event_slug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Event holders aggregated across markets (sorted by total_shares DESC). Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["EventHoldersResponse"];
-                };
-            };
-            /** @description Event not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    get_event_holders_history: {
-        parameters: {
-            query?: {
-                /** @description Time range in hours (default: 24, max: 336 = 14 days) */
-                hours?: number;
-            };
-            header?: never;
-            path: {
-                /** @description Event slug */
-                event_slug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Event holder count history with automatic view selection (1m/5m/15m/1h/6h buckets) */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HolderHistoryCandle"][];
-                };
-            };
-            /** @description Event not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -1947,7 +1844,7 @@ export interface operations {
                 position_ids?: string;
                 /** @description Search in title (3-100 characters) */
                 search?: string;
-                /** @description Filter by status: open or closed */
+                /** @description Filter by status: open, closed, or all (default: all) */
                 status?: components["schemas"]["MarketStatus"];
                 /** @description Sort: volume, txns, unique_traders, liquidity, holders, end_time, start_time, created_time, created_at, relevance */
                 sort_by?: components["schemas"]["MarketSortBy"];
@@ -2075,7 +1972,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PredictionCandlestickResponseData"];
+                    "application/json": components["schemas"]["PredictionCandlestickBar"][];
                 };
             };
         };
@@ -2145,7 +2042,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PredictionCandlestickResponseData"];
+                    "application/json": components["schemas"]["PredictionCandlestickBar"][];
                 };
             };
         };

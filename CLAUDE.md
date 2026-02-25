@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-TypeScript SDK (`@struct/sdk`) for prediction market APIs via `api.struct.to`. Supports multiple venues (Polymarket now, Kalshi etc. later) through a namespace-based client. Published as a dual ESM/CJS package.
+TypeScript SDK (`@structbuild/sdk`) for prediction market APIs via `api.struct.to`. Supports multiple venues (Polymarket now, Kalshi etc. later) through a namespace-based client. Published as a dual ESM/CJS package.
 
 ## Commands
 

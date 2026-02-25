@@ -21,9 +21,6 @@ export type BondOutcome = Schemas["BondOutcome"];
 export type CandlestickResolution = Schemas["CandlestickResolution"];
 export type ClobReward = Schemas["ClobReward"];
 export type ConditionMetricsResponse = Schemas["ConditionMetricsResponse"];
-export type EventHolder = Schemas["EventHolder"];
-export type EventHolderPnl = Schemas["EventHolderPnl"];
-export type EventHoldersResponse = Schemas["EventHoldersResponse"];
 export type EventMarket = Schemas["EventMarket"];
 export type EventMarketOutcome = Schemas["EventMarketOutcome"];
 export type EventMetricsResponse = Schemas["EventMetricsResponse"];
@@ -56,7 +53,6 @@ export type PositionMetricsResponse = Schemas["PositionMetricsResponse"];
 export type PositionVolumeChartResponse = Schemas["PositionVolumeChartResponse"];
 export type PositionVolumeDataPoint = Schemas["PositionVolumeDataPoint"];
 export type PredictionCandlestickBar = Schemas["PredictionCandlestickBar"];
-export type PredictionCandlestickResponseData = Schemas["PredictionCandlestickResponseData"];
 export type PredictionTradeResponse = Schemas["PredictionTradeResponse"];
 export type SearchResponse = Schemas["SearchResponse"];
 export type SeriesFullResponse = Schemas["SeriesFullResponse"];
@@ -72,7 +68,7 @@ export type Series = Schemas["PolymarketSeries"];
 export type SeriesDetail = Schemas["SeriesFullResponse"];
 export type Trade = Schemas["PredictionTradeResponse"];
 export type Candlestick = Schemas["PredictionCandlestickBar"];
-export type CandlestickResponse = Schemas["PredictionCandlestickResponseData"];
+export type CandlestickResponse = Schemas["PredictionCandlestickBar"][];
 export type Timeframe = Schemas["MetricsTimeframe"];
 export type GlobalPnlTimeframe = Schemas["PnlTimeframe"];
 
@@ -316,15 +312,6 @@ export interface GetEventMetricsParams extends OperationQuery<"get_event_metrics
 export interface GetMarketMetricsParams extends OperationQuery<"get_market_metrics"> {}
 
 export interface GetPositionMetricsParams extends OperationQuery<"get_position_metrics"> {}
-
-export interface GetEventHoldersParams extends OperationQuery<"get_event_holders"> {
-	eventSlug: string;
-}
-
-export interface GetEventHoldersHistoryParams {
-	eventSlug: string;
-	hours?: number;
-}
 
 export interface GetMarketHoldersParams extends OperationQuery<"get_market_holders"> {
 	conditionId: string;
