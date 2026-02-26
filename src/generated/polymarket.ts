@@ -989,9 +989,9 @@ export interface components {
         /** @description Holder statistics data point (single time bucket) */
         HolderHistoryCandle: {
             /** Format: int64 */
-            timestamp: number;
+            t: number;
             /** Format: int64 */
-            total_holders?: number | null;
+            h?: number | null;
         };
         /** @description Market-level PnL data for a holder */
         MarketHolderPnl: {
@@ -1170,19 +1170,19 @@ export interface components {
         };
         MarketVolumeDataPoint: {
             /** Format: int64 */
-            timestamp: number;
+            t: number;
             /** Format: double */
-            total_volume: number;
+            v: number;
             /** Format: double */
-            yes_volume: number;
+            yv: number;
             /** Format: double */
-            no_volume: number;
+            nv: number;
             /** Format: int32 */
-            trades_count: number;
+            tc: number;
             /** Format: int32 */
-            yes_trades_count: number;
+            ytc: number;
             /** Format: int32 */
-            no_trades_count: number;
+            ntc: number;
         };
         /** @enum {string} */
         MetricsTimeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
@@ -1295,12 +1295,12 @@ export interface components {
              * Format: int64
              * @description Timestamp in epoch seconds (start of bucket window)
              */
-            ts: number;
+            t: number;
             /**
              * Format: double
              * @description Sum of realized PnL in this bucket
              */
-            pnl_usd: number;
+            pnl: number;
         };
         /** @enum {string} */
         PnlCandleResolution: "1m" | "1h" | "1d";
@@ -1551,19 +1551,19 @@ export interface components {
         };
         PositionVolumeDataPoint: {
             /** Format: int64 */
-            timestamp: number;
+            t: number;
             /** Format: double */
-            volume: number;
+            v: number;
             /** Format: double */
-            buy_volume: number;
+            bv: number;
             /** Format: double */
-            sell_volume: number;
+            sv: number;
             /** Format: int32 */
-            trades_count: number;
+            tc: number;
             /** Format: int32 */
-            buy_trades_count: number;
+            btc: number;
             /** Format: int32 */
-            sell_trades_count: number;
+            stc: number;
         };
         PredictionCandlestickBar: {
             /** Format: double */
@@ -1810,19 +1810,19 @@ export interface components {
         };
         TraderVolumeDataPoint: {
             /** Format: int64 */
-            timestamp: number;
+            t: number;
             /** Format: double */
-            total_volume: number;
+            v: number;
             /** Format: double */
-            buy_volume: number;
+            bv: number;
             /** Format: double */
-            sell_volume: number;
+            sv: number;
             /** Format: int32 */
-            trades_count: number;
+            tc: number;
             /** Format: int32 */
-            buy_trades_count: number;
+            btc: number;
             /** Format: int32 */
-            sell_trades_count: number;
+            stc: number;
         };
     };
     responses: never;
