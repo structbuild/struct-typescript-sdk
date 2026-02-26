@@ -13,7 +13,7 @@ export const methodMeta: Record<string, MethodConfig> = {
 		paginate: true,
 	},
 	"markets.getMarketChart": {
-		params: { condition_id: "$conditionId", resolution: "1", count_back: 10 },
+		params: { condition_id: "$conditionId", resolution: "1D", count_back: 10 },
 		operationId: "get_chart",
 	},
 	"markets.getMarketMetrics": {
@@ -26,11 +26,11 @@ export const methodMeta: Record<string, MethodConfig> = {
 		paginate: true,
 	},
 	"markets.getCandlestick": {
-		params: { condition_id: "$conditionId", resolution: "1" },
+		params: { condition_id: "$conditionId", resolution: "1D" },
 		operationId: "get_market_candlestick",
 	},
 	"markets.getPositionCandlestick": {
-		params: { position_id: "$positionId", resolution: "1" },
+		params: { position_id: "$positionId", resolution: "1D" },
 		operationId: "get_position_candlestick",
 	},
 	"markets.getPositionMetrics": {
@@ -52,7 +52,7 @@ export const methodMeta: Record<string, MethodConfig> = {
 		paginate: true,
 	},
 	"events.getEventChart": {
-		params: { event_slug: "$eventSlug", resolution: "1" },
+		params: { event_slug: "$eventSlug", resolution: "1D" },
 		operationId: "get_event_chart",
 	},
 	"events.getEventMetrics": {

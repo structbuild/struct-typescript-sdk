@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/polymarket/asset-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get asset price history
+         * @description Retrieve historical OHLC-style price data for a supported crypto asset (BTC, ETH, XRP, SOL) over a chosen time window variant. Timestamps are Unix seconds.
+         */
+        get: operations["get_asset_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/events": {
         parameters: {
             query?: never;
@@ -708,6 +728,45 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description A single asset price history record from the `asset_price_history` table. */
+        AssetPriceHistoryRow: {
+            asset_symbol: string;
+            /**
+             * Format: double
+             * @description Opening price at start_time (cast to f64 from NUMERIC in query)
+             */
+            asset_open_price: number;
+            /**
+             * Format: double
+             * @description Closing price at end_time (cast to f64 from NUMERIC in query)
+             */
+            asset_close_price: number;
+            /** Format: double */
+            price_change_percentage?: number | null;
+            /** @description Generated column: "up" if close > open, else "down" */
+            outcome: string;
+            /** @description Time window: "5m", "15m", "1h", "1d" */
+            variant: string;
+            /**
+             * Format: int64
+             * @description Window start timestamp (seconds since epoch)
+             */
+            start_time: number;
+            /**
+             * Format: int64
+             * @description Window end timestamp (seconds since epoch)
+             */
+            end_time: number;
+            /**
+             * Format: int64
+             * @description Canonical timestamp (= end_time, seconds since epoch)
+             */
+            asset_price_timestamp: number;
+        };
+        /** @enum {string} */
+        AssetSymbol: "BTC" | "ETH" | "XRP" | "SOL";
+        /** @enum {string} */
+        AssetVariant: "5m" | "15m" | "1h" | "1d";
         BondMarket: {
             condition_id: string;
             title?: string | null;
@@ -1229,6 +1288,19 @@ export interface components {
              * @default null
              */
             price_change_percent: number | null;
+        };
+        /** @description A single PnL candle entry */
+        PnlCandleEntry: {
+            /**
+             * Format: int64
+             * @description Timestamp in epoch seconds (start of bucket window)
+             */
+            ts: number;
+            /**
+             * Format: double
+             * @description Sum of realized PnL in this bucket
+             */
+            pnl_usd: number;
         };
         /** @enum {string} */
         PnlCandleResolution: "1m" | "1h" | "1d";
@@ -1761,6 +1833,44 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    get_asset_history: {
+        parameters: {
+            query: {
+                /** @description Asset ticker: BTC, ETH, XRP, or SOL */
+                asset_symbol: components["schemas"]["AssetSymbol"];
+                /** @description Time window: 5m, 15m, 1h, or 1d */
+                variant: components["schemas"]["AssetVariant"];
+                /** @description Start timestamp (Unix seconds, inclusive) */
+                from?: number;
+                /** @description End timestamp (Unix seconds, inclusive, defaults to now) */
+                to?: number;
+                /** @description Number of results (default: 10, max: 100) */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Asset price history records, sorted newest first */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetPriceHistoryRow"][];
+                };
+            };
+            /** @description Missing or invalid asset_symbol / variant */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_events: {
         parameters: {
             query?: {
@@ -1842,8 +1952,6 @@ export interface operations {
                 condition_ids?: string;
                 /** @description Comma-separated market slugs to include (max 4, optional). Use either condition_ids or market_slugs, not both */
                 market_slugs?: string;
-                /** @description Number of top markets to include if neither condition_ids nor market_slugs specified (max 4, default: 4) */
-                limit?: number;
                 /** @description Time interval with implicit lookback: 1H (1 hour), 6H (6 hours), 1D (1 day), 1W (1 week), 1M (30 days), ALL (all data) (required) */
                 resolution: "1H" | "6H" | "1D" | "1W" | "1M" | "ALL";
             };
@@ -2796,7 +2904,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PnlCandleEntry"][];
+                };
             };
         };
     };
