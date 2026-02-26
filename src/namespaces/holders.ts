@@ -13,8 +13,7 @@ import type {
 
 export class HoldersNamespace extends Namespace {
 	async getMarketHolders(params: GetMarketHoldersParams, venue?: Venue): Promise<HttpResponse<MarketHoldersResponse>> {
-		const { conditionId, ...query } = params;
-		return this.get<MarketHoldersResponse>(venue, `/holders/markets/${encodeURIComponent(conditionId)}`, { params: query });
+		return this.get<MarketHoldersResponse>(venue, "/holders/markets", { params: { ...params } });
 	}
 
 async getPositionHolders(params: GetPositionHoldersParams, venue?: Venue): Promise<HttpResponse<PositionHoldersResponse>> {
@@ -23,8 +22,7 @@ async getPositionHolders(params: GetPositionHoldersParams, venue?: Venue): Promi
 	}
 
 	async getMarketHoldersHistory(params: GetMarketHoldersHistoryParams, venue?: Venue): Promise<HttpResponse<HolderHistoryCandle[]>> {
-		const { conditionId, ...query } = params;
-		return this.get<HolderHistoryCandle[]>(venue, `/holders/markets/${encodeURIComponent(conditionId)}/history`, { params: query });
+		return this.get<HolderHistoryCandle[]>(venue, "/holders/markets/history", { params: { ...params } });
 	}
 
 async getPositionHoldersHistory(params: GetPositionHoldersHistoryParams, venue?: Venue): Promise<HttpResponse<HolderHistoryCandle[]>> {

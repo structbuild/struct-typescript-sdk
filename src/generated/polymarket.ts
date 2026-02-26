@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/events/chart": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get event chart
+         * @description Retrieve price data over time for up to 4 markets with highest YES outcome (outcome_index 0) prices in an event. Perfect for rendering multi-line charts showing price movement across top markets.
+         */
+        get: operations["get_event_chart"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/events/metrics": {
         parameters: {
             query?: never;
@@ -44,7 +64,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/holders/markets/{condition_id}": {
+    "/polymarket/holders/markets": {
         parameters: {
             query?: never;
             header?: never;
@@ -53,7 +73,7 @@ export interface paths {
         };
         /**
          * Get market holders
-         * @description Retrieve holders of a market grouped by outcome, sorted by shares held
+         * @description Retrieve holders of a market grouped by outcome, sorted by shares held. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Each holder includes a nested `pnl` object with position-level PnL sourced from the position PnL table.
          */
         get: operations["get_market_holders"];
         put?: never;
@@ -64,7 +84,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/holders/markets/{condition_id}/history": {
+    "/polymarket/holders/markets/history": {
         parameters: {
             query?: never;
             header?: never;
@@ -73,7 +93,7 @@ export interface paths {
         };
         /**
          * Get market holders history
-         * @description Retrieve historical holder count snapshots for a market over a time range
+         * @description Retrieve historical holder count snapshots for a market over a time range. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided.
          */
         get: operations["get_market_holders_history"];
         put?: never;
@@ -93,7 +113,7 @@ export interface paths {
         };
         /**
          * Get position holders
-         * @description Retrieve holders of a specific position (ERC1155 token), sorted by shares held. Uses cursor-based pagination for efficient traversal.
+         * @description Retrieve holders of a specific position (ERC1155 token), sorted by shares held. Each holder includes a nested `pnl` object with position-level PnL (realized_pnl_usd, buy_usd, sell_usd, avg_entry_price, avg_exit_price, total_buys, total_sells, total_fees, first/last_trade_at) sourced from the position PnL table — no extra joins required at query time. Uses cursor-based pagination for efficient traversal.
          */
         get: operations["get_position_holders"];
         put?: never;
@@ -176,6 +196,26 @@ export interface paths {
          * @description Retrieve OHLCV candlestick data for a market by its condition_id
          */
         get: operations["get_market_candlestick"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/market/chart": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get market chart
+         * @description Retrieve price data over time for up to 4 position outcomes in a market condition. Auto-selects the 4 most active outcomes if position_ids not specified.
+         */
+        get: operations["get_chart"];
         put?: never;
         post?: never;
         delete?: never;
@@ -524,7 +564,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/trader/portfolio/{address}": {
+    "/polymarket/trader/pnl/{address}/positions": {
         parameters: {
             query?: never;
             header?: never;
@@ -532,30 +572,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get trader portfolio
-         * @description Retrieve a trader's portfolio overview including balances and active positions
+         * Get trader position PnL
+         * @description Retrieve per-outcome-token PnL for a trader. Only includes OrderFilled trades (no redemptions/merges). Each entry represents a specific position (outcome token) the trader has bought or sold.
          */
-        get: operations["get_portfolio"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/polymarket/trader/positions/{address}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get trader positions
-         * @description Retrieve a trader's active positions with PnL data, sorted by the specified field
-         */
-        get: operations["get_portfolio_positions"];
+        get: operations["get_trader_position_pnl"];
         put?: never;
         post?: never;
         delete?: never;
@@ -593,7 +613,7 @@ export interface paths {
         };
         /**
          * Get multiple trader profiles
-         * @description Retrieve profiles for multiple traders in a single request. Returns a map of address -> profile.
+         * @description Retrieve profiles for multiple traders in a single request. Returns an array of profiles.
          */
         get: operations["get_trader_profiles_batch"];
         put?: never;
@@ -671,9 +691,9 @@ export interface components {
             name: string;
             /** Format: int32 */
             index: number;
+            position_id: string;
             /** Format: double */
             price: number;
-            position_id: string;
         };
         /** @enum {string} */
         CandlestickResolution: "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D";
@@ -755,6 +775,18 @@ export interface components {
             outcomes: components["schemas"]["EventMarketOutcome"][];
             /** @default null */
             winning_outcome: null | components["schemas"]["EventMarketOutcome"];
+        };
+        EventMarketChartDataPoint: {
+            /** Format: double */
+            value: number;
+            /** Format: int64 */
+            timestamp: number;
+        };
+        EventMarketChartOutcome: {
+            condition_id: string;
+            market_slug: string;
+            name: string;
+            data: components["schemas"]["EventMarketChartDataPoint"][];
         };
         /** @description Market outcome for event API responses */
         EventMarketOutcome: {
@@ -848,11 +880,7 @@ export interface components {
             shares_usd?: string | null;
             /** @description USD balance of wallet (USDe on Polygon) */
             usd_balance?: string | null;
-            /**
-             * Format: double
-             * @description Lifetime realized PnL in USD
-             */
-            realized_pnl_usd?: number | null;
+            pnl?: null | components["schemas"]["PositionHolderPnl"];
         };
         /** @description Holder statistics data point (single time bucket) */
         HolderHistoryCandle: {
@@ -1112,11 +1140,6 @@ export interface components {
             sells: number;
             /**
              * Format: double
-             * @default 0
-             */
-            open_interest_change: number;
-            /**
-             * Format: double
              * @default null
              */
             price_open: number | null;
@@ -1192,6 +1215,16 @@ export interface components {
              * Format: int64
              * @default null
              */
+            created_time: number | null;
+            /**
+             * Format: int64
+             * @default null
+             */
+            closed_time: number | null;
+            /**
+             * Format: int64
+             * @default null
+             */
             start_time: number | null;
             /**
              * Format: int64
@@ -1221,16 +1254,6 @@ export interface components {
             markets: components["schemas"]["EventMarket"][];
             /** @default null */
             series: null | components["schemas"]["PolymarketSeries"];
-            /**
-             * Format: int64
-             * @default null
-             */
-            created_time: number | null;
-            /**
-             * Format: int64
-             * @default null
-             */
-            closed_time: number | null;
         };
         /**
          * @description A Polymarket series from the Gamma API
@@ -1306,22 +1329,41 @@ export interface components {
             is_mod: boolean;
             created_at?: string | null;
         };
-        /** @description PnL data for a holder (position-level) */
-        PositionHolderPnl: {
+        PositionChartDataPoint: {
             /** Format: double */
-            realized_pnl_usd?: number | null;
+            value: number;
+            /** Format: int64 */
+            timestamp: number;
+        };
+        PositionChartOutcome: {
+            position_id: string;
+            name: string;
+            /** Format: int32 */
+            outcome_index: number;
+            data: components["schemas"]["PositionChartDataPoint"][];
+        };
+        /** @description Position-level PnL data for a holder (outcome token, OrderFilled trades only) */
+        PositionHolderPnl: {
             /** Format: double */
             buy_usd?: number | null;
             /** Format: double */
             sell_usd?: number | null;
+            /**
+             * Format: double
+             * @description Average price paid per share across all buys (0–1 range)
+             */
+            avg_entry_price?: number | null;
+            /**
+             * Format: double
+             * @description Average price received per share across all sells (0–1 range)
+             */
+            avg_exit_price?: number | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
             /** Format: double */
             total_fees?: number | null;
-            /** Format: double */
-            net_shares?: number | null;
-            /** Format: int64 */
-            buy_count?: number | null;
-            /** Format: int64 */
-            sell_count?: number | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -1383,6 +1425,8 @@ export interface components {
             /** Format: double */
             price_close: number;
         };
+        /** @enum {string} */
+        PositionPnlSortBy: "realized_pnl_usd" | "buy_usd" | "sell_usd" | "total_buys" | "total_sells" | "total_fees";
         PositionVolumeChartResponse: {
             volumes: components["schemas"]["PositionVolumeDataPoint"][];
             has_more: boolean;
@@ -1499,11 +1543,6 @@ export interface components {
              * @default 0
              */
             unique_traders: number;
-            /**
-             * Format: double
-             * @default 0
-             */
-            open_interest_change: number;
         };
         /** @enum {string} */
         SortDirection: "asc" | "desc";
@@ -1534,6 +1573,44 @@ export interface components {
             x_username?: string | null;
             verified_badge?: boolean;
         };
+        /** @description Event-level PnL entry */
+        TraderEventPnlEntry: {
+            event_slug?: string | null;
+            /** Format: int64 */
+            markets_traded?: number | null;
+            /** Format: int64 */
+            outcomes_traded?: number | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: int64 */
+            total_redemptions?: number | null;
+            /** Format: int64 */
+            total_merges?: number | null;
+            /** Format: double */
+            total_volume_usd?: number | null;
+            /** Format: double */
+            buy_usd?: number | null;
+            /** Format: double */
+            sell_usd?: number | null;
+            /** Format: double */
+            redemption_usd?: number | null;
+            /** Format: double */
+            merge_usd?: number | null;
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: int64 */
+            winning_markets?: number | null;
+            /** Format: int64 */
+            losing_markets?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+        };
         /** @description Trader profile info - backwards compatibility */
         TraderInfo: {
             address: string;
@@ -1542,6 +1619,72 @@ export interface components {
             profile_image?: string | null;
             x_username?: string | null;
             verified_badge?: boolean;
+        };
+        /** @description Market-level PnL entry */
+        TraderMarketPnlEntry: {
+            condition_id?: string | null;
+            event_slug?: string | null;
+            /** Format: int64 */
+            outcomes_traded?: number | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: int64 */
+            total_redemptions?: number | null;
+            /** Format: int64 */
+            total_merges?: number | null;
+            /** Format: double */
+            buy_usd?: number | null;
+            /** Format: double */
+            sell_usd?: number | null;
+            /** Format: double */
+            redemption_usd?: number | null;
+            /** Format: double */
+            merge_usd?: number | null;
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: int64 */
+            winning_outcomes?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+        };
+        /** @description Outcome-level PnL entry (per outcome token / position_id, OrderFilled trades only) */
+        TraderOutcomePnlEntry: {
+            position_id?: string | null;
+            condition_id?: string | null;
+            event_slug?: string | null;
+            outcome?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: double */
+            buy_usd?: number | null;
+            /** Format: double */
+            sell_usd?: number | null;
+            /**
+             * Format: double
+             * @description VWAP price paid per share across all buys (0–1)
+             */
+            avg_entry_price?: number | null;
+            /**
+             * Format: double
+             * @description VWAP price received per share across all sells (0–1)
+             */
+            avg_exit_price?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
         };
         TraderVolumeChartResponse: {
             volumes: components["schemas"]["TraderVolumeDataPoint"][];
@@ -1644,6 +1787,45 @@ export interface operations {
             };
         };
     };
+    get_event_chart: {
+        parameters: {
+            query: {
+                /** @description Event slug (required) */
+                event_slug: string;
+                /** @description Comma-separated condition IDs to include (max 4, optional) */
+                condition_ids?: string;
+                /** @description Comma-separated market slugs to include (max 4, optional). Use either condition_ids or market_slugs, not both */
+                market_slugs?: string;
+                /** @description Number of top markets to include if neither condition_ids nor market_slugs specified (max 4, default: 4) */
+                limit?: number;
+                /** @description Time interval: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
+                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Number of data points (max: 2500) */
+                count_back?: number;
+                /** @description Start timestamp (Unix seconds) */
+                from?: number;
+                /** @description End timestamp (Unix seconds) */
+                to?: number;
+                /** @description Cursor-based pagination key for fetching next page */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Price data over time for up to 4 markets with highest YES odds */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventMarketChartOutcome"][];
+                };
+            };
+        };
+    };
     get_event_metrics: {
         parameters: {
             query: {
@@ -1686,25 +1868,24 @@ export interface operations {
     get_market_holders: {
         parameters: {
             query?: {
+                /** @description Market condition ID (0x-prefixed hex) */
+                condition_id?: string;
+                /** @description Market slug (e.g. `will-trump-win`) */
+                market_slug?: string;
                 /** @description Results limit (default: 10, max: 100) */
                 limit?: number;
                 /** @description Minimum shares held (decimal string) */
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
-                /** @description PnL timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
-                timeframe?: components["schemas"]["PnlTimeframe"];
             };
             header?: never;
-            path: {
-                /** @description Market condition ID */
-                condition_id: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Market holders grouped by outcome (sorted by shares DESC) */
+            /** @description Market holders grouped by outcome (sorted by shares DESC). Each holder has `pnl: PositionHolderPnl` with outcome-specific trading stats. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1725,14 +1906,15 @@ export interface operations {
     get_market_holders_history: {
         parameters: {
             query?: {
+                /** @description Market condition ID (0x-prefixed hex) */
+                condition_id?: string;
+                /** @description Market slug (e.g. `will-trump-win`) */
+                market_slug?: string;
                 /** @description Time range in hours (default: 24, max: 336 = 14 days) */
                 hours?: number;
             };
             header?: never;
-            path: {
-                /** @description Market condition ID */
-                condition_id: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -1776,7 +1958,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Position holders (sorted by shares DESC). Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
+            /** @description Position holders (sorted by shares DESC). Each holder has `pnl: PositionHolderPnl` with outcome-specific trading stats. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -1977,6 +2159,43 @@ export interface operations {
             };
         };
     };
+    get_chart: {
+        parameters: {
+            query?: {
+                /** @description Market condition ID or market_slug (one required) */
+                condition_id?: string;
+                /** @description Market slug (alternative to condition_id) */
+                market_slug?: string;
+                /** @description Comma-separated list of position IDs (max 4, optional). Auto-selected if not provided */
+                position_ids?: string;
+                /** @description Time interval: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
+                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Number of data points (max: 2500) */
+                count_back?: number;
+                /** @description Start timestamp (Unix seconds) */
+                from?: number;
+                /** @description End timestamp (Unix seconds) */
+                to?: number;
+                /** @description Cursor-based pagination key for fetching next page */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Price data over time for up to 4 market outcomes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PositionChartOutcome"][];
+                };
+            };
+        };
+    };
     get_market_metrics: {
         parameters: {
             query: {
@@ -2112,7 +2331,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PositionVolumeChartResponse"];
+                    "application/json": components["schemas"]["PositionVolumeDataPoint"][];
                 };
             };
         };
@@ -2180,9 +2399,11 @@ export interface operations {
     };
     get_market_volume_chart: {
         parameters: {
-            query: {
-                /** @description Market condition ID (required) */
-                condition_id: string;
+            query?: {
+                /** @description Market condition ID (or use market_slug) */
+                condition_id?: string;
+                /** @description Market slug (alternative to condition_id) */
+                market_slug?: string;
                 /** @description Time interval: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
                 resolution?: components["schemas"]["CandlestickResolution"];
                 /** @description Number of data points (max: 2500) */
@@ -2204,7 +2425,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MarketVolumeChartResponse"];
+                    "application/json": components["schemas"]["MarketVolumeDataPoint"][];
                 };
             };
         };
@@ -2496,8 +2717,8 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Results limit (default: 10, max: 200) */
                 limit?: number;
-                /** @description Offset-based pagination key */
-                pagination_key?: number;
+                /** @description Cursor-based pagination key (base64-encoded, from previous response) */
+                pagination_key?: string;
                 /** @description Filter by event slug */
                 event_slug?: string;
             };
@@ -2510,12 +2731,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Event-level PnL entries for this trader. Response includes `pagination: { has_more, pagination_key }` for offset-based pagination. */
+            /** @description Event-level PnL entries for this trader */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TraderEventPnlEntry"][];
+                };
             };
         };
     };
@@ -2530,10 +2753,12 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Results limit (default: 10, max: 200) */
                 limit?: number;
-                /** @description Offset-based pagination key */
-                pagination_key?: number;
-                /** @description Filter by condition ID */
+                /** @description Cursor-based pagination key (base64-encoded, from previous response) */
+                pagination_key?: string;
+                /** @description Filter by condition ID (or use market_slug) */
                 condition_id?: string;
+                /** @description Filter by market slug (alternative to condition_id) */
+                market_slug?: string;
                 /** @description Filter by event slug */
                 event_slug?: string;
             };
@@ -2546,54 +2771,36 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Market-level PnL entries for this trader. Response includes `pagination: { has_more, pagination_key }` for offset-based pagination. */
+            /** @description Market-level PnL entries for this trader */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TraderMarketPnlEntry"][];
+                };
             };
         };
     };
-    get_portfolio: {
+    get_trader_position_pnl: {
         parameters: {
             query?: {
-                /** @description Stats timeframe: 7d, 30d, lifetime */
+                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-            };
-            header?: never;
-            path: {
-                /** @description Trader wallet address */
-                address: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Full portfolio with stats, positions, and PnL chart. Positions include `pagination: { has_more, pagination_key }` for offset-based pagination. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    get_portfolio_positions: {
-        parameters: {
-            query?: {
-                /** @description Sort field: shares_usd (default), shares, realized_pnl_usd, price, buy_usd */
-                sort_by?: string;
+                /** @description Sort: realized_pnl_usd, buy_usd, sell_usd, total_buys, total_sells, total_fees (default: realized_pnl_usd) */
+                sort_by?: components["schemas"]["PositionPnlSortBy"];
                 /** @description Sort direction: asc, desc (default: desc) */
                 sort_direction?: components["schemas"]["SortDirection"];
-                /** @description Filter by condition ID */
-                condition_id?: string;
-                /** @description Filter by event slug */
-                event_slug?: string;
-                /** @description Results limit (default: 50, max: 200) */
+                /** @description Results limit (default: 10, max: 200) */
                 limit?: number;
-                /** @description Offset-based pagination key (integer offset into result set) */
-                pagination_key?: number;
+                /** @description Cursor-based pagination key (base64-encoded, from previous response) */
+                pagination_key?: string;
+                /** @description Filter by market condition ID (or use market_slug) */
+                condition_id?: string;
+                /** @description Filter by market slug (alternative to condition_id) */
+                market_slug?: string;
+                /** @description Filter by specific outcome token (position ID) */
+                position_id?: string;
             };
             header?: never;
             path: {
@@ -2604,12 +2811,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Trader positions with market metadata and PnL. Response includes `pagination: { has_more, pagination_key }` for offset-based pagination. */
+            /** @description Position-level PnL entries for this trader. Each entry is a specific outcome token with avg_entry_price and avg_exit_price. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TraderOutcomePnlEntry"][];
+                };
             };
         };
     };
@@ -2655,7 +2864,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Map of trader addresses to their profile information */
+            /** @description Array of trader profiles */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2762,7 +2971,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TraderVolumeChartResponse"];
+                    "application/json": components["schemas"]["TraderVolumeDataPoint"][];
                 };
             };
         };

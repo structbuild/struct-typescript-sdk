@@ -62,7 +62,11 @@ export type TokenOutcome = Schemas["TokenOutcome"];
 export type Trader = Schemas["Trader"];
 export type TraderInfo = Schemas["TraderInfo"];
 export type TraderVolumeChartResponse = Schemas["TraderVolumeChartResponse"];
+export type TraderOutcomePnlEntry = Schemas["TraderOutcomePnlEntry"];
 export type TraderVolumeDataPoint = Schemas["TraderVolumeDataPoint"];
+export type PositionPnlSortBy = Schemas["PositionPnlSortBy"];
+export type EventMarketChartOutcome = Schemas["EventMarketChartOutcome"];
+export type PositionChartOutcome = Schemas["PositionChartOutcome"];
 
 export type Series = Schemas["PolymarketSeries"];
 export type SeriesDetail = Schemas["SeriesFullResponse"];
@@ -75,166 +79,6 @@ export type GlobalPnlTimeframe = Schemas["PnlTimeframe"];
 export type TradeSide = "Buy" | "Sell";
 export type EventStatus = "active" | "resolved" | "ended" | "archived";
 export type HolderSortBy = "shares_held" | "total_cost_usd" | "unrealized_pnl_usd";
-
-export type PortfolioTimeframe = "7d" | "30d" | "lifetime";
-
-export interface PortfolioOutcome {
-	index: number;
-	name: string;
-}
-
-export interface PortfolioMarketMetadata {
-	question: string | null;
-	title: string | null;
-	id: string | null;
-	market_id: string | null;
-	slug: string | null;
-	image_url: string | null;
-	status: string | null;
-	outcomes: PortfolioOutcome[] | null;
-}
-
-export interface ResolvedMarketMetadata {
-	question: string | null;
-	title: string | null;
-	id: string | null;
-	market_id: string | null;
-	slug: string | null;
-	image_url: string | null;
-	winning_outcome: number | null;
-	outcomes: PortfolioOutcome[] | null;
-}
-
-export interface PositionMarketMetadata {
-	question: string | null;
-	title: string | null;
-	id: string | null;
-	market_id: string | null;
-	slug: string | null;
-	image_url: string | null;
-	status: string | null;
-	winning_outcome: number | null;
-	outcomes: PortfolioOutcome[] | null;
-}
-
-export interface OverallStats {
-	realized_pnl_usd: number | null;
-	unrealized_pnl_usd: number | null;
-	resolved_markets_count: number | null;
-	winning_markets_count: number | null;
-	win_rate: number | null;
-	total_trades: number | null;
-	total_volume_usd: number | null;
-	smart_money_score: number | null;
-	insider_score: number | null;
-	first_trade_at: number | null;
-	last_trade_at: number | null;
-}
-
-export interface TimeframeStats {
-	timeframe: string;
-	buy_count: number | null;
-	sell_count: number | null;
-	buy_volume_usd: number | null;
-	sell_volume_usd: number | null;
-	unique_markets: number | null;
-}
-
-export interface ActivePosition {
-	condition_id: string;
-	outcome_index: number | null;
-	outcome_name: string | null;
-	shares_held: number | null;
-	avg_entry_price: number | null;
-	total_cost_usd: number | null;
-	realized_pnl_usd: number | null;
-	entry_probability: number | null;
-	entry_timestamp: number | null;
-	created_at: number | null;
-	updated_at: number | null;
-	market: PortfolioMarketMetadata | null;
-}
-
-export interface ResolvedPosition {
-	condition_id: string;
-	outcome_index: number | null;
-	outcome_name: string | null;
-	shares_held: number | null;
-	avg_entry_price: number | null;
-	total_cost_usd: number | null;
-	realized_pnl_usd: number | null;
-	entry_probability: number | null;
-	entry_timestamp: number | null;
-	created_at: number | null;
-	updated_at: number | null;
-	is_winner: boolean | null;
-	market: ResolvedMarketMetadata | null;
-}
-
-export interface PnlChartPoint {
-	timestamp: number;
-	cumulative_pnl_usd: number | null;
-}
-
-export interface Portfolio {
-	overall_stats: OverallStats | null;
-	timeframe_stats: TimeframeStats | null;
-	active_positions: ActivePosition[];
-	resolved_positions: ResolvedPosition[];
-	pnl_chart_data: PnlChartPoint[];
-}
-
-export interface Position {
-	condition_id: string;
-	outcome_index: number | null;
-	outcome_name: string | null;
-	shares_held: number | null;
-	avg_entry_price: number | null;
-	total_cost_usd: number | null;
-	realized_pnl_usd: number | null;
-	is_resolved: boolean | null;
-	entry_probability: number | null;
-	current_price: number | null;
-	current_value_usd: number | null;
-	unrealized_pnl_usd: number | null;
-	entry_timestamp: number | null;
-	created_at: number | null;
-	updated_at: number | null;
-	market: PositionMarketMetadata | null;
-}
-
-export interface PositionsResponse {
-	positions: Position[];
-	total_count: number | null;
-	limit: number;
-	offset: number;
-}
-
-export interface TraderPositionPnlEntry {
-	condition_id: string | null;
-	position_id: string | null;
-	outcome: string | null;
-	outcome_index: number | null;
-	event_slug: string | null;
-	buy_count: number | null;
-	sell_count: number | null;
-	redemption_count: number | null;
-	merge_count: number | null;
-	total_shares_bought: number | null;
-	total_shares_sold: number | null;
-	total_shares_redeemed: number | null;
-	total_shares_merged: number | null;
-	net_shares: number | null;
-	buy_usd: number | null;
-	sell_usd: number | null;
-	redemption_usd: number | null;
-	merge_usd: number | null;
-	realized_pnl_usd: number | null;
-	cost_basis: number | null;
-	total_fees: number | null;
-	first_trade_at: number | null;
-	last_trade_at: number | null;
-}
 
 export interface TraderMarketPnlEntry {
 	condition_id: string | null;
@@ -313,14 +157,9 @@ export interface GetMarketMetricsParams extends OperationQuery<"get_market_metri
 
 export interface GetPositionMetricsParams extends OperationQuery<"get_position_metrics"> {}
 
-export interface GetMarketHoldersParams extends OperationQuery<"get_market_holders"> {
-	conditionId: string;
-}
+export interface GetMarketHoldersParams extends OperationQuery<"get_market_holders"> {}
 
-export interface GetMarketHoldersHistoryParams {
-	conditionId: string;
-	hours?: number;
-}
+export interface GetMarketHoldersHistoryParams extends OperationQuery<"get_market_holders_history"> {}
 
 export interface GetPositionHoldersParams extends OperationQuery<"get_position_holders"> {
 	positionId: string;
@@ -361,6 +200,10 @@ export interface GetTagParams {
 	identifier: string;
 }
 
+export interface GetEventChartParams extends OperationQuery<"get_event_chart"> {}
+
+export interface GetMarketChartParams extends OperationQuery<"get_chart"> {}
+
 export interface GetGlobalPnlParams extends OperationQuery<"get_global_pnl"> {}
 
 export interface GetTraderPnlParams {
@@ -379,21 +222,16 @@ export interface GetTraderPnlBreakdownParams {
 	event_slug?: string;
 }
 
+export interface GetTraderPositionPnlParams extends OperationQuery<"get_trader_position_pnl"> {
+	address: string;
+}
+
 export interface GetTraderPnlCandlesParams {
 	address: string;
 	resolution?: PnlCandleResolution;
 	start_ts?: number;
 	end_ts?: number;
 	limit?: number;
-}
-
-export interface GetPortfolioParams {
-	address: string;
-	timeframe?: PortfolioTimeframe;
-}
-
-export interface GetPortfolioPositionsParams extends OperationQuery<"get_portfolio_positions"> {
-	address: string;
 }
 
 export interface GetTraderTradesParams extends OperationQuery<"get_trader_trades"> {

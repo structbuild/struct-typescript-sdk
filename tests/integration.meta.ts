@@ -1,0 +1,156 @@
+export interface MethodConfig {
+	skip?: boolean;
+	params?: Record<string, unknown>;
+	operationId?: string;
+}
+
+export const methodMeta: Record<string, MethodConfig> = {
+	"markets.getMarkets": {
+		params: { limit: 2 },
+		operationId: "list_markets",
+	},
+	"markets.getMarketChart": {
+		params: { condition_id: "$conditionId", resolution: "1", count_back: 10 },
+		operationId: "get_chart",
+	},
+	"markets.getMarketMetrics": {
+		params: { condition_id: "$conditionId", timeframe: "24h" },
+		operationId: "get_market_metrics",
+	},
+	"markets.getTrades": {
+		params: { condition_ids: "$conditionId", limit: 2 },
+		operationId: "get_market_trades",
+	},
+	"markets.getCandlestick": {
+		params: { condition_id: "$conditionId", resolution: "1" },
+		operationId: "get_market_candlestick",
+	},
+	"markets.getPositionCandlestick": {
+		params: { position_id: "$positionId", resolution: "1" },
+		operationId: "get_position_candlestick",
+	},
+	"markets.getPositionMetrics": {
+		params: { position_id: "$positionId", timeframe: "24h" },
+		operationId: "get_position_metrics",
+	},
+	"markets.getPositionVolumeChart": {
+		params: { position_id: "$positionId" },
+		operationId: "get_position_volume_chart",
+	},
+	"markets.getMarketVolumeChart": {
+		params: { condition_id: "$conditionId" },
+		operationId: "get_market_volume_chart",
+	},
+
+	"events.getEvents": {
+		params: { limit: 2 },
+		operationId: "get_events",
+	},
+	"events.getEventChart": {
+		params: { event_slug: "$eventSlug", resolution: "1" },
+		operationId: "get_event_chart",
+	},
+	"events.getEventMetrics": {
+		params: { event_slug: "$eventSlug", timeframe: "24h" },
+		operationId: "get_event_metrics",
+	},
+
+	"holders.getMarketHolders": {
+		params: { condition_id: "$conditionId", limit: 2 },
+		operationId: "get_market_holders",
+	},
+	"holders.getPositionHolders": {
+		params: { positionId: "$positionId", limit: 2 },
+		operationId: "get_position_holders",
+	},
+	"holders.getMarketHoldersHistory": {
+		params: { condition_id: "$conditionId" },
+		operationId: "get_market_holders_history",
+	},
+	"holders.getPositionHoldersHistory": {
+		params: { positionId: "$positionId" },
+		operationId: "get_position_holders_history",
+	},
+
+	"tags.getTags": {
+		params: { limit: 2 },
+		operationId: "get_tags",
+	},
+	"tags.getTag": {
+		params: { identifier: "$tagId" },
+		operationId: "get_tag_by_id",
+	},
+
+	"series.getSeriesList": {
+		params: { limit: 2 },
+		operationId: "get_series_list",
+	},
+	"series.getSeriesDetail": {
+		params: { identifier: "$seriesId" },
+		operationId: "get_series_by_id",
+	},
+	"series.getSeriesEvents": {
+		params: { identifier: "$seriesId" },
+		operationId: "get_series_events",
+	},
+
+	"trader.getTraderTrades": {
+		params: { address: "$address", limit: 2 },
+		operationId: "get_trader_trades",
+	},
+	"trader.getTraderProfile": {
+		params: { address: "$address" },
+		operationId: "get_trader_profile",
+	},
+	"trader.getTraderProfilesBatch": {
+		params: { addresses: "$address" },
+		operationId: "get_trader_profiles_batch",
+	},
+	"trader.getTraderVolumeChart": {
+		params: { address: "$address" },
+		operationId: "get_trader_volume_chart",
+	},
+	"trader.getTraderPnl": {
+		params: { address: "$address" },
+		operationId: "get_trader_pnl",
+	},
+	"trader.getTraderMarketPnl": {
+		params: { address: "$address", limit: 2 },
+		operationId: "get_trader_market_pnl",
+	},
+	"trader.getTraderEventPnl": {
+		params: { address: "$address", limit: 2 },
+		operationId: "get_trader_event_pnl",
+	},
+	"trader.getTraderPnlCandles": {
+		params: { address: "$address" },
+		operationId: "get_trader_pnl_candles",
+	},
+	"trader.getTraderOutcomePnl": {
+		params: { address: "$address", sort_by: "buy_usd", limit: 2 },
+		operationId: "get_trader_position_pnl",
+	},
+	"trader.getGlobalPnl": {
+		params: { limit: 2 },
+		operationId: "get_global_pnl",
+	},
+
+	"search.search": {
+		params: { q: "president" },
+		operationId: "search",
+	},
+
+	"bonds.getBonds": {
+		params: { limit: 2 },
+		operationId: "get_bonds",
+	},
+
+	"webhooks.list": {
+		operationId: "list_webhooks",
+	},
+	"webhooks.create": { skip: true },
+	"webhooks.update": { skip: true },
+	"webhooks.deleteWebhook": { skip: true },
+	"webhooks.test": { skip: true },
+	"webhooks.getWebhook": { skip: true },
+};

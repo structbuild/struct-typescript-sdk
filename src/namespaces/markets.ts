@@ -6,11 +6,13 @@ import type {
 	ConditionMetricsResponse,
 	PositionMetricsResponse,
 	PositionVolumeChartResponse,
+	PositionChartOutcome,
 	MarketVolumeChartResponse,
 	Trade,
 	CandlestickResponse,
 	GetMarketsParams,
 	GetMarketMetricsParams,
+	GetMarketChartParams,
 	GetTradesParams,
 	GetCandlestickParams,
 	GetPositionCandlestickParams,
@@ -22,6 +24,10 @@ import type {
 export class MarketsNamespace extends Namespace {
 	async getMarkets(params?: GetMarketsParams, venue?: Venue): Promise<HttpResponse<MarketMetadata[]>> {
 		return this.get<MarketMetadata[]>(venue, "/market", { params: { ...params } });
+	}
+
+	async getMarketChart(params: GetMarketChartParams, venue?: Venue): Promise<HttpResponse<PositionChartOutcome[]>> {
+		return this.get<PositionChartOutcome[]>(venue, "/market/chart", { params: { ...params } });
 	}
 
 	async getMarketMetrics(params: GetMarketMetricsParams, venue?: Venue): Promise<HttpResponse<ConditionMetricsResponse>> {
