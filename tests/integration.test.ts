@@ -2,6 +2,7 @@ import { describe, expect, test, beforeAll, afterAll } from "bun:test";
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { StructClient, HttpError } from "../src/index.js";
+import { paginate } from "../src/paginate.js";
 import { Namespace, PlatformNamespace } from "../src/namespaces/index.js";
 import { methodMeta, type MethodConfig } from "./integration.meta.js";
 
@@ -433,6 +434,46 @@ describe.skipIf(!API_KEY)("integration", () => {
 						handleHttpError(ns, method, shapeLabel, openApiSchema, err);
 					}
 				});
+
+				if (meta?.paginate) {
+					test(`${method} (paginate)`, async () => {
+						const paginateMethod = `${method} (paginate)`;
+						const { formatted: openApiSchema } = getExpectedSchema(meta);
+
+						try {
+							const baseParams = meta.paginateParams ?? meta.params ?? {};
+							const resolved = resolveParams(baseParams, setupData);
+							const fetcher = (p: Record<string, unknown>) =>
+								instance[method]({ ...resolved, ...p });
+
+							const items: unknown[] = [];
+							for await (const item of paginate(fetcher, {}, 2)) {
+								items.push(item);
+								if (items.length >= 3) break;
+							}
+
+							if (items.length < 1) {
+								recordFail(ns, paginateMethod, ">=1 item", openApiSchema, {
+									error: "paginate yielded 0 items",
+								});
+								throw new Error(`[${ns}.${paginateMethod}] paginate yielded 0 items`);
+							}
+
+							for (const item of items) {
+								if (item === undefined || item === null) {
+									recordFail(ns, paginateMethod, "defined items", openApiSchema, {
+										error: "paginate yielded undefined/null item",
+									});
+									throw new Error(`[${ns}.${paginateMethod}] paginate yielded undefined/null item`);
+								}
+							}
+
+							recordPass(ns, paginateMethod, `>=1 defined item (got ${items.length})`, openApiSchema);
+						} catch (err) {
+							handleHttpError(ns, paginateMethod, "paginate", openApiSchema, err);
+						}
+					});
+				}
 			}
 		});
 	}

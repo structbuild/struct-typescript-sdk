@@ -785,7 +785,8 @@ export interface components {
         EventMarketChartOutcome: {
             condition_id: string;
             market_slug: string;
-            name: string;
+            question: string;
+            title: string;
             data: components["schemas"]["EventMarketChartDataPoint"][];
         };
         /** @description Market outcome for event API responses */
