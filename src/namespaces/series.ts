@@ -1,7 +1,7 @@
 import { Namespace } from "./base.js";
 import type { HttpResponse } from "../types/http.js";
 import type { Venue } from "../types/common.js";
-import type { Series, SeriesDetail, Event, GetSeriesListParams, GetSeriesDetailParams, GetSeriesEventsParams } from "../types/index.js";
+import type { Series, SeriesDetail, Event, GetSeriesListParams, GetSeriesDetailParams, GetSeriesEventsParams, GetSeriesOutcomesParams } from "../types/index.js";
 
 export class SeriesNamespace extends Namespace {
 	async getSeriesList(params?: GetSeriesListParams, venue?: Venue): Promise<HttpResponse<Series[]>> {
@@ -16,5 +16,9 @@ export class SeriesNamespace extends Namespace {
 	async getSeriesEvents(params: GetSeriesEventsParams, venue?: Venue): Promise<HttpResponse<Event[]>> {
 		const { identifier, ...query } = params;
 		return this.get<Event[]>(venue, `/series/${encodeURIComponent(identifier)}/events`, { params: query });
+	}
+
+	async getSeriesOutcomes(params: GetSeriesOutcomesParams, venue?: Venue): Promise<HttpResponse<Record<string, string>>> {
+		return this.get<Record<string, string>>(venue, "/series/outcomes", { params: { ...params } });
 	}
 }

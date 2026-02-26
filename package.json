@@ -23,7 +23,8 @@
   "scripts": {
     "build": "rm -rf dist && bun build ./src/index.ts --target browser --format esm --sourcemap --outdir ./dist && bun build ./src/index.ts --target browser --format cjs --sourcemap --outdir ./dist-cjs && mv ./dist-cjs/index.js ./dist/index.cjs && mv ./dist-cjs/index.js.map ./dist/index.cjs.map && rm -rf dist-cjs && tsc --emitDeclarationOnly",
     "check-routes": "bun run scripts/check-routes.ts",
-    "prep": "bun run fetch-spec:polymarket && bun run generate:polymarket && bun run fetch-spec:webhooks && bun run generate:webhooks && bun run check-routes && bun run build",
+    "fix-spec": "bun run scripts/fix-spec.ts",
+    "prep": "bun run fetch-spec:polymarket && bun run fix-spec && bun run generate:polymarket && bun run fetch-spec:webhooks && bun run generate:webhooks && bun run check-routes && bun run build",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "typecheck": "bun run tsc -p tsconfig.check.json",

@@ -33,7 +33,7 @@ export interface paths {
         };
         /**
          * Get event chart
-         * @description Retrieve price data over time for up to 4 markets with highest YES outcome (outcome_index 0) prices in an event. Perfect for rendering multi-line charts showing price movement across top markets.
+         * @description Retrieve price data over time for up to 4 markets with highest YES outcome (outcome_index 0) prices in an event. Perfect for rendering multi-line charts showing price movement across top markets. TradingView-style: resolution parameter determines both candle size and implicit lookback period.
          */
         get: operations["get_event_chart"];
         put?: never;
@@ -56,6 +56,26 @@ export interface paths {
          * @description Retrieve volume, transaction, and trader metrics for an event. Supports single timeframe (e.g., '1m'), multiple timeframes (e.g., '1m,5m,1h'), or 'all' to get all available timeframes.
          */
         get: operations["get_event_metrics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/events/outcomes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get event market outcomes
+         * @description Returns the winning outcome name for each resolved market in an event, keyed by market slug. Useful for quickly checking which outcomes won across a series.
+         */
+        get: operations["get_event_outcomes"];
         put?: never;
         post?: never;
         delete?: never;
@@ -213,7 +233,7 @@ export interface paths {
         };
         /**
          * Get market chart
-         * @description Retrieve price data over time for up to 4 position outcomes in a market condition. Auto-selects the 4 most active outcomes if position_ids not specified.
+         * @description Retrieve price data over time for up to 4 position outcomes in a market condition. TradingView-style: resolution parameter determines both candle size and implicit lookback period. Auto-selects the 4 most active outcomes if position_ids not specified.
          */
         get: operations["get_chart"];
         put?: never;
@@ -376,6 +396,26 @@ export interface paths {
          * @description Retrieve a paginated list of event series
          */
         get: operations["get_series_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/series/outcomes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get series market outcomes
+         * @description Returns the winning outcome name for each resolved market across all events in a series, keyed by market slug. Useful for checking historical results across recurring series (e.g., btc-updown-5m).
+         */
+        get: operations["get_series_outcomes"];
         put?: never;
         post?: never;
         delete?: never;
@@ -769,6 +809,10 @@ export interface components {
             creator: string | null;
             /** @default null */
             category: string | null;
+            /** @default null */
+            accepting_orders: boolean | null;
+            /** @default null */
+            uma_resolution_status: string | null;
             /** @default [] */
             clob_rewards: components["schemas"]["ClobReward"][];
             /** @default [] */
@@ -938,6 +982,7 @@ export interface components {
             event_slug?: string | null;
             event_id?: string | null;
             event_title?: string | null;
+            series_slug?: string | null;
             neg_risk: boolean;
             tokens: components["schemas"]["TokenOutcome"][];
             image_url?: string | null;
@@ -1799,16 +1844,8 @@ export interface operations {
                 market_slugs?: string;
                 /** @description Number of top markets to include if neither condition_ids nor market_slugs specified (max 4, default: 4) */
                 limit?: number;
-                /** @description Time interval: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
-                /** @description Number of data points (max: 2500) */
-                count_back?: number;
-                /** @description Start timestamp (Unix seconds) */
-                from?: number;
-                /** @description End timestamp (Unix seconds) */
-                to?: number;
-                /** @description Cursor-based pagination key for fetching next page */
-                pagination_key?: string;
+                /** @description Time interval with implicit lookback: 1H (1 hour), 6H (6 hours), 1D (1 day), 1W (1 week), 1M (30 days), ALL (all data) (required) */
+                resolution: "1H" | "6H" | "1D" | "1W" | "1M" | "ALL";
             };
             header?: never;
             path?: never;
@@ -1859,6 +1896,38 @@ export interface operations {
             };
             /** @description Event metrics not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_event_outcomes: {
+        parameters: {
+            query: {
+                /** @description Event slug (required) */
+                event_slug: string;
+                /** @description Number of resolved markets per page (default: 10, max: 250) */
+                limit?: number;
+                /** @description Cursor-based pagination key for fetching next page */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Map of market_slug → winning outcome name with pagination metadata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing event_slug parameter */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2162,23 +2231,15 @@ export interface operations {
     };
     get_chart: {
         parameters: {
-            query?: {
+            query: {
                 /** @description Market condition ID or market_slug (one required) */
                 condition_id?: string;
                 /** @description Market slug (alternative to condition_id) */
                 market_slug?: string;
                 /** @description Comma-separated list of position IDs (max 4, optional). Auto-selected if not provided */
                 position_ids?: string;
-                /** @description Time interval: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
-                /** @description Number of data points (max: 2500) */
-                count_back?: number;
-                /** @description Start timestamp (Unix seconds) */
-                from?: number;
-                /** @description End timestamp (Unix seconds) */
-                to?: number;
-                /** @description Cursor-based pagination key for fetching next page */
-                pagination_key?: string;
+                /** @description Time interval with implicit lookback: 1H (1 hour), 6H (6 hours), 1D (1 day), 1W (1 week), 1M (30 days), ALL (all data) (required) */
+                resolution: "1H" | "6H" | "1D" | "1W" | "1M" | "ALL";
             };
             header?: never;
             path?: never;
@@ -2482,6 +2543,38 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PolymarketSeries"][];
                 };
+            };
+        };
+    };
+    get_series_outcomes: {
+        parameters: {
+            query: {
+                /** @description Series slug (required) */
+                series_slug: string;
+                /** @description Number of resolved markets per page (default: 10, max: 250) */
+                limit?: number;
+                /** @description Cursor-based pagination key for fetching next page */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Map of market_slug → winning outcome name with pagination metadata */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing series_slug parameter */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -59,6 +59,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { event_slug: "$eventSlug", timeframe: "24h" },
 		operationId: "get_event_metrics",
 	},
+	"events.getEventOutcomes": {
+		params: { event_slug: "$eventSlug", limit: 2 },
+		operationId: "get_event_outcomes",
+	},
 
 	"holders.getMarketHolders": {
 		params: { condition_id: "$conditionId", limit: 2 },
@@ -102,6 +106,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { identifier: "$seriesId" },
 		operationId: "get_series_events",
 		paginate: true,
+	},
+	"series.getSeriesOutcomes": {
+		params: { series_slug: "$seriesId", limit: 2 },
+		operationId: "get_series_outcomes",
 	},
 
 	"trader.getTraderTrades": {

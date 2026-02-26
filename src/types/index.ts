@@ -194,11 +194,15 @@ export interface GetSeriesEventsParams extends OperationQuery<"get_series_events
 	identifier: string;
 }
 
+export interface GetSeriesOutcomesParams extends OperationQuery<"get_series_outcomes"> {}
+
 export interface GetTagsParams extends OperationQuery<"get_tags"> {}
 
 export interface GetTagParams {
 	identifier: string;
 }
+
+export interface GetEventOutcomesParams extends OperationQuery<"get_event_outcomes"> {}
 
 export interface GetEventChartParams extends OperationQuery<"get_event_chart"> {}
 

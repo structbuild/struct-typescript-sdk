@@ -7,8 +7,17 @@ function makeFetcher(pages: unknown[][]) {
 	let callIndex = 0;
 	return async (_params: PaginationParams): Promise<HttpResponse<unknown[]>> => {
 		const data = pages[callIndex] ?? [];
+		const hasMore = callIndex < pages.length - 1 && data.length > 0;
 		callIndex++;
-		return { data, message: null, success: true };
+		return {
+			data,
+			message: null,
+			success: true,
+			pagination: {
+				has_more: hasMore,
+				pagination_key: hasMore ? callIndex : null,
+			},
+		};
 	};
 }
 
@@ -44,12 +53,12 @@ describe("paginate", () => {
 		const calls: Record<string, any>[] = [];
 		const fetcher = async (params: PaginationParams): Promise<HttpResponse<unknown[]>> => {
 			calls.push({ ...params });
-			return { data: [], message: null, success: true };
+			return { data: [], message: null, success: true, pagination: { has_more: false, pagination_key: null } };
 		};
 		const gen = paginate(fetcher, { limit: 5 } as PaginationParams, 10);
 		await gen.next();
 		expect(calls.length).toBe(1);
 		expect(calls[0]!.limit).toBe(10);
-		expect(calls[0]!.offset).toBe(0);
+		expect(calls[0]!.pagination_key).toBeUndefined();
 	});
 });

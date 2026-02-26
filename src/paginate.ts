@@ -8,19 +8,19 @@ export async function* paginate<T, P extends PaginationParams>(
 	params: P,
 	pageSize: number = DEFAULT_PAGE_SIZE,
 ): AsyncGenerator<T> {
-	let offset = 0;
+	let paginationKey: string | number | undefined;
 
 	while (true) {
-		const response = await fetcher({ ...params, limit: pageSize, offset } as P);
+		const response = await fetcher({ ...params, limit: pageSize, pagination_key: paginationKey } as P);
 
 		for (const item of response.data) {
 			yield item;
 		}
 
-		if (response.data.length < pageSize) {
+		if (!response.pagination?.has_more || response.pagination.pagination_key == null) {
 			break;
 		}
 
-		offset += pageSize;
+		paginationKey = response.pagination.pagination_key;
 	}
 }
