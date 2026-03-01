@@ -404,16 +404,12 @@ export interface components {
         };
         /** @description First trade webhook payload with zero-copy Arc<str> for string sharing */
         FirstTradePayload: {
-            /** @description Event type identifier */
-            event_type: string;
             /** @description Trader/taker address (zero-copy Arc) */
             trader: string;
             /** @description Taker address (same as trader, zero-copy Arc) */
             taker: string;
             /** @description Position ID (ERC1155 token ID, zero-copy Arc) */
             position_id: string;
-            /** @description Market ID (same as position_id for compatibility, zero-copy Arc) */
-            market_id: string;
             /** @description Condition ID (market condition, zero-copy Arc) */
             condition_id?: string | null;
             /** @description Market outcome (e.g., "Yes", "No", zero-copy Arc) */
@@ -426,7 +422,7 @@ export interface components {
             /** @description Market question (zero-copy Arc) */
             question?: string | null;
             /** @description Market slug (zero-copy Arc) */
-            slug?: string | null;
+            market_slug?: string | null;
             /** @description Event slug (parent event, zero-copy Arc) */
             event_slug?: string | null;
             /** @description Trade ID (zero-copy Arc) */
@@ -443,14 +439,12 @@ export interface components {
              * @description Confirmed timestamp (Unix seconds)
              */
             confirmed_at: number;
-            /**
-             * Format: int64
-             * @description Timestamp (same as confirmed_at for compatibility)
-             */
-            timestamp: number;
-            amount_usd: string;
-            shares_amount: string;
-            fee: string;
+            /** Format: double */
+            amount_usd: number;
+            /** Format: double */
+            shares_amount: number;
+            /** Format: double */
+            fee: number;
             /** @description Trade side (Buy/Sell, zero-copy Arc) */
             side: string;
             /**
@@ -458,11 +452,6 @@ export interface components {
              * @description Price per share (0.0 - 1.0)
              */
             price: number;
-            /**
-             * Format: double
-             * @description Implied probability (0.0 - 1.0)
-             */
-            probability?: number | null;
             exchange: string;
             trade_type: string;
         };
@@ -560,7 +549,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "first_trade" | "global_pnl" | "market_pnl" | "event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "volume_spike" | "*";
+        PolymarketWebhookEvent: "first_trade" | "global_pnl" | "market_pnl" | "event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "volume_spike";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -915,40 +904,23 @@ export interface components {
             url: string;
             /** @description Subscribed events */
             events: components["schemas"]["PolymarketWebhookEvent"][];
-            /** @description Filters */
-            filters: components["schemas"]["WebhookFiltersBody"];
-            /** @description Current status */
+            /** @description Active filters (omitted when no filters are set) */
+            filters?: components["schemas"]["PolymarketWebhookFilter"];
+            /** @description Current status: "active", "paused", or "disabled" */
             status: string;
             /**
-             * Format: int32
-             * @description Consecutive failure count
-             */
-            failure_count: number;
-            /**
              * Format: int64
-             * @description Last successful delivery timestamp
-             */
-            last_success_at?: number | null;
-            /**
-             * Format: int64
-             * @description Last failed delivery timestamp
-             */
-            last_failure_at?: number | null;
-            /** @description Last failure reason */
-            last_failure_reason?: string | null;
-            /**
-             * Format: int64
-             * @description Created timestamp
+             * @description Created timestamp (ms)
              */
             created_at: number;
             /**
              * Format: int64
-             * @description Updated timestamp
+             * @description Updated timestamp (ms)
              */
             updated_at: number;
-            /** @description Description */
+            /** @description Description/name */
             description?: string | null;
-            /** @description Whether a secret is configured */
+            /** @description Whether an HMAC secret is configured */
             has_secret: boolean;
         };
         /**

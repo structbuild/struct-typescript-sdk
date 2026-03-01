@@ -626,16 +626,13 @@
         "type": "object",
         "description": "First trade webhook payload with zero-copy Arc<str> for string sharing",
         "required": [
-          "event_type",
           "trader",
           "taker",
           "position_id",
-          "market_id",
           "trade_id",
           "hash",
           "block",
           "confirmed_at",
-          "timestamp",
           "amount_usd",
           "shares_amount",
           "fee",
@@ -645,10 +642,6 @@
           "trade_type"
         ],
         "properties": {
-          "event_type": {
-            "type": "string",
-            "description": "Event type identifier"
-          },
           "trader": {
             "type": "string",
             "description": "Trader/taker address (zero-copy Arc)"
@@ -660,10 +653,6 @@
           "position_id": {
             "type": "string",
             "description": "Position ID (ERC1155 token ID, zero-copy Arc)"
-          },
-          "market_id": {
-            "type": "string",
-            "description": "Market ID (same as position_id for compatibility, zero-copy Arc)"
           },
           "condition_id": {
             "type": [
@@ -695,7 +684,7 @@
             ],
             "description": "Market question (zero-copy Arc)"
           },
-          "slug": {
+          "market_slug": {
             "type": [
               "string",
               "null"
@@ -729,20 +718,17 @@
             "description": "Confirmed timestamp (Unix seconds)",
             "minimum": 0
           },
-          "timestamp": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Timestamp (same as confirmed_at for compatibility)",
-            "minimum": 0
-          },
           "amount_usd": {
-            "type": "string"
+            "type": "number",
+            "format": "double"
           },
           "shares_amount": {
-            "type": "string"
+            "type": "number",
+            "format": "double"
           },
           "fee": {
-            "type": "string"
+            "type": "number",
+            "format": "double"
           },
           "side": {
             "type": "string",
@@ -752,14 +738,6 @@
             "type": "number",
             "format": "double",
             "description": "Price per share (0.0 - 1.0)"
-          },
-          "probability": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Implied probability (0.0 - 1.0)"
           },
           "exchange": {
             "type": "string"
@@ -1095,8 +1073,7 @@
           "event_volume_milestone",
           "position_volume_milestone",
           "probability_spike",
-          "volume_spike",
-          "*"
+          "volume_spike"
         ]
       },
       "PolymarketWebhookFilter": {
@@ -1817,9 +1794,7 @@
           "id",
           "url",
           "events",
-          "filters",
           "status",
-          "failure_count",
           "created_at",
           "updated_at",
           "has_secret"
@@ -1841,62 +1816,33 @@
             "description": "Subscribed events"
           },
           "filters": {
-            "$ref": "#/components/schemas/WebhookFiltersBody",
-            "description": "Filters"
+            "$ref": "#/components/schemas/PolymarketWebhookFilter",
+            "description": "Active filters (omitted when no filters are set)"
           },
           "status": {
             "type": "string",
-            "description": "Current status"
-          },
-          "failure_count": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Consecutive failure count",
-            "minimum": 0
-          },
-          "last_success_at": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64",
-            "description": "Last successful delivery timestamp"
-          },
-          "last_failure_at": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64",
-            "description": "Last failed delivery timestamp"
-          },
-          "last_failure_reason": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Last failure reason"
+            "description": "Current status: \"active\", \"paused\", or \"disabled\""
           },
           "created_at": {
             "type": "integer",
             "format": "int64",
-            "description": "Created timestamp"
+            "description": "Created timestamp (ms)"
           },
           "updated_at": {
             "type": "integer",
             "format": "int64",
-            "description": "Updated timestamp"
+            "description": "Updated timestamp (ms)"
           },
           "description": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Description"
+            "description": "Description/name"
           },
           "has_secret": {
             "type": "boolean",
-            "description": "Whether a secret is configured"
+            "description": "Whether an HMAC secret is configured"
           }
         }
       },

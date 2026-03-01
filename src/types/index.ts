@@ -67,6 +67,9 @@ export type TraderVolumeDataPoint = Schemas["TraderVolumeDataPoint"];
 export type PositionPnlSortBy = Schemas["PositionPnlSortBy"];
 export type EventMarketChartOutcome = Schemas["EventMarketChartOutcome"];
 export type PositionChartOutcome = Schemas["PositionChartOutcome"];
+export type AssetPriceHistoryRow = Schemas["AssetPriceHistoryRow"];
+export type AssetSymbol = Schemas["AssetSymbol"];
+export type AssetVariant = Schemas["AssetVariant"];
 
 export type Series = Schemas["PolymarketSeries"];
 export type SeriesDetail = Schemas["SeriesFullResponse"];
@@ -146,6 +149,8 @@ export interface TraderSearchResult {
 	x_username?: string;
 	verified_badge: boolean;
 }
+
+export interface GetAssetHistoryParams extends OperationQuery<"get_asset_history"> {}
 
 export interface GetBondsParams extends OperationQuery<"get_bonds"> {}
 

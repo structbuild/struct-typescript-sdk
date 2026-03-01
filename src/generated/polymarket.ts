@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get asset price history
-         * @description Retrieve historical OHLC-style price data for a supported crypto asset (BTC, ETH, XRP, SOL) over a chosen time window variant. Timestamps are Unix seconds.
+         * @description Retrieve historical OHLC-style price data for a supported crypto asset (BTC, ETH, XRP, SOL) over a chosen time window variant. Timestamps are Unix seconds. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination — pass `pagination_key` from the previous response to fetch the next page.
          */
         get: operations["get_asset_history"];
         put?: never;
@@ -757,11 +757,6 @@ export interface components {
              * @description Window end timestamp (seconds since epoch)
              */
             end_time: number;
-            /**
-             * Format: int64
-             * @description Canonical timestamp (= end_time, seconds since epoch)
-             */
-            asset_price_timestamp: number;
         };
         /** @enum {string} */
         AssetSymbol: "BTC" | "ETH" | "XRP" | "SOL";
@@ -1694,6 +1689,8 @@ export interface components {
         /** @description Event-level PnL entry */
         TraderEventPnlEntry: {
             event_slug?: string | null;
+            question?: string | null;
+            image_url?: string | null;
             /** Format: int64 */
             markets_traded?: number | null;
             /** Format: int64 */
@@ -1742,6 +1739,8 @@ export interface components {
         TraderMarketPnlEntry: {
             condition_id?: string | null;
             event_slug?: string | null;
+            question?: string | null;
+            image_url?: string | null;
             /** Format: int64 */
             outcomes_traded?: number | null;
             /** Format: int64 */
@@ -1846,6 +1845,8 @@ export interface operations {
                 to?: number;
                 /** @description Number of results (default: 10, max: 100) */
                 limit?: number;
+                /** @description Cursor-based pagination key Obtained from previous response's `pagination.pagination_key`. Pass this to fetch the next page of results. */
+                pagination_key?: string;
             };
             header?: never;
             path?: never;
@@ -1853,7 +1854,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Asset price history records, sorted newest first */
+            /** @description Asset price history records, sorted newest first. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2120,7 +2121,7 @@ export interface operations {
             query?: {
                 /** @description Results limit (default: 10, max: 100) */
                 limit?: number;
-                /** @description Cursor-based pagination key (base64-encoded, obtained from previous response's pagination.pagination_key) */
+                /** @description Cursor-based pagination key */
                 pagination_key?: string;
                 /** @description Minimum shares held (decimal string) */
                 min_shares?: string;
@@ -2252,7 +2253,7 @@ export interface operations {
                 include_metrics?: boolean;
                 /** @description Results limit (default: 10, max: 100) */
                 limit?: number;
-                /** @description Cursor-based pagination key (base64-encoded, obtained from previous response's pagination.pagination_key) */
+                /** @description Cursor-based pagination key */
                 pagination_key?: string;
             };
             header?: never;
@@ -2764,7 +2765,7 @@ export interface operations {
             query?: {
                 /** @description Results limit (default: 10, max: 250) */
                 limit?: number;
-                /** @description Cursor-based pagination key (base64-encoded, obtained from previous response's pagination.pagination_key) */
+                /** @description Cursor-based pagination key */
                 pagination_key?: string;
             };
             header?: never;
@@ -2825,7 +2826,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Results limit (default: 10, max: 200) */
                 limit?: number;
-                /** @description Cursor-based pagination key (base64-encoded, obtained from previous response's pagination.pagination_key) */
+                /** @description Cursor-based pagination key */
                 pagination_key?: string;
             };
             header?: never;
@@ -2921,7 +2922,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Results limit (default: 10, max: 200) */
                 limit?: number;
-                /** @description Cursor-based pagination key (base64-encoded, from previous response) */
+                /** @description Cursor-based pagination key */
                 pagination_key?: string;
                 /** @description Filter by event slug */
                 event_slug?: string;
@@ -2957,7 +2958,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Results limit (default: 10, max: 200) */
                 limit?: number;
-                /** @description Cursor-based pagination key (base64-encoded, from previous response) */
+                /** @description Cursor-based pagination key */
                 pagination_key?: string;
                 /** @description Filter by condition ID (or use market_slug) */
                 condition_id?: string;
@@ -2997,7 +2998,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Results limit (default: 10, max: 200) */
                 limit?: number;
-                /** @description Cursor-based pagination key (base64-encoded, from previous response) */
+                /** @description Cursor-based pagination key */
                 pagination_key?: string;
                 /** @description Filter by market condition ID (or use market_slug) */
                 condition_id?: string;

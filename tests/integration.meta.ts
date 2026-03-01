@@ -7,6 +7,11 @@ export interface MethodConfig {
 }
 
 export const methodMeta: Record<string, MethodConfig> = {
+	"assets.getAssetHistory": {
+		params: { asset_symbol: "BTC", variant: "1h" },
+		operationId: "get_asset_history",
+	},
+
 	"markets.getMarkets": {
 		params: { limit: 2 },
 		operationId: "list_markets",

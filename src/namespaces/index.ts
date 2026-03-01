@@ -1,4 +1,5 @@
 export { Namespace, PlatformNamespace } from "./base.js";
+export { AssetsNamespace } from "./assets.js";
 export { HoldersNamespace } from "./holders.js";
 export { TagsNamespace } from "./tags.js";
 export { EventsNamespace } from "./events.js";

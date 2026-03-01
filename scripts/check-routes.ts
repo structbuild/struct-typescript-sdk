@@ -13,7 +13,7 @@ const specs: SpecConfig[] = [
 	{
 		specPath: join(import.meta.dirname, "../src/generated/polymarket.ts"),
 		venuePrefix: "/polymarket",
-		namespaceFiles: ["holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "search.ts", "tags.ts"],
+		namespaceFiles: ["assets.ts", "holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "search.ts", "tags.ts"],
 	},
 	{
 		specPath: join(import.meta.dirname, "../src/generated/webhooks.ts"),

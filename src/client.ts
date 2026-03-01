@@ -2,6 +2,7 @@ import { HttpClient } from "./http.js";
 import type { Venue } from "./types/common.js";
 import type { RetryConfig, RequestHookInfo, ResponseHookInfo } from "./types/index.js";
 import {
+	AssetsNamespace,
 	HoldersNamespace,
 	TagsNamespace,
 	EventsNamespace,
@@ -27,6 +28,7 @@ export interface StructClientConfig {
 }
 
 export class StructClient {
+	readonly assets: AssetsNamespace;
 	readonly holders: HoldersNamespace;
 	readonly tags: TagsNamespace;
 	readonly events: EventsNamespace;
@@ -51,6 +53,7 @@ export class StructClient {
 		});
 
 		const venue = config.venue ?? "polymarket";
+		this.assets = new AssetsNamespace(http, venue);
 		this.holders = new HoldersNamespace(http, venue);
 		this.tags = new TagsNamespace(http, venue);
 		this.events = new EventsNamespace(http, venue);
