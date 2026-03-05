@@ -50,6 +50,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { condition_id: "$conditionId" },
 		operationId: "get_market_volume_chart",
 	},
+	"markets.getPriceJumps": {
+		params: { condition_id: "$conditionId" },
+		operationId: "get_price_jumps",
+	},
 
 	"events.getEvents": {
 		params: { limit: 2 },

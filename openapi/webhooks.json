@@ -132,6 +132,36 @@
         ]
       }
     },
+    "/webhooks/events": {
+      "get": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "List event types",
+        "description": "Retrieve all available webhook event types with descriptions",
+        "operationId": "list_events",
+        "responses": {
+          "200": {
+            "description": "List of available event types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListEventsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
     "/webhooks/{webhook_id}": {
       "get": {
         "tags": [
@@ -249,8 +279,59 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Webhook deleted successfully"
+          "200": {
+            "description": "Webhook deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteWebhookResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "description": "Webhook not found or not owned by user"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/webhooks/{webhook_id}/rotate-secret": {
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Rotate webhook secret",
+        "description": "Generate a new HMAC secret for a webhook. The new secret is returned once — store it securely",
+        "operationId": "rotate_secret",
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "description": "Webhook UUID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New secret generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RotateSecretResponse"
+                }
+              }
+            }
           },
           "401": {
             "description": "Missing or invalid API key"
@@ -313,6 +394,145 @@
   },
   "components": {
     "schemas": {
+      "CloseToBondPayload": {
+        "type": "object",
+        "description": "Close-to-bond webhook payload",
+        "required": [
+          "trader",
+          "taker",
+          "position_id",
+          "trade_id",
+          "hash",
+          "block",
+          "confirmed_at",
+          "amount_usd",
+          "shares_amount",
+          "fee",
+          "side",
+          "price",
+          "bond_side",
+          "threshold"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader address (the limit-order maker)"
+          },
+          "taker": {
+            "type": "string",
+            "description": "Taker address (the order filler — often the exchange contract)"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Position ID (ERC1155 token ID)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Condition ID (parent market)"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Outcome index (0 = Yes, 1 = No)",
+            "minimum": 0
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
+          },
+          "trade_id": {
+            "type": "string",
+            "description": "Trade ID"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Block number",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Confirmed timestamp (Unix seconds)",
+            "minimum": 0
+          },
+          "amount_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "USD size of the trade"
+          },
+          "shares_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Outcome shares traded"
+          },
+          "fee": {
+            "type": "number",
+            "format": "double",
+            "description": "Fee paid (USD)"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side (\"Buy\" or \"Sell\")"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "description": "Price per share (0.0–1.0) — the value that triggered the notification"
+          },
+          "probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Implied probability of the outcome (0.0–1.0)"
+          },
+          "bond_side": {
+            "type": "string",
+            "description": "Which bond zone was entered: `\"high\"` (YES near-certain) or `\"low\"` (NO near-certain)"
+          },
+          "threshold": {
+            "type": "number",
+            "format": "double",
+            "description": "The probability threshold from the subscriber's filter that was breached"
+          }
+        }
+      },
       "ConditionMetricsPayload": {
         "type": "object",
         "description": "Condition metrics webhook payload (Arc-optimized, no internal metadata)",
@@ -364,19 +584,16 @@
         "description": "Request body for creating a webhook",
         "required": [
           "url",
-          "events"
+          "event"
         ],
         "properties": {
           "url": {
             "type": "string",
             "description": "Destination URL for webhook deliveries (must be HTTPS)"
           },
-          "events": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PolymarketWebhookEvent"
-            },
-            "description": "Events to subscribe to"
+          "event": {
+            "$ref": "#/components/schemas/PolymarketWebhookEvent",
+            "description": "Event to subscribe to"
           },
           "secret": {
             "type": [
@@ -402,6 +619,18 @@
               "null"
             ],
             "description": "Optional description/name"
+          }
+        }
+      },
+      "DeleteWebhookResponse": {
+        "type": "object",
+        "description": "Delete webhook response",
+        "required": [
+          "deleted"
+        ],
+        "properties": {
+          "deleted": {
+            "type": "boolean"
           }
         }
       },
@@ -454,12 +683,25 @@
       "EventPnlPayload": {
         "type": "object",
         "description": "Event PnL webhook payload (Arc-optimized)",
+        "required": [
+          "timeframe"
+        ],
         "properties": {
+          "trader": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "event_slug": {
             "type": [
               "string",
               "null"
             ]
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Aggregation timeframe: \"1d\", \"7d\", \"30d\", or \"lifetime\""
           },
           "markets_traded": {
             "type": [
@@ -750,12 +992,19 @@
       "GlobalPnlPayload": {
         "type": "object",
         "description": "Global PnL webhook payload (Arc-optimized)",
+        "required": [
+          "timeframe"
+        ],
         "properties": {
           "trader": {
             "type": [
               "string",
               "null"
             ]
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Aggregation timeframe: \"1d\", \"7d\", \"30d\", or \"lifetime\""
           },
           "realized_pnl_usd": {
             "type": [
@@ -932,10 +1181,171 @@
           }
         }
       },
+      "ListEventsResponse": {
+        "type": "object",
+        "description": "Response for GET /v1/webhook/events",
+        "required": [
+          "events"
+        ],
+        "properties": {
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookEventInfo"
+            }
+          }
+        }
+      },
+      "MarketCreatedOutcome": {
+        "type": "object",
+        "description": "Outcome entry in the market created payload — mirrors `NewMarketOutcome`",
+        "required": [
+          "index",
+          "name",
+          "position_id"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Outcome index (0 = Yes, 1 = No)",
+            "minimum": 0
+          },
+          "name": {
+            "type": "string",
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "ERC1155 position token ID"
+          }
+        }
+      },
+      "MarketCreatedPayload": {
+        "type": "object",
+        "description": "Market created webhook payload — mirrors `NewMarketPayload` field-for-field",
+        "required": [
+          "condition_id",
+          "market_slug",
+          "outcomes",
+          "question",
+          "description",
+          "tags",
+          "neg_risk",
+          "block",
+          "block_timestamp"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": "string",
+            "description": "Condition ID (0x-prefixed hex, lowercase)"
+          },
+          "market_slug": {
+            "type": "string",
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug (parent event)"
+          },
+          "event_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event ID"
+          },
+          "event_title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event title"
+          },
+          "series_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Series slug"
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketCreatedOutcome"
+            },
+            "description": "Outcomes with their position IDs, index, and name"
+          },
+          "question": {
+            "type": "string",
+            "description": "Market question"
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market title (short display name)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Market description"
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market category (e.g. \"Sports\", \"Politics\")"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Market tags"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Cover image URL"
+          },
+          "neg_risk": {
+            "type": "boolean",
+            "description": "Whether this is a neg-risk market"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Block number where ConditionPreparation was emitted",
+            "minimum": 0
+          },
+          "block_timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Block timestamp (Unix seconds)",
+            "minimum": 0
+          }
+        }
+      },
       "MarketPnlPayload": {
         "type": "object",
         "description": "Market PnL webhook payload (Arc-optimized)",
+        "required": [
+          "timeframe"
+        ],
         "properties": {
+          "trader": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "condition_id": {
             "type": [
               "string",
@@ -947,6 +1357,10 @@
               "string",
               "null"
             ]
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Aggregation timeframe: \"1d\", \"7d\", \"30d\", or \"lifetime\""
           },
           "outcomes_traded": {
             "type": [
@@ -1048,6 +1462,142 @@
           }
         }
       },
+      "NewMarketPayload": {
+        "type": "object",
+        "description": "New market entry webhook payload\n\nFired when a trader places their first trade in a specific condition/market.\nThe payload contains the full details of the triggering trade.",
+        "required": [
+          "trader",
+          "taker",
+          "position_id",
+          "trade_id",
+          "hash",
+          "block",
+          "confirmed_at",
+          "amount_usd",
+          "shares_amount",
+          "fee",
+          "side",
+          "price",
+          "exchange",
+          "trade_type"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader address (placed the limit order)"
+          },
+          "taker": {
+            "type": "string",
+            "description": "Taker address (filled the order — often the exchange contract)"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Position ID (ERC1155 token ID)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Condition ID (market condition)"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Outcome index (0 = Yes, 1 = No)",
+            "minimum": 0
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug (parent event)"
+          },
+          "trade_id": {
+            "type": "string",
+            "description": "Trade ID"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Block number",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Confirmed timestamp (Unix seconds)",
+            "minimum": 0
+          },
+          "amount_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "USD size of the trade"
+          },
+          "shares_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Outcome shares traded"
+          },
+          "fee": {
+            "type": "number",
+            "format": "double",
+            "description": "Fee paid (USD)"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side (\"Buy\" or \"Sell\")"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "description": "Price per share (0.0–1.0)"
+          },
+          "probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Implied probability (0.0–1.0); None when outcome is unknown"
+          },
+          "exchange": {
+            "type": "string"
+          },
+          "trade_type": {
+            "type": "string"
+          }
+        }
+      },
       "PnlTimeframeFilter": {
         "type": "string",
         "description": "PnL timeframe enum for webhook filtering",
@@ -1063,6 +1613,8 @@
         "description": "Polymarket webhook event types",
         "enum": [
           "first_trade",
+          "new_market",
+          "whale_trade",
           "global_pnl",
           "market_pnl",
           "event_pnl",
@@ -1073,12 +1625,14 @@
           "event_volume_milestone",
           "position_volume_milestone",
           "probability_spike",
-          "volume_spike"
+          "volume_spike",
+          "close_to_bond",
+          "market_created"
         ]
       },
       "PolymarketWebhookFilter": {
         "type": "object",
-        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
+        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, timeframes\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
         "properties": {
           "wallet_addresses": {
             "type": "array",
@@ -1241,6 +1795,14 @@
             "format": "int64",
             "description": "Minimum transaction count - for metrics webhooks"
           },
+          "min_unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum unique traders - for metrics webhooks"
+          },
           "min_sell_volume_usd": {
             "type": [
               "number",
@@ -1270,7 +1832,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h)"
+            "description": "Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d)"
           },
           "milestone_amounts": {
             "type": "array",
@@ -1296,7 +1858,7 @@
             "format": "double",
             "description": "Spike ratio multiplier (must be > 1.0) - for volume spike webhooks\nExample: 2.0 for 2x, 5.0 for 5x, 10.0 for 10x"
           },
-          "exclude_shortterm_market_timeframes": {
+          "exclude_shorterm_market_timeframes": {
             "type": "array",
             "items": {
               "type": "string"
@@ -1608,6 +2170,25 @@
           }
         }
       },
+      "RotateSecretResponse": {
+        "type": "object",
+        "description": "Response for POST /v1/webhook/{id}/rotate-secret",
+        "required": [
+          "secret",
+          "rotated_at"
+        ],
+        "properties": {
+          "secret": {
+            "type": "string",
+            "description": "The new HMAC secret (only returned once — store it securely)"
+          },
+          "rotated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Timestamp of rotation (ms since epoch)"
+          }
+        }
+      },
       "UpdateWebhookRequestBody": {
         "type": "object",
         "description": "Request body for updating a webhook",
@@ -1619,15 +2200,16 @@
             ],
             "description": "Destination URL for webhook deliveries (must be HTTPS)"
           },
-          "events": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/PolymarketWebhookEvent"
-            },
-            "description": "Events to subscribe to"
+          "event": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PolymarketWebhookEvent",
+                "description": "Event to subscribe to"
+              }
+            ]
           },
           "secret": {
             "type": [
@@ -1707,6 +2289,76 @@
           }
         }
       },
+      "VolumeSpikePayload": {
+        "type": "object",
+        "description": "Volume spike webhook payload",
+        "required": [
+          "condition_id",
+          "timeframe",
+          "current_volume_usd",
+          "baseline_volume_usd",
+          "spike_ratio",
+          "threshold_usd",
+          "txns",
+          "fees"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": "string"
+          },
+          "timeframe": {
+            "type": "string"
+          },
+          "current_volume_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Current volume that triggered the spike (USD)"
+          },
+          "baseline_volume_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "User's baseline volume for comparison (USD)"
+          },
+          "spike_ratio": {
+            "type": "number",
+            "format": "double",
+            "description": "Spike ratio threshold that was triggered"
+          },
+          "threshold_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Calculated threshold that was crossed (baseline * ratio)"
+          },
+          "txns": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Total transactions in this timeframe"
+          },
+          "fees": {
+            "type": "number",
+            "format": "double",
+            "description": "Total fees in this timeframe"
+          }
+        }
+      },
+      "WebhookEventInfo": {
+        "type": "object",
+        "description": "Single event type entry for the events list",
+        "required": [
+          "event",
+          "description"
+        ],
+        "properties": {
+          "event": {
+            "type": "string",
+            "description": "Event type identifier (e.g. \"first_trade\")"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description"
+          }
+        }
+      },
       "WebhookFiltersBody": {
         "type": "object",
         "description": "Webhook filters request body",
@@ -1716,7 +2368,14 @@
             "items": {
               "type": "string"
             },
-            "description": "Filter by wallet addresses"
+            "description": "Filter by wallet addresses (for first_trade / new_market / whale_trade)"
+          },
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by trader addresses (for PnL webhooks)"
           },
           "condition_ids": {
             "type": "array",
@@ -1725,13 +2384,12 @@
             },
             "description": "Filter by market/condition IDs"
           },
-          "min_usd_value": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Filter by minimum USD value"
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by position IDs (for position metrics / close_to_bond)"
           },
           "event_slugs": {
             "type": "array",
@@ -1739,6 +2397,21 @@
               "type": "string"
             },
             "description": "Filter by event slugs"
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by outcomes (e.g. \"Yes\", \"No\") — for position metrics / close_to_bond"
+          },
+          "min_usd_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum USD trade size (for whale_trade / first_trade)"
           },
           "min_probability": {
             "type": [
@@ -1756,12 +2429,147 @@
             "format": "double",
             "description": "Maximum probability threshold (0.0 - 1.0)"
           },
-          "exclude_shortterm_market_timeframes": {
+          "min_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum realized PnL (USD) — for global_pnl / market_pnl / event_pnl"
+          },
+          "max_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum realized PnL (USD) — for global_pnl / market_pnl / event_pnl"
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum total volume (USD) — for global_pnl / event_pnl / metrics"
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum total volume (USD) — for metrics webhooks"
+          },
+          "min_buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum buy volume (USD) — for market_pnl / position metrics"
+          },
+          "min_sell_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum sell volume (USD) — for position metrics"
+          },
+          "min_win_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum win rate (0.0 - 100.0) — for global_pnl"
+          },
+          "min_markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum markets traded — for global_pnl / event_pnl"
+          },
+          "min_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum fees (USD) — for metrics webhooks"
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum transaction count — for metrics webhooks"
+          },
+          "min_unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum unique traders — for metrics webhooks"
+          },
+          "min_price_change_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum price change percentage — for position metrics"
+          },
+          "min_probability_change_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum probability change percentage — for probability_spike"
+          },
+          "timeframes": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Exclude short-term trading markets by timeframe (e.g., [\"5m\", \"15m\"])"
+            "description": "Timeframes to track (e.g. [\"1m\", \"5m\", \"1h\", \"24h\", \"7d\", \"30d\"]) — for metrics webhooks"
+          },
+          "milestone_amounts": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Milestone amounts to trigger on (USD) — for volume_milestone webhooks"
+          },
+          "baseline_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "User-defined baseline volume for spike detection (USD) — for volume_spike"
+          },
+          "spike_ratio": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Spike ratio multiplier (must be > 1.0) — for volume_spike. E.g. 2.0 for 2x baseline"
+          },
+          "exclude_shorterm_market_timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Exclude short-term trading markets by timeframe pattern (e.g. [\"5m\", \"15m\"])"
           }
         }
       },
@@ -1793,7 +2601,7 @@
         "required": [
           "id",
           "url",
-          "events",
+          "event",
           "status",
           "created_at",
           "updated_at",
@@ -1808,12 +2616,9 @@
             "type": "string",
             "description": "Destination URL"
           },
-          "events": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PolymarketWebhookEvent"
-            },
-            "description": "Subscribed events"
+          "event": {
+            "$ref": "#/components/schemas/PolymarketWebhookEvent",
+            "description": "Subscribed event"
           },
           "filters": {
             "$ref": "#/components/schemas/PolymarketWebhookFilter",
@@ -1889,6 +2694,142 @@
             "minimum": 0
           }
         }
+      },
+      "WhaleTradePayload": {
+        "type": "object",
+        "description": "Whale trade webhook payload",
+        "required": [
+          "trader",
+          "taker",
+          "position_id",
+          "trade_id",
+          "hash",
+          "block",
+          "confirmed_at",
+          "amount_usd",
+          "shares_amount",
+          "fee",
+          "side",
+          "price",
+          "exchange",
+          "trade_type"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader address (the limit-order maker)"
+          },
+          "taker": {
+            "type": "string",
+            "description": "Taker address (the order filler — often the exchange contract)"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Position ID (ERC1155 token ID)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Condition ID"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Outcome index (0 = Yes, 1 = No)",
+            "minimum": 0
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
+          },
+          "trade_id": {
+            "type": "string",
+            "description": "Trade ID"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Block number",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Confirmed timestamp (Unix seconds)",
+            "minimum": 0
+          },
+          "amount_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "USD size of the trade"
+          },
+          "shares_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Outcome shares traded"
+          },
+          "fee": {
+            "type": "number",
+            "format": "double",
+            "description": "Fee paid (USD)"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side (\"Buy\" or \"Sell\")"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "description": "Price per share (0.0–1.0)"
+          },
+          "probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Implied probability of the event (0.0–1.0); None when outcome is unknown"
+          },
+          "exchange": {
+            "type": "string"
+          },
+          "trade_type": {
+            "type": "string"
+          }
+        }
       }
     }
   },
@@ -1917,6 +2858,62 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/FirstTradePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "new-market": {
+      "post": {
+        "summary": "New market entry callback",
+        "description": "Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)",
+        "operationId": "new-market",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewMarketPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "whale-trade": {
+      "post": {
+        "summary": "Whale trade callback",
+        "description": "Fired when a trade exceeds the configured USD threshold within the configured probability range (e.g. >$10k between 5–95% probability). Requires `min_usd_value` in the subscription filter.",
+        "operationId": "whale-trade",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhaleTradePayload"
               }
             }
           }
@@ -2197,6 +3194,90 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ProbabilitySpikePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "volume-spike": {
+      "post": {
+        "summary": "Volume spike callback",
+        "description": "Fired when a market's volume in a timeframe exceeds the user-defined baseline by the configured ratio (e.g. 2x baseline). Requires `baseline_volume_usd` and `spike_ratio` in the subscription filter.",
+        "operationId": "volume-spike",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VolumeSpikePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "close-to-bond": {
+      "post": {
+        "summary": "Close to bond callback",
+        "description": "Fired when a position's probability enters the bond zone (e.g. YES ≥ 95% or ≤ 5%). Requires `min_probability` and/or `max_probability` in the subscription filter.",
+        "operationId": "close-to-bond",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseToBondPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "market-created": {
+      "post": {
+        "summary": "Market created callback",
+        "description": "Fired when a new prediction market is detected on-chain (ConditionPreparation event), enriched with Gamma API metadata. Filterable by `tags`, `condition_ids`, and `event_slugs`.",
+        "operationId": "market-created",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketCreatedPayload"
               }
             }
           }

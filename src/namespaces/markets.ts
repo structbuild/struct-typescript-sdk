@@ -19,6 +19,8 @@ import type {
 	GetPositionMetricsParams,
 	GetPositionVolumeChartParams,
 	GetMarketVolumeChartParams,
+	GetPriceJumpsParams,
+	PriceJump,
 } from "../types/index.js";
 
 export class MarketsNamespace extends Namespace {
@@ -56,5 +58,9 @@ export class MarketsNamespace extends Namespace {
 
 	async getMarketVolumeChart(params: GetMarketVolumeChartParams, venue?: Venue): Promise<HttpResponse<MarketVolumeChartResponse>> {
 		return this.get<MarketVolumeChartResponse>(venue, "/market/volume-chart", { params: { ...params } });
+	}
+
+	async getPriceJumps(params?: GetPriceJumpsParams, venue?: Venue): Promise<HttpResponse<PriceJump[]>> {
+		return this.get<PriceJump[]>(venue, "/market/price-jumps", { params: { ...params } });
 	}
 }

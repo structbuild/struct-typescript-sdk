@@ -28,6 +28,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/webhooks/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List event types
+         * @description Retrieve all available webhook event types with descriptions
+         */
+        get: operations["list_events"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/webhooks/{webhook_id}": {
         parameters: {
             query?: never;
@@ -51,6 +71,26 @@ export interface paths {
          * @description Permanently delete a webhook subscription
          */
         delete: operations["delete_webhook"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/webhooks/{webhook_id}/rotate-secret": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate webhook secret
+         * @description Generate a new HMAC secret for a webhook. The new secret is returned once — store it securely
+         */
+        post: operations["rotate_secret"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -92,6 +132,46 @@ export interface webhooks {
          * @description Fired when a tracked trader executes their first trade on a market
          */
         post: operations["first-trade"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "new-market": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * New market entry callback
+         * @description Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)
+         */
+        post: operations["new-market"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "whale-trade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Whale trade callback
+         * @description Fired when a trade exceeds the configured USD threshold within the configured probability range (e.g. >$10k between 5–95% probability). Requires `min_usd_value` in the subscription filter.
+         */
+        post: operations["whale-trade"];
         delete?: never;
         options?: never;
         head?: never;
@@ -298,9 +378,141 @@ export interface webhooks {
         patch?: never;
         trace?: never;
     };
+    "volume-spike": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Volume spike callback
+         * @description Fired when a market's volume in a timeframe exceeds the user-defined baseline by the configured ratio (e.g. 2x baseline). Requires `baseline_volume_usd` and `spike_ratio` in the subscription filter.
+         */
+        post: operations["volume-spike"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "close-to-bond": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close to bond callback
+         * @description Fired when a position's probability enters the bond zone (e.g. YES ≥ 95% or ≤ 5%). Requires `min_probability` and/or `max_probability` in the subscription filter.
+         */
+        post: operations["close-to-bond"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "market-created": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Market created callback
+         * @description Fired when a new prediction market is detected on-chain (ConditionPreparation event), enriched with Gamma API metadata. Filterable by `tags`, `condition_ids`, and `event_slugs`.
+         */
+        post: operations["market-created"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export interface components {
     schemas: {
+        /** @description Close-to-bond webhook payload */
+        CloseToBondPayload: {
+            /** @description Trader address (the limit-order maker) */
+            trader: string;
+            /** @description Taker address (the order filler — often the exchange contract) */
+            taker: string;
+            /** @description Position ID (ERC1155 token ID) */
+            position_id: string;
+            /** @description Condition ID (parent market) */
+            condition_id?: string | null;
+            /** @description Outcome name (e.g. "Yes", "No") */
+            outcome?: string | null;
+            /**
+             * Format: int32
+             * @description Outcome index (0 = Yes, 1 = No)
+             */
+            outcome_index?: number | null;
+            /** @description Market question */
+            question?: string | null;
+            /** @description Market slug */
+            market_slug?: string | null;
+            /** @description Event slug */
+            event_slug?: string | null;
+            /** @description Trade ID */
+            trade_id: string;
+            /** @description Transaction hash */
+            hash: string;
+            /**
+             * Format: int64
+             * @description Block number
+             */
+            block: number;
+            /**
+             * Format: int64
+             * @description Confirmed timestamp (Unix seconds)
+             */
+            confirmed_at: number;
+            /**
+             * Format: double
+             * @description USD size of the trade
+             */
+            amount_usd: number;
+            /**
+             * Format: double
+             * @description Outcome shares traded
+             */
+            shares_amount: number;
+            /**
+             * Format: double
+             * @description Fee paid (USD)
+             */
+            fee: number;
+            /** @description Trade side ("Buy" or "Sell") */
+            side: string;
+            /**
+             * Format: double
+             * @description Price per share (0.0–1.0) — the value that triggered the notification
+             */
+            price: number;
+            /**
+             * Format: double
+             * @description Implied probability of the outcome (0.0–1.0)
+             */
+            probability?: number | null;
+            /** @description Which bond zone was entered: `"high"` (YES near-certain) or `"low"` (NO near-certain) */
+            bond_side: string;
+            /**
+             * Format: double
+             * @description The probability threshold from the subscriber's filter that was breached
+             */
+            threshold: number;
+        };
         /** @description Condition metrics webhook payload (Arc-optimized, no internal metadata) */
         ConditionMetricsPayload: {
             condition_id?: string | null;
@@ -318,13 +530,17 @@ export interface components {
         CreateWebhookRequestBody: {
             /** @description Destination URL for webhook deliveries (must be HTTPS) */
             url: string;
-            /** @description Events to subscribe to */
-            events: components["schemas"]["PolymarketWebhookEvent"][];
+            /** @description Event to subscribe to */
+            event: components["schemas"]["PolymarketWebhookEvent"];
             /** @description Optional secret for HMAC signature verification */
             secret?: string | null;
             filters?: null | components["schemas"]["WebhookFiltersBody"];
             /** @description Optional description/name */
             description?: string | null;
+        };
+        /** @description Delete webhook response */
+        DeleteWebhookResponse: {
+            deleted: boolean;
         };
         /** @description Event metrics webhook payload (Arc-optimized, no internal metadata) */
         EventMetricsPayload: {
@@ -341,7 +557,10 @@ export interface components {
         };
         /** @description Event PnL webhook payload (Arc-optimized) */
         EventPnlPayload: {
+            trader?: string | null;
             event_slug?: string | null;
+            /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
+            timeframe: string;
             /** Format: int64 */
             markets_traded?: number | null;
             /** Format: int64 */
@@ -458,6 +677,8 @@ export interface components {
         /** @description Global PnL webhook payload (Arc-optimized) */
         GlobalPnlPayload: {
             trader?: string | null;
+            /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
+            timeframe: string;
             /** Format: double */
             realized_pnl_usd?: number | null;
             /** Format: int64 */
@@ -507,10 +728,70 @@ export interface components {
             /** Format: int64 */
             last_trade_at?: number | null;
         };
+        /** @description Response for GET /v1/webhook/events */
+        ListEventsResponse: {
+            events: components["schemas"]["WebhookEventInfo"][];
+        };
+        /** @description Outcome entry in the market created payload — mirrors `NewMarketOutcome` */
+        MarketCreatedOutcome: {
+            /**
+             * Format: int32
+             * @description Outcome index (0 = Yes, 1 = No)
+             */
+            index: number;
+            /** @description Outcome name (e.g. "Yes", "No") */
+            name: string;
+            /** @description ERC1155 position token ID */
+            position_id: string;
+        };
+        /** @description Market created webhook payload — mirrors `NewMarketPayload` field-for-field */
+        MarketCreatedPayload: {
+            /** @description Condition ID (0x-prefixed hex, lowercase) */
+            condition_id: string;
+            /** @description Market slug */
+            market_slug: string;
+            /** @description Event slug (parent event) */
+            event_slug?: string | null;
+            /** @description Event ID */
+            event_id?: string | null;
+            /** @description Event title */
+            event_title?: string | null;
+            /** @description Series slug */
+            series_slug?: string | null;
+            /** @description Outcomes with their position IDs, index, and name */
+            outcomes: components["schemas"]["MarketCreatedOutcome"][];
+            /** @description Market question */
+            question: string;
+            /** @description Market title (short display name) */
+            title?: string | null;
+            /** @description Market description */
+            description: string;
+            /** @description Market category (e.g. "Sports", "Politics") */
+            category?: string | null;
+            /** @description Market tags */
+            tags: string[];
+            /** @description Cover image URL */
+            image_url?: string | null;
+            /** @description Whether this is a neg-risk market */
+            neg_risk: boolean;
+            /**
+             * Format: int64
+             * @description Block number where ConditionPreparation was emitted
+             */
+            block: number;
+            /**
+             * Format: int64
+             * @description Block timestamp (Unix seconds)
+             */
+            block_timestamp: number;
+        };
         /** @description Market PnL webhook payload (Arc-optimized) */
         MarketPnlPayload: {
+            trader?: string | null;
             condition_id?: string | null;
             event_slug?: string | null;
+            /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
+            timeframe: string;
             /** Format: int64 */
             outcomes_traded?: number | null;
             /** Format: int64 */
@@ -541,6 +822,78 @@ export interface components {
             last_trade_at?: number | null;
         };
         /**
+         * @description New market entry webhook payload
+         *
+         *     Fired when a trader places their first trade in a specific condition/market.
+         *     The payload contains the full details of the triggering trade.
+         */
+        NewMarketPayload: {
+            /** @description Trader address (placed the limit order) */
+            trader: string;
+            /** @description Taker address (filled the order — often the exchange contract) */
+            taker: string;
+            /** @description Position ID (ERC1155 token ID) */
+            position_id: string;
+            /** @description Condition ID (market condition) */
+            condition_id?: string | null;
+            /** @description Outcome name (e.g. "Yes", "No") */
+            outcome?: string | null;
+            /**
+             * Format: int32
+             * @description Outcome index (0 = Yes, 1 = No)
+             */
+            outcome_index?: number | null;
+            /** @description Market question */
+            question?: string | null;
+            /** @description Market slug */
+            market_slug?: string | null;
+            /** @description Event slug (parent event) */
+            event_slug?: string | null;
+            /** @description Trade ID */
+            trade_id: string;
+            /** @description Transaction hash */
+            hash: string;
+            /**
+             * Format: int64
+             * @description Block number
+             */
+            block: number;
+            /**
+             * Format: int64
+             * @description Confirmed timestamp (Unix seconds)
+             */
+            confirmed_at: number;
+            /**
+             * Format: double
+             * @description USD size of the trade
+             */
+            amount_usd: number;
+            /**
+             * Format: double
+             * @description Outcome shares traded
+             */
+            shares_amount: number;
+            /**
+             * Format: double
+             * @description Fee paid (USD)
+             */
+            fee: number;
+            /** @description Trade side ("Buy" or "Sell") */
+            side: string;
+            /**
+             * Format: double
+             * @description Price per share (0.0–1.0)
+             */
+            price: number;
+            /**
+             * Format: double
+             * @description Implied probability (0.0–1.0); None when outcome is unknown
+             */
+            probability?: number | null;
+            exchange: string;
+            trade_type: string;
+        };
+        /**
          * @description PnL timeframe enum for webhook filtering
          * @enum {string}
          */
@@ -549,12 +902,14 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "first_trade" | "global_pnl" | "market_pnl" | "event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "volume_spike";
+        PolymarketWebhookEvent: "first_trade" | "new_market" | "whale_trade" | "global_pnl" | "market_pnl" | "event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "volume_spike" | "close_to_bond" | "market_created";
         /**
          * @description Polymarket-specific webhook filters
          *
          *     Different webhook handlers use different subsets of these fields:
          *     - first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags
+         *     - new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability
+         *     - whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs
          *     - global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded
          *     - market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs
          *     - event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded
@@ -562,6 +917,7 @@ export interface components {
          *     - event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes
          *     - position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes
          *     - volume_milestone: condition_ids, timeframes, milestone_amounts
+         *     - close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, timeframes
          *
          *     Implements Hash + Eq manually (f64 fields use bit representation)
          */
@@ -651,6 +1007,11 @@ export interface components {
              */
             min_txns?: number | null;
             /**
+             * Format: int64
+             * @description Minimum unique traders - for metrics webhooks
+             */
+            min_unique_traders?: number | null;
+            /**
              * Format: double
              * @description Minimum sell volume (USD) - for position metrics webhooks
              */
@@ -665,7 +1026,7 @@ export interface components {
              * @description Minimum probability change percentage - for position metrics webhooks
              */
             min_probability_change_pct?: number | null;
-            /** @description Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h) */
+            /** @description Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d) */
             timeframes?: string[];
             /** @description Milestone amounts to track - for volume milestone webhooks (e.g., 10000, 100000, 1000000) */
             milestone_amounts?: number[];
@@ -686,7 +1047,7 @@ export interface components {
              *     Filters out event slugs containing these timeframe patterns (auto-wrapped: "5m" → "-5m-")
              *     Example: Excludes "btc-updown-5m-1771678800" when "5m" is in the list
              */
-            exclude_shortterm_market_timeframes?: string[];
+            exclude_shorterm_market_timeframes?: string[];
         };
         /** @description Position metrics webhook payload (Arc-optimized, no internal metadata) */
         PositionMetricsPayload: {
@@ -825,12 +1186,21 @@ export interface components {
              */
             txns: number;
         };
+        /** @description Response for POST /v1/webhook/{id}/rotate-secret */
+        RotateSecretResponse: {
+            /** @description The new HMAC secret (only returned once — store it securely) */
+            secret: string;
+            /**
+             * Format: int64
+             * @description Timestamp of rotation (ms since epoch)
+             */
+            rotated_at: number;
+        };
         /** @description Request body for updating a webhook */
         UpdateWebhookRequestBody: {
             /** @description Destination URL for webhook deliveries (must be HTTPS) */
             url?: string | null;
-            /** @description Events to subscribe to */
-            events?: components["schemas"]["PolymarketWebhookEvent"][] | null;
+            event?: null | components["schemas"]["PolymarketWebhookEvent"];
             /** @description New secret for HMAC signature verification */
             secret?: string | null;
             filters?: null | components["schemas"]["WebhookFiltersBody"];
@@ -863,19 +1233,67 @@ export interface components {
              */
             txns: number;
         };
-        /** @description Webhook filters request body */
-        WebhookFiltersBody: {
-            /** @description Filter by wallet addresses */
-            wallet_addresses?: string[];
-            /** @description Filter by market/condition IDs */
-            condition_ids?: string[];
+        /** @description Volume spike webhook payload */
+        VolumeSpikePayload: {
+            condition_id: string;
+            timeframe: string;
             /**
              * Format: double
-             * @description Filter by minimum USD value
+             * @description Current volume that triggered the spike (USD)
              */
-            min_usd_value?: number | null;
+            current_volume_usd: number;
+            /**
+             * Format: double
+             * @description User's baseline volume for comparison (USD)
+             */
+            baseline_volume_usd: number;
+            /**
+             * Format: double
+             * @description Spike ratio threshold that was triggered
+             */
+            spike_ratio: number;
+            /**
+             * Format: double
+             * @description Calculated threshold that was crossed (baseline * ratio)
+             */
+            threshold_usd: number;
+            /**
+             * Format: int64
+             * @description Total transactions in this timeframe
+             */
+            txns: number;
+            /**
+             * Format: double
+             * @description Total fees in this timeframe
+             */
+            fees: number;
+        };
+        /** @description Single event type entry for the events list */
+        WebhookEventInfo: {
+            /** @description Event type identifier (e.g. "first_trade") */
+            event: string;
+            /** @description Human-readable description */
+            description: string;
+        };
+        /** @description Webhook filters request body */
+        WebhookFiltersBody: {
+            /** @description Filter by wallet addresses (for first_trade / new_market / whale_trade) */
+            wallet_addresses?: string[];
+            /** @description Filter by trader addresses (for PnL webhooks) */
+            traders?: string[];
+            /** @description Filter by market/condition IDs */
+            condition_ids?: string[];
+            /** @description Filter by position IDs (for position metrics / close_to_bond) */
+            position_ids?: string[];
             /** @description Filter by event slugs */
             event_slugs?: string[];
+            /** @description Filter by outcomes (e.g. "Yes", "No") — for position metrics / close_to_bond */
+            outcomes?: string[];
+            /**
+             * Format: double
+             * @description Minimum USD trade size (for whale_trade / first_trade)
+             */
+            min_usd_value?: number | null;
             /**
              * Format: double
              * @description Minimum probability threshold (0.0 - 1.0)
@@ -886,8 +1304,87 @@ export interface components {
              * @description Maximum probability threshold (0.0 - 1.0)
              */
             max_probability?: number | null;
-            /** @description Exclude short-term trading markets by timeframe (e.g., ["5m", "15m"]) */
-            exclude_shortterm_market_timeframes?: string[];
+            /**
+             * Format: double
+             * @description Minimum realized PnL (USD) — for global_pnl / market_pnl / event_pnl
+             */
+            min_realized_pnl_usd?: number | null;
+            /**
+             * Format: double
+             * @description Maximum realized PnL (USD) — for global_pnl / market_pnl / event_pnl
+             */
+            max_realized_pnl_usd?: number | null;
+            /**
+             * Format: double
+             * @description Minimum total volume (USD) — for global_pnl / event_pnl / metrics
+             */
+            min_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Maximum total volume (USD) — for metrics webhooks
+             */
+            max_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Minimum buy volume (USD) — for market_pnl / position metrics
+             */
+            min_buy_usd?: number | null;
+            /**
+             * Format: double
+             * @description Minimum sell volume (USD) — for position metrics
+             */
+            min_sell_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Minimum win rate (0.0 - 100.0) — for global_pnl
+             */
+            min_win_rate?: number | null;
+            /**
+             * Format: int64
+             * @description Minimum markets traded — for global_pnl / event_pnl
+             */
+            min_markets_traded?: number | null;
+            /**
+             * Format: double
+             * @description Minimum fees (USD) — for metrics webhooks
+             */
+            min_fees?: number | null;
+            /**
+             * Format: int64
+             * @description Minimum transaction count — for metrics webhooks
+             */
+            min_txns?: number | null;
+            /**
+             * Format: int64
+             * @description Minimum unique traders — for metrics webhooks
+             */
+            min_unique_traders?: number | null;
+            /**
+             * Format: double
+             * @description Minimum price change percentage — for position metrics
+             */
+            min_price_change_pct?: number | null;
+            /**
+             * Format: double
+             * @description Minimum probability change percentage — for probability_spike
+             */
+            min_probability_change_pct?: number | null;
+            /** @description Timeframes to track (e.g. ["1m", "5m", "1h", "24h", "7d", "30d"]) — for metrics webhooks */
+            timeframes?: string[];
+            /** @description Milestone amounts to trigger on (USD) — for volume_milestone webhooks */
+            milestone_amounts?: number[];
+            /**
+             * Format: double
+             * @description User-defined baseline volume for spike detection (USD) — for volume_spike
+             */
+            baseline_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Spike ratio multiplier (must be > 1.0) — for volume_spike. E.g. 2.0 for 2x baseline
+             */
+            spike_ratio?: number | null;
+            /** @description Exclude short-term trading markets by timeframe pattern (e.g. ["5m", "15m"]) */
+            exclude_shorterm_market_timeframes?: string[];
         };
         /** @description List webhooks response */
         WebhookListResponseBody: {
@@ -902,8 +1399,8 @@ export interface components {
             id: string;
             /** @description Destination URL */
             url: string;
-            /** @description Subscribed events */
-            events: components["schemas"]["PolymarketWebhookEvent"][];
+            /** @description Subscribed event */
+            event: components["schemas"]["PolymarketWebhookEvent"];
             /** @description Active filters (omitted when no filters are set) */
             filters?: components["schemas"]["PolymarketWebhookFilter"];
             /** @description Current status: "active", "paused", or "disabled" */
@@ -944,6 +1441,73 @@ export interface components {
              * @description Delivery duration in milliseconds
              */
             duration_ms: number;
+        };
+        /** @description Whale trade webhook payload */
+        WhaleTradePayload: {
+            /** @description Trader address (the limit-order maker) */
+            trader: string;
+            /** @description Taker address (the order filler — often the exchange contract) */
+            taker: string;
+            /** @description Position ID (ERC1155 token ID) */
+            position_id: string;
+            /** @description Condition ID */
+            condition_id?: string | null;
+            /** @description Outcome name (e.g. "Yes", "No") */
+            outcome?: string | null;
+            /**
+             * Format: int32
+             * @description Outcome index (0 = Yes, 1 = No)
+             */
+            outcome_index?: number | null;
+            /** @description Market question */
+            question?: string | null;
+            /** @description Market slug */
+            market_slug?: string | null;
+            /** @description Event slug */
+            event_slug?: string | null;
+            /** @description Trade ID */
+            trade_id: string;
+            /** @description Transaction hash */
+            hash: string;
+            /**
+             * Format: int64
+             * @description Block number
+             */
+            block: number;
+            /**
+             * Format: int64
+             * @description Confirmed timestamp (Unix seconds)
+             */
+            confirmed_at: number;
+            /**
+             * Format: double
+             * @description USD size of the trade
+             */
+            amount_usd: number;
+            /**
+             * Format: double
+             * @description Outcome shares traded
+             */
+            shares_amount: number;
+            /**
+             * Format: double
+             * @description Fee paid (USD)
+             */
+            fee: number;
+            /** @description Trade side ("Buy" or "Sell") */
+            side: string;
+            /**
+             * Format: double
+             * @description Price per share (0.0–1.0)
+             */
+            price: number;
+            /**
+             * Format: double
+             * @description Implied probability of the event (0.0–1.0); None when outcome is unknown
+             */
+            probability?: number | null;
+            exchange: string;
+            trade_type: string;
         };
     };
     responses: never;
@@ -1035,6 +1599,33 @@ export interface operations {
             };
             /** @description Rate limit exceeded (max 100 webhooks per user) */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_events: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of available event types */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListEventsResponse"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1140,11 +1731,50 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description Webhook deleted successfully */
-            204: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeleteWebhookResponse"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Webhook not found or not owned by user */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    rotate_secret: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Webhook UUID */
+                webhook_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description New secret generated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RotateSecretResponse"];
+                };
             };
             /** @description Missing or invalid API key */
             401: {
@@ -1209,6 +1839,64 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["FirstTradePayload"];
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "new-market": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewMarketPayload"];
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "whale-trade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WhaleTradePayload"];
             };
         };
         responses: {
@@ -1499,6 +2187,93 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["ProbabilitySpikePayload"];
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "volume-spike": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VolumeSpikePayload"];
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "close-to-bond": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CloseToBondPayload"];
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "market-created": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarketCreatedPayload"];
             };
         };
         responses: {

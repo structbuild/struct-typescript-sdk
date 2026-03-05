@@ -344,6 +344,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/market/price-jumps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Detect price jumps
+         * @description Scan candles for significant price movements. Returns jumps with from/to timestamps in milliseconds, directly usable as trades API time range parameters to identify traders who traded before or during the movement.
+         */
+        get: operations["get_price_jumps"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/market/trades": {
         parameters: {
             query?: never;
@@ -743,8 +763,8 @@ export interface components {
             asset_close_price: number;
             /** Format: double */
             price_change_percentage?: number | null;
-            /** @description Generated column: "up" if close > open, else "down" */
-            outcome: string;
+            /** @description Generated column: "up" if close > open, "down" if close ≤ open, null if no close yet */
+            outcome?: string | null;
             /** @description Time window: "5m", "15m", "1h", "1d" */
             variant: string;
             /**
@@ -1611,6 +1631,24 @@ export interface components {
             log_index: number;
             order_hash: string;
             position_id: string;
+        };
+        PriceJump: {
+            /** Format: int64 */
+            from: number;
+            /** Format: int64 */
+            to: number;
+            /** Format: double */
+            price_before: number;
+            /** Format: double */
+            price_after: number;
+            /** Format: double */
+            change_pct: number;
+            direction: string;
+            /** Format: double */
+            volume: number;
+            /** Format: int32 */
+            trades_count: number;
+            condition_id: string;
         };
         SearchResponse: {
             events: unknown;
@@ -2503,6 +2541,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PositionVolumeDataPoint"][];
+                };
+            };
+        };
+    };
+    get_price_jumps: {
+        parameters: {
+            query?: {
+                /** @description Market condition ID (one of condition_id or market_slug required) */
+                condition_id?: string;
+                /** @description Market slug (resolved to condition_id) */
+                market_slug?: string;
+                /** @description Candle resolution in minutes: 1, 5, 15, 30, 60, 240 (default: 15) */
+                resolution?: string;
+                /** @description Minimum relative percent change to qualify as a jump (default: 10.0) */
+                min_change_pct?: number;
+                /** @description Number of candles to scan back from now (default: 1440, max: 2500) */
+                lookback?: number;
+                /** @description Offset in candles from now — window is [now - (lookback + offset) * resolution, now - offset * resolution] (default: 0) */
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Price jumps sorted by timestamp descending */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PriceJump"][];
                 };
             };
         };

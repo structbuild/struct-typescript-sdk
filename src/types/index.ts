@@ -70,6 +70,7 @@ export type PositionChartOutcome = Schemas["PositionChartOutcome"];
 export type AssetPriceHistoryRow = Schemas["AssetPriceHistoryRow"];
 export type AssetSymbol = Schemas["AssetSymbol"];
 export type AssetVariant = Schemas["AssetVariant"];
+export type PriceJump = Schemas["PriceJump"];
 
 export type Series = Schemas["PolymarketSeries"];
 export type SeriesDetail = Schemas["SeriesFullResponse"];
@@ -213,6 +214,8 @@ export interface GetEventChartParams extends OperationQuery<"get_event_chart"> {
 
 export interface GetMarketChartParams extends OperationQuery<"get_chart"> {}
 
+export interface GetPriceJumpsParams extends OperationQuery<"get_price_jumps"> {}
+
 export interface GetGlobalPnlParams extends OperationQuery<"get_global_pnl"> {}
 
 export interface GetTraderPnlParams {
@@ -281,6 +284,9 @@ export type VolumeMilestonePayload = WebhookSchemas["VolumeMilestonePayload"];
 export type EventVolumeMilestonePayload = WebhookSchemas["EventVolumeMilestonePayload"];
 export type PositionVolumeMilestonePayload = WebhookSchemas["PositionVolumeMilestonePayload"];
 export type ProbabilitySpikePayload = WebhookSchemas["ProbabilitySpikePayload"];
+export type RotateSecretResponse = WebhookSchemas["RotateSecretResponse"];
+export type ListEventsResponse = WebhookSchemas["ListEventsResponse"];
+export type WebhookEventInfo = WebhookSchemas["WebhookEventInfo"];
 
 export interface ListWebhooksParams extends WebhookOperationQuery<"list_webhooks"> {}
 
@@ -299,6 +305,10 @@ export interface DeleteWebhookParams {
 }
 
 export interface TestWebhookParams {
+	webhookId: string;
+}
+
+export interface RotateSecretParams {
 	webhookId: string;
 }
 
