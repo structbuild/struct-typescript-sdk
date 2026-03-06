@@ -37,7 +37,7 @@ export interface paths {
         };
         /**
          * List event types
-         * @description Retrieve all available webhook event types with descriptions
+         * @description Retrieve all available webhook event types with descriptions, categories, credits cost, and applicable filter fields
          */
         get: operations["list_events"];
         put?: never;
@@ -1274,6 +1274,15 @@ export interface components {
             event: string;
             /** @description Human-readable description */
             description: string;
+            /** @description Category grouping: "trader", "market", "event", or "position" */
+            category: string;
+            /**
+             * Format: int64
+             * @description Credits consumed per webhook delivery
+             */
+            credits_cost: number;
+            /** @description Filter field names that apply to this event type */
+            applicable_filters: string[];
         };
         /** @description Webhook filters request body */
         WebhookFiltersBody: {

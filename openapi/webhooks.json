@@ -138,7 +138,7 @@
           "Webhooks"
         ],
         "summary": "List event types",
-        "description": "Retrieve all available webhook event types with descriptions",
+        "description": "Retrieve all available webhook event types with descriptions, categories, credits cost, and applicable filter fields",
         "operationId": "list_events",
         "responses": {
           "200": {
@@ -2346,7 +2346,10 @@
         "description": "Single event type entry for the events list",
         "required": [
           "event",
-          "description"
+          "description",
+          "category",
+          "credits_cost",
+          "applicable_filters"
         ],
         "properties": {
           "event": {
@@ -2356,6 +2359,23 @@
           "description": {
             "type": "string",
             "description": "Human-readable description"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category grouping: \"trader\", \"market\", \"event\", or \"position\""
+          },
+          "credits_cost": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Credits consumed per webhook delivery",
+            "minimum": 0
+          },
+          "applicable_filters": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter field names that apply to this event type"
           }
         }
       },
