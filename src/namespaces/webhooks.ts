@@ -11,6 +11,7 @@ import type {
 	CreateWebhookParams,
 	UpdateWebhookParams,
 	DeleteWebhookParams,
+	DeleteWebhookResponse,
 	TestWebhookParams,
 	RotateSecretParams,
 } from "../types/index.js";
@@ -33,8 +34,8 @@ export class WebhooksNamespace extends PlatformNamespace {
 		return this.http.put<WebhookResponse>(`/webhooks/${encodeURIComponent(webhookId)}`, body);
 	}
 
-	async deleteWebhook(params: DeleteWebhookParams): Promise<HttpResponse<void>> {
-		return this.http.delete<void>(`/webhooks/${encodeURIComponent(params.webhookId)}`);
+	async deleteWebhook(params: DeleteWebhookParams): Promise<HttpResponse<DeleteWebhookResponse>> {
+		return this.http.delete<DeleteWebhookResponse>(`/webhooks/${encodeURIComponent(params.webhookId)}`);
 	}
 
 	async test(params: TestWebhookParams): Promise<HttpResponse<WebhookTestResponseBody>> {

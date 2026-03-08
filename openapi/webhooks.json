@@ -1612,16 +1612,16 @@
         "type": "string",
         "description": "Polymarket webhook event types",
         "enum": [
-          "first_trade",
-          "new_market",
-          "whale_trade",
-          "global_pnl",
-          "market_pnl",
-          "event_pnl",
+          "trader_first_trade",
+          "trader_new_market",
+          "trader_whale_trade",
+          "trader_global_pnl",
+          "trader_market_pnl",
+          "trader_event_pnl",
           "condition_metrics",
           "event_metrics",
           "position_metrics",
-          "volume_milestone",
+          "market_volume_milestone",
           "event_volume_milestone",
           "position_volume_milestone",
           "probability_spike",
@@ -2864,11 +2864,11 @@
     }
   ],
   "webhooks": {
-    "first-trade": {
+    "trader-first-trade": {
       "post": {
         "summary": "First trade callback",
         "description": "Fired when a tracked trader executes their first trade on a market",
-        "operationId": "first-trade",
+        "operationId": "trader-first-trade",
         "tags": [
           "Webhook Callbacks"
         ],
@@ -2892,11 +2892,11 @@
         }
       }
     },
-    "new-market": {
+    "trader-new-market": {
       "post": {
         "summary": "New market entry callback",
         "description": "Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)",
-        "operationId": "new-market",
+        "operationId": "trader-new-market",
         "tags": [
           "Webhook Callbacks"
         ],
@@ -2920,11 +2920,11 @@
         }
       }
     },
-    "whale-trade": {
+    "trader-whale-trade": {
       "post": {
         "summary": "Whale trade callback",
-        "description": "Fired when a trade exceeds the configured USD threshold within the configured probability range (e.g. >$10k between 5–95% probability). Requires `min_usd_value` in the subscription filter.",
-        "operationId": "whale-trade",
+        "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.",
+        "operationId": "trader-whale-trade",
         "tags": [
           "Webhook Callbacks"
         ],
@@ -2948,11 +2948,11 @@
         }
       }
     },
-    "global-pnl": {
+    "trader-global-pnl": {
       "post": {
         "summary": "Global PnL callback",
         "description": "Fired when a trader's global PnL crosses a configured threshold",
-        "operationId": "global-pnl",
+        "operationId": "trader-global-pnl",
         "tags": [
           "Webhook Callbacks"
         ],
@@ -2976,11 +2976,11 @@
         }
       }
     },
-    "market-pnl": {
+    "trader-market-pnl": {
       "post": {
         "summary": "Market PnL callback",
         "description": "Fired when a trader's market-level PnL crosses a configured threshold",
-        "operationId": "market-pnl",
+        "operationId": "trader-market-pnl",
         "tags": [
           "Webhook Callbacks"
         ],
@@ -3004,11 +3004,11 @@
         }
       }
     },
-    "event-pnl": {
+    "trader-event-pnl": {
       "post": {
         "summary": "Event PnL callback",
         "description": "Fired when a trader's event-level PnL crosses a configured threshold",
-        "operationId": "event-pnl",
+        "operationId": "trader-event-pnl",
         "tags": [
           "Webhook Callbacks"
         ],

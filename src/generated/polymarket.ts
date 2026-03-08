@@ -104,6 +104,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/events/slug/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get event by slug
+         * @description Retrieve a single event by its slug with optional nested tags, markets, and metrics
+         */
+        get: operations["get_event_by_slug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/events/{identifier}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get event by ID or slug
+         * @description Retrieve a single event by its numeric ID or slug with optional nested tags, markets, and metrics
+         */
+        get: operations["get_event"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/holders/markets": {
         parameters: {
             query?: never;
@@ -364,6 +404,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/market/slug/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get market by slug
+         * @description Retrieve a single market by its slug with optional nested tags, event, and metrics
+         */
+        get: operations["get_market_by_slug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/market/trades": {
         parameters: {
             query?: never;
@@ -396,6 +456,26 @@ export interface paths {
          * @description Retrieve volume breakdown by YES/NO outcome over time for a prediction market
          */
         get: operations["get_market_volume_chart"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/market/{condition_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get market by condition ID
+         * @description Retrieve a single market by its condition ID with optional nested tags, event, and metrics
+         */
+        get: operations["get_market"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1957,6 +2037,8 @@ export interface operations {
                 limit?: number;
                 /** @description Cursor-based pagination key */
                 pagination_key?: string;
+                /** @description Return truncated response optimized for AI consumers (default: false) */
+                ai?: boolean;
             };
             header?: never;
             path?: never;
@@ -2082,6 +2164,84 @@ export interface operations {
             };
         };
     };
+    get_event_by_slug: {
+        parameters: {
+            query?: {
+                /** @description Include tags array (default: true) */
+                include_tags?: boolean;
+                /** @description Include markets array with outcomes (default: true) */
+                include_markets?: boolean;
+                /** @description Include metrics object with all timeframes (default: true) */
+                include_metrics?: boolean;
+                /** @description Return truncated response optimized for AI consumers (default: false) */
+                ai?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description Event slug */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Event with nested tags, markets, and series */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolymarketEvent"];
+                };
+            };
+            /** @description Event not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_event: {
+        parameters: {
+            query?: {
+                /** @description Include tags array (default: true) */
+                include_tags?: boolean;
+                /** @description Include markets array with outcomes (default: true) */
+                include_markets?: boolean;
+                /** @description Include metrics object with all timeframes (default: true) */
+                include_metrics?: boolean;
+                /** @description Return truncated response optimized for AI consumers (default: false) */
+                ai?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description Event ID or slug */
+                identifier: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Event with nested tags, markets, and series */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolymarketEvent"];
+                };
+            };
+            /** @description Event not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_market_holders: {
         parameters: {
             query?: {
@@ -2095,6 +2255,8 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
+                /** @description Return truncated response optimized for AI consumers (default: false) */
+                ai?: boolean;
             };
             header?: never;
             path?: never;
@@ -2165,6 +2327,8 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
+                /** @description Return truncated response optimized for AI consumers (default: false) */
+                ai?: boolean;
             };
             header?: never;
             path: {
@@ -2293,6 +2457,8 @@ export interface operations {
                 limit?: number;
                 /** @description Cursor-based pagination key */
                 pagination_key?: string;
+                /** @description Return truncated response optimized for AI consumers (default: false) */
+                ai?: boolean;
             };
             header?: never;
             path?: never;
@@ -2578,6 +2744,43 @@ export interface operations {
             };
         };
     };
+    get_market_by_slug: {
+        parameters: {
+            query?: {
+                /** @description Include tags array (default: true) */
+                include_tags?: boolean;
+                /** @description Include event object (default: true) */
+                include_event?: boolean;
+                /** @description Include all timeframe metrics (default: true) */
+                include_metrics?: boolean;
+                /** @description Return truncated response optimized for AI consumers (default: false) */
+                ai?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description Market slug (e.g. `will-trump-win`) */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Market with metadata, outcomes, tags, event, and metrics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Market not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_market_trades: {
         parameters: {
             query?: {
@@ -2621,6 +2824,8 @@ export interface operations {
                 pagination_key?: number;
                 /** @description Sort newest first (default: true) */
                 sort_desc?: boolean;
+                /** @description Return truncated response optimized for AI consumers (default: false) */
+                ai?: boolean;
             };
             header?: never;
             path?: never;
@@ -2669,6 +2874,43 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MarketVolumeDataPoint"][];
                 };
+            };
+        };
+    };
+    get_market: {
+        parameters: {
+            query?: {
+                /** @description Include tags array (default: true) */
+                include_tags?: boolean;
+                /** @description Include event object (default: true) */
+                include_event?: boolean;
+                /** @description Include all timeframe metrics (default: true) */
+                include_metrics?: boolean;
+                /** @description Return truncated response optimized for AI consumers (default: false) */
+                ai?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description Market condition ID (0x-prefixed hex) */
+                condition_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Market with metadata, outcomes, tags, event, and metrics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Market not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -3199,6 +3441,8 @@ export interface operations {
                 pagination_key?: number;
                 /** @description Sort newest first (default: true) */
                 sort_desc?: boolean;
+                /** @description Return truncated response optimized for AI consumers (default: false) */
+                ai?: boolean;
             };
             header?: never;
             path: {

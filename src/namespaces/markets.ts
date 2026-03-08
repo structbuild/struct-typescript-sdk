@@ -19,6 +19,8 @@ import type {
 	GetPositionMetricsParams,
 	GetPositionVolumeChartParams,
 	GetMarketVolumeChartParams,
+	GetMarketParams,
+	GetMarketBySlugParams,
 	GetPriceJumpsParams,
 	PriceJump,
 } from "../types/index.js";
@@ -26,6 +28,16 @@ import type {
 export class MarketsNamespace extends Namespace {
 	async getMarkets(params?: GetMarketsParams, venue?: Venue): Promise<HttpResponse<MarketMetadata[]>> {
 		return this.get<MarketMetadata[]>(venue, "/market", { params: { ...params } });
+	}
+
+	async getMarket(params: GetMarketParams, venue?: Venue): Promise<HttpResponse<MarketMetadata>> {
+		const { conditionId, ...query } = params;
+		return this.get<MarketMetadata>(venue, `/market/${encodeURIComponent(conditionId)}`, { params: { ...query } });
+	}
+
+	async getMarketBySlug(params: GetMarketBySlugParams, venue?: Venue): Promise<HttpResponse<MarketMetadata>> {
+		const { slug, ...query } = params;
+		return this.get<MarketMetadata>(venue, `/market/slug/${encodeURIComponent(slug)}`, { params: { ...query } });
 	}
 
 	async getMarketChart(params: GetMarketChartParams, venue?: Venue): Promise<HttpResponse<PositionChartOutcome[]>> {

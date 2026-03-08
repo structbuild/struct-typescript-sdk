@@ -2,23 +2,30 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const NAMESPACES_DIR = join(import.meta.dirname, "../src/namespaces");
+const TYPES_FILE = join(import.meta.dirname, "../src/types/index.ts");
 
 interface SpecConfig {
 	specPath: string;
+	jsonSpecPath: string;
 	venuePrefix: string | null;
 	namespaceFiles: string[];
+	schemaAccessor: string;
 }
 
 const specs: SpecConfig[] = [
 	{
 		specPath: join(import.meta.dirname, "../src/generated/polymarket.ts"),
+		jsonSpecPath: join(import.meta.dirname, "../openapi/polymarket.json"),
 		venuePrefix: "/polymarket",
 		namespaceFiles: ["assets.ts", "holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "search.ts", "tags.ts"],
+		schemaAccessor: "Schemas",
 	},
 	{
 		specPath: join(import.meta.dirname, "../src/generated/webhooks.ts"),
+		jsonSpecPath: join(import.meta.dirname, "../openapi/webhooks.json"),
 		venuePrefix: null,
 		namespaceFiles: ["webhooks.ts"],
+		schemaAccessor: "WebhookSchemas",
 	},
 ];
 
@@ -98,7 +105,24 @@ async function getSdkRoutes(namespaceFiles: string[]): Promise<SdkRoute[]> {
 	return routes;
 }
 
+async function getSpecSchemas(jsonSpecPath: string): Promise<string[]> {
+	const spec = JSON.parse(await readFile(jsonSpecPath, "utf-8"));
+	return Object.keys(spec.components?.schemas ?? {});
+}
+
+async function getExportedSchemas(typesContent: string): Promise<Set<string>> {
+	const exported = new Set<string>();
+	for (const m of typesContent.matchAll(/Schemas\["(\w+)"\]/g)) exported.add(m[1]);
+	for (const m of typesContent.matchAll(/WebhookSchemas\["(\w+)"\]/g)) exported.add(m[1]);
+	for (const m of typesContent.matchAll(/export type (\w+)\s*=/g)) exported.add(m[1]);
+	for (const m of typesContent.matchAll(/export interface (\w+)/g)) exported.add(m[1]);
+	return exported;
+}
+
 let hasErrors = false;
+
+const typesContent = await readFile(TYPES_FILE, "utf-8");
+const exportedSchemas = await getExportedSchemas(typesContent);
 
 for (const config of specs) {
 	const specName = config.venuePrefix ?? "platform";
@@ -135,6 +159,20 @@ for (const config of specs) {
 		console.log(`\x1b[32m✓ [${specName}] All SDK routes match the OpenAPI spec.\x1b[0m`);
 	} else if (phantomRoutes.length === 0) {
 		console.log(`\x1b[32m✓ [${specName}] No phantom routes found.\x1b[0m`);
+	}
+
+	const specSchemas = await getSpecSchemas(config.jsonSpecPath);
+	const missingSchemas = specSchemas.filter((s) => !exportedSchemas.has(s));
+
+	if (missingSchemas.length > 0) {
+		hasErrors = true;
+		console.error(`\x1b[31m✗ [${specName}] Missing schema exports in src/types/index.ts:\x1b[0m\n`);
+		for (const schema of missingSchemas) {
+			console.error(`  ${config.schemaAccessor}["${schema}"]`);
+		}
+		console.error();
+	} else {
+		console.log(`\x1b[32m✓ [${specName}] All schemas exported.\x1b[0m`);
 	}
 }
 

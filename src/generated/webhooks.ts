@@ -118,7 +118,7 @@ export interface paths {
     };
 }
 export interface webhooks {
-    "first-trade": {
+    "trader-first-trade": {
         parameters: {
             query?: never;
             header?: never;
@@ -131,14 +131,14 @@ export interface webhooks {
          * First trade callback
          * @description Fired when a tracked trader executes their first trade on a market
          */
-        post: operations["first-trade"];
+        post: operations["trader-first-trade"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "new-market": {
+    "trader-new-market": {
         parameters: {
             query?: never;
             header?: never;
@@ -151,14 +151,14 @@ export interface webhooks {
          * New market entry callback
          * @description Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)
          */
-        post: operations["new-market"];
+        post: operations["trader-new-market"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "whale-trade": {
+    "trader-whale-trade": {
         parameters: {
             query?: never;
             header?: never;
@@ -169,16 +169,16 @@ export interface webhooks {
         put?: never;
         /**
          * Whale trade callback
-         * @description Fired when a trade exceeds the configured USD threshold within the configured probability range (e.g. >$10k between 5–95% probability). Requires `min_usd_value` in the subscription filter.
+         * @description Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.
          */
-        post: operations["whale-trade"];
+        post: operations["trader-whale-trade"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "global-pnl": {
+    "trader-global-pnl": {
         parameters: {
             query?: never;
             header?: never;
@@ -191,14 +191,14 @@ export interface webhooks {
          * Global PnL callback
          * @description Fired when a trader's global PnL crosses a configured threshold
          */
-        post: operations["global-pnl"];
+        post: operations["trader-global-pnl"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "market-pnl": {
+    "trader-market-pnl": {
         parameters: {
             query?: never;
             header?: never;
@@ -211,14 +211,14 @@ export interface webhooks {
          * Market PnL callback
          * @description Fired when a trader's market-level PnL crosses a configured threshold
          */
-        post: operations["market-pnl"];
+        post: operations["trader-market-pnl"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "event-pnl": {
+    "trader-event-pnl": {
         parameters: {
             query?: never;
             header?: never;
@@ -231,7 +231,7 @@ export interface webhooks {
          * Event PnL callback
          * @description Fired when a trader's event-level PnL crosses a configured threshold
          */
-        post: operations["event-pnl"];
+        post: operations["trader-event-pnl"];
         delete?: never;
         options?: never;
         head?: never;
@@ -902,7 +902,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "first_trade" | "new_market" | "whale_trade" | "global_pnl" | "market_pnl" | "event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "volume_spike" | "close_to_bond" | "market_created";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "volume_spike" | "close_to_bond" | "market_created";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -1838,7 +1838,7 @@ export interface operations {
             };
         };
     };
-    "first-trade": {
+    "trader-first-trade": {
         parameters: {
             query?: never;
             header?: never;
@@ -1867,7 +1867,7 @@ export interface operations {
             };
         };
     };
-    "new-market": {
+    "trader-new-market": {
         parameters: {
             query?: never;
             header?: never;
@@ -1896,7 +1896,7 @@ export interface operations {
             };
         };
     };
-    "whale-trade": {
+    "trader-whale-trade": {
         parameters: {
             query?: never;
             header?: never;
@@ -1925,7 +1925,7 @@ export interface operations {
             };
         };
     };
-    "global-pnl": {
+    "trader-global-pnl": {
         parameters: {
             query?: never;
             header?: never;
@@ -1954,7 +1954,7 @@ export interface operations {
             };
         };
     };
-    "market-pnl": {
+    "trader-market-pnl": {
         parameters: {
             query?: never;
             header?: never;
@@ -1983,7 +1983,7 @@ export interface operations {
             };
         };
     };
-    "event-pnl": {
+    "trader-event-pnl": {
         parameters: {
             query?: never;
             header?: never;
