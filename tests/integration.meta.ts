@@ -107,16 +107,7 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "get_series_list",
 		paginate: true,
 	},
-	"series.getSeriesDetail": {
-		params: { identifier: "$seriesId" },
-		operationId: "get_series_by_id",
-	},
-	"series.getSeriesEvents": {
-		params: { identifier: "$seriesId" },
-		operationId: "get_series_events",
-		paginate: true,
-	},
-	"series.getSeriesOutcomes": {
+"series.getSeriesOutcomes": {
 		params: { series_slug: "$seriesId", limit: 2 },
 		operationId: "get_series_outcomes",
 	},

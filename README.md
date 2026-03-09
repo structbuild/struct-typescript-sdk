@@ -89,8 +89,7 @@ const history = await client.holders.getMarketHoldersHistory({ condition_id: "0x
 
 ```typescript
 const series = await client.series.getSeriesList();
-const detail = await client.series.getSeriesDetail({ identifier: "my-series" });
-const seriesEvents = await client.series.getSeriesEvents({ identifier: "my-series" });
+const outcomes = await client.series.getSeriesOutcomes({ series_slug: "my-series" });
 ```
 
 ### Search, Tags, Bonds

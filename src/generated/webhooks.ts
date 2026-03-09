@@ -309,7 +309,7 @@ export interface webhooks {
         put?: never;
         /**
          * Market volume milestone callback
-         * @description Fired when a market's trading volume reaches a milestone threshold
+         * @description Fired once per org when a market's trading volume crosses a milestone in the specified timeframe. **`timeframes` is required** (e.g. `["1h", "24h"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets. Each milestone fires at most once per minute per org.
          */
         post: operations["market-volume-milestone"];
         delete?: never;
@@ -329,7 +329,7 @@ export interface webhooks {
         put?: never;
         /**
          * Event volume milestone callback
-         * @description Fired when an event's trading volume reaches a milestone threshold
+         * @description Fired once per org when an event's trading volume crosses a milestone in the specified timeframe. **`timeframes` is required** (e.g. `["1h", "24h"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events. Each milestone fires at most once per minute per org.
          */
         post: operations["event-volume-milestone"];
         delete?: never;
@@ -349,7 +349,7 @@ export interface webhooks {
         put?: never;
         /**
          * Position volume milestone callback
-         * @description Fired when a position's trading volume reaches a milestone threshold
+         * @description Fired once per org when a position's trading volume crosses a milestone in the specified timeframe. **`timeframes` is required** (e.g. `["1h", "24h"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets. Each milestone fires at most once per minute per org.
          */
         post: operations["position-volume-milestone"];
         delete?: never;
@@ -369,7 +369,7 @@ export interface webhooks {
         put?: never;
         /**
          * Probability spike callback
-         * @description Fired when a position's probability changes by more than a configured percentage
+         * @description Fired when a position's probability changes by at least `min_probability_change_pct` percent (relative to open) within the specified timeframe. Valid timeframes: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional filters: `position_ids`, `outcomes`, `timeframes`. `probability_change_pct` in the payload is relative (e.g. `83.3` for a move from 30%→55%) and can be negative for downward moves. A hard minimum of 5% relative change is applied before any subscription filter.
          */
         post: operations["probability-spike"];
         delete?: never;
@@ -378,7 +378,7 @@ export interface webhooks {
         patch?: never;
         trace?: never;
     };
-    "volume-spike": {
+    "market-volume-spike": {
         parameters: {
             query?: never;
             header?: never;
@@ -388,10 +388,50 @@ export interface webhooks {
         get?: never;
         put?: never;
         /**
-         * Volume spike callback
-         * @description Fired when a market's volume in a timeframe exceeds the user-defined baseline by the configured ratio (e.g. 2x baseline). Requires `baseline_volume_usd` and `spike_ratio` in the subscription filter.
+         * Market volume spike callback
+         * @description Fired when a market's volume in a timeframe exceeds the user-defined baseline by the configured ratio (e.g. 2x baseline). Requires `baseline_volume_usd` and `spike_ratio` in the subscription filter. Optional `timeframes` restricts to specific windows — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `condition_ids` restricts to specific markets.
          */
-        post: operations["volume-spike"];
+        post: operations["market-volume-spike"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "event-volume-spike": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Event volume spike callback
+         * @description Fired when an event's aggregated volume in a timeframe exceeds the user-defined baseline by the configured ratio. Requires `baseline_volume_usd` and `spike_ratio` in the subscription filter. Optional `timeframes` and `event_slugs` filter by timeframe and event. 1-minute cooldown per org prevents repeated firing.
+         */
+        post: operations["event-volume-spike"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "position-volume-spike": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Position volume spike callback
+         * @description Fired when a position's volume in a timeframe exceeds the user-defined baseline by the configured ratio. Requires `baseline_volume_usd` and `spike_ratio` in the subscription filter. Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` for narrowing scope. 1-minute cooldown per org prevents repeated firing.
+         */
+        post: operations["position-volume-spike"];
         delete?: never;
         options?: never;
         head?: never;
@@ -409,7 +449,7 @@ export interface webhooks {
         put?: never;
         /**
          * Close to bond callback
-         * @description Fired when a position's probability enters the bond zone (e.g. YES ≥ 95% or ≤ 5%). Requires `min_probability` and/or `max_probability` in the subscription filter.
+         * @description Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No; position 0 usually represents Yes/Up in binary markets); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `"Yes"`, `"No"`); `event_slugs` — restrict to specific events. Deduplication: each org is notified at most once per 6 hours while a position remains in the bond zone.
          */
         post: operations["close-to-bond"];
         delete?: never;
@@ -429,9 +469,49 @@ export interface webhooks {
         put?: never;
         /**
          * Market created callback
-         * @description Fired when a new prediction market is detected on-chain (ConditionPreparation event), enriched with Gamma API metadata. Filterable by `tags`, `condition_ids`, and `event_slugs`.
+         * @description Fired when a new prediction market is detected on-chain (ConditionPreparation event), enriched with Gamma API metadata. Filterable by `tags`, `condition_ids`, `event_slugs`, and `exclude_shorterm_market_timeframes`. By default (`filter_no_metadata: true`) markets without Gamma metadata (no title, category, or tags) are suppressed — set `filter_no_metadata: false` to receive bare on-chain markets as well.
          */
         post: operations["market-created"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "asset-price-tick": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Asset price tick callback
+         * @description Fired on every raw Chainlink price tick received from the WebSocket feed for crypto assets (BTC, ETH, SOL, XRP). Use `asset_symbols` to restrict to specific assets (empty = all). Use `min_usd_value` as a minimum price filter.
+         */
+        post: operations["asset-price-tick"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "asset-price-window-update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Asset price window update callback
+         * @description Fired twice per candle: once when the window opens (`update_type: "open"`) and once when it closes with a confirmed close price (`update_type: "close"`). Use `asset_symbols` to restrict to specific assets (BTC, ETH, SOL, XRP). Use `timeframes` to restrict to specific candle sizes — valid values: `"5m"`, `"15m"`, `"1h"`, `"24h"`.
+         */
+        post: operations["asset-price-window-update"];
         delete?: never;
         options?: never;
         head?: never;
@@ -441,6 +521,50 @@ export interface webhooks {
 }
 export interface components {
     schemas: {
+        /** @description Webhook payload for an asset price tick. */
+        AssetPriceTickPayload: {
+            /** @description Asset symbol: "BTC", "ETH", "SOL", or "XRP" */
+            symbol: string;
+            /**
+             * Format: double
+             * @description Current price from the Chainlink feed
+             */
+            price: number;
+            /**
+             * Format: int64
+             * @description Tick timestamp as reported by the WebSocket feed (milliseconds since epoch)
+             */
+            timestamp_ms: number;
+        };
+        /** @description Webhook payload for an asset price window open or close. */
+        AssetPriceWindowUpdatePayload: {
+            /** @description Asset symbol: "BTC", "ETH", "SOL", or "XRP" */
+            symbol: string;
+            /** @description Time-window variant: "5m", "15m", "1h", or "24h" */
+            variant: string;
+            /**
+             * Format: int64
+             * @description Window start timestamp (milliseconds since epoch)
+             */
+            start_time: number;
+            /**
+             * Format: int64
+             * @description Window end timestamp (milliseconds since epoch)
+             */
+            end_time: number;
+            /**
+             * Format: double
+             * @description Opening price at start_time
+             */
+            open_price: number;
+            /**
+             * Format: double
+             * @description Closing price at end_time (0.0 on an "open" update — not yet available)
+             */
+            close_price: number;
+            /** @description "open" when the window starts, "close" when the window is complete */
+            update_type: string;
+        };
         /** @description Close-to-bond webhook payload */
         CloseToBondPayload: {
             /** @description Trader address (the limit-order maker) */
@@ -455,7 +579,7 @@ export interface components {
             outcome?: string | null;
             /**
              * Format: int32
-             * @description Outcome index (0 = Yes, 1 = No)
+             * @description Outcome index (0 = Yes/Up, 1 = No). Position 0 usually represents Yes/Up.
              */
             outcome_index?: number | null;
             /** @description Market question */
@@ -620,6 +744,41 @@ export interface components {
              * @description Total transactions in this timeframe
              */
             txns: number;
+        };
+        /** @description Event volume spike webhook payload */
+        EventVolumeSpikePayload: {
+            event_slug: string;
+            timeframe: string;
+            /**
+             * Format: double
+             * @description Current aggregated event volume that triggered the spike (USD)
+             */
+            current_volume_usd: number;
+            /**
+             * Format: double
+             * @description User's baseline volume for comparison (USD)
+             */
+            baseline_volume_usd: number;
+            /**
+             * Format: double
+             * @description Spike ratio threshold that was triggered
+             */
+            spike_ratio: number;
+            /**
+             * Format: double
+             * @description Calculated threshold that was crossed (baseline * ratio)
+             */
+            threshold_usd: number;
+            /**
+             * Format: int64
+             * @description Total transactions in this timeframe
+             */
+            txns: number;
+            /**
+             * Format: double
+             * @description Total fees in this timeframe
+             */
+            fees: number;
         };
         /** @description First trade webhook payload with zero-copy Arc<str> for string sharing */
         FirstTradePayload: {
@@ -821,6 +980,41 @@ export interface components {
             /** Format: int64 */
             last_trade_at?: number | null;
         };
+        /** @description Volume spike webhook payload */
+        MarketVolumeSpikePayload: {
+            condition_id: string;
+            timeframe: string;
+            /**
+             * Format: double
+             * @description Current volume that triggered the spike (USD)
+             */
+            current_volume_usd: number;
+            /**
+             * Format: double
+             * @description User's baseline volume for comparison (USD)
+             */
+            baseline_volume_usd: number;
+            /**
+             * Format: double
+             * @description Spike ratio threshold that was triggered
+             */
+            spike_ratio: number;
+            /**
+             * Format: double
+             * @description Calculated threshold that was crossed (baseline * ratio)
+             */
+            threshold_usd: number;
+            /**
+             * Format: int64
+             * @description Total transactions in this timeframe
+             */
+            txns: number;
+            /**
+             * Format: double
+             * @description Total fees in this timeframe
+             */
+            fees: number;
+        };
         /**
          * @description New market entry webhook payload
          *
@@ -902,7 +1096,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "volume_spike" | "close_to_bond" | "market_created";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -917,7 +1111,7 @@ export interface components {
          *     - event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes
          *     - position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes
          *     - volume_milestone: condition_ids, timeframes, milestone_amounts
-         *     - close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, timeframes
+         *     - close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs
          *
          *     Implements Hash + Eq manually (f64 fields use bit representation)
          */
@@ -997,6 +1191,11 @@ export interface components {
             /** @description Filter by outcomes (e.g., "Yes", "No") - for position PnL webhooks */
             outcomes?: string[];
             /**
+             * @description Filter by position outcome index — for close_to_bond. Position 0 usually represents Yes/Up, 1 = No.
+             *     When non-empty, only trades whose outcome_index is in this list will match.
+             */
+            position_outcome_indices?: number[];
+            /**
              * Format: double
              * @description Minimum fees - for metrics webhooks
              */
@@ -1048,6 +1247,17 @@ export interface components {
              *     Example: Excludes "btc-updown-5m-1771678800" when "5m" is in the list
              */
             exclude_shorterm_market_timeframes?: string[];
+            /**
+             * @description Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update` webhooks.
+             *     Valid values: "BTC", "ETH", "SOL", "XRP". Empty = all assets.
+             */
+            asset_symbols?: string[];
+            /**
+             * @description When `true` (default), skip markets that have no Gamma metadata (title, category, tags).
+             *     Bare on-chain markets detected before Gamma enrichment arrives will be suppressed.
+             *     Set to `false` to receive all `market_created` events regardless of metadata availability.
+             */
+            filter_no_metadata?: boolean;
         };
         /** @description Position metrics webhook payload (Arc-optimized, no internal metadata) */
         PositionMetricsPayload: {
@@ -1137,6 +1347,45 @@ export interface components {
              * @description Sell transactions
              */
             sells: number;
+        };
+        /** @description Position volume spike webhook payload */
+        PositionVolumeSpikePayload: {
+            position_id: string;
+            condition_id: string;
+            outcome?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            timeframe: string;
+            /**
+             * Format: double
+             * @description Current position volume that triggered the spike (USD)
+             */
+            current_volume_usd: number;
+            /**
+             * Format: double
+             * @description User's baseline volume for comparison (USD)
+             */
+            baseline_volume_usd: number;
+            /**
+             * Format: double
+             * @description Spike ratio threshold that was triggered
+             */
+            spike_ratio: number;
+            /**
+             * Format: double
+             * @description Calculated threshold that was crossed (baseline * ratio)
+             */
+            threshold_usd: number;
+            /**
+             * Format: int64
+             * @description Total transactions in this timeframe
+             */
+            txns: number;
+            /**
+             * Format: double
+             * @description Total fees in this timeframe
+             */
+            fees: number;
         };
         /** @description Position probability spike webhook payload */
         ProbabilitySpikePayload: {
@@ -1233,41 +1482,6 @@ export interface components {
              */
             txns: number;
         };
-        /** @description Volume spike webhook payload */
-        VolumeSpikePayload: {
-            condition_id: string;
-            timeframe: string;
-            /**
-             * Format: double
-             * @description Current volume that triggered the spike (USD)
-             */
-            current_volume_usd: number;
-            /**
-             * Format: double
-             * @description User's baseline volume for comparison (USD)
-             */
-            baseline_volume_usd: number;
-            /**
-             * Format: double
-             * @description Spike ratio threshold that was triggered
-             */
-            spike_ratio: number;
-            /**
-             * Format: double
-             * @description Calculated threshold that was crossed (baseline * ratio)
-             */
-            threshold_usd: number;
-            /**
-             * Format: int64
-             * @description Total transactions in this timeframe
-             */
-            txns: number;
-            /**
-             * Format: double
-             * @description Total fees in this timeframe
-             */
-            fees: number;
-        };
         /** @description Single event type entry for the events list */
         WebhookEventInfo: {
             /** @description Event type identifier (e.g. "first_trade") */
@@ -1298,6 +1512,8 @@ export interface components {
             event_slugs?: string[];
             /** @description Filter by outcomes (e.g. "Yes", "No") — for position metrics / close_to_bond */
             outcomes?: string[];
+            /** @description Filter by position outcome index — for close_to_bond. Position 0 = Yes/Up, 1 = No. */
+            position_outcome_indices?: number[];
             /**
              * Format: double
              * @description Minimum USD trade size (for whale_trade / first_trade)
@@ -1378,7 +1594,11 @@ export interface components {
              * @description Minimum probability change percentage — for probability_spike
              */
             min_probability_change_pct?: number | null;
-            /** @description Timeframes to track (e.g. ["1m", "5m", "1h", "24h", "7d", "30d"]) — for metrics webhooks */
+            /**
+             * @description Timeframes to filter by (e.g. ["1h", "24h", "7d"]) — **required** for volume_milestone
+             *     webhooks (market/event/position), optional for metrics webhooks.
+             *     Valid values: "1m", "5m", "30m", "1h", "6h", "24h", "7d", "30d".
+             */
             timeframes?: string[];
             /** @description Milestone amounts to trigger on (USD) — for volume_milestone webhooks */
             milestone_amounts?: number[];
@@ -1394,6 +1614,11 @@ export interface components {
             spike_ratio?: number | null;
             /** @description Exclude short-term trading markets by timeframe pattern (e.g. ["5m", "15m"]) */
             exclude_shorterm_market_timeframes?: string[];
+            /**
+             * @description Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update`.
+             *     Valid values: "BTC", "ETH", "SOL", "XRP". Empty = all assets (send everything).
+             */
+            asset_symbols?: string[];
         };
         /** @description List webhooks response */
         WebhookListResponseBody: {
@@ -1428,6 +1653,11 @@ export interface components {
             description?: string | null;
             /** @description Whether an HMAC secret is configured */
             has_secret: boolean;
+            /**
+             * Format: int64
+             * @description Credits consumed by this webhook in the last 24 hours
+             */
+            credits_used_24h?: number;
         };
         /**
          * @description Webhook status
@@ -2215,7 +2445,7 @@ export interface operations {
             };
         };
     };
-    "volume-spike": {
+    "market-volume-spike": {
         parameters: {
             query?: never;
             header?: never;
@@ -2224,7 +2454,65 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["VolumeSpikePayload"];
+                "application/json": components["schemas"]["MarketVolumeSpikePayload"];
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "event-volume-spike": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EventVolumeSpikePayload"];
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "position-volume-spike": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PositionVolumeSpikePayload"];
             };
         };
         responses: {
@@ -2283,6 +2571,64 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["MarketCreatedPayload"];
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "asset-price-tick": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetPriceTickPayload"];
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "asset-price-window-update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetPriceWindowUpdatePayload"];
             };
         };
         responses: {

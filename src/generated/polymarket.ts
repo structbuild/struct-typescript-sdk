@@ -512,8 +512,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get series
-         * @description Retrieve a paginated list of event series
+         * List or get series
+         * @description Retrieve series. Use `id` or `series_slug` for single lookup, `series_ids` or `series_slugs` (comma-separated, max 250, mutually exclusive) for multi-lookup, or paginate with `active_only`.
          */
         get: operations["get_series_list"];
         put?: never;
@@ -536,46 +536,6 @@ export interface paths {
          * @description Returns the winning outcome name for each resolved market across all events in a series, keyed by market slug. Useful for checking historical results across recurring series (e.g., btc-updown-5m).
          */
         get: operations["get_series_outcomes"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/polymarket/series/{identifier}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get series by ID
-         * @description Retrieve a single series by its ID or slug
-         */
-        get: operations["get_series_by_id"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/polymarket/series/{identifier}/events": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get events from series
-         * @description Retrieve all events belonging to a specific series
-         */
-        get: operations["get_series_events"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1733,25 +1693,6 @@ export interface components {
         SearchResponse: {
             events: unknown;
             traders: components["schemas"]["Trader"][];
-        };
-        SeriesFullResponse: {
-            id: string;
-            slug?: string | null;
-            ticker?: string | null;
-            title?: string | null;
-            description?: string | null;
-            series_type?: string | null;
-            recurrence?: string | null;
-            image_url?: string | null;
-            active: boolean;
-            closed: boolean;
-            archived: boolean;
-            featured: boolean;
-            restricted: boolean;
-            pyth_token_id?: string | null;
-            cg_asset_name?: string | null;
-            tags: components["schemas"]["PolymarketTag"][];
-            events: components["schemas"]["PolymarketEvent"][];
         };
         SimpleTimeframeMetrics: {
             /**
@@ -2944,9 +2885,15 @@ export interface operations {
     get_series_list: {
         parameters: {
             query?: {
-                /** @description Only active series (default: true) */
+                /** @description Single series ID for direct lookup */
+                id?: string;
+                /** @description Comma-separated series IDs (max 250). Mutually exclusive with series_slugs. */
+                series_ids?: string;
+                /** @description Comma-separated series slugs (max 250). Mutually exclusive with series_ids. */
+                series_slugs?: string;
+                /** @description Only active series (default: true). Ignored when series_ids or series_slugs are provided. */
                 active_only?: boolean;
-                /** @description Results limit (default: 10) */
+                /** @description Results limit (default: 10, max: 250) */
                 limit?: number;
                 /** @description Cursor for pagination: id of the last series from the previous page */
                 pagination_key?: string;
@@ -2957,7 +2904,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of prediction market series */
+            /** @description Series or list of series */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2965,6 +2912,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PolymarketSeries"][];
                 };
+            };
+            /** @description series_ids and series_slugs cannot both be provided */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -2997,79 +2951,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    get_series_by_id: {
-        parameters: {
-            query?: {
-                /** @description Return minimal data without events (default: false) */
-                slim?: boolean;
-                /** @description Events to include (default: 20, max: 100) */
-                event_limit?: number;
-                /** @description Event pagination offset */
-                event_offset?: number;
-            };
-            header?: never;
-            path: {
-                /** @description Series slug or ID */
-                identifier: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Series details with events and tags */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SeriesFullResponse"];
-                };
-            };
-            /** @description Series not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    get_series_events: {
-        parameters: {
-            query?: {
-                /** @description Only active events (default: false) */
-                active_only?: boolean;
-                /** @description Include tags array (default: true) */
-                include_tags?: boolean;
-                /** @description Include markets array with outcomes (default: true) */
-                include_markets?: boolean;
-                /** @description Include metrics object with all timeframes (default: true) */
-                include_metrics?: boolean;
-                /** @description Results limit (default: 10) */
-                limit?: number;
-                /** @description Offset-based pagination key (integer offset into result set) */
-                pagination_key?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Series slug or ID */
-                identifier: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Events belonging to this series with nested tags and markets */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PolymarketEvent"][];
-                };
             };
         };
     };

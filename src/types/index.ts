@@ -55,7 +55,6 @@ export type PositionVolumeDataPoint = Schemas["PositionVolumeDataPoint"];
 export type PredictionCandlestickBar = Schemas["PredictionCandlestickBar"];
 export type PredictionTradeResponse = Schemas["PredictionTradeResponse"];
 export type SearchResponse = Schemas["SearchResponse"];
-export type SeriesFullResponse = Schemas["SeriesFullResponse"];
 export type SimpleTimeframeMetrics = Schemas["SimpleTimeframeMetrics"];
 export type SortDirection = Schemas["SortDirection"];
 export type TokenOutcome = Schemas["TokenOutcome"];
@@ -81,7 +80,6 @@ export type PositionChartDataPoint = Schemas["PositionChartDataPoint"];
 export type TradeType = Schemas["TradeType"];
 
 export type Series = Schemas["PolymarketSeries"];
-export type SeriesDetail = Schemas["SeriesFullResponse"];
 export type Trade = Schemas["PredictionTradeResponse"];
 export type Candlestick = Schemas["PredictionCandlestickBar"];
 export type CandlestickResponse = Schemas["PredictionCandlestickBar"][];
@@ -216,14 +214,6 @@ export interface GetSearchParams extends OperationQuery<"search"> {}
 
 export interface GetSeriesListParams extends OperationQuery<"get_series_list"> {}
 
-export interface GetSeriesDetailParams extends OperationQuery<"get_series_by_id"> {
-	identifier: string;
-}
-
-export interface GetSeriesEventsParams extends OperationQuery<"get_series_events"> {
-	identifier: string;
-}
-
 export interface GetSeriesOutcomesParams extends OperationQuery<"get_series_outcomes"> {}
 
 export interface GetTagsParams extends OperationQuery<"get_tags"> {}
@@ -316,8 +306,12 @@ export type CloseToBondPayload = WebhookSchemas["CloseToBondPayload"];
 export type MarketCreatedOutcome = WebhookSchemas["MarketCreatedOutcome"];
 export type MarketCreatedPayload = WebhookSchemas["MarketCreatedPayload"];
 export type NewMarketPayload = WebhookSchemas["NewMarketPayload"];
-export type VolumeSpikePayload = WebhookSchemas["VolumeSpikePayload"];
 export type WhaleTradePayload = WebhookSchemas["WhaleTradePayload"];
+export type AssetPriceTickPayload = WebhookSchemas["AssetPriceTickPayload"];
+export type AssetPriceWindowUpdatePayload = WebhookSchemas["AssetPriceWindowUpdatePayload"];
+export type EventVolumeSpikePayload = WebhookSchemas["EventVolumeSpikePayload"];
+export type MarketVolumeSpikePayload = WebhookSchemas["MarketVolumeSpikePayload"];
+export type PositionVolumeSpikePayload = WebhookSchemas["PositionVolumeSpikePayload"];
 
 export interface ListWebhooksParams extends WebhookOperationQuery<"list_webhooks"> {}
 
