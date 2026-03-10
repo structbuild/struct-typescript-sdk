@@ -492,8 +492,14 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Search events or traders
-         * @description Search across events and traders by keyword
+         * Search events, markets, and traders
+         * @description Search across events, markets, and traders simultaneously.
+         *
+         *     All three categories are queried in parallel. Each has independent cursor-based pagination via its own `*_pagination_key`.
+         *
+         *     **Trader search** matches by wallet address (exact, `0x...` 42 chars) or by display name / pseudonym (ILIKE).
+         *
+         *     **sort_by / timeframe** apply to events and markets. Some sort fields only apply to one category (e.g. `liquidity` and `holders` are markets-only; `title`, `creation_date`, `start_date`, `end_date` are events-only) — unrecognised fields fall back to `volume`.
          */
         get: operations["search"];
         put?: never;
@@ -1138,16 +1144,22 @@ export interface components {
                 [key: string]: components["schemas"]["OutcomeTimeframeMetrics"];
             };
         };
-        /** @description Market outcome with price/volume data */
+        /** @description Outcome for market API responses */
         MarketOutcome: {
-            /** Format: int32 */
-            index: number;
+            /** @default  */
             name: string;
-            position_id: string;
-            /** Format: double */
-            price?: number | null;
-            /** Format: double */
-            volume?: number | null;
+            /**
+             * Format: double
+             * @default null
+             */
+            price: number | null;
+            /** @default null */
+            position_id: string | null;
+            /**
+             * Format: int32
+             * @default null
+             */
+            outcome_index: number | null;
         };
         /** @enum {string} */
         MarketPnlSortBy: "realized_pnl_usd" | "buy_usd" | "total_buys" | "total_fees" | "outcomes_traded";
@@ -1343,6 +1355,13 @@ export interface components {
              * @default null
              */
             price_change_percent: number | null;
+        };
+        /** @description Pagination metadata to include in API responses */
+        PaginationMeta: {
+            /** @description Whether there are more results available */
+            has_more: boolean;
+            /** @description Pagination key for the next page (if has_more is true) */
+            pagination_key?: string | null;
         };
         /** @description A single PnL candle entry */
         PnlCandleEntry: {
@@ -1692,8 +1711,17 @@ export interface components {
         };
         SearchResponse: {
             events: unknown;
+            events_pagination: components["schemas"]["PaginationMeta"];
+            markets: components["schemas"]["MarketResponse"][];
+            markets_pagination: components["schemas"]["PaginationMeta"];
             traders: components["schemas"]["Trader"][];
+            traders_pagination: components["schemas"]["PaginationMeta"];
         };
+        /**
+         * @description Combined sort options valid for both events and markets in search
+         * @enum {string}
+         */
+        SearchSortBy: "volume" | "txns" | "unique_traders" | "relevance" | "title" | "creation_date" | "start_date" | "end_date" | "liquidity" | "holders" | "end_time" | "start_time" | "created_time";
         SimpleTimeframeMetrics: {
             /**
              * Format: double
@@ -2858,12 +2886,22 @@ export interface operations {
     search: {
         parameters: {
             query: {
-                /** @description Search query (min 2 characters) */
+                /** @description Search query (min 2 characters). Prefix with 0x for exact wallet address lookup. */
                 q: string;
-                /** @description Results limit (default: 20) */
+                /** @description Sort field applied to both events and markets (default: volume). Fields marked events-only or markets-only fall back to volume on the other category. */
+                sort_by?: components["schemas"]["SearchSortBy"];
+                /** @description Sort direction (default: desc) */
+                sort_dir?: components["schemas"]["SortDirection"];
+                /** @description Metrics timeframe used for volume/txns/unique_traders sort (default: 24h) */
+                timeframe?: components["schemas"]["MetricsTimeframe"];
+                /** @description Results limit per category (default: 10, max: 250) */
                 limit?: number;
-                /** @description Offset-based pagination key (integer offset into result set) */
-                pagination_key?: string;
+                /** @description Cursor for the next page of events, obtained from previous response's events_pagination.pagination_key */
+                events_pagination_key?: string;
+                /** @description Cursor for the next page of markets, obtained from previous response's markets_pagination.pagination_key */
+                markets_pagination_key?: string;
+                /** @description Cursor for the next page of traders, obtained from previous response's traders_pagination.pagination_key */
+                traders_pagination_key?: string;
             };
             header?: never;
             path?: never;
@@ -2871,7 +2909,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Search results with events and traders */
+            /** @description Search results with events, markets, and traders */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2879,6 +2917,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["SearchResponse"];
                 };
+            };
+            /** @description Bad request — q is missing or shorter than 2 characters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

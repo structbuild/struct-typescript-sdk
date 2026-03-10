@@ -3105,7 +3105,7 @@
     "trader-first-trade": {
       "post": {
         "summary": "First trade callback",
-        "description": "Fired when a tracked trader executes their first trade on a market",
+        "description": "Fired when a tracked trader executes their first trade on Polymarket",
         "operationId": "trader-first-trade",
         "tags": [
           "Webhook Callbacks"

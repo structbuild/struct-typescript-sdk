@@ -129,7 +129,7 @@ export interface webhooks {
         put?: never;
         /**
          * First trade callback
-         * @description Fired when a tracked trader executes their first trade on a market
+         * @description Fired when a tracked trader executes their first trade on Polymarket
          */
         post: operations["trader-first-trade"];
         delete?: never;
