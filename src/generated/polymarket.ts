@@ -153,7 +153,7 @@ export interface paths {
         };
         /**
          * Get market holders
-         * @description Retrieve holders of a market grouped by outcome, sorted by shares held. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Each holder includes a nested `pnl` object with position-level PnL sourced from the position PnL table.
+         * @description Retrieve holders of a market grouped by outcome, sorted by shares held. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Each holder includes a nested `pnl` object with position-level PnL.
          */
         get: operations["get_market_holders"];
         put?: never;
@@ -193,7 +193,7 @@ export interface paths {
         };
         /**
          * Get position holders
-         * @description Retrieve holders of a specific position (ERC1155 token), sorted by shares held. Each holder includes a nested `pnl` object with position-level PnL (realized_pnl_usd, buy_usd, sell_usd, avg_entry_price, avg_exit_price, total_buys, total_sells, total_fees, first/last_trade_at) sourced from the position PnL table — no extra joins required at query time. Uses cursor-based pagination for efficient traversal.
+         * @description Retrieve holders of a specific position (ERC1155 token), sorted by shares held. Each holder includes a nested `pnl` object with position-level PnL (realized_pnl_usd, buy_usd, sell_usd, avg_entry_price, avg_exit_price, total_buys, total_sells, total_fees, first/last_trade_at). Uses cursor-based pagination for efficient traversal.
          */
         get: operations["get_position_holders"];
         put?: never;
@@ -497,7 +497,7 @@ export interface paths {
          *
          *     All three categories are queried in parallel. Each has independent cursor-based pagination via its own `*_pagination_key`.
          *
-         *     **Trader search** matches by wallet address (exact, `0x...` 42 chars) or by display name / pseudonym (ILIKE).
+         *     **Trader search** matches by wallet address (exact, `0x...` 42 chars) or by display name / pseudonym (case-insensitive partial match).
          *
          *     **sort_by / timeframe** apply to events and markets. Some sort fields only apply to one category (e.g. `liquidity` and `holders` are markets-only; `title`, `creation_date`, `start_date`, `end_date` are events-only) — unrecognised fields fall back to `volume`.
          */
@@ -2267,7 +2267,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Market holder count history with automatic view selection (1m/5m/15m/1h/6h buckets) */
+            /** @description Market holder count history with automatic granularity (1m/5m/15m/1h/6h buckets) */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2341,7 +2341,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Position holder count history with automatic view selection (1m/5m/15m/1h/6h buckets) */
+            /** @description Position holder count history with automatic granularity (1m/5m/15m/1h/6h buckets) */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2372,7 +2372,7 @@ export interface operations {
                 market_slugs?: string;
                 /** @description Filter by event slug(s) - comma-separated (max 50) */
                 event_slugs?: string;
-                /** @description Filter by position ID(s) - comma-separated (max 50), resolved via market_outcomes table */
+                /** @description Filter by position ID(s) - comma-separated (max 50) */
                 position_ids?: string;
                 /** @description Search in title (3-100 characters) */
                 search?: string;

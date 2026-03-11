@@ -314,6 +314,26 @@ export type AssetPriceWindowUpdatePayload = WebhookSchemas["AssetPriceWindowUpda
 export type EventVolumeSpikePayload = WebhookSchemas["EventVolumeSpikePayload"];
 export type MarketVolumeSpikePayload = WebhookSchemas["MarketVolumeSpikePayload"];
 export type PositionVolumeSpikePayload = WebhookSchemas["PositionVolumeSpikePayload"];
+export type TraderFirstTradeFilters = WebhookSchemas["TraderFirstTradeFilters"];
+export type TraderNewMarketFilters = WebhookSchemas["TraderNewMarketFilters"];
+export type TraderWhaleTradeFilters = WebhookSchemas["TraderWhaleTradeFilters"];
+export type TraderGlobalPnlFilters = WebhookSchemas["TraderGlobalPnlFilters"];
+export type TraderMarketPnlFilters = WebhookSchemas["TraderMarketPnlFilters"];
+export type TraderEventPnlFilters = WebhookSchemas["TraderEventPnlFilters"];
+export type MarketMetricsFilters = WebhookSchemas["MarketMetricsFilters"];
+export type EventMetricsFilters = WebhookSchemas["EventMetricsFilters"];
+export type PositionMetricsFilters = WebhookSchemas["PositionMetricsFilters"];
+export type MarketVolumeMilestoneFilters = WebhookSchemas["MarketVolumeMilestoneFilters"];
+export type EventVolumeMilestoneFilters = WebhookSchemas["EventVolumeMilestoneFilters"];
+export type PositionVolumeMilestoneFilters = WebhookSchemas["PositionVolumeMilestoneFilters"];
+export type ProbabilitySpikeFilters = WebhookSchemas["ProbabilitySpikeFilters"];
+export type MarketVolumeSpikeFilters = WebhookSchemas["MarketVolumeSpikeFilters"];
+export type EventVolumeSpikeFilters = WebhookSchemas["EventVolumeSpikeFilters"];
+export type PositionVolumeSpikeFilters = WebhookSchemas["PositionVolumeSpikeFilters"];
+export type CloseToBondFilters = WebhookSchemas["CloseToBondFilters"];
+export type MarketCreatedFilters = WebhookSchemas["MarketCreatedFilters"];
+export type AssetPriceTickFilters = WebhookSchemas["AssetPriceTickFilters"];
+export type AssetPriceWindowUpdateFilters = WebhookSchemas["AssetPriceWindowUpdateFilters"];
 
 export interface ListWebhooksParams extends WebhookOperationQuery<"list_webhooks"> {}
 
