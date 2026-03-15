@@ -16,6 +16,9 @@ export type {
 import type { Schemas, OperationQuery } from "./helpers.js";
 import type { WebhookSchemas, WebhookOperationQuery, WebhookOperationRequestBody } from "./webhook-helpers.js";
 
+type TimeframeKey = Schemas["MetricsTimeframe"];
+type TimeframeRecord<V> = Partial<Record<TimeframeKey, V>>;
+
 export type BondMarket = Schemas["BondMarket"];
 export type BondOutcome = Schemas["BondOutcome"];
 export type CandlestickResolution = Schemas["CandlestickResolution"];
@@ -32,8 +35,12 @@ export type Holder = Schemas["Holder"];
 export type HolderHistoryCandle = Schemas["HolderHistoryCandle"];
 export type MarketHolderPnl = Schemas["MarketHolderPnl"];
 export type MarketHoldersResponse = Schemas["MarketHoldersResponse"];
-export type MarketMetadata = Schemas["MarketMetadata"];
-export type MarketMetadataOutcome = Schemas["MarketMetadataOutcome"];
+export type MarketMetadata = Omit<Schemas["MarketMetadata"], "metrics"> & {
+	metrics: TimeframeRecord<number>;
+};
+export type MarketMetadataOutcome = Omit<Schemas["MarketMetadataOutcome"], "metrics"> & {
+	metrics?: TimeframeRecord<OutcomeTimeframeMetrics>;
+};
 export type MarketOutcome = Schemas["MarketOutcome"];
 export type MarketPnlSortBy = Schemas["MarketPnlSortBy"];
 export type MarketVolumeChartResponse = Schemas["MarketVolumeChartResponse"];
@@ -44,7 +51,9 @@ export type OutcomeTimeframeMetrics = Schemas["OutcomeTimeframeMetrics"];
 export type PaginationMeta = Schemas["PaginationMeta"];
 export type PnlCandleResolution = Schemas["PnlCandleResolution"];
 export type PnlTimeframe = Schemas["PnlTimeframe"];
-export type Event = Schemas["PolymarketEvent"];
+export type Event = Omit<Schemas["PolymarketEvent"], "metrics"> & {
+	metrics: TimeframeRecord<SimpleTimeframeMetrics>;
+};
 export type PolymarketSeries = Schemas["PolymarketSeries"];
 export type Tag = Schemas["PolymarketTag"];
 export type UserProfile = Schemas["PolymarketUserProfile"];
@@ -74,7 +83,9 @@ export type AssetSymbol = Schemas["AssetSymbol"];
 export type AssetVariant = Schemas["AssetVariant"];
 export type PriceJump = Schemas["PriceJump"];
 export type EventMarketChartDataPoint = Schemas["EventMarketChartDataPoint"];
-export type MarketResponse = Schemas["MarketResponse"];
+export type MarketResponse = Omit<Schemas["MarketResponse"], "metrics"> & {
+	metrics?: TimeframeRecord<SimpleTimeframeMetrics>;
+};
 export type MarketReward = Schemas["MarketReward"];
 export type MarketSortBy = Schemas["MarketSortBy"];
 export type MarketStatus = Schemas["MarketStatus"];
