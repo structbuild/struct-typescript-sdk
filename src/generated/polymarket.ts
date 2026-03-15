@@ -1228,7 +1228,7 @@ export interface components {
             daily_rate: number | null;
         };
         /** @enum {string} */
-        MarketSortBy: "volume" | "txns" | "unique_traders" | "liquidity" | "holders" | "end_time" | "start_time" | "created_time" | "created_at" | "relevance";
+        MarketSortBy: "volume" | "txns" | "unique_traders" | "liquidity" | "holders" | "end_time" | "start_time" | "created_time" | "relevance";
         /** @enum {string} */
         MarketStatus: "open" | "closed" | "all";
         MarketVolumeChartResponse: {
@@ -1746,6 +1746,11 @@ export interface components {
         };
         /** @enum {string} */
         SortDirection: "asc" | "desc";
+        /**
+         * @description Direction filter for spike webhooks.
+         * @enum {string}
+         */
+        SpikeDirection: "up" | "down" | "both";
         /** @description Token outcome (position) */
         TokenOutcome: {
             token_id: string;
@@ -1910,6 +1915,16 @@ export interface components {
             /** Format: int32 */
             stc: number;
         };
+        /**
+         * @description Crypto asset symbols accepted by `asset_price_tick` and `asset_price_window_update` filters.
+         * @enum {string}
+         */
+        WebhookAssetSymbol: "BTC" | "ETH" | "SOL" | "XRP";
+        /**
+         * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
+         * @enum {string}
+         */
+        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "6h" | "1d" | "24h" | "7d" | "30d";
     };
     responses: never;
     parameters: never;
@@ -2378,7 +2393,7 @@ export interface operations {
                 search?: string;
                 /** @description Filter by status: open, closed, or all (default: all) */
                 status?: components["schemas"]["MarketStatus"];
-                /** @description Sort: volume, txns, unique_traders, liquidity, holders, end_time, start_time, created_time, created_at, relevance */
+                /** @description Sort: volume, txns, unique_traders, liquidity, holders, end_time, start_time, created_time, relevance */
                 sort_by?: components["schemas"]["MarketSortBy"];
                 /** @description Sort direction: asc, desc (default: desc) */
                 sort_dir?: components["schemas"]["SortDirection"];

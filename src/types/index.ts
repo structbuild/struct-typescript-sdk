@@ -59,6 +59,7 @@ export type SearchResponse = Schemas["SearchResponse"];
 export type SearchSortBy = Schemas["SearchSortBy"];
 export type SimpleTimeframeMetrics = Schemas["SimpleTimeframeMetrics"];
 export type SortDirection = Schemas["SortDirection"];
+export type SpikeDirection = Schemas["SpikeDirection"];
 export type TokenOutcome = Schemas["TokenOutcome"];
 export type Trader = Schemas["Trader"];
 export type TraderInfo = Schemas["TraderInfo"];
@@ -80,6 +81,8 @@ export type MarketStatus = Schemas["MarketStatus"];
 export type OutcomeIndex = Schemas["OutcomeIndex"];
 export type PositionChartDataPoint = Schemas["PositionChartDataPoint"];
 export type TradeType = Schemas["TradeType"];
+export type WebhookAssetSymbol = Schemas["WebhookAssetSymbol"];
+export type WebhookTimeframe = Schemas["WebhookTimeframe"];
 
 export type Series = Schemas["PolymarketSeries"];
 export type Trade = Schemas["PredictionTradeResponse"];
@@ -334,6 +337,12 @@ export type CloseToBondFilters = WebhookSchemas["CloseToBondFilters"];
 export type MarketCreatedFilters = WebhookSchemas["MarketCreatedFilters"];
 export type AssetPriceTickFilters = WebhookSchemas["AssetPriceTickFilters"];
 export type AssetPriceWindowUpdateFilters = WebhookSchemas["AssetPriceWindowUpdateFilters"];
+export type PriceSpikePayload = WebhookSchemas["PriceSpikePayload"];
+export type PriceSpikeFilters = WebhookSchemas["PriceSpikeFilters"];
+
+export type WebhookSpikeDirection = WebhookSchemas["SpikeDirection"];
+export type WebhookWebhookAssetSymbol = WebhookSchemas["WebhookAssetSymbol"];
+export type WebhookWebhookTimeframe = WebhookSchemas["WebhookTimeframe"];
 
 export interface ListWebhooksParams extends WebhookOperationQuery<"list_webhooks"> {}
 

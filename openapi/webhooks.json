@@ -966,14 +966,14 @@
       },
       "EventVolumeSpikePayload": {
         "type": "object",
-        "description": "Payload delivered when an event's aggregated volume in a timeframe exceeds the configured baseline by the spike ratio",
+        "description": "Payload delivered when an event's aggregated volume has spiked since the last snapshot",
         "required": [
           "event_slug",
           "timeframe",
           "current_volume_usd",
-          "baseline_volume_usd",
-          "spike_ratio",
-          "threshold_usd",
+          "snapshot_volume_usd",
+          "delta_volume_usd",
+          "spike_pct",
           "txns",
           "fees"
         ],
@@ -988,19 +988,19 @@
           },
           "current_volume_usd": {
             "type": "number",
-            "description": "Current aggregated event volume at time of trigger (USD)"
+            "description": "Current aggregated event volume at time of the spike (USD)"
           },
-          "baseline_volume_usd": {
+          "snapshot_volume_usd": {
             "type": "number",
-            "description": "User-configured baseline volume (USD)"
+            "description": "Volume at the snapshot baseline (USD)"
           },
-          "spike_ratio": {
+          "delta_volume_usd": {
             "type": "number",
-            "description": "Spike ratio threshold triggered (e.g. 2.0 for 2x)"
+            "description": "New volume since the snapshot that triggered this notification (USD)"
           },
-          "threshold_usd": {
+          "spike_pct": {
             "type": "number",
-            "description": "Calculated threshold = baseline × ratio (USD)"
+            "description": "Volume growth as a percentage of the snapshot (e.g. 200.0 means volume tripled)"
           },
           "txns": {
             "type": "integer",
@@ -1630,14 +1630,14 @@
       },
       "MarketVolumeSpikePayload": {
         "type": "object",
-        "description": "Payload delivered when a market's volume in a timeframe exceeds the configured baseline by the spike ratio",
+        "description": "Payload delivered when a market's volume has spiked since the last snapshot",
         "required": [
           "condition_id",
           "timeframe",
           "current_volume_usd",
-          "baseline_volume_usd",
-          "spike_ratio",
-          "threshold_usd",
+          "snapshot_volume_usd",
+          "delta_volume_usd",
+          "spike_pct",
           "txns",
           "fees"
         ],
@@ -1652,19 +1652,19 @@
           },
           "current_volume_usd": {
             "type": "number",
-            "description": "Current volume that triggered the spike (USD)"
+            "description": "Current volume at the time of the spike (USD)"
           },
-          "baseline_volume_usd": {
+          "snapshot_volume_usd": {
             "type": "number",
-            "description": "User-configured baseline volume for comparison (USD)"
+            "description": "Volume at the snapshot baseline (USD)"
           },
-          "spike_ratio": {
+          "delta_volume_usd": {
             "type": "number",
-            "description": "Spike ratio threshold that was triggered (e.g. 2.0 for 2x)"
+            "description": "New volume since the snapshot that triggered this notification (USD)"
           },
-          "threshold_usd": {
+          "spike_pct": {
             "type": "number",
-            "description": "Calculated threshold = baseline × ratio (USD)"
+            "description": "Volume growth as a percentage of the snapshot (e.g. 200.0 means volume tripled)"
           },
           "txns": {
             "type": "integer",
@@ -1847,12 +1847,13 @@
           "close_to_bond",
           "market_created",
           "asset_price_tick",
-          "asset_price_window_update"
+          "asset_price_window_update",
+          "price_spike"
         ]
       },
       "PolymarketWebhookFilter": {
         "type": "object",
-        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
+        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets\n- market_created: event_slugs, tags, exclude_shortterm_markets\n- probability_spike: condition_ids, event_slugs, outcomes, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets\n- trader_event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded, exclude_shortterm_markets\n- trader_market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, exclude_shortterm_markets\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
         "properties": {
           "wallet_addresses": {
             "type": "array",
@@ -2059,9 +2060,9 @@
           "timeframes": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/WebhookTimeframe"
             },
-            "description": "Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d). Max 500 entries."
+            "description": "Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d)."
           },
           "milestone_amounts": {
             "type": "array",
@@ -2071,14 +2072,6 @@
             },
             "description": "Milestone amounts to track - for volume milestone webhooks (e.g., 10000, 100000, 1000000). Max 500 entries."
           },
-          "baseline_volume_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "User's baseline volume for spike detection (USD) - for volume spike webhooks\nExample: 50000.0 for $50k baseline"
-          },
           "spike_ratio": {
             "type": [
               "number",
@@ -2087,19 +2080,36 @@
             "format": "double",
             "description": "Spike ratio multiplier (must be > 1.0) - for volume spike webhooks\nExample: 2.0 for 2x, 5.0 for 5x, 10.0 for 10x"
           },
-          "exclude_shorterm_market_timeframes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Exclude short-term trading markets by timeframe (e.g., [\"5m\", \"15m\", \"30m\", \"1h\"])\nFilters out event slugs containing these timeframe patterns (auto-wrapped: \"5m\" → \"-5m-\")\nExample: Excludes \"btc-updown-5m-1771678800\" when \"5m\" is in the list. Max 500 entries."
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, exclude all short-term \"updown\" markets (event slugs containing \"updown\").\nThese are short-duration crypto price markets (e.g., \"btc-updown-5m-…\", \"eth-updown-1h-…\").\nSupported by: close_to_bond, market_created, price_spike, probability_spike,\ntrader_first_trade, trader_new_market, trader_whale_trade, trader_event_pnl, trader_market_pnl,\nevent_metrics, event_volume_milestone, event_volume_spike."
           },
           "asset_symbols": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/WebhookAssetSymbol"
             },
-            "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update` webhooks.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\". Empty = all assets. Max 500 entries."
+            "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update` webhooks.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\". Empty = all assets."
+          },
+          "spike_direction": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SpikeDirection",
+                "description": "Direction filter for `probability_spike` and `price_spike` — only fire for spikes in a specific direction.\nOmit or set to `null` to receive spikes in both directions."
+              }
+            ]
+          },
+          "window_secs": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Observation window in seconds for `probability_spike` and `price_spike`.\n\nWhen set, the first trade seen for a position opens a window of this duration.\nThe opening price becomes the baseline, and every subsequent trade within the\nwindow is compared to it. When the window expires the next trade starts a new\nwindow. If omitted, the baseline accumulates indefinitely until a spike fires.\n\nExample: `60` to detect spikes that happen within 60 seconds.",
+            "minimum": 0
           }
         }
       },
@@ -2340,15 +2350,15 @@
       },
       "PositionVolumeSpikePayload": {
         "type": "object",
-        "description": "Payload delivered when a position's volume in a timeframe exceeds the configured baseline by the spike ratio",
+        "description": "Payload delivered when a position's volume has spiked since the last snapshot",
         "required": [
           "position_id",
           "condition_id",
           "timeframe",
           "current_volume_usd",
-          "baseline_volume_usd",
-          "spike_ratio",
-          "threshold_usd",
+          "snapshot_volume_usd",
+          "delta_volume_usd",
+          "spike_pct",
           "txns",
           "fees"
         ],
@@ -2381,19 +2391,19 @@
           },
           "current_volume_usd": {
             "type": "number",
-            "description": "Current position volume at time of trigger (USD)"
+            "description": "Current position volume at the time of the spike (USD)"
           },
-          "baseline_volume_usd": {
+          "snapshot_volume_usd": {
             "type": "number",
-            "description": "User-configured baseline volume (USD)"
+            "description": "Volume at the snapshot baseline (USD)"
           },
-          "spike_ratio": {
+          "delta_volume_usd": {
             "type": "number",
-            "description": "Spike ratio threshold triggered (e.g. 2.0 for 2x)"
+            "description": "New volume since the snapshot that triggered this notification (USD)"
           },
-          "threshold_usd": {
+          "spike_pct": {
             "type": "number",
-            "description": "Calculated threshold = baseline × ratio (USD)"
+            "description": "Volume growth as a percentage of the snapshot (e.g. 200.0 means volume tripled)"
           },
           "txns": {
             "type": "integer",
@@ -2406,23 +2416,29 @@
       },
       "ProbabilitySpikePayload": {
         "type": "object",
-        "description": "Payload delivered when a position's probability changes by at least the configured percentage within a timeframe",
         "required": [
           "position_id",
-          "timeframe",
-          "probability_open",
-          "probability_close",
-          "probability_change",
-          "probability_change_pct",
-          "price_open",
-          "price_close",
-          "volume_usd",
-          "txns"
+          "spike_direction",
+          "spike_pct"
         ],
         "properties": {
           "position_id": {
             "type": "string",
-            "description": "ERC-1155 outcome token ID"
+            "description": "Outcome token ID"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market condition ID"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
           },
           "outcome": {
             "type": [
@@ -2439,50 +2455,17 @@
             "format": "int16",
             "description": "Outcome index"
           },
-          "timeframe": {
+          "spike_direction": {
             "type": "string",
-            "description": "Aggregation window (e.g. \"5m\", \"1h\")"
+            "enum": [
+              "up",
+              "down"
+            ],
+            "description": "`\"up\"` = probability rising, `\"down\"` = probability falling"
           },
-          "probability_open": {
+          "spike_pct": {
             "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Probability at the start of the timeframe (0.0–1.0)"
-          },
-          "probability_close": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Probability at the end of the timeframe (0.0–1.0)"
-          },
-          "probability_change": {
-            "type": "number",
-            "description": "Absolute probability change (e.g. 0.25 for a 25 percentage-point move)"
-          },
-          "probability_change_pct": {
-            "type": "number",
-            "description": "Relative percentage change vs open (e.g. 83.3 for a 30%→55% move). Negative for downward moves."
-          },
-          "price_open": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Outcome token price at timeframe open"
-          },
-          "price_close": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Outcome token price at timeframe close"
-          },
-          "volume_usd": {
-            "type": "number",
-            "description": "Total USD volume during the timeframe"
-          },
-          "txns": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Number of transactions during the timeframe"
+            "description": "Percentage move that triggered this notification. Positive = up, negative = down."
           }
         }
       },
@@ -2504,6 +2487,15 @@
             "description": "Timestamp of rotation (ms since epoch)"
           }
         }
+      },
+      "SpikeDirection": {
+        "type": "string",
+        "description": "Direction filter for spike webhooks.",
+        "enum": [
+          "up",
+          "down",
+          "both"
+        ]
       },
       "UpdateWebhookRequestBody": {
         "type": "object",
@@ -2603,6 +2595,16 @@
             "description": "Total transactions in this timeframe"
           }
         }
+      },
+      "WebhookAssetSymbol": {
+        "type": "string",
+        "description": "Crypto asset symbols accepted by `asset_price_tick` and `asset_price_window_update` filters.",
+        "enum": [
+          "BTC",
+          "ETH",
+          "SOL",
+          "XRP"
+        ]
       },
       "WebhookEventInfo": {
         "type": "object",
@@ -2828,9 +2830,9 @@
           "timeframes": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/WebhookTimeframe"
             },
-            "description": "Timeframes to filter by (e.g. [\"1h\", \"24h\", \"7d\"]) — **required** for volume_milestone\nwebhooks (market/event/position), optional for metrics webhooks.\nValid values: \"1m\", \"5m\", \"30m\", \"1h\", \"6h\", \"24h\", \"7d\", \"30d\". Max 500 entries."
+            "description": "Timeframes to filter by (e.g. [\"1h\", \"24h\", \"7d\"]) — **required** for volume_milestone\nwebhooks (market/event/position), optional for metrics webhooks.\nValid values: \"1m\", \"5m\", \"30m\", \"1h\", \"6h\", \"24h\", \"7d\", \"30d\"."
           },
           "milestone_amounts": {
             "type": "array",
@@ -2840,14 +2842,6 @@
             },
             "description": "Milestone amounts to trigger on (USD) — for volume_milestone webhooks. Max 500 entries."
           },
-          "baseline_volume_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "User-defined baseline volume for spike detection (USD) — for volume_spike"
-          },
           "spike_ratio": {
             "type": [
               "number",
@@ -2856,19 +2850,12 @@
             "format": "double",
             "description": "Spike ratio multiplier (must be > 1.0) — for volume_spike. E.g. 2.0 for 2x baseline"
           },
-          "exclude_shorterm_market_timeframes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Exclude short-term trading markets by timeframe pattern (e.g. [\"5m\", \"15m\"]). Max 500 entries."
-          },
           "asset_symbols": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/WebhookAssetSymbol"
             },
-            "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update`.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\". Empty = all assets (send everything). Max 500 entries."
+            "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update`.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\". Empty = all assets (send everything)."
           }
         }
       },
@@ -2998,6 +2985,22 @@
             "minimum": 0
           }
         }
+      },
+      "WebhookTimeframe": {
+        "type": "string",
+        "description": "Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.",
+        "enum": [
+          "1m",
+          "5m",
+          "15m",
+          "30m",
+          "1h",
+          "6h",
+          "1d",
+          "24h",
+          "7d",
+          "30d"
+        ]
       },
       "WhaleTradePayload": {
         "type": "object",
@@ -3136,6 +3139,61 @@
           }
         }
       },
+      "PriceSpikePayload": {
+        "type": "object",
+        "required": [
+          "position_id",
+          "spike_direction",
+          "spike_pct"
+        ],
+        "properties": {
+          "position_id": {
+            "type": "string",
+            "description": "Outcome token ID"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market condition ID"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int16",
+            "description": "Outcome index"
+          },
+          "spike_direction": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down"
+            ],
+            "description": "`\"up\"` = price rising, `\"down\"` = price falling"
+          },
+          "spike_pct": {
+            "type": "number",
+            "description": "Percentage move that triggered this notification. Positive = up, negative = down."
+          }
+        }
+      },
       "TraderFirstTradeFilters": {
         "type": "object",
         "description": "Subscription filters for the `trader_first_trade` event. All fields are optional.",
@@ -3179,6 +3237,10 @@
             "minimum": 0.0,
             "maximum": 1.0,
             "description": "Only fire when the outcome probability is ≤ this value."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets (event slugs containing `updown`). Default: `false`."
           }
         }
       },
@@ -3209,6 +3271,10 @@
             },
             "maxItems": 500,
             "description": "Restrict to markets belonging to these events."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -3256,6 +3322,10 @@
             "minimum": 0.0,
             "maximum": 1.0,
             "description": "Only fire when outcome probability is ≤ this value."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -3282,6 +3352,18 @@
           "min_volume_usd": {
             "type": "number",
             "description": "Only fire when total trading volume ≥ this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": "number",
+            "description": "Only fire when total trading volume ≤ this value (USD)."
+          },
+          "min_buy_usd": {
+            "type": "number",
+            "description": "Only fire when buy volume ≥ this value (USD)."
+          },
+          "min_sell_volume_usd": {
+            "type": "number",
+            "description": "Only fire when sell volume ≥ this value (USD)."
           },
           "min_win_rate": {
             "type": "number",
@@ -3345,9 +3427,21 @@
             "type": "number",
             "description": "Only fire when per-market realized PnL ≤ this value (USD)."
           },
+          "min_volume_usd": {
+            "type": "number",
+            "description": "Only fire when total volume (buy + sell + redemption + merge) ≥ this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": "number",
+            "description": "Only fire when total volume ≤ this value (USD)."
+          },
           "min_buy_usd": {
             "type": "number",
             "description": "Only fire when buy volume in the market ≥ this value (USD)."
+          },
+          "min_sell_volume_usd": {
+            "type": "number",
+            "description": "Only fire when sell volume in the market ≥ this value (USD)."
           },
           "timeframes": {
             "type": "array",
@@ -3361,6 +3455,10 @@
               ]
             },
             "description": "Restrict to these PnL windows."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -3396,6 +3494,18 @@
             "type": "number",
             "description": "Only fire when total event volume ≥ this value (USD)."
           },
+          "max_volume_usd": {
+            "type": "number",
+            "description": "Only fire when total event volume ≤ this value (USD)."
+          },
+          "min_buy_usd": {
+            "type": "number",
+            "description": "Only fire when buy volume within the event ≥ this value (USD)."
+          },
+          "min_sell_volume_usd": {
+            "type": "number",
+            "description": "Only fire when sell volume within the event ≥ this value (USD)."
+          },
           "min_markets_traded": {
             "type": "integer",
             "format": "int64",
@@ -3413,6 +3523,10 @@
               ]
             },
             "description": "Restrict to these PnL windows."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -3525,6 +3639,10 @@
           },
           "min_fees": {
             "type": "number"
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -3695,6 +3813,10 @@
             },
             "maxItems": 500,
             "description": "Specific USD milestones to trigger on."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -3754,36 +3876,30 @@
       "ProbabilitySpikeFilters": {
         "type": "object",
         "description": "Subscription filters for the `probability_spike` event.",
-        "required": [
-          "timeframes"
-        ],
         "properties": {
-          "timeframes": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "1m",
-                "5m",
-                "30m",
-                "1h",
-                "6h",
-                "24h",
-                "7d",
-                "30d"
-              ]
-            },
-            "minItems": 1,
-            "maxItems": 500,
-            "description": "**Required.** Windows to monitor for probability changes."
-          },
           "position_ids": {
             "type": "array",
             "items": {
               "type": "string"
             },
             "maxItems": 500,
-            "description": "Restrict to these outcome token IDs."
+            "description": "Restrict to specific outcome token IDs. Empty = all positions."
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to specific market condition IDs. Empty = all markets."
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to specific events. Empty = all events."
           },
           "outcomes": {
             "type": "array",
@@ -3791,30 +3907,111 @@
               "type": "string"
             },
             "maxItems": 500,
-            "description": "Restrict to these outcome names (e.g. [\"Yes\"])."
+            "description": "Restrict to these outcome names (e.g. [\"Yes\", \"No\"])."
           },
           "min_probability_change_pct": {
             "type": "number",
-            "description": "Only fire when the relative probability change ≥ this percentage. E.g. 50 fires when probability moves ≥ 50% relative to open."
+            "description": "Minimum probability percentage move to trigger (e.g. `10` for a 10% move)."
+          },
+          "spike_direction": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down",
+              "both"
+            ],
+            "description": "`\"up\"` = probability rising only (default when omitted), `\"down\"` = falling only, `\"both\"` = either direction."
+          },
+          "window_secs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 600,
+            "description": "Observation window in seconds. The first trade in each window sets the reference price; subsequent trades are compared to it. E.g. `60` detects moves that occur within 60 seconds."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "PriceSpikeFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `price_spike` event.",
+        "properties": {
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to specific outcome token IDs. Empty = all positions."
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to specific market condition IDs. Empty = all markets."
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to specific events. Empty = all events."
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to these outcome names (e.g. [\"Yes\", \"No\"])."
+          },
+          "min_price_change_pct": {
+            "type": "number",
+            "description": "Minimum price percentage move to trigger (e.g. `10` for a 10% move)."
+          },
+          "spike_direction": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down",
+              "both"
+            ],
+            "description": "`\"up\"` = price rising only (default when omitted), `\"down\"` = falling only, `\"both\"` = either direction."
+          },
+          "window_secs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 600,
+            "description": "Observation window in seconds. The first trade in each window sets the reference price; subsequent trades are compared to it. E.g. `60` detects moves that occur within 60 seconds."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
       "MarketVolumeSpikeFilters": {
         "type": "object",
-        "description": "Subscription filters for the `market_volume_spike` event.",
+        "description": "Subscription filters for the `market_volume_spike` event. `spike_ratio` is required.",
         "required": [
-          "baseline_volume_usd",
           "spike_ratio"
         ],
         "properties": {
-          "baseline_volume_usd": {
-            "type": "number",
-            "description": "**Required.** Your baseline volume for comparison (USD). E.g. 50000 for a $50k baseline."
-          },
           "spike_ratio": {
             "type": "number",
             "exclusiveMinimum": 1.0,
-            "description": "**Required.** Multiplier threshold (must be > 1.0). E.g. 2.0 fires when volume exceeds 2× the baseline."
+            "description": "**Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio. The snapshot is set automatically on first data and resets after each fire."
+          },
+          "window_secs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 600,
+            "description": "Force snapshot reset after this many seconds (max 600 / 10 minutes)."
           },
           "condition_ids": {
             "type": "array",
@@ -3834,6 +4031,7 @@
                 "30m",
                 "1h",
                 "6h",
+                "1d",
                 "24h",
                 "7d",
                 "30d"
@@ -3846,20 +4044,21 @@
       },
       "EventVolumeSpikeFilters": {
         "type": "object",
-        "description": "Subscription filters for the `event_volume_spike` event.",
+        "description": "Subscription filters for the `event_volume_spike` event. `spike_ratio` is required.",
         "required": [
-          "baseline_volume_usd",
           "spike_ratio"
         ],
         "properties": {
-          "baseline_volume_usd": {
-            "type": "number",
-            "description": "**Required.** Your baseline volume for comparison (USD)."
-          },
           "spike_ratio": {
             "type": "number",
             "exclusiveMinimum": 1.0,
-            "description": "**Required.** Multiplier threshold (must be > 1.0)."
+            "description": "**Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio."
+          },
+          "window_secs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 600,
+            "description": "Force snapshot reset after this many seconds (max 600 / 10 minutes)."
           },
           "event_slugs": {
             "type": "array",
@@ -3879,6 +4078,7 @@
                 "30m",
                 "1h",
                 "6h",
+                "1d",
                 "24h",
                 "7d",
                 "30d"
@@ -3886,25 +4086,30 @@
             },
             "maxItems": 500,
             "description": "Restrict to these aggregation windows."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
       "PositionVolumeSpikeFilters": {
         "type": "object",
-        "description": "Subscription filters for the `position_volume_spike` event.",
+        "description": "Subscription filters for the `position_volume_spike` event. `spike_ratio` is required.",
         "required": [
-          "baseline_volume_usd",
           "spike_ratio"
         ],
         "properties": {
-          "baseline_volume_usd": {
-            "type": "number",
-            "description": "**Required.** Your baseline volume for comparison (USD)."
-          },
           "spike_ratio": {
             "type": "number",
             "exclusiveMinimum": 1.0,
-            "description": "**Required.** Multiplier threshold (must be > 1.0)."
+            "description": "**Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio."
+          },
+          "window_secs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 600,
+            "description": "Force snapshot reset after this many seconds (max 600 / 10 minutes)."
           },
           "position_ids": {
             "type": "array",
@@ -3940,6 +4145,7 @@
                 "30m",
                 "1h",
                 "6h",
+                "1d",
                 "24h",
                 "7d",
                 "30d"
@@ -4007,6 +4213,10 @@
             },
             "maxItems": 500,
             "description": "Restrict by outcome index. 0 = Yes/Up, 1 = No. Position 0 usually represents the Up/Yes side in binary markets."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -4038,13 +4248,9 @@
             "maxItems": 500,
             "description": "Restrict to markets belonging to these events."
           },
-          "exclude_shorterm_market_timeframes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "maxItems": 500,
-            "description": "Exclude short-term trading markets whose event slug contains these timeframe patterns (e.g. [\"5m\", \"15m\", \"30m\", \"1h\"]). Each value is auto-wrapped: \"5m\" → \"-5m-\"."
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets (event slugs containing `updown`). Default: `false`."
           }
         }
       },
@@ -4063,12 +4269,7 @@
                 "XRP"
               ]
             },
-            "maxItems": 500,
             "description": "Restrict to these crypto assets. Empty = all assets."
-          },
-          "min_usd_value": {
-            "type": "number",
-            "description": "Minimum asset price in USD. Only fire ticks where price ≥ this value."
           }
         }
       },
@@ -4185,7 +4386,7 @@
     "trader-whale-trade": {
       "post": {
         "summary": "Whale trade callback",
-        "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range. Array filters (`condition_ids`, `event_slugs`, `wallet_addresses`) accept at most 500 entries each.",
+        "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.",
         "operationId": "trader-whale-trade",
         "tags": [
           "Webhook Callbacks"
@@ -4309,7 +4510,7 @@
     "market-metrics": {
       "post": {
         "summary": "Market metrics callback",
-        "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`). All array filters accept at most 500 entries each.",
+        "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).",
         "operationId": "market-metrics",
         "tags": [
           "Webhook Callbacks"
@@ -4340,7 +4541,7 @@
     "event-metrics": {
       "post": {
         "summary": "Event metrics callback",
-        "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`). All array filters accept at most 500 entries each.",
+        "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).",
         "operationId": "event-metrics",
         "tags": [
           "Webhook Callbacks"
@@ -4371,7 +4572,7 @@
     "position-metrics": {
       "post": {
         "summary": "Position metrics callback",
-        "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`). All array filters accept at most 500 entries each.",
+        "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).",
         "operationId": "position-metrics",
         "tags": [
           "Webhook Callbacks"
@@ -4402,7 +4603,7 @@
     "market-volume-milestone": {
       "post": {
         "summary": "Market volume milestone callback",
-        "description": "Fired once per org when a market's trading volume crosses a milestone in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets. Each milestone fires at most once per minute per org. All array filters accept at most 500 entries each.",
+        "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.",
         "operationId": "market-volume-milestone",
         "tags": [
           "Webhook Callbacks"
@@ -4433,7 +4634,7 @@
     "event-volume-milestone": {
       "post": {
         "summary": "Event volume milestone callback",
-        "description": "Fired once per org when an event's trading volume crosses a milestone in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events. Each milestone fires at most once per minute per org. All array filters accept at most 500 entries each.",
+        "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.",
         "operationId": "event-volume-milestone",
         "tags": [
           "Webhook Callbacks"
@@ -4464,7 +4665,7 @@
     "position-volume-milestone": {
       "post": {
         "summary": "Position volume milestone callback",
-        "description": "Fired once per org when a position's trading volume crosses a milestone in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets. Each milestone fires at most once per minute per org. All array filters accept at most 500 entries each.",
+        "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.",
         "operationId": "position-volume-milestone",
         "tags": [
           "Webhook Callbacks"
@@ -4495,7 +4696,7 @@
     "probability-spike": {
       "post": {
         "summary": "Probability spike callback",
-        "description": "Fired when a position's probability changes by at least `min_probability_change_pct` percent (relative to open) within the specified timeframe. **`timeframes` is required** (e.g. `[\"5m\", \"1h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional filters: `position_ids`, `outcomes`, `min_probability_change_pct`. `probability_change_pct` in the payload is relative (e.g. `83.3` for a move from 30%→55%) and can be negative for downward moves. All array filters accept at most 500 entries each.",
+        "description": "Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.",
         "operationId": "probability-spike",
         "tags": [
           "Webhook Callbacks"
@@ -4523,10 +4724,41 @@
         }
       }
     },
+    "price-spike": {
+      "post": {
+        "summary": "Price spike callback",
+        "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.",
+        "operationId": "price-spike",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "x-filters-schema": {
+          "$ref": "#/components/schemas/PriceSpikeFilters"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceSpikePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
     "market-volume-spike": {
       "post": {
         "summary": "Market volume spike callback",
-        "description": "Fired when a market's volume in a timeframe exceeds the user-defined baseline by the configured ratio (e.g. 2x baseline). Requires `baseline_volume_usd` and `spike_ratio` in the subscription filter. Optional `timeframes` restricts to specific windows — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `condition_ids` restricts to specific markets. All array filters accept at most 500 entries each.",
+        "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`. Optional `condition_ids` restricts to specific markets.",
         "operationId": "market-volume-spike",
         "tags": [
           "Webhook Callbacks"
@@ -4557,7 +4789,7 @@
     "event-volume-spike": {
       "post": {
         "summary": "Event volume spike callback",
-        "description": "Fired when an event's aggregated volume in a timeframe exceeds the user-defined baseline by the configured ratio. Requires `baseline_volume_usd` and `spike_ratio` in the subscription filter. Optional `timeframes` and `event_slugs` filter by timeframe and event. 1-minute cooldown per org prevents repeated firing. All array filters accept at most 500 entries each.",
+        "description": "Fired when an event's aggregated trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` and `event_slugs` to narrow scope.",
         "operationId": "event-volume-spike",
         "tags": [
           "Webhook Callbacks"
@@ -4588,7 +4820,7 @@
     "position-volume-spike": {
       "post": {
         "summary": "Position volume spike callback",
-        "description": "Fired when a position's volume in a timeframe exceeds the user-defined baseline by the configured ratio. Requires `baseline_volume_usd` and `spike_ratio` in the subscription filter. Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` for narrowing scope. 1-minute cooldown per org prevents repeated firing. All array filters accept at most 500 entries each.",
+        "description": "Fired when a position's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` to narrow scope.",
         "operationId": "position-volume-spike",
         "tags": [
           "Webhook Callbacks"
@@ -4619,7 +4851,7 @@
     "close-to-bond": {
       "post": {
         "summary": "Close to bond callback",
-        "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No; position 0 usually represents Yes/Up in binary markets); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events. Deduplication: each org is notified at most once per 6 hours while a position remains in the bond zone. All array filters accept at most 500 entries each.",
+        "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.",
         "operationId": "close-to-bond",
         "tags": [
           "Webhook Callbacks"
@@ -4650,7 +4882,7 @@
     "market-created": {
       "post": {
         "summary": "Market created callback",
-        "description": "Fired when a new prediction market is detected on-chain (ConditionPreparation event), enriched with Gamma API metadata. Filterable by `tags`, `condition_ids`, `event_slugs`, and `exclude_shorterm_market_timeframes`. All array filters accept at most 500 entries each.",
+        "description": "Fired when a new prediction market is created on Polymarket. Filterable by `tags` and `event_slugs`.",
         "operationId": "market-created",
         "tags": [
           "Webhook Callbacks"
@@ -4681,7 +4913,7 @@
     "asset-price-tick": {
       "post": {
         "summary": "Asset price tick callback",
-        "description": "Fired on every raw Chainlink price tick received from the WebSocket feed for crypto assets (BTC, ETH, SOL, XRP). Use `asset_symbols` to restrict to specific assets (empty = all, max 500 entries). Use `min_usd_value` as a minimum price filter.",
+        "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP). Use `asset_symbols` to restrict to specific assets (empty = all).",
         "operationId": "asset-price-tick",
         "tags": [
           "Webhook Callbacks"
@@ -4712,7 +4944,7 @@
     "asset-price-window-update": {
       "post": {
         "summary": "Asset price window update callback",
-        "description": "Fired twice per candle: once when the window opens (`update_type: \"open\"`) and once when it closes with a confirmed close price (`update_type: \"close\"`). Use `asset_symbols` to restrict to specific assets (BTC, ETH, SOL, XRP; max 500 entries). Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"1d\"`, `\"24h\"` (max 500 entries).",
+        "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"1d\"`, `\"24h\"`.",
         "operationId": "asset-price-window-update",
         "tags": [
           "Webhook Callbacks"
