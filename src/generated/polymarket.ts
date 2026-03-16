@@ -553,7 +553,7 @@ export interface paths {
         };
         /**
          * Get spread history
-         * @description Lightweight time series of derived orderbook metrics (best bid/ask, mid price, spread, liquidity depth) without raw bids/asks — ideal for charting. Default limit 100, max 1000.
+         * @description Lightweight time series of derived orderbook metrics (best bid/ask, mid price, spread, liquidity depth) without raw bids/asks — ideal for charting. Default limit 20, max 200.
          */
         get: operations["get_spread_history"];
         put?: never;
@@ -1041,9 +1041,9 @@ export interface components {
         };
         EventMarketChartDataPoint: {
             /** Format: double */
-            value: number;
+            v: number;
             /** Format: int64 */
-            timestamp: number;
+            t: number;
         };
         EventMarketChartOutcome: {
             condition_id: string;
@@ -1681,9 +1681,9 @@ export interface components {
         };
         PositionChartDataPoint: {
             /** Format: double */
-            value: number;
+            v: number;
             /** Format: int64 */
-            timestamp: number;
+            t: number;
         };
         PositionChartOutcome: {
             position_id: string;
@@ -2059,6 +2059,8 @@ export interface components {
             buy_usd?: number | null;
             /** Format: double */
             sell_usd?: number | null;
+            /** Format: double */
+            realized_pnl_usd?: number | null;
             /**
              * Format: double
              * @description VWAP price paid per share across all buys (0–1)
