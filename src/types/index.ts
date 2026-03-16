@@ -94,6 +94,11 @@ export type PositionChartDataPoint = Schemas["PositionChartDataPoint"];
 export type TradeType = Schemas["TradeType"];
 export type WebhookAssetSymbol = Schemas["WebhookAssetSymbol"];
 export type WebhookTimeframe = Schemas["WebhookTimeframe"];
+export type ConditionOrderbookRow = Schemas["ConditionOrderbookRow"];
+export type OrderbookHistoryRow = Schemas["OrderbookHistoryRow"];
+export type OrderbookLevel = Schemas["OrderbookLevel"];
+export type OrderbookSnapshotRow = Schemas["OrderbookSnapshotRow"];
+export type SpreadRow = Schemas["SpreadRow"];
 
 export type Series = Schemas["PolymarketSeries"];
 export type Trade = Schemas["PredictionTradeResponse"];

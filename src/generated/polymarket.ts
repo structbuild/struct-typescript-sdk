@@ -956,6 +956,31 @@ export interface components {
             /** Format: int32 */
             unique_traders: number;
         };
+        ConditionOrderbookRow: {
+            /** Format: int64 */
+            ts: number;
+            position_id: string;
+            condition_id: string;
+            bids: components["schemas"]["OrderbookLevel"][];
+            asks: components["schemas"]["OrderbookLevel"][];
+            hash: string;
+            /** Format: double */
+            best_bid?: number | null;
+            /** Format: double */
+            best_ask?: number | null;
+            /** Format: double */
+            mid_price?: number | null;
+            /** Format: double */
+            spread?: number | null;
+            /** Format: double */
+            bid_liquidity_usd?: number | null;
+            /** Format: double */
+            ask_liquidity_usd?: number | null;
+            /** Format: int32 */
+            bid_levels?: number | null;
+            /** Format: int32 */
+            ask_levels?: number | null;
+        };
         /** @description Enriched market data for event API responses */
         EventMarket: {
             /** @default  */
@@ -1329,6 +1354,63 @@ export interface components {
         };
         /** @enum {string} */
         MetricsTimeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
+        OrderbookHistoryRow: {
+            /** Format: int64 */
+            ts: number;
+            position_id: string;
+            condition_id: string;
+            bids: components["schemas"]["OrderbookLevel"][];
+            asks: components["schemas"]["OrderbookLevel"][];
+            hash: string;
+            /** Format: double */
+            best_bid?: number | null;
+            /** Format: double */
+            best_ask?: number | null;
+            /** Format: double */
+            mid_price?: number | null;
+            /** Format: double */
+            spread?: number | null;
+            /** Format: double */
+            bid_liquidity_usd?: number | null;
+            /** Format: double */
+            ask_liquidity_usd?: number | null;
+            /** Format: int32 */
+            bid_levels?: number | null;
+            /** Format: int32 */
+            ask_levels?: number | null;
+        };
+        /** @description A single price level in a bids/asks array. */
+        OrderbookLevel: {
+            /** @description Price as a decimal string */
+            p: string;
+            /** @description Size as a decimal string */
+            s: string;
+        };
+        OrderbookSnapshotRow: {
+            /** Format: int64 */
+            ts: number;
+            position_id: string;
+            condition_id: string;
+            bids: components["schemas"]["OrderbookLevel"][];
+            asks: components["schemas"]["OrderbookLevel"][];
+            hash: string;
+            /** Format: double */
+            best_bid?: number | null;
+            /** Format: double */
+            best_ask?: number | null;
+            /** Format: double */
+            mid_price?: number | null;
+            /** Format: double */
+            spread?: number | null;
+            /** Format: double */
+            bid_liquidity_usd?: number | null;
+            /** Format: double */
+            ask_liquidity_usd?: number | null;
+            /** Format: int32 */
+            bid_levels?: number | null;
+            /** Format: int32 */
+            ask_levels?: number | null;
+        };
         /** @description Holder data grouped by outcome for market-level queries */
         OutcomeHolders: {
             /**
@@ -1827,6 +1909,29 @@ export interface components {
          * @enum {string}
          */
         SpikeDirection: "up" | "down" | "both";
+        /** @description Lightweight row — derived metrics only, no bids/asks JSONB. */
+        SpreadRow: {
+            /** Format: int64 */
+            ts: number;
+            position_id: string;
+            condition_id: string;
+            /** Format: double */
+            best_bid?: number | null;
+            /** Format: double */
+            best_ask?: number | null;
+            /** Format: double */
+            mid_price?: number | null;
+            /** Format: double */
+            spread?: number | null;
+            /** Format: double */
+            bid_liquidity_usd?: number | null;
+            /** Format: double */
+            ask_liquidity_usd?: number | null;
+            /** Format: int32 */
+            bid_levels?: number | null;
+            /** Format: int32 */
+            ask_levels?: number | null;
+        };
         /** @description Token outcome (position) */
         TokenOutcome: {
             token_id: string;
@@ -2830,7 +2935,55 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        condition_id: string;
+                        id?: string | null;
+                        market_slug?: string | null;
+                        question?: string | null;
+                        title?: string | null;
+                        description?: string | null;
+                        image_url?: string | null;
+                        oracle?: string | null;
+                        status: string;
+                        /** Format: int64 */
+                        created_time?: number | null;
+                        /** Format: int64 */
+                        start_time?: number | null;
+                        /** Format: int64 */
+                        game_start_time?: number | null;
+                        /** Format: int64 */
+                        closed_time?: number | null;
+                        /** Format: int64 */
+                        end_time?: number | null;
+                        accepting_orders?: boolean | null;
+                        uma_resolution_status?: string | null;
+                        is_neg_risk?: boolean | null;
+                        market_maker_address?: string | null;
+                        creator?: string | null;
+                        category?: string | null;
+                        /** Format: double */
+                        volume_usd?: number | null;
+                        /** Format: double */
+                        liquidity_usd?: number | null;
+                        /** Format: double */
+                        highest_probability?: number | null;
+                        /** Format: int64 */
+                        total_holders?: number | null;
+                        winning_outcome?: null | components["schemas"]["MarketOutcome"];
+                        outcomes?: components["schemas"]["MarketOutcome"][];
+                        rewards?: components["schemas"]["MarketReward"][];
+                        clob_rewards?: components["schemas"]["ClobReward"][];
+                        tags?: string[];
+                        event_slug?: string | null;
+                        resolution_source?: string | null;
+                        metrics?: {
+                            [key: string]: components["schemas"]["SimpleTimeframeMetrics"];
+                        };
+                        /** Format: double */
+                        relevance_score?: number | null;
+                    };
+                };
             };
             /** @description Market not found */
             404: {
@@ -2963,7 +3116,55 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        condition_id: string;
+                        id?: string | null;
+                        market_slug?: string | null;
+                        question?: string | null;
+                        title?: string | null;
+                        description?: string | null;
+                        image_url?: string | null;
+                        oracle?: string | null;
+                        status: string;
+                        /** Format: int64 */
+                        created_time?: number | null;
+                        /** Format: int64 */
+                        start_time?: number | null;
+                        /** Format: int64 */
+                        game_start_time?: number | null;
+                        /** Format: int64 */
+                        closed_time?: number | null;
+                        /** Format: int64 */
+                        end_time?: number | null;
+                        accepting_orders?: boolean | null;
+                        uma_resolution_status?: string | null;
+                        is_neg_risk?: boolean | null;
+                        market_maker_address?: string | null;
+                        creator?: string | null;
+                        category?: string | null;
+                        /** Format: double */
+                        volume_usd?: number | null;
+                        /** Format: double */
+                        liquidity_usd?: number | null;
+                        /** Format: double */
+                        highest_probability?: number | null;
+                        /** Format: int64 */
+                        total_holders?: number | null;
+                        winning_outcome?: null | components["schemas"]["MarketOutcome"];
+                        outcomes?: components["schemas"]["MarketOutcome"][];
+                        rewards?: components["schemas"]["MarketReward"][];
+                        clob_rewards?: components["schemas"]["ClobReward"][];
+                        tags?: string[];
+                        event_slug?: string | null;
+                        resolution_source?: string | null;
+                        metrics?: {
+                            [key: string]: components["schemas"]["SimpleTimeframeMetrics"];
+                        };
+                        /** Format: double */
+                        relevance_score?: number | null;
+                    };
+                };
             };
             /** @description Market not found */
             404: {
@@ -2991,7 +3192,33 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** Format: int64 */
+                        ts: number;
+                        position_id: string;
+                        condition_id: string;
+                        bids: components["schemas"]["OrderbookLevel"][];
+                        asks: components["schemas"]["OrderbookLevel"][];
+                        hash: string;
+                        /** Format: double */
+                        best_bid?: number | null;
+                        /** Format: double */
+                        best_ask?: number | null;
+                        /** Format: double */
+                        mid_price?: number | null;
+                        /** Format: double */
+                        spread?: number | null;
+                        /** Format: double */
+                        bid_liquidity_usd?: number | null;
+                        /** Format: double */
+                        ask_liquidity_usd?: number | null;
+                        /** Format: int32 */
+                        bid_levels?: number | null;
+                        /** Format: int32 */
+                        ask_levels?: number | null;
+                    };
+                };
             };
             /** @description Missing or invalid parameters */
             400: {
@@ -3044,7 +3271,33 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** Format: int64 */
+                        ts: number;
+                        position_id: string;
+                        condition_id: string;
+                        bids: components["schemas"]["OrderbookLevel"][];
+                        asks: components["schemas"]["OrderbookLevel"][];
+                        hash: string;
+                        /** Format: double */
+                        best_bid?: number | null;
+                        /** Format: double */
+                        best_ask?: number | null;
+                        /** Format: double */
+                        mid_price?: number | null;
+                        /** Format: double */
+                        spread?: number | null;
+                        /** Format: double */
+                        bid_liquidity_usd?: number | null;
+                        /** Format: double */
+                        ask_liquidity_usd?: number | null;
+                        /** Format: int32 */
+                        bid_levels?: number | null;
+                        /** Format: int32 */
+                        ask_levels?: number | null;
+                    }[];
+                };
             };
             /** @description Missing or invalid parameters */
             400: {
@@ -3074,7 +3327,33 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** Format: int64 */
+                        ts: number;
+                        position_id: string;
+                        condition_id: string;
+                        bids: components["schemas"]["OrderbookLevel"][];
+                        asks: components["schemas"]["OrderbookLevel"][];
+                        hash: string;
+                        /** Format: double */
+                        best_bid?: number | null;
+                        /** Format: double */
+                        best_ask?: number | null;
+                        /** Format: double */
+                        mid_price?: number | null;
+                        /** Format: double */
+                        spread?: number | null;
+                        /** Format: double */
+                        bid_liquidity_usd?: number | null;
+                        /** Format: double */
+                        ask_liquidity_usd?: number | null;
+                        /** Format: int32 */
+                        bid_levels?: number | null;
+                        /** Format: int32 */
+                        ask_levels?: number | null;
+                    }[];
+                };
             };
             /** @description Missing or invalid parameters */
             400: {
@@ -3127,7 +3406,30 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        /** Format: int64 */
+                        ts: number;
+                        position_id: string;
+                        condition_id: string;
+                        /** Format: double */
+                        best_bid?: number | null;
+                        /** Format: double */
+                        best_ask?: number | null;
+                        /** Format: double */
+                        mid_price?: number | null;
+                        /** Format: double */
+                        spread?: number | null;
+                        /** Format: double */
+                        bid_liquidity_usd?: number | null;
+                        /** Format: double */
+                        ask_liquidity_usd?: number | null;
+                        /** Format: int32 */
+                        bid_levels?: number | null;
+                        /** Format: int32 */
+                        ask_levels?: number | null;
+                    }[];
+                };
             };
             /** @description Missing or invalid parameters */
             400: {
