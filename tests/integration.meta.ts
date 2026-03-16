@@ -171,6 +171,23 @@ export const methodMeta: Record<string, MethodConfig> = {
 		paginate: true,
 	},
 
+	"orderBook.getOrderBook": {
+		params: { position_id: "$positionId" },
+		operationId: "get_order_book",
+	},
+	"orderBook.getOrderBookHistory": {
+		params: { position_id: "$positionId" },
+		operationId: "get_order_book_history",
+	},
+	"orderBook.getMarketOrderBook": {
+		params: { condition_id: "$conditionId" },
+		operationId: "get_market_order_book",
+	},
+	"orderBook.getSpreadHistory": {
+		params: { position_id: "$positionId" },
+		operationId: "get_spread_history",
+	},
+
 	"webhooks.list": {
 		operationId: "list_webhooks",
 	},

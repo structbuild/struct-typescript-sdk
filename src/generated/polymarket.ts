@@ -484,6 +484,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/order-book": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get order book
+         * @description Returns the latest CLOB orderbook snapshot for a position, including derived metrics (best bid/ask, mid price, spread, liquidity depth). Data is sourced from the real-time Polymarket WebSocket feed. `bids` and `asks` are arrays of `{"p": price, "s": size}` objects, sorted best-first.
+         */
+        get: operations["get_order_book"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/order-book/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get order book history
+         * @description Paginated history of raw CLOB orderbook snapshots including full bids/asks levels and derived metrics. Default limit 20, max 200. `bids` and `asks` are arrays of `{"p": price, "s": size}` objects, sorted best-first.
+         */
+        get: operations["get_order_book_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/order-book/market": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get order books for a market
+         * @description Returns the latest orderbook snapshot for every position (outcome) in a market. Accepts condition_id or market_slug. `bids` and `asks` are arrays of `{"p": price, "s": size}` objects, sorted best-first.
+         */
+        get: operations["get_market_order_book"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/order-book/spread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get spread history
+         * @description Lightweight time series of derived orderbook metrics (best bid/ask, mid price, spread, liquidity depth) without raw bids/asks — ideal for charting. Default limit 100, max 1000.
+         */
+        get: operations["get_spread_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/search": {
         parameters: {
             query?: never;
@@ -493,13 +573,7 @@ export interface paths {
         };
         /**
          * Search events, markets, and traders
-         * @description Search across events, markets, and traders simultaneously.
-         *
-         *     All three categories are queried in parallel. Each has independent cursor-based pagination via its own `*_pagination_key`.
-         *
-         *     **Trader search** matches by wallet address (exact, `0x...` 42 chars) or by display name / pseudonym (case-insensitive partial match).
-         *
-         *     **sort_by / timeframe** apply to events and markets. Some sort fields only apply to one category (e.g. `liquidity` and `holders` are markets-only; `title`, `creation_date`, `start_date`, `end_date` are events-only) — unrecognised fields fall back to `volume`.
+         * @description Search across markets, events, and traders. Trader search supports wallet address lookup or name search. Results for each category are independently paginated.
          */
         get: operations["search"];
         put?: never;
@@ -827,7 +901,7 @@ export interface components {
         /** @enum {string} */
         AssetSymbol: "BTC" | "ETH" | "XRP" | "SOL";
         /** @enum {string} */
-        AssetVariant: "5m" | "15m" | "1h" | "1d";
+        AssetVariant: "5m" | "15m" | "1h" | "4h" | "1d";
         BondMarket: {
             condition_id: string;
             title?: string | null;
@@ -1208,6 +1282,8 @@ export interface components {
             metrics?: {
                 [key: string]: components["schemas"]["SimpleTimeframeMetrics"];
             };
+            /** Format: double */
+            relevance_score?: number | null;
         };
         /** @description Reward info for market API responses */
         MarketReward: {
@@ -1924,7 +2000,7 @@ export interface components {
          * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
          * @enum {string}
          */
-        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "6h" | "1d" | "24h" | "7d" | "30d";
+        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d";
     };
     responses: never;
     parameters: never;
@@ -1939,7 +2015,7 @@ export interface operations {
             query: {
                 /** @description Asset ticker: BTC, ETH, XRP, or SOL */
                 asset_symbol: components["schemas"]["AssetSymbol"];
-                /** @description Time window: 5m, 15m, 1h, or 1d */
+                /** @description Time window: 5m, 15m, 1h, 4h, or 1d */
                 variant: components["schemas"]["AssetVariant"];
                 /** @description Start timestamp (Unix seconds, inclusive) */
                 from?: number;
@@ -2891,6 +2967,170 @@ export interface operations {
             };
             /** @description Market not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_order_book: {
+        parameters: {
+            query: {
+                /** @description Token ID (position ID) to query */
+                position_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Latest orderbook snapshot. ts is Unix milliseconds. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No snapshot found for this position */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_order_book_history: {
+        parameters: {
+            query?: {
+                /** @description Token ID (required if condition_id / market_slug not set) */
+                position_id?: string;
+                /** @description Condition ID — returns history for all positions in this market */
+                condition_id?: string;
+                /** @description Market slug (alternative to condition_id) */
+                market_slug?: string;
+                /** @description Start timestamp (Unix milliseconds, inclusive) */
+                from?: number;
+                /** @description End timestamp (Unix milliseconds, inclusive) */
+                to?: number;
+                /** @description Only return snapshots with spread >= this value */
+                min_spread?: number;
+                /** @description Only return snapshots with spread <= this value */
+                max_spread?: number;
+                /** @description Only return snapshots where total liquidity (bid + ask) >= this value */
+                min_liquidity?: number;
+                /** @description Number of results (default: 20, max: 200) */
+                limit?: number;
+                /** @description Cursor from previous response's pagination.pagination_key */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Orderbook snapshot rows, newest first. ts is Unix milliseconds. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_market_order_book: {
+        parameters: {
+            query?: {
+                /** @description Condition ID of the market */
+                condition_id?: string;
+                /** @description Market slug (alternative to condition_id) */
+                market_slug?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Latest orderbook snapshot per position. ts is Unix milliseconds. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Market not found or no snapshots exist */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_spread_history: {
+        parameters: {
+            query?: {
+                /** @description Token ID (required if condition_id / market_slug not set) */
+                position_id?: string;
+                /** @description Condition ID — returns spread history for all positions in this market */
+                condition_id?: string;
+                /** @description Market slug (alternative to condition_id) */
+                market_slug?: string;
+                /** @description Start timestamp (Unix milliseconds, inclusive) */
+                from?: number;
+                /** @description End timestamp (Unix milliseconds, inclusive) */
+                to?: number;
+                /** @description Only return rows with spread >= this value */
+                min_spread?: number;
+                /** @description Only return rows with spread <= this value */
+                max_spread?: number;
+                /** @description Only return rows where total liquidity (bid + ask) >= this value */
+                min_liquidity?: number;
+                /** @description Number of results (default: 100, max: 1000) */
+                limit?: number;
+                /** @description Cursor from previous response's pagination.pagination_key */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Spread time series rows, newest first. ts is Unix milliseconds. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid parameters */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

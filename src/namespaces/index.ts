@@ -8,4 +8,5 @@ export { SeriesNamespace } from "./series.js";
 export { TraderNamespace } from "./trader.js";
 export { BondsNamespace } from "./bonds.js";
 export { SearchNamespace } from "./search.js";
+export { OrderBookNamespace } from "./orderBook.js";
 export { WebhooksNamespace } from "./webhooks.js";

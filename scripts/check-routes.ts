@@ -17,7 +17,7 @@ const specs: SpecConfig[] = [
 		specPath: join(import.meta.dirname, "../src/generated/polymarket.ts"),
 		jsonSpecPath: join(import.meta.dirname, "../openapi/polymarket.json"),
 		venuePrefix: "/polymarket",
-		namespaceFiles: ["assets.ts", "holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "search.ts", "tags.ts"],
+		namespaceFiles: ["assets.ts", "holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "search.ts", "tags.ts", "orderBook.ts"],
 		schemaAccessor: "Schemas",
 	},
 	{

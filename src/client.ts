@@ -11,6 +11,7 @@ import {
 	TraderNamespace,
 	BondsNamespace,
 	SearchNamespace,
+	OrderBookNamespace,
 	WebhooksNamespace,
 } from "./namespaces/index.js";
 
@@ -37,6 +38,7 @@ export class StructClient {
 	readonly trader: TraderNamespace;
 	readonly bonds: BondsNamespace;
 	readonly search: SearchNamespace;
+	readonly orderBook: OrderBookNamespace;
 	readonly webhooks: WebhooksNamespace;
 
 	constructor(config: StructClientConfig) {
@@ -62,6 +64,7 @@ export class StructClient {
 		this.trader = new TraderNamespace(http, venue);
 		this.bonds = new BondsNamespace(http, venue);
 		this.search = new SearchNamespace(http, venue);
+		this.orderBook = new OrderBookNamespace(http, venue);
 		this.webhooks = new WebhooksNamespace(http);
 	}
 }

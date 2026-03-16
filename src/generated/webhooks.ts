@@ -529,7 +529,7 @@ export interface webhooks {
         put?: never;
         /**
          * Asset price window update callback
-         * @description Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP). Payload includes `update_type` (`"open"` or `"close"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `"5m"`, `"15m"`, `"1h"`, `"1d"`, `"24h"`.
+         * @description Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP). Payload includes `update_type` (`"open"` or `"close"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `"5m"`, `"15m"`, `"1h"`, `"4h"`, `"1d"`, `"24h"`.
          */
         post: operations["asset-price-window-update"];
         delete?: never;
@@ -567,7 +567,7 @@ export interface components {
              * @description Candle / window size
              * @enum {string}
              */
-            variant: "5m" | "15m" | "1h" | "1d" | "24h";
+            variant: "5m" | "15m" | "1h" | "4h" | "1d" | "24h";
             /**
              * Format: int64
              * @description Window start timestamp (milliseconds since Unix epoch)
@@ -1639,7 +1639,7 @@ export interface components {
          * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
          * @enum {string}
          */
-        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "6h" | "1d" | "24h" | "7d" | "30d";
+        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d";
         /** @description Payload delivered when a trade exceeds the configured size and probability thresholds */
         WhaleTradePayload: {
             /** @description Limit-order maker wallet address (lowercase) */
@@ -2064,7 +2064,7 @@ export interface components {
             /** @description Restrict to these crypto assets. Empty = all assets. */
             asset_symbols?: ("BTC" | "ETH" | "SOL" | "XRP")[];
             /** @description Restrict to these candle sizes. Empty = all sizes. */
-            timeframes?: ("5m" | "15m" | "1h" | "1d" | "24h")[];
+            timeframes?: ("5m" | "15m" | "1h" | "4h" | "1d" | "24h")[];
         };
     };
     responses: never;

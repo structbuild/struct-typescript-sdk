@@ -173,6 +173,14 @@ export interface TraderSearchResult {
 	verified_badge: boolean;
 }
 
+export interface GetOrderBookParams extends OperationQuery<"get_order_book"> {}
+
+export interface GetOrderBookHistoryParams extends OperationQuery<"get_order_book_history"> {}
+
+export interface GetMarketOrderBookParams extends OperationQuery<"get_market_order_book"> {}
+
+export interface GetSpreadHistoryParams extends OperationQuery<"get_spread_history"> {}
+
 export interface GetAssetHistoryParams extends OperationQuery<"get_asset_history"> {}
 
 export interface GetBondsParams extends OperationQuery<"get_bonds"> {}
