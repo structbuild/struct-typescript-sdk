@@ -13,7 +13,7 @@ export interface paths {
         };
         /**
          * Get asset price history
-         * @description Retrieve historical OHLC-style price data for a supported crypto asset (BTC, ETH, XRP, SOL) over a chosen time window variant. Timestamps are Unix seconds. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination — pass `pagination_key` from the previous response to fetch the next page.
+         * @description Retrieve historical OHLC-style price data for a supported crypto asset (BTC, ETH, XRP, SOL, DOGE, BNB, HYPE) over a chosen time window variant. Timestamps are Unix seconds. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination — pass `pagination_key` from the previous response to fetch the next page.
          */
         get: operations["get_asset_history"];
         put?: never;
@@ -899,7 +899,7 @@ export interface components {
             end_time: number;
         };
         /** @enum {string} */
-        AssetSymbol: "BTC" | "ETH" | "XRP" | "SOL";
+        AssetSymbol: "BTC" | "ETH" | "XRP" | "SOL" | "DOGE" | "BNB" | "HYPE";
         /** @enum {string} */
         AssetVariant: "5m" | "15m" | "1h" | "4h" | "1d";
         BondMarket: {
@@ -1868,7 +1868,7 @@ export interface components {
             condition_id: string;
         };
         SearchResponse: {
-            events: unknown;
+            events: components["schemas"]["PolymarketEvent"][];
             events_pagination: components["schemas"]["PaginationMeta"];
             markets: components["schemas"]["MarketResponse"][];
             markets_pagination: components["schemas"]["PaginationMeta"];
@@ -2102,7 +2102,7 @@ export interface components {
          * @description Crypto asset symbols accepted by `asset_price_tick` and `asset_price_window_update` filters.
          * @enum {string}
          */
-        WebhookAssetSymbol: "BTC" | "ETH" | "SOL" | "XRP";
+        WebhookAssetSymbol: "BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE";
         /**
          * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
          * @enum {string}
@@ -2120,7 +2120,7 @@ export interface operations {
     get_asset_history: {
         parameters: {
             query: {
-                /** @description Asset ticker: BTC, ETH, XRP, or SOL */
+                /** @description Asset ticker: BTC, ETH, XRP, SOL, DOGE, BNB, or HYPE */
                 asset_symbol: components["schemas"]["AssetSymbol"];
                 /** @description Time window: 5m, 15m, 1h, 4h, or 1d */
                 variant: components["schemas"]["AssetVariant"];
@@ -2320,7 +2320,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
             };
             /** @description Missing event_slug parameter */
             400: {
@@ -2638,7 +2642,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MarketResponse"][];
+                };
             };
             /** @description Bad request - validation error (search length, array limits, conflicting params) */
             400: {
@@ -3547,7 +3553,11 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
             };
             /** @description Missing series_slug parameter */
             400: {

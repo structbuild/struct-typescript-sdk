@@ -509,7 +509,7 @@ export interface webhooks {
         put?: never;
         /**
          * Asset price tick callback
-         * @description Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP). Use `asset_symbols` to restrict to specific assets (empty = all).
+         * @description Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Use `asset_symbols` to restrict to specific assets (empty = all).
          */
         post: operations["asset-price-tick"];
         delete?: never;
@@ -529,7 +529,7 @@ export interface webhooks {
         put?: never;
         /**
          * Asset price window update callback
-         * @description Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP). Payload includes `update_type` (`"open"` or `"close"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `"5m"`, `"15m"`, `"1h"`, `"4h"`, `"1d"`, `"24h"`.
+         * @description Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Payload includes `update_type` (`"open"` or `"close"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `"5m"`, `"15m"`, `"1h"`, `"4h"`, `"1d"`, `"24h"`.
          */
         post: operations["asset-price-window-update"];
         delete?: never;
@@ -547,7 +547,7 @@ export interface components {
              * @description Asset symbol
              * @enum {string}
              */
-            symbol: "BTC" | "ETH" | "SOL" | "XRP";
+            symbol: "BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE";
             /** @description Current asset price in USD from the Chainlink feed */
             price: number;
             /**
@@ -562,7 +562,7 @@ export interface components {
              * @description Asset symbol
              * @enum {string}
              */
-            symbol: "BTC" | "ETH" | "SOL" | "XRP";
+            symbol: "BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE";
             /**
              * @description Candle / window size
              * @enum {string}
@@ -1260,7 +1260,7 @@ export interface components {
             exclude_shortterm_markets?: boolean;
             /**
              * @description Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update` webhooks.
-             *     Valid values: "BTC", "ETH", "SOL", "XRP". Empty = all assets.
+             *     Valid values: "BTC", "ETH", "SOL", "XRP", "DOGE", "BNB", "HYPE". Empty = all assets.
              */
             asset_symbols?: components["schemas"]["WebhookAssetSymbol"][];
             spike_direction?: null | components["schemas"]["SpikeDirection"];
@@ -1442,7 +1442,7 @@ export interface components {
          * @description Crypto asset symbols accepted by `asset_price_tick` and `asset_price_window_update` filters.
          * @enum {string}
          */
-        WebhookAssetSymbol: "BTC" | "ETH" | "SOL" | "XRP";
+        WebhookAssetSymbol: "BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE";
         /** @description Single event type entry for the events list */
         WebhookEventInfo: {
             /** @description Event type identifier (e.g. "first_trade") */
@@ -1570,7 +1570,7 @@ export interface components {
             spike_ratio?: number | null;
             /**
              * @description Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update`.
-             *     Valid values: "BTC", "ETH", "SOL", "XRP". Empty = all assets (send everything).
+             *     Valid values: "BTC", "ETH", "SOL", "XRP", "DOGE", "BNB", "HYPE". Empty = all assets (send everything).
              */
             asset_symbols?: components["schemas"]["WebhookAssetSymbol"][];
         };
@@ -2057,12 +2057,12 @@ export interface components {
         /** @description Subscription filters for the `asset_price_tick` event. All fields are optional. */
         AssetPriceTickFilters: {
             /** @description Restrict to these crypto assets. Empty = all assets. */
-            asset_symbols?: ("BTC" | "ETH" | "SOL" | "XRP")[];
+            asset_symbols?: ("BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE")[];
         };
         /** @description Subscription filters for the `asset_price_window_update` event. All fields are optional. */
         AssetPriceWindowUpdateFilters: {
             /** @description Restrict to these crypto assets. Empty = all assets. */
-            asset_symbols?: ("BTC" | "ETH" | "SOL" | "XRP")[];
+            asset_symbols?: ("BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE")[];
             /** @description Restrict to these candle sizes. Empty = all sizes. */
             timeframes?: ("5m" | "15m" | "1h" | "4h" | "1d" | "24h")[];
         };

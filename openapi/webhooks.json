@@ -409,7 +409,10 @@
               "BTC",
               "ETH",
               "SOL",
-              "XRP"
+              "XRP",
+              "DOGE",
+              "BNB",
+              "HYPE"
             ],
             "description": "Asset symbol"
           },
@@ -443,7 +446,10 @@
               "BTC",
               "ETH",
               "SOL",
-              "XRP"
+              "XRP",
+              "DOGE",
+              "BNB",
+              "HYPE"
             ],
             "description": "Asset symbol"
           },
@@ -2090,7 +2096,7 @@
             "items": {
               "$ref": "#/components/schemas/WebhookAssetSymbol"
             },
-            "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update` webhooks.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\". Empty = all assets."
+            "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update` webhooks.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\", \"DOGE\", \"BNB\", \"HYPE\". Empty = all assets."
           },
           "spike_direction": {
             "oneOf": [
@@ -2604,7 +2610,10 @@
           "BTC",
           "ETH",
           "SOL",
-          "XRP"
+          "XRP",
+          "DOGE",
+          "BNB",
+          "HYPE"
         ]
       },
       "WebhookEventInfo": {
@@ -2856,7 +2865,7 @@
             "items": {
               "$ref": "#/components/schemas/WebhookAssetSymbol"
             },
-            "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update`.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\". Empty = all assets (send everything)."
+            "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update`.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\", \"DOGE\", \"BNB\", \"HYPE\". Empty = all assets (send everything)."
           }
         }
       },
@@ -4268,7 +4277,10 @@
                 "BTC",
                 "ETH",
                 "SOL",
-                "XRP"
+                "XRP",
+                "DOGE",
+                "BNB",
+                "HYPE"
               ]
             },
             "description": "Restrict to these crypto assets. Empty = all assets."
@@ -4287,7 +4299,10 @@
                 "BTC",
                 "ETH",
                 "SOL",
-                "XRP"
+                "XRP",
+                "DOGE",
+                "BNB",
+                "HYPE"
               ]
             },
             "maxItems": 500,
@@ -4916,7 +4931,7 @@
     "asset-price-tick": {
       "post": {
         "summary": "Asset price tick callback",
-        "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP). Use `asset_symbols` to restrict to specific assets (empty = all).",
+        "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Use `asset_symbols` to restrict to specific assets (empty = all).",
         "operationId": "asset-price-tick",
         "tags": [
           "Webhook Callbacks"
@@ -4947,7 +4962,7 @@
     "asset-price-window-update": {
       "post": {
         "summary": "Asset price window update callback",
-        "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"`, `\"24h\"`.",
+        "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"`, `\"24h\"`.",
         "operationId": "asset-price-window-update",
         "tags": [
           "Webhook Callbacks"
