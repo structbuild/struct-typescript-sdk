@@ -1,5 +1,5 @@
 import { WebSocketError, WebSocketClosedError } from "./errors.js";
-import type { ConnectionState, WebSocketMessage } from "./types/ws.js";
+import type { ConnectionState } from "./types/ws.js";
 import type { RetryConfig } from "./types/http.js";
 
 const DEFAULT_INITIAL_DELAY_MS = 1_000;
@@ -19,8 +19,10 @@ export class WebSocketTransport {
 	private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 	private reconnectAttempt = 0;
 	private intentionalClose = false;
-	private readonly pendingMessages: WebSocketMessage[] = [];
-	private readonly replayMessages: WebSocketMessage[] = [];
+	private connectResolve: (() => void) | null = null;
+	private connectReject: ((err: Error) => void) | null = null;
+	private readonly pendingMessages: Record<string, unknown>[] = [];
+	private readonly replayMessages: Record<string, unknown>[] = [];
 	private readonly url: string;
 	private readonly retry: RetryConfig;
 	private readonly callbacks: WebSocketTransportCallbacks;
@@ -35,17 +37,28 @@ export class WebSocketTransport {
 		return this._state;
 	}
 
-	connect(): void {
-		if (this._state === "connected" || this._state === "connecting" || this._state === "reconnecting") {
-			return;
+	connect(): Promise<void> {
+		if (this._state === "connected") return Promise.resolve();
+		if (this._state === "connecting" || this._state === "reconnecting") {
+			return new Promise<void>((resolve, reject) => {
+				const prevResolve = this.connectResolve;
+				const prevReject = this.connectReject;
+				this.connectResolve = () => { prevResolve?.(); resolve(); };
+				this.connectReject = (err) => { prevReject?.(err); reject(err); };
+			});
 		}
-		if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
-			return;
-		}
+
 		this.intentionalClose = false;
 		this.clearReconnectTimer();
 		this.setState("connecting");
+
+		const promise = new Promise<void>((resolve, reject) => {
+			this.connectResolve = resolve;
+			this.connectReject = reject;
+		});
+
 		this.createSocket();
+		return promise;
 	}
 
 	disconnect(): void {
@@ -53,6 +66,7 @@ export class WebSocketTransport {
 		this.clearReconnectTimer();
 		this.pendingMessages.length = 0;
 		this.replayMessages.length = 0;
+		this.resolveConnect(new WebSocketClosedError(1000, "client disconnect"));
 		if (this.ws) {
 			this.ws.close(1000, "client disconnect");
 			this.ws = null;
@@ -60,7 +74,7 @@ export class WebSocketTransport {
 		this.setState("disconnected");
 	}
 
-	send(message: WebSocketMessage): void {
+	send(message: Record<string, unknown>): void {
 		if (this._state === "connected" && this.ws?.readyState === WebSocket.OPEN) {
 			this.ws.send(JSON.stringify(message));
 		} else {
@@ -68,29 +82,31 @@ export class WebSocketTransport {
 		}
 	}
 
-	addReplayMessage(message: WebSocketMessage): void {
+	addReplayMessage(message: Record<string, unknown>): void {
 		this.replayMessages.push(message);
-	}
-
-	removeReplayMessages(predicate: (msg: WebSocketMessage) => boolean): void {
-		for (let i = this.replayMessages.length - 1; i >= 0; i--) {
-			if (predicate(this.replayMessages[i]!)) {
-				this.replayMessages.splice(i, 1);
-			}
-		}
 	}
 
 	clearReplayMessages(): void {
 		this.replayMessages.length = 0;
 	}
 
+	private resolveConnect(error?: Error): void {
+		if (error) {
+			this.connectReject?.(error);
+		} else {
+			this.connectResolve?.();
+		}
+		this.connectResolve = null;
+		this.connectReject = null;
+	}
+
 	private createSocket(): void {
 		try {
 			this.ws = new WebSocket(this.url);
 		} catch (err) {
-			this.callbacks.onError(
-				new WebSocketError("Failed to create WebSocket", { cause: err }),
-			);
+			const error = new WebSocketError("Failed to create WebSocket", { cause: err });
+			this.callbacks.onError(error);
+			this.resolveConnect(error);
 			this.scheduleReconnect();
 			return;
 		}
@@ -100,6 +116,7 @@ export class WebSocketTransport {
 			this.reconnectAttempt = 0;
 			this.replaySubscriptions();
 			this.flushPendingMessages();
+			this.resolveConnect();
 			this.callbacks.onOpen();
 		};
 
@@ -110,6 +127,7 @@ export class WebSocketTransport {
 				this.callbacks.onClose(event.code, event.reason);
 				return;
 			}
+			this.resolveConnect(new WebSocketClosedError(event.code, event.reason));
 			this.callbacks.onClose(event.code, event.reason);
 			this.scheduleReconnect();
 		};

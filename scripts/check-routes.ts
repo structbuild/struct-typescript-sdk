@@ -3,6 +3,7 @@ import { join } from "node:path";
 
 const NAMESPACES_DIR = join(import.meta.dirname, "../src/namespaces");
 const TYPES_FILE = join(import.meta.dirname, "../src/types/index.ts");
+const WS_TYPES_FILE = join(import.meta.dirname, "../src/types/ws.ts");
 
 interface SpecConfig {
 	specPath: string;
@@ -114,15 +115,37 @@ async function getExportedSchemas(typesContent: string): Promise<Set<string>> {
 	const exported = new Set<string>();
 	for (const m of typesContent.matchAll(/Schemas\["(\w+)"\]/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/WebhookSchemas\["(\w+)"\]/g)) exported.add(m[1]);
+	for (const m of typesContent.matchAll(/WsSchemas\["(\w+)"\]/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/export type (\w+)\s*=/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/export interface (\w+)/g)) exported.add(m[1]);
 	return exported;
 }
 
+async function getWsSpecRooms(jsonSpecPath: string): Promise<string[]> {
+	const spec = JSON.parse(await readFile(jsonSpecPath, "utf-8"));
+	return Object.keys(spec.channels ?? {});
+}
+
+async function getSdkWsRooms(): Promise<Set<string>> {
+	const content = await readFile(WS_TYPES_FILE, "utf-8");
+	const rooms = new Set<string>();
+	const subscriptionMapMatch = content.match(/interface WsSubscriptionMap\s*\{([^}]+)\}/);
+	if (subscriptionMapMatch) {
+		const regex = /(\w+)\s*:/g;
+		let match: RegExpExecArray | null;
+		while ((match = regex.exec(subscriptionMapMatch[1])) !== null) {
+			rooms.add(match[1]);
+		}
+	}
+	return rooms;
+}
+
 let hasErrors = false;
 
 const typesContent = await readFile(TYPES_FILE, "utf-8");
-const exportedSchemas = await getExportedSchemas(typesContent);
+const wsTypesContent = await readFile(join(import.meta.dirname, "../src/types/ws.ts"), "utf-8");
+const combinedTypesContent = typesContent + "\n" + wsTypesContent;
+const exportedSchemas = await getExportedSchemas(combinedTypesContent);
 
 for (const config of specs) {
 	const specName = config.venuePrefix ?? "platform";
@@ -174,6 +197,49 @@ for (const config of specs) {
 	} else {
 		console.log(`\x1b[32m✓ [${specName}] All schemas exported.\x1b[0m`);
 	}
+}
+
+const wsJsonPath = join(import.meta.dirname, "../openapi/ws.json");
+const wsSpecRooms = await getWsSpecRooms(wsJsonPath);
+const sdkWsRooms = await getSdkWsRooms();
+
+const phantomWsRooms = [...sdkWsRooms].filter((r) => !wsSpecRooms.includes(r));
+const missingWsRooms = wsSpecRooms.filter((r) => !sdkWsRooms.has(r));
+
+if (phantomWsRooms.length > 0) {
+	hasErrors = true;
+	console.error(`\x1b[31m✗ [ws] Phantom rooms (SDK rooms not in WS OpenAPI spec):\x1b[0m\n`);
+	for (const r of phantomWsRooms) {
+		console.error(`  ${r}`);
+	}
+	console.error();
+}
+
+if (missingWsRooms.length > 0) {
+	hasErrors = true;
+	console.error(`\x1b[31m✗ [ws] Unimplemented rooms (WS OpenAPI spec rooms missing from SDK):\x1b[0m\n`);
+	for (const r of missingWsRooms) {
+		console.error(`  ${r}`);
+	}
+	console.error();
+}
+
+if (phantomWsRooms.length === 0 && missingWsRooms.length === 0) {
+	console.log(`\x1b[32m✓ [ws] All SDK rooms match the WS OpenAPI spec.\x1b[0m`);
+}
+
+const wsSpecSchemas = await getSpecSchemas(wsJsonPath);
+const missingWsSchemas = wsSpecSchemas.filter((s) => !exportedSchemas.has(s));
+
+if (missingWsSchemas.length > 0) {
+	hasErrors = true;
+	console.error(`\x1b[31m✗ [ws] Missing schema exports:\x1b[0m\n`);
+	for (const schema of missingWsSchemas) {
+		console.error(`  WsSchemas["${schema}"]`);
+	}
+	console.error();
+} else {
+	console.log(`\x1b[32m✓ [ws] All WS schemas exported.\x1b[0m`);
 }
 
 process.exit(hasErrors ? 1 : 0);
