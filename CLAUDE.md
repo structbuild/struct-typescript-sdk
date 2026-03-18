@@ -17,6 +17,8 @@ TypeScript SDK (`@structbuild/sdk`) for prediction market APIs via `api.struct.t
 - **Check routes:** `bun run check-routes` (validates namespace routes match OpenAPI spec)
 - **Fetch webhook spec:** `bun run fetch-spec:webhooks`
 - **Generate webhook types:** `bun run generate:webhooks`
+- **Fetch WS spec:** `bun run fetch-spec:ws` (AsyncAPI format)
+- **Generate WS types:** `bun run generate:ws`
 - **Fix spec:** `bun run fix-spec` (fixes broken `$ref`s in the OpenAPI spec)
 - **Test:** `bun test` (integration tests against live API, requires `STRUCT_API_KEY`)
 - **Test watch:** `bun test --watch`
@@ -29,11 +31,12 @@ TypeScript SDK (`@structbuild/sdk`) for prediction market APIs via `api.struct.t
 - `src/http.ts` — Generic `HttpClient` built on `fetch` with timeout via `AbortController`, query param building, exponential backoff retry (429/5xx), request/response hooks, and typed `HttpResponse<T>` responses.
 - `src/errors.ts` — Error hierarchy: `StructError` → `HttpError` | `NetworkError` | `TimeoutError` | `WebSocketError` | `WebSocketClosedError`.
 - `src/paginate.ts` — `paginate()` async generator for offset-based pagination across any namespace method.
-- `src/ws.ts` — `StructWebSocket` for real-time trade streaming. Event system (`on`/`off`/`once`), subscriptions (markets, positions, wallets, conditions, whale/smart-money/insider rooms), auto-replays subscriptions on reconnect.
-- `src/ws-transport.ts` — Low-level WebSocket connection management with reconnection (exponential backoff + jitter), pending/replay message queues.
-- `src/types/` — All type definitions. `common.ts` (pagination/sort/Venue), `helpers.ts` (OpenAPI type utilities: `OperationQuery`, `OperationPath`, `OperationResponse`), `webhook-helpers.ts` (webhook OpenAPI type utilities), `http.ts` (client config/request/response), `ws.ts` (WebSocket types). `index.ts` barrel exports all types.
+- `src/ws.ts` — `StructWebSocket` for real-time streaming. Room-based protocol (`join_room`/`room_message`). Generic typed `subscribe(room, filters?)` / `unsubscribe(room)` with Promise-based acks. Event system (`on`/`off`/`once`/`removeAllListeners`), `on()` returns disposer function. Auto-replays subscriptions on reconnect, keepalive ping.
+- `src/ws-transport.ts` — Low-level WebSocket connection management with reconnection (exponential backoff + jitter), pending/replay message queues. `connect()` returns `Promise<void>`.
+- `src/types/` — All type definitions. `common.ts` (pagination/sort/Venue), `helpers.ts` (OpenAPI type utilities: `OperationQuery`, `OperationPath`, `OperationResponse`), `webhook-helpers.ts` (webhook OpenAPI type utilities), `ws-helpers.ts` (WS type utilities: `WsSchemas`), `http.ts` (client config/request/response), `ws.ts` (WebSocket types: room IDs, subscribe filters, event types, event map, subscription/response maps). `index.ts` barrel exports all types.
 - `src/generated/polymarket.ts` — Auto-generated types from the Polymarket OpenAPI spec via `openapi-typescript`. Do not edit manually.
 - `src/generated/webhooks.ts` — Auto-generated types from the Webhooks OpenAPI spec. Do not edit manually.
+- `src/generated/ws.ts` — Auto-generated types from the WS AsyncAPI spec (`scripts/generate-ws-types.ts`). Do not edit manually.
 - `src/index.ts` — Public barrel export.
 - `tests/integration.test.ts` — Auto-discovers namespace methods and runs them against the live API. Test config in `tests/integration.meta.ts` defines params and operationId mappings per method.
 

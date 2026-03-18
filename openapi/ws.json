@@ -1,0 +1,1742 @@
+{
+  "asyncapi": "3.0.0",
+  "info": {
+    "title": "Polymarket WebSocket API",
+    "version": "1.0.0",
+    "description": "Real-time WebSocket streaming API for Polymarket prediction-market data.\n\n## Connection\nConnect to `wss://api.struct.to/ws` using a standard WebSocket client.\n\n## Authentication\nAfter connecting, send:\n```json\n{\"type\":\"authenticate\",\"jwt\":\"<your-JWT>\"}\n```\nUnauthenticated connections can read public rooms but credit checks are enforced.\n\n## Joining a room\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\nAfter joining, send a `room_message` with room-specific subscribe payload:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\nThe server expects a `{\"type\":\"ping\"}` or WebSocket ping frame at least every 60 seconds."
+  },
+  "servers": {
+    "production": {
+      "host": "api.struct.to",
+      "pathname": "/ws",
+      "protocol": "wss",
+      "description": "Production WebSocket endpoint"
+    }
+  },
+  "channels": {
+    "polymarket_trades": {
+      "address": "polymarket_trades",
+      "title": "Trades",
+      "summary": "Trades stream",
+      "description": "Real-time stream of matched Polymarket prediction-market trades. At least one filter is required — open-ended subscriptions are rejected to prevent fan-out across all trades.\n\n**Filters (at least one required):**\n- `condition_ids` — 64-char hex condition IDs (with or without `0x` prefix)\n- `market_slugs` — market slugs\n- `event_slugs` — event slugs (delivers all markets under each event)\n- `position_ids` — ERC-1155 token IDs (decimal or hex)\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"` to clear all subscriptions.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/TradesStreamSubscribe"
+        },
+        "tradeStreamEvent": {
+          "$ref": "#/components/messages/TradeStreamEvent"
+        }
+      }
+    },
+    "polymarket_asset_prices": {
+      "address": "polymarket_asset_prices",
+      "title": "Asset Prices",
+      "summary": "Asset prices stream",
+      "description": "Real-time crypto-asset price feed (BTC, ETH, SOL, XRP, …). Delivers both raw `asset_price_tick` events on every price update and `asset_price_window_update` events at candle open/close boundaries.\n\n**Filter (optional):** `asset_symbols` — uppercase symbols to filter by. Empty array subscribes to all symbols.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/AssetPricesSubscribe"
+        },
+        "assetPriceTickEvent": {
+          "$ref": "#/components/messages/AssetPriceTickEvent"
+        },
+        "assetPriceWindowUpdateEvent": {
+          "$ref": "#/components/messages/AssetPriceWindowUpdateEvent"
+        }
+      }
+    },
+    "polymarket_asset_window_updates": {
+      "address": "polymarket_asset_window_updates",
+      "title": "Asset Window Updates",
+      "summary": "Asset window updates stream",
+      "description": "Filtered stream of asset-price candle open/close events. Unlike `polymarket_asset_prices`, this room **requires** at least one filter so clients receive only the symbols and/or timeframes they care about.\n\n**Filters (at least one required):**\n- `asset_symbols` — uppercase symbols (e.g. `\"BTC\"`, `\"ETH\"`)\n- `timeframes` — candle sizes: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"` / `\"24h\"`\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/AssetWindowUpdatesSubscribe"
+        },
+        "assetWindowUpdateEvent": {
+          "$ref": "#/components/messages/AssetWindowUpdateEvent"
+        }
+      }
+    },
+    "polymarket_market_metrics": {
+      "address": "polymarket_market_metrics",
+      "title": "Market Metrics",
+      "summary": "Market (condition) metrics stream",
+      "description": "Real-time volume and transaction-count metrics per market condition, aggregated across multiple timeframes (`1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Filter (required):** `condition_ids` — 64-char hex condition IDs. Invalid or malformed IDs are returned in `rejected`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/MarketMetricsSubscribe"
+        },
+        "marketMetricsEvent": {
+          "$ref": "#/components/messages/MarketMetricsEvent"
+        }
+      }
+    },
+    "polymarket_event_metrics": {
+      "address": "polymarket_event_metrics",
+      "title": "Event Metrics",
+      "summary": "Event metrics stream",
+      "description": "Real-time volume and transaction-count metrics aggregated at the event (parent market group) level, across multiple timeframes.\n\n**Filter (required):** `event_slugs` — event slugs (lowercase).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/EventMetricsSubscribe"
+        },
+        "eventMetricsEvent": {
+          "$ref": "#/components/messages/EventMetricsEvent"
+        }
+      }
+    },
+    "polymarket_position_metrics": {
+      "address": "polymarket_position_metrics",
+      "title": "Position Metrics",
+      "summary": "Position (outcome token) metrics stream",
+      "description": "Real-time volume and transaction-count metrics per outcome-token position, across multiple timeframes.\n\n**Filter (required):** `position_ids` — ERC-1155 token IDs (decimal or hex; normalized to decimal strings internally).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/PositionMetricsSubscribe"
+        },
+        "positionMetricsEvent": {
+          "$ref": "#/components/messages/PositionMetricsEvent"
+        }
+      }
+    },
+    "polymarket_trader_pnl": {
+      "address": "polymarket_trader_pnl",
+      "title": "Trader PnL",
+      "summary": "Trader PnL stream",
+      "description": "Real-time profit-and-loss updates for tracked traders, delivered at global, market (condition), and event granularity.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Events pushed:** `trader_global_pnl_update`, `trader_market_pnl_update`, `trader_event_pnl_update`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/TraderPnlSubscribe"
+        },
+        "traderGlobalPnlEvent": {
+          "$ref": "#/components/messages/TraderGlobalPnlEvent"
+        },
+        "traderMarketPnlEvent": {
+          "$ref": "#/components/messages/TraderMarketPnlEvent"
+        },
+        "traderEventPnlEvent": {
+          "$ref": "#/components/messages/TraderEventPnlEvent"
+        }
+      }
+    },
+    "polymarket_accounts": {
+      "address": "polymarket_accounts",
+      "title": "Accounts",
+      "summary": "Account balances stream",
+      "description": "Real-time balance updates for Polymarket wallet accounts.\n\nAlways streams ERC-1155 outcome token (shares) balance changes for subscribed wallets as `accounts_update` events. Opt in to additional token streams via boolean flags:\n- `include_usdce: true` — also receive `usdce_update` events (USDCe collateral balance)\n- `include_matic: true` — also receive `matic_update` events (MATIC gas balance)\n\n**Filter (required):** `wallets` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/AccountsSubscribe"
+        },
+        "accountsUpdateEvent": {
+          "$ref": "#/components/messages/AccountsUpdateEvent"
+        },
+        "usdceUpdateEvent": {
+          "$ref": "#/components/messages/UsdceUpdateEvent"
+        },
+        "maticUpdateEvent": {
+          "$ref": "#/components/messages/MaticUpdateEvent"
+        }
+      }
+    },
+    "polymarket_order_book": {
+      "address": "polymarket_order_book",
+      "title": "Order Book",
+      "summary": "Order book snapshots stream",
+      "description": "Real-time CLOB orderbook snapshots for Polymarket outcome tokens. Each event contains the full aggregated bid/ask book plus pre-computed derived metrics (best bid/ask, mid price, spread, USD liquidity depth, level counts).\n\n**Filters (at least one required, max 500 combined):**\n- `condition_ids` — 64-char hex condition IDs (market); delivers snapshots for all positions in that market\n- `position_ids` — hex token/asset IDs (individual outcome tokens)\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/OrderBookSubscribe"
+        },
+        "orderBookUpdateEvent": {
+          "$ref": "#/components/messages/OrderBookUpdateEvent"
+        }
+      }
+    }
+  },
+  "operations": {
+    "subscribePolymarketTrades": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_trades"
+      },
+      "summary": "Subscribe to trades stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trades/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketTrades": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_trades"
+      },
+      "summary": "Receive trades stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trades/messages/tradeStreamEvent"
+        }
+      ]
+    },
+    "subscribePolymarketAssetPrices": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_asset_prices"
+      },
+      "summary": "Subscribe to asset prices stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_asset_prices/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketAssetPrices": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_asset_prices"
+      },
+      "summary": "Receive asset prices stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_asset_prices/messages/assetPriceTickEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_asset_prices/messages/assetPriceWindowUpdateEvent"
+        }
+      ]
+    },
+    "subscribePolymarketAssetWindowUpdates": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_asset_window_updates"
+      },
+      "summary": "Subscribe to asset window updates stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_asset_window_updates/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketAssetWindowUpdates": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_asset_window_updates"
+      },
+      "summary": "Receive asset window updates stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_asset_window_updates/messages/assetWindowUpdateEvent"
+        }
+      ]
+    },
+    "subscribePolymarketMarketMetrics": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_market_metrics"
+      },
+      "summary": "Subscribe to market (condition) metrics stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_market_metrics/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketMarketMetrics": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_market_metrics"
+      },
+      "summary": "Receive market (condition) metrics stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_market_metrics/messages/marketMetricsEvent"
+        }
+      ]
+    },
+    "subscribePolymarketEventMetrics": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_event_metrics"
+      },
+      "summary": "Subscribe to event metrics stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_event_metrics/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketEventMetrics": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_event_metrics"
+      },
+      "summary": "Receive event metrics stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_event_metrics/messages/eventMetricsEvent"
+        }
+      ]
+    },
+    "subscribePolymarketPositionMetrics": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_position_metrics"
+      },
+      "summary": "Subscribe to position (outcome token) metrics stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_position_metrics/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketPositionMetrics": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_position_metrics"
+      },
+      "summary": "Receive position (outcome token) metrics stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_position_metrics/messages/positionMetricsEvent"
+        }
+      ]
+    },
+    "subscribePolymarketTraderPnl": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_trader_pnl"
+      },
+      "summary": "Subscribe to trader pnl stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trader_pnl/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketTraderPnl": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_trader_pnl"
+      },
+      "summary": "Receive trader pnl stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trader_pnl/messages/traderGlobalPnlEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl/messages/traderMarketPnlEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl/messages/traderEventPnlEvent"
+        }
+      ]
+    },
+    "subscribePolymarketAccounts": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_accounts"
+      },
+      "summary": "Subscribe to account balances stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_accounts/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketAccounts": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_accounts"
+      },
+      "summary": "Receive account balances stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_accounts/messages/accountsUpdateEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_accounts/messages/usdceUpdateEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_accounts/messages/maticUpdateEvent"
+        }
+      ]
+    },
+    "subscribePolymarketOrderBook": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_order_book"
+      },
+      "summary": "Subscribe to order book snapshots stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_order_book/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketOrderBook": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_order_book"
+      },
+      "summary": "Receive order book snapshots stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_order_book/messages/orderBookUpdateEvent"
+        }
+      ]
+    }
+  },
+  "components": {
+    "messages": {
+      "TradesStreamSubscribe": {
+        "summary": "Subscribe to trades stream",
+        "payload": {
+          "$ref": "#/components/schemas/TradesStreamSubscribeMessage"
+        }
+      },
+      "TradeStreamEvent": {
+        "summary": "a matched trade on a subscribed market/position/event/slug",
+        "payload": {
+          "$ref": "#/components/schemas/TradeStreamEvent"
+        }
+      },
+      "AssetPricesSubscribe": {
+        "summary": "Subscribe to asset prices stream",
+        "payload": {
+          "$ref": "#/components/schemas/AssetPricesSubscribeMessage"
+        }
+      },
+      "AssetPriceTickEvent": {
+        "summary": "a crypto-asset price tick",
+        "payload": {
+          "$ref": "#/components/schemas/AssetPriceTickEvent"
+        }
+      },
+      "AssetPriceWindowUpdateEvent": {
+        "summary": "candle open or close for a crypto asset",
+        "payload": {
+          "$ref": "#/components/schemas/AssetPriceWindowUpdateEvent"
+        }
+      },
+      "AssetWindowUpdatesSubscribe": {
+        "summary": "Subscribe to asset window updates stream",
+        "payload": {
+          "$ref": "#/components/schemas/AssetWindowUpdatesSubscribeMessage"
+        }
+      },
+      "AssetWindowUpdateEvent": {
+        "summary": "Server-pushed event from the polymarket_asset_window_updates room",
+        "payload": {
+          "$ref": "#/components/schemas/AssetWindowUpdateEvent"
+        }
+      },
+      "MarketMetricsSubscribe": {
+        "summary": "Subscribe to market (condition) metrics stream",
+        "payload": {
+          "$ref": "#/components/schemas/MarketMetricsSubscribeMessage"
+        }
+      },
+      "MarketMetricsEvent": {
+        "summary": "updated metrics for a condition",
+        "payload": {
+          "$ref": "#/components/schemas/MarketMetricsEvent"
+        }
+      },
+      "EventMetricsSubscribe": {
+        "summary": "Subscribe to event metrics stream",
+        "payload": {
+          "$ref": "#/components/schemas/EventMetricsSubscribeMessage"
+        }
+      },
+      "EventMetricsEvent": {
+        "summary": "updated aggregated metrics for an event",
+        "payload": {
+          "$ref": "#/components/schemas/EventMetricsEvent"
+        }
+      },
+      "PositionMetricsSubscribe": {
+        "summary": "Subscribe to position (outcome token) metrics stream",
+        "payload": {
+          "$ref": "#/components/schemas/PositionMetricsSubscribeMessage"
+        }
+      },
+      "PositionMetricsEvent": {
+        "summary": "updated metrics for an outcome token",
+        "payload": {
+          "$ref": "#/components/schemas/PositionMetricsEvent"
+        }
+      },
+      "TraderPnlSubscribe": {
+        "summary": "Subscribe to trader pnl stream",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPnlSubscribeMessage"
+        }
+      },
+      "TraderGlobalPnlEvent": {
+        "summary": "global (portfolio-level) PnL update for a trader",
+        "payload": {
+          "$ref": "#/components/schemas/TraderGlobalPnlEvent"
+        }
+      },
+      "TraderMarketPnlEvent": {
+        "summary": "per-market PnL update for a trader",
+        "payload": {
+          "$ref": "#/components/schemas/TraderMarketPnlEvent"
+        }
+      },
+      "TraderEventPnlEvent": {
+        "summary": "per-event PnL update for a trader",
+        "payload": {
+          "$ref": "#/components/schemas/TraderEventPnlEvent"
+        }
+      },
+      "AccountsSubscribe": {
+        "summary": "Subscribe to account balances stream",
+        "payload": {
+          "$ref": "#/components/schemas/AccountsSubscribeMessage"
+        }
+      },
+      "AccountsUpdateEvent": {
+        "summary": "ERC-1155 outcome token balance change for a wallet",
+        "payload": {
+          "$ref": "#/components/schemas/AccountsUpdateEvent"
+        }
+      },
+      "UsdceUpdateEvent": {
+        "summary": "USDCe collateral balance change for a wallet",
+        "payload": {
+          "$ref": "#/components/schemas/UsdceUpdateEvent"
+        }
+      },
+      "MaticUpdateEvent": {
+        "summary": "MATIC native balance change for a wallet",
+        "payload": {
+          "$ref": "#/components/schemas/MaticUpdateEvent"
+        }
+      },
+      "OrderBookSubscribe": {
+        "summary": "Subscribe to order book snapshots stream",
+        "payload": {
+          "$ref": "#/components/schemas/OrderBookSubscribeMessage"
+        }
+      },
+      "OrderBookUpdateEvent": {
+        "summary": "full CLOB orderbook snapshot for an outcome token",
+        "payload": {
+          "$ref": "#/components/schemas/OrderBookUpdateEvent"
+        }
+      }
+    },
+    "schemas": {
+      "OrderBookUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed event: full CLOB orderbook snapshot for an outcome token. Envelope type: \"order_book_update\". Delivered whenever the book changes for a subscribed condition or position.",
+        "required": [
+          "asset_id",
+          "market",
+          "bids",
+          "asks",
+          "timestamp",
+          "hash"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "description": "Hex token ID (position / outcome token)"
+          },
+          "market": {
+            "type": "string",
+            "description": "Condition ID (hex)"
+          },
+          "bids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderBookLevel"
+            },
+            "description": "Bid levels sorted best-first (highest price first)"
+          },
+          "asks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderBookLevel"
+            },
+            "description": "Ask levels sorted best-first (lowest price first)"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix milliseconds from CLOB message"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Orderbook content hash — identical hash means no change"
+          },
+          "best_bid": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Best bid price (0–1)"
+          },
+          "best_ask": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Best ask price (0–1)"
+          },
+          "mid_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "(best_bid + best_ask) / 2"
+          },
+          "spread": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "best_ask − best_bid"
+          },
+          "bid_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Total USD value of all bid levels"
+          },
+          "ask_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Total USD value of all ask levels"
+          },
+          "bid_levels": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Number of bid price levels"
+          },
+          "ask_levels": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Number of ask price levels"
+          }
+        }
+      },
+      "OrderBookLevel": {
+        "type": "array",
+        "description": "A single price level: [price_string, size_string]",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "OrderBookSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for an order book subscription",
+        "properties": {
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted condition IDs"
+          },
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted position IDs"
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter values that were rejected (invalid format or limit exceeded)"
+          }
+        }
+      },
+      "OrderBookSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the order book stream. At least one filter is required. Maximum 500 combined condition_ids + position_ids per client.",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Condition IDs (markets). All positions within each market are delivered.",
+            "maxItems": 500
+          },
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Token / asset IDs (individual outcome positions, hex strings).",
+            "maxItems": 500
+          }
+        }
+      },
+      "MaticUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed event: MATIC native balance change for a wallet. Envelope type: \"matic_update\". Only delivered when `include_matic: true`.",
+        "required": [
+          "address",
+          "block_number",
+          "updated_at"
+        ],
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address"
+          },
+          "balance": {
+            "type": "number",
+            "description": "Current MATIC balance — omitted when not available"
+          },
+          "block_number": {
+            "type": "integer",
+            "format": "uint64"
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix seconds"
+          }
+        }
+      },
+      "TradesStreamSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the trades stream. At least one filter field must be non-empty.",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "64-char hex condition IDs (with or without 0x prefix)"
+          },
+          "market_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Market slugs"
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Event slugs — subscribes to all markets under each event"
+          },
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "ERC-1155 outcome token IDs (decimal or hex strings)"
+          }
+        }
+      },
+      "TradesStreamSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a trades stream subscription",
+        "properties": {
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "market_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter values that were rejected (invalid format)"
+          }
+        }
+      },
+      "AssetPricesSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the asset prices stream. Empty asset_symbols = all assets.",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "asset_symbols": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Uppercase asset symbols (e.g. \"BTC\", \"ETH\"). Empty = subscribe to all."
+          }
+        }
+      },
+      "AssetPricesSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for an asset prices subscription",
+        "properties": {
+          "asset_symbols": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted symbols. Empty array means subscribed to all symbols."
+          }
+        }
+      },
+      "AssetWindowUpdatesSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the asset window updates stream. At least one of asset_symbols or timeframes must be non-empty.",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "asset_symbols": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Uppercase asset symbols (e.g. \"BTC\", \"ETH\")"
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "5m",
+                "15m",
+                "1h",
+                "4h",
+                "1d",
+                "24h"
+              ]
+            },
+            "description": "Candle sizes to filter by. \"1d\" and \"24h\" are treated as equivalent."
+          }
+        }
+      },
+      "AssetWindowUpdatesSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for an asset window updates subscription",
+        "properties": {
+          "asset_symbols": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Set if the subscription was rejected (e.g. no filters provided)"
+          }
+        }
+      },
+      "MarketMetricsSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the market metrics stream. condition_ids is required and must be non-empty.",
+        "required": [
+          "action",
+          "condition_ids"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "64-char hex condition IDs (with or without 0x prefix)",
+            "minItems": 1
+          }
+        }
+      },
+      "MarketMetricsSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a market metrics subscription",
+        "properties": {
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Condition IDs that were rejected (invalid format)"
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Set if the entire subscription was rejected"
+          }
+        }
+      },
+      "EventMetricsSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the event metrics stream. event_slugs is required and must be non-empty.",
+        "required": [
+          "action",
+          "event_slugs"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Event slugs (lowercase)",
+            "minItems": 1
+          }
+        }
+      },
+      "EventMetricsSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for an event metrics subscription",
+        "properties": {
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "PositionMetricsSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the position metrics stream. position_ids is required and must be non-empty.",
+        "required": [
+          "action",
+          "position_ids"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "ERC-1155 outcome token IDs (decimal or hex strings)",
+            "minItems": 1
+          }
+        }
+      },
+      "PositionMetricsSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a position metrics subscription",
+        "properties": {
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "TraderPnlSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the trader PnL stream. traders is required and must be non-empty.",
+        "required": [
+          "action",
+          "traders"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "EVM wallet addresses",
+            "minItems": 1
+          }
+        }
+      },
+      "TraderPnlSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a trader PnL subscription",
+        "properties": {
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "TradeStreamEvent": {
+        "type": "object",
+        "description": "Server-pushed event: a matched trade on a subscribed market/position/event/slug. Envelope type: \"trade_stream_update\".",
+        "required": [
+          "trader",
+          "taker",
+          "position_id",
+          "trade_id",
+          "hash",
+          "block",
+          "confirmed_at",
+          "amount_usd",
+          "shares_amount",
+          "fee",
+          "side",
+          "price"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Limit-order maker wallet"
+          },
+          "taker": {
+            "type": "string",
+            "description": "Order taker wallet"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "ERC-1155 outcome token ID"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "0 = Yes, 1 = No"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "trade_id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "amount_usd": {
+            "type": "number"
+          },
+          "shares_amount": {
+            "type": "number"
+          },
+          "fee": {
+            "type": "number"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "Buy",
+              "Sell"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        }
+      },
+      "AssetPriceTickEvent": {
+        "type": "object",
+        "description": "Server-pushed event: a crypto-asset price tick. Envelope type: \"asset_price_tick\".",
+        "required": [
+          "symbol",
+          "price",
+          "timestamp"
+        ],
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Uppercase asset symbol (e.g. \"BTC\")"
+          },
+          "price": {
+            "type": "number",
+            "description": "Current price in USD"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix milliseconds"
+          },
+          "change_24h": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "24-hour price change %"
+          },
+          "volume_24h": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "24-hour trading volume USD"
+          },
+          "market_cap": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      },
+      "AssetPriceWindowUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed event: candle open or close for a crypto asset. Envelope type: \"asset_price_window_update\".",
+        "required": [
+          "symbol",
+          "timeframe",
+          "update_type",
+          "open",
+          "close",
+          "high",
+          "low",
+          "timestamp"
+        ],
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "description": "Uppercase asset symbol"
+          },
+          "timeframe": {
+            "type": "string",
+            "enum": [
+              "5m",
+              "15m",
+              "1h",
+              "4h",
+              "1d",
+              "24h"
+            ]
+          },
+          "update_type": {
+            "type": "string",
+            "enum": [
+              "open",
+              "close"
+            ],
+            "description": "\"open\" = candle starting, \"close\" = candle finalised"
+          },
+          "open": {
+            "type": "number"
+          },
+          "close": {
+            "type": "number"
+          },
+          "high": {
+            "type": "number"
+          },
+          "low": {
+            "type": "number"
+          },
+          "volume": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Candle start time in Unix milliseconds"
+          }
+        }
+      },
+      "AssetWindowUpdateEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AssetPriceWindowUpdateEvent"
+          }
+        ],
+        "description": "Server-pushed event from the polymarket_asset_window_updates room. Envelope type: \"asset_window_update\"."
+      },
+      "MetricsTimeframe": {
+        "type": "object",
+        "description": "Volume and trade-count metrics for one timeframe window",
+        "required": [
+          "timeframe",
+          "volume_usd",
+          "trade_count"
+        ],
+        "properties": {
+          "timeframe": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ]
+          },
+          "volume_usd": {
+            "type": "number",
+            "description": "USD volume in this window"
+          },
+          "trade_count": {
+            "type": "integer",
+            "description": "Number of trades in this window"
+          }
+        }
+      },
+      "MarketMetricsEvent": {
+        "type": "object",
+        "description": "Server-pushed event: updated metrics for a condition. Envelope type: \"market_metrics_update\".",
+        "required": [
+          "condition_id",
+          "timeframes"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": "string",
+            "description": "0x-prefixed 64-char hex condition ID"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetricsTimeframe"
+            }
+          }
+        }
+      },
+      "EventMetricsEvent": {
+        "type": "object",
+        "description": "Server-pushed event: updated aggregated metrics for an event. Envelope type: \"event_metrics_update\".",
+        "required": [
+          "event_slug",
+          "timeframes"
+        ],
+        "properties": {
+          "event_slug": {
+            "type": "string"
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetricsTimeframe"
+            }
+          }
+        }
+      },
+      "PositionMetricsEvent": {
+        "type": "object",
+        "description": "Server-pushed event: updated metrics for an outcome token. Envelope type: \"position_metrics_update\".",
+        "required": [
+          "position_id",
+          "timeframes"
+        ],
+        "properties": {
+          "position_id": {
+            "type": "string",
+            "description": "ERC-1155 token ID (decimal string)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetricsTimeframe"
+            }
+          }
+        }
+      },
+      "PnlTimeframes": {
+        "type": "object",
+        "description": "PnL figures broken down by timeframe",
+        "properties": {
+          "1d": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "1-day PnL in USD"
+          },
+          "7d": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "30d": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "all": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "All-time PnL in USD"
+          }
+        }
+      },
+      "TraderGlobalPnlEvent": {
+        "type": "object",
+        "description": "Server-pushed event: global (portfolio-level) PnL update for a trader. Envelope type: \"trader_global_pnl_update\".",
+        "required": [
+          "trader",
+          "realized_pnl",
+          "unrealized_pnl",
+          "timeframe"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader EVM address"
+          },
+          "realized_pnl": {
+            "type": "number",
+            "description": "Realized PnL in USD"
+          },
+          "unrealized_pnl": {
+            "type": "number",
+            "description": "Unrealized PnL in USD"
+          },
+          "total_pnl": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Window that triggered the update"
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix seconds"
+          }
+        }
+      },
+      "TraderMarketPnlEvent": {
+        "type": "object",
+        "description": "Server-pushed event: per-market PnL update for a trader. Envelope type: \"trader_market_pnl_update\".",
+        "required": [
+          "trader",
+          "condition_id",
+          "realized_pnl",
+          "unrealized_pnl",
+          "timeframe"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "realized_pnl": {
+            "type": "number"
+          },
+          "unrealized_pnl": {
+            "type": "number"
+          },
+          "total_pnl": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "timeframe": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "TraderEventPnlEvent": {
+        "type": "object",
+        "description": "Server-pushed event: per-event PnL update for a trader. Envelope type: \"trader_event_pnl_update\".",
+        "required": [
+          "trader",
+          "event_slug",
+          "realized_pnl",
+          "unrealized_pnl",
+          "timeframe"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "realized_pnl": {
+            "type": "number"
+          },
+          "unrealized_pnl": {
+            "type": "number"
+          },
+          "total_pnl": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "timeframe": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "AccountsSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the accounts stream. `wallets` is required. Share balance updates (`accounts_update`) are always delivered. Set `include_usdce` or `include_matic` to also receive those balance streams.",
+        "required": [
+          "action",
+          "wallets"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "wallets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "EVM wallet addresses",
+            "minItems": 1
+          },
+          "include_usdce": {
+            "type": "boolean",
+            "default": false,
+            "description": "Also stream USDCe collateral balance updates for subscribed wallets"
+          },
+          "include_matic": {
+            "type": "boolean",
+            "default": false,
+            "description": "Also stream MATIC gas balance updates for subscribed wallets"
+          }
+        }
+      },
+      "AccountsSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for an accounts subscription",
+        "properties": {
+          "wallets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Addresses rejected (invalid format)"
+          },
+          "include_usdce": {
+            "type": "boolean"
+          },
+          "include_matic": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "AccountsUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed event: ERC-1155 outcome token balance change for a wallet. Envelope type: \"accounts_update\".",
+        "required": [
+          "wallet",
+          "position_id",
+          "balance",
+          "block_number",
+          "updated_at"
+        ],
+        "properties": {
+          "wallet": {
+            "type": "string",
+            "description": "Wallet address"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "ERC-1155 outcome token ID (decimal string)"
+          },
+          "balance": {
+            "type": "string",
+            "description": "Current token balance (U256 as decimal string)"
+          },
+          "block_number": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "condition_id": {
+            "type": "string",
+            "description": "Condition ID — omitted when not available"
+          },
+          "event_slug": {
+            "type": "string",
+            "description": "Event slug — omitted when not available"
+          }
+        }
+      },
+      "UsdceUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed event: USDCe collateral balance change for a wallet. Envelope type: \"usdce_update\". Only delivered when `include_usdce: true`.",
+        "required": [
+          "address",
+          "block_number",
+          "updated_at"
+        ],
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Wallet address"
+          },
+          "token_address": {
+            "type": "string",
+            "description": "USDCe contract address — omitted when not available"
+          },
+          "balance": {
+            "type": "number",
+            "description": "Current USDCe balance — omitted when not available"
+          },
+          "block_number": {
+            "type": "integer",
+            "format": "uint64"
+          },
+          "updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix seconds"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Send `{\"type\":\"authenticate\",\"jwt\":\"<token>\"}` after connecting"
+      }
+    }
+  }
+}
