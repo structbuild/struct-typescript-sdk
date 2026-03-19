@@ -33,7 +33,7 @@ export type GlobalPnlSortBy = Schemas["GlobalPnlSortBy"];
 export type GlobalPnlTrader = Schemas["GlobalPnlTrader"];
 export type Holder = Schemas["Holder"];
 export type HolderHistoryCandle = Schemas["HolderHistoryCandle"];
-export type MarketHolderPnl = Schemas["MarketHolderPnl"];
+export type HolderPnl = Schemas["HolderPnl"];
 export type MarketHoldersResponse = Schemas["MarketHoldersResponse"];
 export type MarketMetadata = Omit<Schemas["MarketMetadata"], "metrics"> & {
 	metrics: TimeframeRecord<number>;
@@ -57,7 +57,6 @@ export type Event = Omit<Schemas["PolymarketEvent"], "metrics"> & {
 export type PolymarketSeries = Schemas["PolymarketSeries"];
 export type Tag = Schemas["PolymarketTag"];
 export type UserProfile = Schemas["PolymarketUserProfile"];
-export type PositionHolderPnl = Schemas["PositionHolderPnl"];
 export type PositionHoldersResponse = Schemas["PositionHoldersResponse"];
 export type PositionMetricsResponse = Schemas["PositionMetricsResponse"];
 export type PositionVolumeChartResponse = Schemas["PositionVolumeChartResponse"];
@@ -155,18 +154,11 @@ export interface TraderEventPnlEntry {
 	last_trade_at: number | null;
 }
 
-export interface PnlCandleEntry {
-	ts: number;
-	pnl_usd: number;
-}
+export type PnlCandleEntry = Schemas["PnlCandleEntry"];
 
 export interface PnlListResponse<T> {
 	data: T[];
 	total_count: number;
-}
-
-export interface PnlCandlesResponse {
-	data: PnlCandleEntry[];
 }
 
 export interface TraderSearchResult {
@@ -281,12 +273,8 @@ export interface GetTraderPositionPnlParams extends OperationQuery<"get_trader_p
 	address: string;
 }
 
-export interface GetTraderPnlCandlesParams {
+export interface GetTraderPnlCandlesParams extends OperationQuery<"get_trader_pnl_candles"> {
 	address: string;
-	resolution?: PnlCandleResolution;
-	start_ts?: number;
-	end_ts?: number;
-	limit?: number;
 }
 
 export interface GetTraderTradesParams extends OperationQuery<"get_trader_trades"> {

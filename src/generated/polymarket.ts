@@ -153,7 +153,7 @@ export interface paths {
         };
         /**
          * Get market holders
-         * @description Retrieve holders of a market grouped by outcome, sorted by shares held. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Each holder includes a nested `pnl` object with position-level PnL.
+         * @description Retrieve holders of a market grouped by outcome, sorted by shares held. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Set `include_pnl=true` to include a nested holder `pnl` object.
          */
         get: operations["get_market_holders"];
         put?: never;
@@ -193,7 +193,7 @@ export interface paths {
         };
         /**
          * Get position holders
-         * @description Retrieve holders of a specific position (ERC1155 token), sorted by shares held. Each holder includes a nested `pnl` object with position-level PnL (realized_pnl_usd, buy_usd, sell_usd, avg_entry_price, avg_exit_price, total_buys, total_sells, total_fees, first/last_trade_at). Uses cursor-based pagination for efficient traversal.
+         * @description Retrieve holders of a specific position (ERC1155 token), sorted by shares held. Set `include_pnl=true` to include nested holder PnL. Uses cursor-based pagination for efficient traversal.
          */
         get: operations["get_position_holders"];
         put?: never;
@@ -1144,7 +1144,7 @@ export interface components {
             shares_usd?: string | null;
             /** @description USD balance of wallet (USDe on Polygon) */
             usd_balance?: string | null;
-            pnl?: null | components["schemas"]["PositionHolderPnl"];
+            pnl?: null | components["schemas"]["HolderPnl"];
         };
         /** @description Holder statistics data point (single time bucket) */
         HolderHistoryCandle: {
@@ -1153,24 +1153,25 @@ export interface components {
             /** Format: int64 */
             h?: number | null;
         };
-        /** @description Market-level PnL data for a holder */
-        MarketHolderPnl: {
+        /** @description Holder-level PnL data, included when `include_pnl=true` */
+        HolderPnl: {
             /** Format: double */
-            realized_pnl_usd?: number | null;
+            avg_entry_price?: number | null;
+            total_cost_usd?: string | null;
+            unrealized_pnl_usd?: string | null;
+            realized_sell_pnl_usd?: string | null;
+            /** Format: double */
+            avg_exit_price?: number | null;
             /** Format: double */
             buy_usd?: number | null;
             /** Format: double */
             sell_usd?: number | null;
-            /** Format: double */
-            total_fees?: number | null;
-            /** Format: int64 */
-            outcomes_traded?: number | null;
             /** Format: int64 */
             total_buys?: number | null;
             /** Format: int64 */
             total_sells?: number | null;
-            /** Format: int64 */
-            winning_outcomes?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -1692,33 +1693,6 @@ export interface components {
             outcome_index: number;
             data: components["schemas"]["PositionChartDataPoint"][];
         };
-        /** @description Position-level PnL data for a holder (outcome token, OrderFilled trades only) */
-        PositionHolderPnl: {
-            /** Format: double */
-            buy_usd?: number | null;
-            /** Format: double */
-            sell_usd?: number | null;
-            /**
-             * Format: double
-             * @description Average price paid per share across all buys (0–1 range)
-             */
-            avg_entry_price?: number | null;
-            /**
-             * Format: double
-             * @description Average price received per share across all sells (0–1 range)
-             */
-            avg_exit_price?: number | null;
-            /** Format: int64 */
-            total_buys?: number | null;
-            /** Format: int64 */
-            total_sells?: number | null;
-            /** Format: double */
-            total_fees?: number | null;
-            /** Format: int64 */
-            first_trade_at?: number | null;
-            /** Format: int64 */
-            last_trade_at?: number | null;
-        };
         /** @description Response for position (position_id) holders endpoint */
         PositionHoldersResponse: {
             /** @description Position ID (ERC1155 token ID) */
@@ -1940,7 +1914,7 @@ export interface components {
         /** @enum {string} */
         TradeSide: "0" | "1";
         /** @enum {string} */
-        TradeType: "0" | "1" | "2" | "4";
+        TradeType: "0" | "1" | "2" | "4" | "6";
         /**
          * @description Trader profile info embedded in API responses
          *
@@ -2426,6 +2400,8 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
+                /** @description Include nested holder PnL data (default: false) */
+                include_pnl?: boolean;
                 /** @description Return truncated response optimized for AI consumers (default: false) */
                 ai?: boolean;
             };
@@ -2435,7 +2411,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Market holders grouped by outcome (sorted by shares DESC). Each holder has `pnl: PositionHolderPnl` with outcome-specific trading stats. */
+            /** @description Market holders grouped by outcome (sorted by shares DESC). Holder `pnl` is included only when `include_pnl=true`. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2498,6 +2474,8 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
+                /** @description Include nested holder PnL data (default: false) */
+                include_pnl?: boolean;
                 /** @description Return truncated response optimized for AI consumers (default: false) */
                 ai?: boolean;
             };
@@ -2510,7 +2488,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Position holders (sorted by shares DESC). Each holder has `pnl: PositionHolderPnl` with outcome-specific trading stats. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
+            /** @description Position holders (sorted by shares DESC). Holder `pnl` is included only when `include_pnl=true`. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -3693,9 +3671,9 @@ export interface operations {
                 /** @description Candle resolution: 1m, 1h, 1d (default: 1h) */
                 resolution?: components["schemas"]["PnlCandleResolution"];
                 /** @description Start timestamp (Unix seconds) */
-                start_ts?: number;
+                from?: number;
                 /** @description End timestamp (Unix seconds) */
-                end_ts?: number;
+                to?: number;
                 /** @description Results limit (default: 1440, max: 10000) */
                 limit?: number;
             };
