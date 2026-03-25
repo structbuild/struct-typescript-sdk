@@ -178,6 +178,26 @@ export interface webhooks {
         patch?: never;
         trace?: never;
     };
+    "trader-new-trade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * New trade callback
+         * @description Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.
+         */
+        post: operations["trader-new-trade"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "trader-global-pnl": {
         parameters: {
             query?: never;
@@ -1094,6 +1114,60 @@ export interface components {
             /** @description Trade type identifier */
             trade_type: string;
         };
+        /** @description Payload delivered on every order-filled trade */
+        NewTradePayload: {
+            /** @description Limit-order maker wallet address (lowercase) */
+            trader: string;
+            /** @description Order filler wallet address (lowercase) */
+            taker: string;
+            /** @description ERC-1155 outcome token ID */
+            position_id: string;
+            /** @description Parent market condition ID */
+            condition_id?: string | null;
+            /** @description Outcome name (e.g. "Yes", "No") */
+            outcome?: string | null;
+            /** @description Outcome index: 0 = Yes/Up, 1 = No */
+            outcome_index?: number | null;
+            /** @description Market question text */
+            question?: string | null;
+            /** @description Market slug */
+            market_slug?: string | null;
+            /** @description Parent event slug */
+            event_slug?: string | null;
+            /** @description Unique trade identifier */
+            trade_id: string;
+            /** @description Transaction hash */
+            hash: string;
+            /**
+             * Format: int64
+             * @description Block number
+             */
+            block: number;
+            /**
+             * Format: int64
+             * @description Block confirmation timestamp (Unix seconds)
+             */
+            confirmed_at: number;
+            /** @description USD size of the trade (6 decimal places) */
+            amount_usd: number;
+            /** @description Outcome shares traded (6 decimal places) */
+            shares_amount: number;
+            /** @description Fee paid in USD (6 decimal places) */
+            fee: number;
+            /**
+             * @description Trade direction
+             * @enum {string}
+             */
+            side: "Buy" | "Sell";
+            /** @description Outcome token price (0.0–1.0) */
+            price: number;
+            /** @description Implied probability (0.0–1.0); null when outcome is unknown */
+            probability?: number | null;
+            /** @description Exchange identifier */
+            exchange: string;
+            /** @description Trade type identifier */
+            trade_type: string;
+        };
         /**
          * @description PnL timeframe enum for webhook filtering
          * @enum {string}
@@ -1103,7 +1177,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -1385,6 +1459,10 @@ export interface components {
              * @description Outcome index
              */
             outcome_index?: number | null;
+            /** @description Probability at the start of the observation window (baseline snapshot, 0.0–1.0) */
+            previous_probability: number;
+            /** @description Current probability that triggered the spike (0.0–1.0) */
+            current_probability: number;
             /**
              * @description `"up"` = probability rising, `"down"` = probability falling
              * @enum {string}
@@ -1708,6 +1786,10 @@ export interface components {
              * @description Outcome index
              */
             outcome_index?: number | null;
+            /** @description Price at the start of the observation window (baseline snapshot, 0.0–1.0) */
+            previous_price: number;
+            /** @description Current price that triggered the spike (0.0–1.0) */
+            current_price: number;
             /**
              * @description `"up"` = price rising, `"down"` = price falling
              * @enum {string}
@@ -1746,6 +1828,26 @@ export interface components {
         };
         /** @description Subscription filters for the `trader_whale_trade` event. All fields are optional. */
         TraderWhaleTradeFilters: {
+            /** @description Only fire for trades by these wallet addresses. Empty = all traders. */
+            wallet_addresses?: string[];
+            /** @description Restrict to these markets. */
+            condition_ids?: string[];
+            /** @description Restrict to markets belonging to these events. */
+            event_slugs?: string[];
+            /**
+             * @description Minimum trade size in USD. Defaults to 0 (matches all trades).
+             * @default 0
+             */
+            min_usd_value: number;
+            /** @description Only fire when outcome probability is ≥ this value. */
+            min_probability?: number;
+            /** @description Only fire when outcome probability is ≤ this value. */
+            max_probability?: number;
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `trader_new_trade` event. All fields are optional. */
+        TraderNewTradeFilters: {
             /** @description Only fire for trades by these wallet addresses. Empty = all traders. */
             wallet_addresses?: string[];
             /** @description Restrict to these markets. */
@@ -2454,6 +2556,35 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["WhaleTradePayload"];
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "trader-new-trade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewTradePayload"];
             };
         };
         responses: {

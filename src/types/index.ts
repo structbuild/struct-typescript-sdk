@@ -50,6 +50,7 @@ export type OutcomeHolders = Schemas["OutcomeHolders"];
 export type OutcomeTimeframeMetrics = Schemas["OutcomeTimeframeMetrics"];
 export type PaginationMeta = Schemas["PaginationMeta"];
 export type PnlCandleResolution = Schemas["PnlCandleResolution"];
+export type PnlCandleTimeframe = Schemas["PnlCandleTimeframe"];
 export type PnlTimeframe = Schemas["PnlTimeframe"];
 export type Event = Omit<Schemas["PolymarketEvent"], "metrics"> & {
 	metrics: TimeframeRecord<SimpleTimeframeMetrics>;
@@ -273,6 +274,10 @@ export interface GetTraderPositionPnlParams extends OperationQuery<"get_trader_p
 	address: string;
 }
 
+export interface GetTraderPnlCalendarParams extends OperationQuery<"get_trader_pnl_calendar"> {
+	address: string;
+}
+
 export interface GetTraderPnlCandlesParams extends OperationQuery<"get_trader_pnl_candles"> {
 	address: string;
 }
@@ -349,6 +354,8 @@ export type CloseToBondFilters = WebhookSchemas["CloseToBondFilters"];
 export type MarketCreatedFilters = WebhookSchemas["MarketCreatedFilters"];
 export type AssetPriceTickFilters = WebhookSchemas["AssetPriceTickFilters"];
 export type AssetPriceWindowUpdateFilters = WebhookSchemas["AssetPriceWindowUpdateFilters"];
+export type NewTradePayload = WebhookSchemas["NewTradePayload"];
+export type TraderNewTradeFilters = WebhookSchemas["TraderNewTradeFilters"];
 export type PriceSpikePayload = WebhookSchemas["PriceSpikePayload"];
 export type PriceSpikeFilters = WebhookSchemas["PriceSpikeFilters"];
 

@@ -144,6 +144,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { address: "$address", limit: 2 },
 		operationId: "get_trader_event_pnl",
 	},
+	"trader.getTraderPnlCalendar": {
+		params: { address: "$address" },
+		operationId: "get_trader_pnl_calendar",
+	},
 	"trader.getTraderPnlCandles": {
 		params: { address: "$address" },
 		operationId: "get_trader_pnl_candles",

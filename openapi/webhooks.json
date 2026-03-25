@@ -1821,6 +1821,143 @@
           }
         }
       },
+      "NewTradePayload": {
+        "type": "object",
+        "description": "Payload delivered on every order-filled trade",
+        "required": [
+          "trader",
+          "taker",
+          "position_id",
+          "trade_id",
+          "hash",
+          "block",
+          "confirmed_at",
+          "amount_usd",
+          "shares_amount",
+          "fee",
+          "side",
+          "price",
+          "exchange",
+          "trade_type"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Limit-order maker wallet address (lowercase)"
+          },
+          "taker": {
+            "type": "string",
+            "description": "Order filler wallet address (lowercase)"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "ERC-1155 outcome token ID"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Parent market condition ID"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Outcome index: 0 = Yes/Up, 1 = No"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question text"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Parent event slug"
+          },
+          "trade_id": {
+            "type": "string",
+            "description": "Unique trade identifier"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Block number"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Block confirmation timestamp (Unix seconds)"
+          },
+          "amount_usd": {
+            "type": "number",
+            "description": "USD size of the trade (6 decimal places)"
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Outcome shares traded (6 decimal places)"
+          },
+          "fee": {
+            "type": "number",
+            "description": "Fee paid in USD (6 decimal places)"
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "Buy",
+              "Sell"
+            ],
+            "description": "Trade direction"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Outcome token price (0.0–1.0)"
+          },
+          "probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Implied probability (0.0–1.0); null when outcome is unknown"
+          },
+          "exchange": {
+            "type": "string",
+            "description": "Exchange identifier"
+          },
+          "trade_type": {
+            "type": "string",
+            "description": "Trade type identifier"
+          }
+        }
+      },
       "PnlTimeframeFilter": {
         "type": "string",
         "description": "PnL timeframe enum for webhook filtering",
@@ -1838,6 +1975,7 @@
           "trader_first_trade",
           "trader_new_market",
           "trader_whale_trade",
+          "trader_new_trade",
           "trader_global_pnl",
           "trader_market_pnl",
           "trader_event_pnl",
@@ -2425,6 +2563,8 @@
         "type": "object",
         "required": [
           "position_id",
+          "previous_probability",
+          "current_probability",
           "spike_direction",
           "spike_pct"
         ],
@@ -2461,6 +2601,14 @@
             ],
             "format": "int16",
             "description": "Outcome index"
+          },
+          "previous_probability": {
+            "type": "number",
+            "description": "Probability at the start of the observation window (baseline snapshot, 0.0–1.0)"
+          },
+          "current_probability": {
+            "type": "number",
+            "description": "Current probability that triggered the spike (0.0–1.0)"
           },
           "spike_direction": {
             "type": "string",
@@ -3154,6 +3302,8 @@
         "type": "object",
         "required": [
           "position_id",
+          "previous_price",
+          "current_price",
           "spike_direction",
           "spike_pct"
         ],
@@ -3190,6 +3340,14 @@
             ],
             "format": "int16",
             "description": "Outcome index"
+          },
+          "previous_price": {
+            "type": "number",
+            "description": "Price at the start of the observation window (baseline snapshot, 0.0–1.0)"
+          },
+          "current_price": {
+            "type": "number",
+            "description": "Current price that triggered the spike (0.0–1.0)"
           },
           "spike_direction": {
             "type": "string",
@@ -3292,6 +3450,57 @@
       "TraderWhaleTradeFilters": {
         "type": "object",
         "description": "Subscription filters for the `trader_whale_trade` event. All fields are optional.",
+        "properties": {
+          "wallet_addresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Only fire for trades by these wallet addresses. Empty = all traders."
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to these markets."
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to markets belonging to these events."
+          },
+          "min_usd_value": {
+            "type": "number",
+            "default": 0,
+            "description": "Minimum trade size in USD. Defaults to 0 (matches all trades)."
+          },
+          "min_probability": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Only fire when outcome probability is ≥ this value."
+          },
+          "max_probability": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Only fire when outcome probability is ≤ this value."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "TraderNewTradeFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_new_trade` event. All fields are optional.",
         "properties": {
           "wallet_addresses": {
             "type": "array",
@@ -4418,6 +4627,37 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/WhaleTradePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "trader-new-trade": {
+      "post": {
+        "summary": "New trade callback",
+        "description": "Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.",
+        "operationId": "trader-new-trade",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "x-filters-schema": {
+          "$ref": "#/components/schemas/TraderNewTradeFilters"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewTradePayload"
               }
             }
           }

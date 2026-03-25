@@ -704,6 +704,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/pnl/{address}/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader PnL calendar
+         * @description Retrieve raw per-day PnL. Each entry is the realized PnL for that calendar day. Paginate backwards using the pagination key.
+         */
+        get: operations["get_trader_pnl_calendar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/pnl/{address}/candles": {
         parameters: {
             query?: never;
@@ -713,7 +733,7 @@ export interface paths {
         };
         /**
          * Get trader PnL candles
-         * @description Retrieve PnL candle data for charting a trader's equity curve over time
+         * @description Retrieve PnL candles for charting a trader's equity curve over time.
          */
         get: operations["get_trader_pnl_candles"];
         put?: never;
@@ -773,7 +793,7 @@ export interface paths {
         };
         /**
          * Get trader position PnL
-         * @description Retrieve per-outcome-token PnL for a trader. Only includes OrderFilled trades (no redemptions/merges). Each entry represents a specific position (outcome token) the trader has bought or sold.
+         * @description Retrieve per-outcome-token lifetime PnL for a trader from polymarket_accounts. Includes open/closed state, win/loss outcome, redemption payouts, and share quantities. Filter by status and won/lost to segment portfolio views.
          */
         get: operations["get_trader_position_pnl"];
         put?: never;
@@ -1075,7 +1095,7 @@ export interface components {
             unique_traders: number;
         };
         /** @enum {string} */
-        EventPnlSortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "total_fees";
+        EventPnlSortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "total_fees" | "realized_pnl_pct";
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
         /** @enum {string} */
@@ -1262,7 +1282,7 @@ export interface components {
             outcome_index: number | null;
         };
         /** @enum {string} */
-        MarketPnlSortBy: "realized_pnl_usd" | "buy_usd" | "total_buys" | "total_fees" | "outcomes_traded";
+        MarketPnlSortBy: "realized_pnl_usd" | "buy_usd" | "total_buys" | "total_fees" | "outcomes_traded" | "realized_pnl_pct";
         /** @description Formatted market response with structured metrics, tags, outcomes, and event */
         MarketResponse: {
             condition_id: string;
@@ -1526,17 +1546,19 @@ export interface components {
         PnlCandleEntry: {
             /**
              * Format: int64
-             * @description Timestamp in epoch seconds (start of bucket window)
+             * @description Timestamp in epoch milliseconds (start of bucket window)
              */
             t: number;
             /**
              * Format: double
-             * @description Sum of realized PnL in this bucket
+             * @description Realized PnL in this bucket (USD)
              */
             pnl: number;
         };
         /** @enum {string} */
         PnlCandleResolution: "1m" | "1h" | "1d";
+        /** @enum {string} */
+        PnlCandleTimeframe: "1d" | "7d" | "30d" | "lifetime";
         /** @enum {string} */
         PnlTimeframe: "1d" | "7d" | "30d" | "lifetime";
         /** @description A Polymarket event from the Gamma API */
@@ -1750,7 +1772,7 @@ export interface components {
             price_close: number;
         };
         /** @enum {string} */
-        PositionPnlSortBy: "realized_pnl_usd" | "buy_usd" | "sell_usd" | "total_buys" | "total_sells" | "total_fees";
+        PositionPnlSortBy: "realized_pnl_usd" | "buy_usd" | "sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "title";
         PositionVolumeChartResponse: {
             volumes: components["schemas"]["PositionVolumeDataPoint"][];
             has_more: boolean;
@@ -2017,24 +2039,36 @@ export interface components {
             /** Format: int64 */
             last_trade_at?: number | null;
         };
-        /** @description Outcome-level PnL entry (per outcome token / position_id, OrderFilled trades only) */
+        /** @description Outcome-level PnL entry (per outcome token / position_id) */
         TraderOutcomePnlEntry: {
             position_id?: string | null;
             condition_id?: string | null;
+            market_slug?: string | null;
             event_slug?: string | null;
+            title?: string | null;
+            image_url?: string | null;
             outcome?: string | null;
             /** Format: int32 */
             outcome_index?: number | null;
+            /** @description TRUE = won, FALSE = lost, NULL = open or sold before resolution */
+            won?: boolean | null;
             /** Format: int64 */
             total_buys?: number | null;
             /** Format: int64 */
             total_sells?: number | null;
             /** Format: double */
-            buy_usd?: number | null;
+            total_shares_bought?: number | null;
             /** Format: double */
-            sell_usd?: number | null;
+            total_shares_sold?: number | null;
             /** Format: double */
-            realized_pnl_usd?: number | null;
+            total_buy_usd?: number | null;
+            /** Format: double */
+            total_sell_usd?: number | null;
+            /**
+             * Format: double
+             * @description Payout on redemption (non-zero only if won)
+             */
+            redemption_usd?: number | null;
             /**
              * Format: double
              * @description VWAP price paid per share across all buys (0–1)
@@ -2046,11 +2080,30 @@ export interface components {
              */
             avg_exit_price?: number | null;
             /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: double */
             total_fees?: number | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
             last_trade_at?: number | null;
+            /**
+             * Format: double
+             * @description Last traded price for this outcome (0–1). NULL if market_outcomes has no price yet.
+             */
+            current_price?: number | null;
+            /**
+             * Format: double
+             * @description Estimated current USD value of held shares: (balance / 1e6) * current_price.
+             *     Only meaningful for open positions (balance > 0).
+             */
+            current_value?: number | null;
+            /**
+             * Format: double
+             * @description Realized PnL as a percentage of total spend: (realized_pnl_usd / total_buy_usd) * 100.
+             *     NULL when total_buy_usd = 0.
+             */
+            realized_pnl_pct?: number | null;
         };
         TraderVolumeChartResponse: {
             volumes: components["schemas"]["TraderVolumeDataPoint"][];
@@ -3665,17 +3718,13 @@ export interface operations {
             };
         };
     };
-    get_trader_pnl_candles: {
+    get_trader_pnl_calendar: {
         parameters: {
             query?: {
-                /** @description Candle resolution: 1m, 1h, 1d (default: 1h) */
-                resolution?: components["schemas"]["PnlCandleResolution"];
-                /** @description Start timestamp (Unix seconds) */
-                from?: number;
-                /** @description End timestamp (Unix seconds) */
-                to?: number;
-                /** @description Results limit (default: 1440, max: 10000) */
-                limit?: number;
+                /** @description Window size in days (default: 30, max: 30) */
+                days?: number;
+                /** @description Pagination key obtained from a previous response to fetch an earlier window */
+                pagination_key?: string;
             };
             header?: never;
             path: {
@@ -3686,7 +3735,35 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description PnL candles for equity curve charting */
+            /** @description Daily PnL entries (one per active trading day) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PnlCandleEntry"][];
+                };
+            };
+        };
+    };
+    get_trader_pnl_candles: {
+        parameters: {
+            query?: {
+                /** @description Candle resolution (default: 1h) */
+                resolution?: components["schemas"]["PnlCandleResolution"];
+                /** @description Time range (default: lifetime) */
+                timeframe?: components["schemas"]["PnlCandleTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Cumulative PnL candles */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -3775,17 +3852,21 @@ export interface operations {
     };
     get_trader_position_pnl: {
         parameters: {
-            query?: {
-                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
-                timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Sort: realized_pnl_usd, buy_usd, sell_usd, total_buys, total_sells, total_fees (default: realized_pnl_usd) */
+            query: {
+                /** @description Required. Filter by position status */
+                status: "open" | "closed";
+                /** @description Filter by outcome: true (won), false (lost), only for status=closed */
+                won?: boolean;
+                /** @description Search by market title */
+                search?: string;
+                /** @description Sort field (default: realized_pnl_usd) */
                 sort_by?: components["schemas"]["PositionPnlSortBy"];
                 /** @description Sort direction: asc, desc (default: desc) */
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Results limit (default: 10, max: 200) */
                 limit?: number;
-                /** @description Cursor-based pagination key */
-                pagination_key?: string;
+                /** @description Pagination offset */
+                offset?: number;
                 /** @description Filter by market condition ID (or use market_slug) */
                 condition_id?: string;
                 /** @description Filter by market slug (alternative to condition_id) */
@@ -3802,7 +3883,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Position-level PnL entries for this trader. Each entry is a specific outcome token with avg_entry_price and avg_exit_price. */
+            /** @description Position-level PnL entries for this trader. Each entry is a specific outcome token with open/closed state, avg_entry_price, avg_exit_price, and redemption info. */
             200: {
                 headers: {
                     [name: string]: unknown;
