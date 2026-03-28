@@ -6,6 +6,7 @@ import type {
 	UserProfile,
 	TraderVolumeChartResponse,
 	GlobalPnlTrader,
+	TraderPnlSummary,
 	TraderMarketPnlEntry,
 	TraderEventPnlEntry,
 	PnlListResponse,
@@ -42,9 +43,9 @@ export class TraderNamespace extends Namespace {
 		return this.get<TraderVolumeChartResponse>(venue, `/trader/volume-chart/${encodeURIComponent(address)}`, { params: query });
 	}
 
-	async getTraderPnl(params: GetTraderPnlParams, venue?: Venue): Promise<HttpResponse<GlobalPnlTrader>> {
+	async getTraderPnl(params: GetTraderPnlParams, venue?: Venue): Promise<HttpResponse<TraderPnlSummary>> {
 		const { address, ...query } = params;
-		return this.get<GlobalPnlTrader>(venue, `/trader/pnl/${encodeURIComponent(address)}`, { params: query });
+		return this.get<TraderPnlSummary>(venue, `/trader/pnl/${encodeURIComponent(address)}`, { params: query });
 	}
 
 	async getTraderMarketPnl(params: GetTraderPnlBreakdownParams, venue?: Venue): Promise<HttpResponse<PnlListResponse<TraderMarketPnlEntry>>> {
