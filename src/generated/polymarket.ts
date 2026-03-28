@@ -573,7 +573,7 @@ export interface paths {
         };
         /**
          * Search events, markets, and traders
-         * @description Search across markets, events, and traders. Trader search supports wallet address lookup or name search. Results for each category are independently paginated.
+         * @description Search across markets, events, and traders. Use `type` to limit which categories are searched. Trader search supports wallet address lookup or name search. Results for each category are independently paginated. Only requested categories are included in the response.
          */
         get: operations["search"];
         put?: never;
@@ -1546,7 +1546,7 @@ export interface components {
         PnlCandleEntry: {
             /**
              * Format: int64
-             * @description Timestamp in epoch milliseconds (start of bucket window)
+             * @description Timestamp in epoch seconds (start of bucket window)
              */
             t: number;
             /**
@@ -1821,12 +1821,13 @@ export interface components {
             confirmed_at: number;
             trader: components["schemas"]["TraderInfo"];
             taker: string;
-            side: string;
+            side?: string | null;
             condition_id?: string | null;
             outcome?: string | null;
             /** Format: int32 */
             outcome_index?: number | null;
             question?: string | null;
+            image_url?: string | null;
             slug?: string | null;
             /** Format: double */
             usd_amount: number;
@@ -1864,12 +1865,12 @@ export interface components {
             condition_id: string;
         };
         SearchResponse: {
-            events: components["schemas"]["PolymarketEvent"][];
-            events_pagination: components["schemas"]["PaginationMeta"];
-            markets: components["schemas"]["MarketResponse"][];
-            markets_pagination: components["schemas"]["PaginationMeta"];
-            traders: components["schemas"]["Trader"][];
-            traders_pagination: components["schemas"]["PaginationMeta"];
+            events?: components["schemas"]["PolymarketEvent"][] | null;
+            events_pagination?: null | components["schemas"]["PaginationMeta"];
+            markets?: components["schemas"]["MarketResponse"][] | null;
+            markets_pagination?: null | components["schemas"]["PaginationMeta"];
+            traders?: components["schemas"]["TraderWithPnl"][] | null;
+            traders_pagination?: null | components["schemas"]["PaginationMeta"];
         };
         /**
          * @description Combined sort options valid for both events and markets in search
@@ -2094,6 +2095,11 @@ export interface components {
             current_price?: number | null;
             /**
              * Format: double
+             * @description Current shares held: balance / 1e6.
+             */
+            current_shares_balance?: number | null;
+            /**
+             * Format: double
              * @description Estimated current USD value of held shares: (balance / 1e6) * current_price.
              *     Only meaningful for open positions (balance > 0).
              */
@@ -2104,6 +2110,58 @@ export interface components {
              *     NULL when total_buy_usd = 0.
              */
             realized_pnl_pct?: number | null;
+        };
+        /** @description Trader's global PnL summary (single trader) */
+        TraderPnlSummary: {
+            trader?: string | null;
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: int64 */
+            events_traded?: number | null;
+            /** Format: int64 */
+            markets_traded?: number | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: int64 */
+            total_redemptions?: number | null;
+            /** Format: int64 */
+            total_merges?: number | null;
+            /** Format: double */
+            total_volume_usd?: number | null;
+            /** Format: double */
+            buy_volume_usd?: number | null;
+            /** Format: double */
+            sell_volume_usd?: number | null;
+            /** Format: double */
+            redemption_volume_usd?: number | null;
+            /** Format: double */
+            merge_volume_usd?: number | null;
+            /** Format: int64 */
+            markets_won?: number | null;
+            /** Format: int64 */
+            markets_lost?: number | null;
+            /** Format: double */
+            market_win_rate_pct?: number | null;
+            /** Format: double */
+            avg_pnl_per_market?: number | null;
+            /** Format: double */
+            avg_pnl_per_trade?: number | null;
+            /** Format: double */
+            avg_hold_time_seconds?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: double */
+            best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
+            /** Format: double */
+            worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
         };
         TraderVolumeChartResponse: {
             volumes: components["schemas"]["TraderVolumeDataPoint"][];
@@ -2124,6 +2182,9 @@ export interface components {
             btc: number;
             /** Format: int32 */
             stc: number;
+        };
+        TraderWithPnl: components["schemas"]["Trader"] & {
+            pnl?: null | components["schemas"]["TraderPnlSummary"];
         };
         /**
          * @description Crypto asset symbols accepted by `asset_price_tick` and `asset_price_window_update` filters.
@@ -2317,13 +2378,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Event metrics not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     get_event_outcomes: {
@@ -2453,7 +2507,7 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
-                /** @description Include nested holder PnL data (default: false) */
+                /** @description Include nested holder PnL data (default: false, +1 credit) */
                 include_pnl?: boolean;
                 /** @description Return truncated response optimized for AI consumers (default: false) */
                 ai?: boolean;
@@ -2527,7 +2581,7 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
-                /** @description Include nested holder PnL data (default: false) */
+                /** @description Include nested holder PnL data (default: false, +1 credit) */
                 include_pnl?: boolean;
                 /** @description Return truncated response optimized for AI consumers (default: false) */
                 ai?: boolean;
@@ -2805,13 +2859,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Market metrics not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     get_position_candlestick: {
@@ -2870,13 +2917,6 @@ export interface operations {
             };
             /** @description Invalid timeframe */
             400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Position metrics not found */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3266,13 +3306,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description No snapshot found for this position */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     get_order_book_history: {
@@ -3401,13 +3434,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Market not found or no snapshots exist */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
         };
     };
     get_spread_history: {
@@ -3484,6 +3510,10 @@ export interface operations {
             query: {
                 /** @description Search query (min 2 characters). Prefix with 0x for exact wallet address lookup. */
                 q: string;
+                /** @description Comma-separated categories to search: events, markets, traders (default: all three). Example: type=markets,traders */
+                type?: string;
+                /** @description Include lifetime PnL summary for each trader (default: false, +1 credit) */
+                include_pnl?: boolean;
                 /** @description Sort field applied to both events and markets (default: volume). Fields marked events-only or markets-only fall back to volume on the other category. */
                 sort_by?: components["schemas"]["SearchSortBy"];
                 /** @description Sort direction (default: desc) */
@@ -3505,7 +3535,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Search results with events, markets, and traders */
+            /** @description Search results. Only requested categories (via `type`) are included in the response. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -3657,7 +3687,7 @@ export interface operations {
     get_global_pnl: {
         parameters: {
             query?: {
-                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
+                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
                 /** @description Sort: pnl_usd, buys, sells, redemptions, merges, avg_hold_time, markets_traded, events_traded, markets_won, volume_usd, fees, best_trade, worst_trade (default: pnl_usd) */
                 sort_by?: components["schemas"]["GlobalPnlSortBy"];
@@ -3688,7 +3718,7 @@ export interface operations {
     get_trader_pnl: {
         parameters: {
             query?: {
-                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
+                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
             };
             header?: never;
@@ -3706,15 +3736,8 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GlobalPnlTrader"];
+                    "application/json": components["schemas"]["TraderPnlSummary"];
                 };
-            };
-            /** @description Trader not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -3777,7 +3800,7 @@ export interface operations {
     get_trader_event_pnl: {
         parameters: {
             query?: {
-                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
+                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
                 /** @description Sort: realized_pnl_usd, total_volume_usd, markets_traded, total_fees (default: realized_pnl_usd) */
                 sort_by?: components["schemas"]["EventPnlSortBy"];
@@ -3813,7 +3836,7 @@ export interface operations {
     get_trader_market_pnl: {
         parameters: {
             query?: {
-                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: 7d) */
+                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
                 /** @description Sort: realized_pnl_usd, buy_usd, total_buys, total_fees, outcomes_traded (default: realized_pnl_usd) */
                 sort_by?: components["schemas"]["MarketPnlSortBy"];
@@ -3914,13 +3937,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PolymarketUserProfile"];
                 };
-            };
-            /** @description Profile not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
