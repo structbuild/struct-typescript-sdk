@@ -12,8 +12,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get asset price history
-         * @description Retrieve historical OHLC-style price data for a supported crypto asset (BTC, ETH, XRP, SOL, DOGE, BNB, HYPE) over a chosen time window variant. Timestamps are Unix seconds. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination — pass `pagination_key` from the previous response to fetch the next page.
+         * Get Asset Price History
+         * @description Returns historical price data for supported crypto assets from Polymarket API
          */
         get: operations["get_asset_history"];
         put?: never;
@@ -2208,18 +2208,25 @@ export interface operations {
     get_asset_history: {
         parameters: {
             query: {
-                /** @description Asset ticker: BTC, ETH, XRP, SOL, DOGE, BNB, or HYPE */
-                asset_symbol: components["schemas"]["AssetSymbol"];
-                /** @description Time window: 5m, 15m, 1h, 4h, or 1d */
-                variant: components["schemas"]["AssetVariant"];
-                /** @description Start timestamp (Unix seconds, inclusive) */
+                /**
+                 * @description Asset ticker: BTC, ETH, XRP, SOL, DOGE, BNB, HYPE
+                 * @example BTC
+                 */
+                asset_symbol: string;
+                /**
+                 * @description Time window: 5m, 15m, 1h, 4h, 1d
+                 * @example 1h
+                 */
+                variant: string;
+                /** @description Start timestamp in seconds (Unix epoch, inclusive) */
                 from?: number;
-                /** @description End timestamp (Unix seconds, inclusive, defaults to now) */
+                /** @description End timestamp in seconds (Unix epoch, inclusive) */
                 to?: number;
-                /** @description Number of results (default: 10, max: 100) */
+                /**
+                 * @description Number of results (default: 10, max: 100)
+                 * @example 10
+                 */
                 limit?: number;
-                /** @description Cursor-based pagination key Obtained from previous response's `pagination.pagination_key`. Pass this to fetch the next page of results. */
-                pagination_key?: string;
             };
             header?: never;
             path?: never;
@@ -2227,7 +2234,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Asset price history records, sorted newest first. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
+            /** @description Successful response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2236,8 +2243,15 @@ export interface operations {
                     "application/json": components["schemas"]["AssetPriceHistoryRow"][];
                 };
             };
-            /** @description Missing or invalid asset_symbol / variant */
+            /** @description Bad request - missing or invalid parameters */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal server error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3510,7 +3524,7 @@ export interface operations {
             query: {
                 /** @description Search query (min 2 characters). Prefix with 0x for exact wallet address lookup. */
                 q: string;
-                /** @description Comma-separated categories to search: events, markets, traders (default: all three). Example: type=markets,traders */
+                /** @description Comma-separated categories to search: events, markets, traders (default: all three, 1 credit per type). Example: type=markets,traders */
                 type?: string;
                 /** @description Include lifetime PnL summary for each trader (default: false, +1 credit) */
                 include_pnl?: boolean;
@@ -3808,7 +3822,9 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Results limit (default: 10, max: 200) */
                 limit?: number;
-                /** @description Cursor-based pagination key */
+                /** @description Pagination offset (number of results to skip). Takes precedence over pagination_key. */
+                offset?: number;
+                /** @description Cursor-based pagination key obtained from previous response's pagination.pagination_key */
                 pagination_key?: string;
                 /** @description Filter by event slug */
                 event_slug?: string;
@@ -3844,7 +3860,9 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Results limit (default: 10, max: 200) */
                 limit?: number;
-                /** @description Cursor-based pagination key */
+                /** @description Pagination offset (number of results to skip). Takes precedence over pagination_key. */
+                offset?: number;
+                /** @description Cursor-based pagination key obtained from previous response's pagination.pagination_key */
                 pagination_key?: string;
                 /** @description Filter by condition ID (or use market_slug) */
                 condition_id?: string;
@@ -4007,8 +4025,10 @@ export interface operations {
                 all?: boolean;
                 /** @description Results per page (default: 10, max: 250) */
                 limit?: number;
-                /** @description Offset-based pagination key (integer offset into result set) */
-                pagination_key?: number;
+                /** @description Pagination offset (number of results to skip). Takes precedence over pagination_key. */
+                offset?: number;
+                /** @description Cursor-based pagination key obtained from previous response's pagination.pagination_key */
+                pagination_key?: string;
                 /** @description Sort newest first (default: true) */
                 sort_desc?: boolean;
                 /** @description Return truncated response optimized for AI consumers (default: false) */
