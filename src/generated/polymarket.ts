@@ -1099,12 +1099,12 @@ export interface components {
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
         /** @enum {string} */
-        GlobalPnlSortBy: "pnl_usd" | "buys" | "sells" | "redemptions" | "merges" | "avg_hold_time" | "markets_traded" | "events_traded" | "markets_won" | "volume_usd" | "fees" | "best_trade" | "worst_trade";
+        GlobalPnlSortBy: "realized_pnl_usd" | "buys" | "sells" | "redemptions" | "merges" | "avg_hold_time" | "markets_traded" | "events_traded" | "markets_won" | "volume_usd" | "fees" | "best_trade";
         /** @description Individual trader entry in the global PnL leaderboard */
         GlobalPnlTrader: {
             trader: components["schemas"]["TraderInfo"];
             /** Format: double */
-            pnl_usd?: number | null;
+            realized_pnl_usd?: number | null;
             /** Format: int64 */
             events_traded?: number | null;
             /** Format: int64 */
@@ -1146,9 +1146,6 @@ export interface components {
             /** Format: double */
             best_trade_pnl_usd?: number | null;
             best_trade_condition_id?: string | null;
-            /** Format: double */
-            worst_trade_pnl_usd?: number | null;
-            worst_trade_condition_id?: string | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -2155,9 +2152,6 @@ export interface components {
             /** Format: double */
             best_trade_pnl_usd?: number | null;
             best_trade_condition_id?: string | null;
-            /** Format: double */
-            worst_trade_pnl_usd?: number | null;
-            worst_trade_condition_id?: string | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -3703,7 +3697,7 @@ export interface operations {
             query?: {
                 /** @description Timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Sort: pnl_usd, buys, sells, redemptions, merges, avg_hold_time, markets_traded, events_traded, markets_won, volume_usd, fees, best_trade, worst_trade (default: pnl_usd) */
+                /** @description Sort: realized_pnl_usd, buys, sells, redemptions, merges, avg_hold_time, markets_traded, events_traded, markets_won, volume_usd, fees, best_trade (default: realized_pnl_usd) */
                 sort_by?: components["schemas"]["GlobalPnlSortBy"];
                 /** @description Sort direction: asc, desc (default: desc) */
                 sort_direction?: components["schemas"]["SortDirection"];
@@ -3914,6 +3908,8 @@ export interface operations {
                 market_slug?: string;
                 /** @description Filter by specific outcome token (position ID) */
                 position_id?: string;
+                /** @description Minimum shares balance to include (e.g. 1.0 to filter out dust positions) */
+                min_shares?: number;
             };
             header?: never;
             path: {

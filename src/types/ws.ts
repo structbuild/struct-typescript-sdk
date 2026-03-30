@@ -18,6 +18,7 @@ export type WsRoomId =
 	| "polymarket_event_metrics"
 	| "polymarket_position_metrics"
 	| "polymarket_trader_pnl"
+	| "polymarket_trader_positions"
 	| "polymarket_accounts"
 	| "polymarket_order_book";
 
@@ -34,6 +35,18 @@ export type TraderPnlSubscribeFilters = Omit<WsSchemas["TraderPnlSubscribeMessag
 export type AccountsSubscribeFilters = Pick<WsSchemas["AccountsSubscribeMessage"], "wallets"> &
 	Partial<Pick<WsSchemas["AccountsSubscribeMessage"], "include_usdce" | "include_matic">>;
 export type OrderBookSubscribeFilters = Omit<WsSchemas["OrderBookSubscribeMessage"], "action">;
+
+export interface TraderPositionsSubscribeFilters {
+	traders: string[];
+}
+
+export interface TraderPositionsSubscribeResponse {
+	traders?: string[];
+	rejected?: string[];
+	error?: string | null;
+}
+
+export type TraderPositionUpdateEvent = Record<string, unknown>;
 
 export type TradeStreamEvent = WsSchemas["TradeStreamEvent"];
 export type AssetPriceTickEvent = WsSchemas["AssetPriceTickEvent"];
@@ -78,6 +91,7 @@ export interface WebSocketEventMap {
 	usdce_update: UsdceUpdateEvent;
 	matic_update: MaticUpdateEvent;
 	order_book_update: OrderBookUpdateEvent;
+	trader_position_update: TraderPositionUpdateEvent;
 	connected: void;
 	disconnected: { code: number; reason: string };
 	reconnecting: { attempt: number };
@@ -92,6 +106,7 @@ export interface WsSubscriptionMap {
 	polymarket_event_metrics: EventMetricsSubscribeFilters;
 	polymarket_position_metrics: PositionMetricsSubscribeFilters;
 	polymarket_trader_pnl: TraderPnlSubscribeFilters;
+	polymarket_trader_positions: TraderPositionsSubscribeFilters;
 	polymarket_accounts: AccountsSubscribeFilters;
 	polymarket_order_book: OrderBookSubscribeFilters;
 }
@@ -104,6 +119,7 @@ export interface WsSubscribeResponseMap {
 	polymarket_event_metrics: EventMetricsSubscribeResponse;
 	polymarket_position_metrics: PositionMetricsSubscribeResponse;
 	polymarket_trader_pnl: TraderPnlSubscribeResponse;
+	polymarket_trader_positions: TraderPositionsSubscribeResponse;
 	polymarket_accounts: AccountsSubscribeResponse;
 	polymarket_order_book: OrderBookSubscribeResponse;
 }

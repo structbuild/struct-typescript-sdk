@@ -121,6 +121,20 @@
         }
       }
     },
+    "polymarket_trader_positions": {
+      "address": "polymarket_trader_positions",
+      "title": "Trader Positions",
+      "summary": "Trader position updates stream",
+      "description": "Real-time position updates for tracked traders. Streams full position snapshots whenever a position PnL changes in the database.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Events pushed:** `trader_position_update` — includes PnL fields, shares balance, market slug, outcome, and all enriched data.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/TraderPositionsSubscribe"
+        },
+        "traderPositionUpdateEvent": {
+          "$ref": "#/components/messages/TraderPositionUpdateEvent"
+        }
+      }
+    },
     "polymarket_accounts": {
       "address": "polymarket_accounts",
       "title": "Accounts",
@@ -334,6 +348,30 @@
         }
       ]
     },
+    "subscribePolymarketTraderPositions": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_trader_positions"
+      },
+      "summary": "Subscribe to trader position updates stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trader_positions/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketTraderPositions": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_trader_positions"
+      },
+      "summary": "Receive trader position updates stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trader_positions/messages/traderPositionUpdateEvent"
+        }
+      ]
+    },
     "subscribePolymarketAccounts": {
       "action": "send",
       "channel": {
@@ -491,6 +529,18 @@
         "summary": "per-event PnL update for a trader",
         "payload": {
           "$ref": "#/components/schemas/TraderEventPnlEvent"
+        }
+      },
+      "TraderPositionsSubscribe": {
+        "summary": "Subscribe to trader position updates stream",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionsSubscribeMessage"
+        }
+      },
+      "TraderPositionUpdateEvent": {
+        "summary": "TraderPositionUpdateEvent",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionUpdateEvent"
         }
       },
       "AccountsSubscribe": {
