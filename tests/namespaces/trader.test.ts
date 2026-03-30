@@ -74,6 +74,13 @@ describe("TraderNamespace", () => {
 		expect(getPath(http)).toBe(`/polymarket/trader/pnl/${ADDR}/events`);
 	});
 
+	test("getTraderPnlCalendar", async () => {
+		const http = mockHttp();
+		const ns = new TraderNamespace(http, "polymarket");
+		await ns.getTraderPnlCalendar({ address: ADDR } as any);
+		expect(getPath(http)).toBe(`/polymarket/trader/pnl/${ADDR}/calendar`);
+	});
+
 	test("getTraderPnlCandles", async () => {
 		const http = mockHttp();
 		const ns = new TraderNamespace(http, "polymarket");
