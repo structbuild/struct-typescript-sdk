@@ -1325,20 +1325,6 @@
             ],
             "description": "Condition ID of the best trade"
           },
-          "worst_trade_pnl_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Worst single-trade PnL in USD"
-          },
-          "worst_trade_condition_id": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Condition ID of the worst trade"
-          },
           "first_trade_at": {
             "type": [
               "integer",

@@ -1099,12 +1099,12 @@ export interface components {
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
         /** @enum {string} */
-        GlobalPnlSortBy: "pnl_usd" | "buys" | "sells" | "redemptions" | "merges" | "avg_hold_time" | "markets_traded" | "events_traded" | "markets_won" | "volume_usd" | "fees" | "best_trade" | "worst_trade";
+        GlobalPnlSortBy: "realized_pnl_usd" | "buys" | "sells" | "redemptions" | "merges" | "avg_hold_time" | "markets_traded" | "events_traded" | "markets_won" | "volume_usd" | "fees" | "best_trade";
         /** @description Individual trader entry in the global PnL leaderboard */
         GlobalPnlTrader: {
             trader: components["schemas"]["TraderInfo"];
             /** Format: double */
-            pnl_usd?: number | null;
+            realized_pnl_usd?: number | null;
             /** Format: int64 */
             events_traded?: number | null;
             /** Format: int64 */
@@ -1146,9 +1146,6 @@ export interface components {
             /** Format: double */
             best_trade_pnl_usd?: number | null;
             best_trade_condition_id?: string | null;
-            /** Format: double */
-            worst_trade_pnl_usd?: number | null;
-            worst_trade_condition_id?: string | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -1829,6 +1826,7 @@ export interface components {
             question?: string | null;
             image_url?: string | null;
             slug?: string | null;
+            event_slug?: string | null;
             /** Format: double */
             usd_amount: number;
             /** Format: double */
@@ -1937,7 +1935,7 @@ export interface components {
         /** @enum {string} */
         TradeSide: "0" | "1";
         /** @enum {string} */
-        TradeType: "0" | "1" | "2" | "4" | "6";
+        TradeType: "0" | "1" | "2" | "3" | "4" | "5" | "6";
         /**
          * @description Trader profile info embedded in API responses
          *
@@ -2155,9 +2153,6 @@ export interface components {
             /** Format: double */
             best_trade_pnl_usd?: number | null;
             best_trade_condition_id?: string | null;
-            /** Format: double */
-            worst_trade_pnl_usd?: number | null;
-            worst_trade_condition_id?: string | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -2727,6 +2722,8 @@ export interface operations {
                 limit?: number;
                 /** @description Cursor-based pagination key */
                 pagination_key?: string;
+                /** @description Only return markets that have CLOB rewards (default: false) */
+                has_rewards?: boolean;
                 /** @description Return truncated response optimized for AI consumers (default: false) */
                 ai?: boolean;
             };
@@ -3104,8 +3101,8 @@ export interface operations {
                 outcome?: string;
                 /** @description Outcome index: 0 (Yes), 1 (No) */
                 outcome_index?: components["schemas"]["OutcomeIndex"];
-                /** @description Trade type: 0 (OrderFilled), 1 (Redemption), 2 (Merge) */
-                trade_type?: components["schemas"]["TradeType"];
+                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched */
+                trade_types?: string;
                 /** @description Min USD amount */
                 min_usd_amount?: number;
                 /** @description Max USD amount */
@@ -3703,7 +3700,7 @@ export interface operations {
             query?: {
                 /** @description Timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Sort: pnl_usd, buys, sells, redemptions, merges, avg_hold_time, markets_traded, events_traded, markets_won, volume_usd, fees, best_trade, worst_trade (default: pnl_usd) */
+                /** @description Sort: realized_pnl_usd, buys, sells, redemptions, merges, avg_hold_time, markets_traded, events_traded, markets_won, volume_usd, fees, best_trade (default: realized_pnl_usd) */
                 sort_by?: components["schemas"]["GlobalPnlSortBy"];
                 /** @description Sort direction: asc, desc (default: desc) */
                 sort_direction?: components["schemas"]["SortDirection"];
@@ -3914,6 +3911,8 @@ export interface operations {
                 market_slug?: string;
                 /** @description Filter by specific outcome token (position ID) */
                 position_id?: string;
+                /** @description Minimum shares balance to include (e.g. 1.0 to filter out dust positions) */
+                min_shares?: number;
             };
             header?: never;
             path: {
@@ -4003,8 +4002,8 @@ export interface operations {
                 outcome?: string;
                 /** @description Outcome index: 0 (Yes), 1 (No) */
                 outcome_index?: components["schemas"]["OutcomeIndex"];
-                /** @description Trade type: 0 (OrderFilled), 1 (Redemption), 2 (Merge) */
-                trade_type?: components["schemas"]["TradeType"];
+                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched */
+                trade_types?: string;
                 /** @description Min USD amount */
                 min_usd_amount?: number;
                 /** @description Max USD amount */

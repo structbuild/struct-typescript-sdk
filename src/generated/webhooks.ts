@@ -925,10 +925,6 @@ export interface components {
             best_trade_pnl_usd?: number | null;
             /** @description Condition ID of the best trade */
             best_trade_condition_id?: string | null;
-            /** @description Worst single-trade PnL in USD */
-            worst_trade_pnl_usd?: number | null;
-            /** @description Condition ID of the worst trade */
-            worst_trade_condition_id?: string | null;
             /**
              * Format: int64
              * @description Timestamp of the first trade (Unix seconds)
