@@ -3,7 +3,7 @@
   "info": {
     "title": "Polymarket WebSocket API",
     "version": "1.0.0",
-    "description": "Real-time WebSocket streaming API for Polymarket prediction-market data.\n\n## Connection\nConnect to `wss://api.struct.to/ws` using a standard WebSocket client.\n\n## Authentication\nAn API key is required. Pass it via **header** or **query parameter**:\n\n**Header (recommended):**\n```\nX-Api-Key: <your-api-key>\n```\n\n**Query parameter (browser / frontend):**\n```\nwss://api.struct.to/ws?api_key=<your-api-key>\n```\n\nThe query parameter is only used when no `X-Api-Key` header is present.\n\n## Joining a room\nAfter connecting, send:\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\nAfter joining, send a `room_message` with room-specific subscribe payload:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\nThe server sends a `ping` text frame every **30 seconds**. Respond with a `pong` text frame to stay connected. Connections that do not respond within **60 seconds** (two missed pings) are closed."
+    "description": "Real-time WebSocket streaming API for Polymarket prediction-market data.\n\n## Connection\nConnect to `wss://api.struct.to/ws` using a standard WebSocket client.\n\n## Authentication\nAn API key is required. Pass it via **header** or **query parameter**:\n\n**Header (recommended):**\n```\nX-Api-Key: <your-api-key>\n```\n\n**Query parameter (browser / frontend):**\n```\nwss://api.struct.to/ws?api_key=<your-api-key>\n```\n\nThe query parameter is only used when no `X-Api-Key` header is present.\n\n## Joining a room\nAfter connecting, send:\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\nAfter joining, send a `room_message` with room-specific subscribe payload:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\nSend `{\"type\":\"ping\"}` periodically to keep your connection alive. The server responds with `{\"type\":\"pong\"}`. Connections that have not sent a `ping` within **60 seconds** are closed."
   },
   "servers": {
     "production": {
@@ -63,7 +63,7 @@
       "address": "polymarket_market_metrics",
       "title": "Market Metrics",
       "summary": "Market (condition) metrics stream",
-      "description": "Real-time volume and transaction-count metrics per market condition, aggregated across multiple timeframes (`1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Filter (required):** `condition_ids` — 64-char hex condition IDs. Invalid or malformed IDs are returned in `rejected`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time volume and transaction-count metrics per market condition, aggregated across multiple timeframes (`1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`). One event is pushed per timeframe window on each update.\n\n**Filter (required):** `condition_ids` — 64-char hex condition IDs. Invalid or malformed IDs are returned in `rejected`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/MarketMetricsSubscribe"
@@ -77,7 +77,7 @@
       "address": "polymarket_event_metrics",
       "title": "Event Metrics",
       "summary": "Event metrics stream",
-      "description": "Real-time volume and transaction-count metrics aggregated at the event (parent market group) level, across multiple timeframes.\n\n**Filter (required):** `event_slugs` — event slugs (lowercase).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time volume and transaction-count metrics aggregated at the event (parent market group) level, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required):** `event_slugs` — event slugs (lowercase).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/EventMetricsSubscribe"
@@ -91,7 +91,7 @@
       "address": "polymarket_position_metrics",
       "title": "Position Metrics",
       "summary": "Position (outcome token) metrics stream",
-      "description": "Real-time volume and transaction-count metrics per outcome-token position, across multiple timeframes.\n\n**Filter (required):** `position_ids` — ERC-1155 token IDs (decimal or hex; normalized to decimal strings internally).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time volume, trade-count, and OHLC price/probability metrics per outcome-token position, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required):** `position_ids` — ERC-1155 token IDs (decimal or hex; normalized to decimal strings internally).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/PositionMetricsSubscribe"
@@ -166,6 +166,20 @@
         },
         "orderBookUpdateEvent": {
           "$ref": "#/components/messages/OrderBookUpdateEvent"
+        }
+      }
+    },
+    "polymarket_wallet_tracking": {
+      "address": "polymarket_wallet_tracking",
+      "title": "Wallet Tracking",
+      "summary": "Wallet trade tracking stream",
+      "description": "Real-time trade alerts for tracked Polymarket wallets. Streams a `wallet_tracking_alert` event whenever a subscribed wallet executes a trade, enriched with market metadata (slug, question, outcome, image).\n\n**Filter (required):** `wallet_addresses` — EVM wallet addresses to track.\n\n**Unsubscribe:** Disconnect or re-subscribe with a new address list.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WalletTrackingSubscribe"
+        },
+        "walletTrackingAlertEvent": {
+          "$ref": "#/components/messages/WalletTrackingAlertEvent"
         }
       }
     }
@@ -425,6 +439,30 @@
           "$ref": "#/channels/polymarket_order_book/messages/orderBookUpdateEvent"
         }
       ]
+    },
+    "subscribePolymarketWalletTracking": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_wallet_tracking"
+      },
+      "summary": "Subscribe to wallet trade tracking stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_wallet_tracking/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketWalletTracking": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_wallet_tracking"
+      },
+      "summary": "Receive wallet trade tracking stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_wallet_tracking/messages/walletTrackingAlertEvent"
+        }
+      ]
     }
   },
   "components": {
@@ -466,7 +504,7 @@
         }
       },
       "AssetWindowUpdateEvent": {
-        "summary": "Server-pushed event from the polymarket_asset_window_updates room",
+        "summary": "Server-pushed event from the polymarket_asset_window_updates room. Same payload as AssetPriceWindowUpdateEvent",
         "payload": {
           "$ref": "#/components/schemas/AssetWindowUpdateEvent"
         }
@@ -478,7 +516,7 @@
         }
       },
       "MarketMetricsEvent": {
-        "summary": "updated metrics for a condition",
+        "summary": "metrics update for one timeframe of a condition",
         "payload": {
           "$ref": "#/components/schemas/MarketMetricsEvent"
         }
@@ -490,7 +528,7 @@
         }
       },
       "EventMetricsEvent": {
-        "summary": "updated aggregated metrics for an event",
+        "summary": "aggregated metrics update for one timeframe of an event",
         "payload": {
           "$ref": "#/components/schemas/EventMetricsEvent"
         }
@@ -502,7 +540,7 @@
         }
       },
       "PositionMetricsEvent": {
-        "summary": "updated metrics for an outcome token",
+        "summary": "metrics update for one timeframe of an outcome token",
         "payload": {
           "$ref": "#/components/schemas/PositionMetricsEvent"
         }
@@ -538,7 +576,7 @@
         }
       },
       "TraderPositionUpdateEvent": {
-        "summary": "TraderPositionUpdateEvent",
+        "summary": "full position snapshot for a tracked trader",
         "payload": {
           "$ref": "#/components/schemas/TraderPositionUpdateEvent"
         }
@@ -578,9 +616,131 @@
         "payload": {
           "$ref": "#/components/schemas/OrderBookUpdateEvent"
         }
+      },
+      "WalletTrackingSubscribe": {
+        "summary": "Subscribe to wallet trade tracking stream",
+        "payload": {
+          "$ref": "#/components/schemas/WalletTrackingSubscribeMessage"
+        }
+      },
+      "WalletTrackingAlertEvent": {
+        "summary": "a trade executed by a tracked wallet",
+        "payload": {
+          "$ref": "#/components/schemas/WalletTrackingAlertEvent"
+        }
       }
     },
     "schemas": {
+      "WalletTrackingAlertEvent": {
+        "type": "object",
+        "description": "Server-pushed event: a trade executed by a tracked wallet. Envelope type: \"wallet_tracking_alert\".",
+        "required": [
+          "is_buy",
+          "trader",
+          "position_id",
+          "usd_amount",
+          "shares_amount",
+          "price",
+          "confirmed_at"
+        ],
+        "properties": {
+          "is_buy": {
+            "type": "boolean",
+            "description": "True = buy, false = sell"
+          },
+          "trader": {
+            "type": "string",
+            "description": "Trader EVM wallet address (lowercase)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "64-char hex condition ID"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "ERC-1155 outcome token ID (decimal string)"
+          },
+          "usd_amount": {
+            "type": "string",
+            "description": "USD value of the trade (decimal string, 6dp)"
+          },
+          "shares_amount": {
+            "type": "string",
+            "description": "Number of shares traded (decimal string, 6dp)"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Trade price (0–1)"
+          },
+          "probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Implied probability (0–1)"
+          },
+          "metadata": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PredictionMarketMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Market metadata — null when enrichment is unavailable"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix seconds"
+          }
+        }
+      },
+      "PredictionMarketMetadata": {
+        "type": "object",
+        "description": "Market metadata enrichment attached to wallet tracking alerts",
+        "properties": {
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question text"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
       "OrderBookUpdateEvent": {
         "type": "object",
         "description": "Server-pushed event: full CLOB orderbook snapshot for an outcome token. Envelope type: \"order_book_update\". Delivered whenever the book changes for a subscribed condition or position.",
@@ -691,65 +851,6 @@
         "minItems": 2,
         "maxItems": 2
       },
-      "OrderBookSubscribeResponse": {
-        "type": "object",
-        "description": "Server acknowledgement for an order book subscription",
-        "properties": {
-          "condition_ids": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Accepted condition IDs"
-          },
-          "position_ids": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Accepted position IDs"
-          },
-          "rejected": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Filter values that were rejected (invalid format or limit exceeded)"
-          }
-        }
-      },
-      "OrderBookSubscribeMessage": {
-        "type": "object",
-        "description": "Subscribe to the order book stream. At least one filter is required. Maximum 500 combined condition_ids + position_ids per client.",
-        "required": [
-          "action"
-        ],
-        "properties": {
-          "action": {
-            "type": "string",
-            "enum": [
-              "subscribe",
-              "unsubscribe_all"
-            ]
-          },
-          "condition_ids": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Condition IDs (markets). All positions within each market are delivered.",
-            "maxItems": 500
-          },
-          "position_ids": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Token / asset IDs (individual outcome positions, hex strings).",
-            "maxItems": 500
-          }
-        }
-      },
       "MaticUpdateEvent": {
         "type": "object",
         "description": "Server-pushed event: MATIC native balance change for a wallet. Envelope type: \"matic_update\". Only delivered when `include_matic: true`.",
@@ -761,11 +862,15 @@
         "properties": {
           "address": {
             "type": "string",
-            "description": "Wallet address"
+            "description": "Wallet address (0x-prefixed hex)"
+          },
+          "token_address": {
+            "type": "string",
+            "description": "Native token address — omitted when not available"
           },
           "balance": {
-            "type": "number",
-            "description": "Current MATIC balance — omitted when not available"
+            "type": "string",
+            "description": "Current MATIC balance (decimal string) — omitted when not available"
           },
           "block_number": {
             "type": "integer",
@@ -1156,486 +1261,52 @@
           }
         }
       },
-      "TradeStreamEvent": {
+      "TraderPositionsSubscribeMessage": {
         "type": "object",
-        "description": "Server-pushed event: a matched trade on a subscribed market/position/event/slug. Envelope type: \"trade_stream_update\".",
+        "description": "Subscribe to the trader positions stream. traders is required and must be non-empty.",
         "required": [
-          "trader",
-          "taker",
-          "position_id",
-          "trade_id",
-          "hash",
-          "block",
-          "confirmed_at",
-          "amount_usd",
-          "shares_amount",
-          "fee",
-          "side",
-          "price"
+          "action",
+          "traders"
         ],
         "properties": {
-          "trader": {
-            "type": "string",
-            "description": "Limit-order maker wallet"
-          },
-          "taker": {
-            "type": "string",
-            "description": "Order taker wallet"
-          },
-          "position_id": {
-            "type": "string",
-            "description": "ERC-1155 outcome token ID"
-          },
-          "condition_id": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "outcome": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Outcome name (e.g. \"Yes\")"
-          },
-          "outcome_index": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "0 = Yes, 1 = No"
-          },
-          "question": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "market_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "trade_id": {
-            "type": "string"
-          },
-          "hash": {
-            "type": "string",
-            "description": "Transaction hash"
-          },
-          "block": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "confirmed_at": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Unix seconds"
-          },
-          "amount_usd": {
-            "type": "number"
-          },
-          "shares_amount": {
-            "type": "number"
-          },
-          "fee": {
-            "type": "number"
-          },
-          "side": {
+          "action": {
             "type": "string",
             "enum": [
-              "Buy",
-              "Sell"
+              "subscribe",
+              "unsubscribe_all"
             ]
           },
-          "price": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0
-          }
-        }
-      },
-      "AssetPriceTickEvent": {
-        "type": "object",
-        "description": "Server-pushed event: a crypto-asset price tick. Envelope type: \"asset_price_tick\".",
-        "required": [
-          "symbol",
-          "price",
-          "timestamp"
-        ],
-        "properties": {
-          "symbol": {
-            "type": "string",
-            "description": "Uppercase asset symbol (e.g. \"BTC\")"
-          },
-          "price": {
-            "type": "number",
-            "description": "Current price in USD"
-          },
-          "timestamp": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Unix milliseconds"
-          },
-          "change_24h": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "24-hour price change %"
-          },
-          "volume_24h": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "24-hour trading volume USD"
-          },
-          "market_cap": {
-            "type": [
-              "number",
-              "null"
-            ]
-          }
-        }
-      },
-      "AssetPriceWindowUpdateEvent": {
-        "type": "object",
-        "description": "Server-pushed event: candle open or close for a crypto asset. Envelope type: \"asset_price_window_update\".",
-        "required": [
-          "symbol",
-          "timeframe",
-          "update_type",
-          "open",
-          "close",
-          "high",
-          "low",
-          "timestamp"
-        ],
-        "properties": {
-          "symbol": {
-            "type": "string",
-            "description": "Uppercase asset symbol"
-          },
-          "timeframe": {
-            "type": "string",
-            "enum": [
-              "5m",
-              "15m",
-              "1h",
-              "4h",
-              "1d",
-              "24h"
-            ]
-          },
-          "update_type": {
-            "type": "string",
-            "enum": [
-              "open",
-              "close"
-            ],
-            "description": "\"open\" = candle starting, \"close\" = candle finalised"
-          },
-          "open": {
-            "type": "number"
-          },
-          "close": {
-            "type": "number"
-          },
-          "high": {
-            "type": "number"
-          },
-          "low": {
-            "type": "number"
-          },
-          "volume": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "timestamp": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Candle start time in Unix milliseconds"
-          }
-        }
-      },
-      "AssetWindowUpdateEvent": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/AssetPriceWindowUpdateEvent"
-          }
-        ],
-        "description": "Server-pushed event from the polymarket_asset_window_updates room. Envelope type: \"asset_window_update\"."
-      },
-      "MetricsTimeframe": {
-        "type": "object",
-        "description": "Volume and trade-count metrics for one timeframe window",
-        "required": [
-          "timeframe",
-          "volume_usd",
-          "trade_count"
-        ],
-        "properties": {
-          "timeframe": {
-            "type": "string",
-            "enum": [
-              "1m",
-              "5m",
-              "30m",
-              "1h",
-              "6h",
-              "24h",
-              "7d",
-              "30d"
-            ]
-          },
-          "volume_usd": {
-            "type": "number",
-            "description": "USD volume in this window"
-          },
-          "trade_count": {
-            "type": "integer",
-            "description": "Number of trades in this window"
-          }
-        }
-      },
-      "MarketMetricsEvent": {
-        "type": "object",
-        "description": "Server-pushed event: updated metrics for a condition. Envelope type: \"market_metrics_update\".",
-        "required": [
-          "condition_id",
-          "timeframes"
-        ],
-        "properties": {
-          "condition_id": {
-            "type": "string",
-            "description": "0x-prefixed 64-char hex condition ID"
-          },
-          "market_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "timeframes": {
+          "traders": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/MetricsTimeframe"
-            }
+              "type": "string"
+            },
+            "description": "EVM wallet addresses",
+            "minItems": 1
           }
         }
       },
-      "EventMetricsEvent": {
+      "TraderPositionsSubscribeResponse": {
         "type": "object",
-        "description": "Server-pushed event: updated aggregated metrics for an event. Envelope type: \"event_metrics_update\".",
-        "required": [
-          "event_slug",
-          "timeframes"
-        ],
+        "description": "Server acknowledgement for a trader positions subscription",
         "properties": {
-          "event_slug": {
-            "type": "string"
-          },
-          "timeframes": {
+          "traders": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/MetricsTimeframe"
+              "type": "string"
             }
-          }
-        }
-      },
-      "PositionMetricsEvent": {
-        "type": "object",
-        "description": "Server-pushed event: updated metrics for an outcome token. Envelope type: \"position_metrics_update\".",
-        "required": [
-          "position_id",
-          "timeframes"
-        ],
-        "properties": {
-          "position_id": {
-            "type": "string",
-            "description": "ERC-1155 token ID (decimal string)"
           },
-          "condition_id": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "outcome": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "timeframes": {
+          "rejected": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/MetricsTimeframe"
+              "type": "string"
             }
-          }
-        }
-      },
-      "PnlTimeframes": {
-        "type": "object",
-        "description": "PnL figures broken down by timeframe",
-        "properties": {
-          "1d": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "1-day PnL in USD"
           },
-          "7d": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "30d": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "all": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "All-time PnL in USD"
-          }
-        }
-      },
-      "TraderGlobalPnlEvent": {
-        "type": "object",
-        "description": "Server-pushed event: global (portfolio-level) PnL update for a trader. Envelope type: \"trader_global_pnl_update\".",
-        "required": [
-          "trader",
-          "realized_pnl",
-          "unrealized_pnl",
-          "timeframe"
-        ],
-        "properties": {
-          "trader": {
-            "type": "string",
-            "description": "Trader EVM address"
-          },
-          "realized_pnl": {
-            "type": "number",
-            "description": "Realized PnL in USD"
-          },
-          "unrealized_pnl": {
-            "type": "number",
-            "description": "Unrealized PnL in USD"
-          },
-          "total_pnl": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "timeframe": {
-            "type": "string",
-            "description": "Window that triggered the update"
-          },
-          "updated_at": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Unix seconds"
-          }
-        }
-      },
-      "TraderMarketPnlEvent": {
-        "type": "object",
-        "description": "Server-pushed event: per-market PnL update for a trader. Envelope type: \"trader_market_pnl_update\".",
-        "required": [
-          "trader",
-          "condition_id",
-          "realized_pnl",
-          "unrealized_pnl",
-          "timeframe"
-        ],
-        "properties": {
-          "trader": {
-            "type": "string"
-          },
-          "condition_id": {
-            "type": "string"
-          },
-          "market_slug": {
+          "error": {
             "type": [
               "string",
               "null"
             ]
-          },
-          "realized_pnl": {
-            "type": "number"
-          },
-          "unrealized_pnl": {
-            "type": "number"
-          },
-          "total_pnl": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "timeframe": {
-            "type": "string"
-          },
-          "updated_at": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "TraderEventPnlEvent": {
-        "type": "object",
-        "description": "Server-pushed event: per-event PnL update for a trader. Envelope type: \"trader_event_pnl_update\".",
-        "required": [
-          "trader",
-          "event_slug",
-          "realized_pnl",
-          "unrealized_pnl",
-          "timeframe"
-        ],
-        "properties": {
-          "trader": {
-            "type": "string"
-          },
-          "event_slug": {
-            "type": "string"
-          },
-          "realized_pnl": {
-            "type": "number"
-          },
-          "unrealized_pnl": {
-            "type": "number"
-          },
-          "total_pnl": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "timeframe": {
-            "type": "string"
-          },
-          "updated_at": {
-            "type": "integer",
-            "format": "int64"
           }
         }
       },
@@ -1705,6 +1376,1241 @@
           }
         }
       },
+      "OrderBookSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the order book stream. At least one filter is required. Maximum 500 combined condition_ids + position_ids per client. No `type` field is needed — the server routes by room_id.",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Condition IDs (markets). All positions within each market are delivered.",
+            "maxItems": 500
+          },
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Token / asset IDs (individual outcome positions, hex strings).",
+            "maxItems": 500
+          }
+        }
+      },
+      "OrderBookSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for an order book subscription. Envelope type: \"order_book_stream_subscribe_response\".",
+        "properties": {
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted condition IDs"
+          },
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted position IDs"
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter values that were rejected (invalid format or limit exceeded)"
+          }
+        }
+      },
+      "WalletTrackingSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to wallet trade alerts. wallet_addresses is required.",
+        "required": [
+          "action",
+          "wallet_addresses"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe"
+            ]
+          },
+          "wallet_addresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "EVM wallet addresses to track",
+            "minItems": 1
+          }
+        }
+      },
+      "TradeStreamEvent": {
+        "type": "object",
+        "description": "Server-pushed event: a matched trade on a subscribed market/position/event/slug. Envelope type: \"trade_stream_update\".",
+        "required": [
+          "id",
+          "trader",
+          "taker",
+          "position_id",
+          "hash",
+          "block",
+          "confirmed_at",
+          "usd_amount",
+          "shares_amount",
+          "fee",
+          "price"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Trade ID"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash (hex)"
+          },
+          "chain_id": {
+            "type": "integer",
+            "format": "uint64"
+          },
+          "block": {
+            "type": "integer",
+            "format": "uint64"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "format": "uint64",
+            "description": "Unix seconds"
+          },
+          "log_index": {
+            "type": "integer",
+            "format": "uint64"
+          },
+          "block_index": {
+            "type": "integer",
+            "format": "uint64"
+          },
+          "order_hash": {
+            "type": "string",
+            "description": "Order hash (hex)"
+          },
+          "trader": {
+            "type": "string",
+            "description": "Limit-order maker wallet address"
+          },
+          "taker": {
+            "type": "string",
+            "description": "Order taker wallet address"
+          },
+          "side": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"Buy\" or \"Sell\""
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "64-char hex condition ID"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "ERC-1155 outcome token ID (decimal string)"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "0 = Yes, 1 = No"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "usd_amount": {
+            "type": "string",
+            "description": "USD value of the trade (decimal string)"
+          },
+          "shares_amount": {
+            "type": "string",
+            "description": "Number of shares traded (decimal string)"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Trade price (0–1)"
+          },
+          "probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Implied probability (0–1)"
+          },
+          "fee": {
+            "type": "string",
+            "description": "Protocol fee paid (decimal string)"
+          },
+          "exchange": {
+            "type": "string",
+            "description": "Exchange identifier"
+          },
+          "trade_type": {
+            "type": "string",
+            "description": "\"OrderFilled\", \"Redemption\", \"Merge\", \"Split\", \"Cancelled\", \"PositionsConverted\", \"OrdersMatched\""
+          },
+          "winning_outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Resolved winning outcome index"
+          },
+          "is_known_surebet": {
+            "type": "boolean"
+          },
+          "is_coordinated": {
+            "type": "boolean"
+          },
+          "is_surebet_trade": {
+            "type": "boolean"
+          },
+          "surebet_price_sum": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "is_bot": {
+            "type": "boolean"
+          },
+          "bot_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "AssetPriceTickEvent": {
+        "type": "object",
+        "description": "Server-pushed event: a crypto-asset price tick. Envelope type: \"asset_price_tick\".",
+        "required": [
+          "event_type",
+          "symbol",
+          "price",
+          "timestamp_ms",
+          "published_at"
+        ],
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "description": "Always \"asset_price_tick\""
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Uppercase asset symbol (e.g. \"BTC\")"
+          },
+          "price": {
+            "type": "number",
+            "description": "Current price in USD"
+          },
+          "timestamp_ms": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Event timestamp in Unix milliseconds"
+          },
+          "published_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Publish timestamp in Unix milliseconds"
+          }
+        }
+      },
+      "AssetPriceWindowUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed event: candle open or close for a crypto asset. Envelope type: \"asset_price_window_update\". Delivered from both `polymarket_asset_prices` and `polymarket_asset_window_updates` rooms.",
+        "required": [
+          "event_type",
+          "symbol",
+          "variant",
+          "start_time",
+          "end_time",
+          "open_price",
+          "close_price",
+          "update_type",
+          "published_at"
+        ],
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "description": "Always \"asset_price_window_update\""
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Uppercase asset symbol (e.g. \"BTC\")"
+          },
+          "variant": {
+            "type": "string",
+            "description": "Candle size / timeframe (e.g. \"5m\", \"1h\", \"1d\")"
+          },
+          "start_time": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Candle start in Unix milliseconds"
+          },
+          "end_time": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Candle end in Unix milliseconds"
+          },
+          "open_price": {
+            "type": "number",
+            "description": "Candle open price in USD"
+          },
+          "close_price": {
+            "type": "number",
+            "description": "Candle close price in USD"
+          },
+          "update_type": {
+            "type": "string",
+            "description": "\"open\" = candle starting, \"close\" = candle finalised"
+          },
+          "published_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Publish timestamp in Unix milliseconds"
+          }
+        }
+      },
+      "AssetWindowUpdateEvent": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AssetPriceWindowUpdateEvent"
+          }
+        ],
+        "description": "Server-pushed event from the polymarket_asset_window_updates room. Same payload as AssetPriceWindowUpdateEvent. Envelope type: \"asset_price_window_update\"."
+      },
+      "MarketMetricsEvent": {
+        "type": "object",
+        "description": "Server-pushed event: metrics update for one timeframe of a condition. Envelope type: \"market_metrics_update\". One event is emitted per timeframe window on each update.",
+        "required": [
+          "condition_id",
+          "timeframe",
+          "usd_volume",
+          "fees",
+          "txns",
+          "unique_traders",
+          "historical_confirmed_at",
+          "latest_confirmed_at",
+          "latest_block"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": "string",
+            "description": "64-char hex condition ID"
+          },
+          "timeframe": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ]
+          },
+          "timestamp": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Optional event timestamp (Unix seconds)"
+          },
+          "usd_volume": {
+            "type": "string",
+            "description": "USD volume in this timeframe window (decimal string)"
+          },
+          "fees": {
+            "type": "number",
+            "description": "Total fees in this window"
+          },
+          "txns": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of transactions"
+          },
+          "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "historical_confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Earliest trade timestamp in window (Unix seconds)"
+          },
+          "latest_confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Latest trade timestamp in window (Unix seconds)"
+          },
+          "latest_block": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "EventMetricsEvent": {
+        "type": "object",
+        "description": "Server-pushed event: aggregated metrics update for one timeframe of an event. Envelope type: \"event_metrics_update\". One event is emitted per timeframe window on each update.",
+        "required": [
+          "event_slug",
+          "timeframe",
+          "usd_volume",
+          "fees",
+          "txns",
+          "unique_traders",
+          "historical_confirmed_at",
+          "latest_confirmed_at",
+          "latest_block"
+        ],
+        "properties": {
+          "event_slug": {
+            "type": "string"
+          },
+          "timeframe": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ]
+          },
+          "timestamp": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Optional event timestamp (Unix seconds)"
+          },
+          "usd_volume": {
+            "type": "string",
+            "description": "USD volume in this timeframe window (decimal string)"
+          },
+          "fees": {
+            "type": "number"
+          },
+          "txns": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "historical_confirmed_at": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "latest_confirmed_at": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "latest_block": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PositionMetricsEvent": {
+        "type": "object",
+        "description": "Server-pushed event: metrics update for one timeframe of an outcome token. Envelope type: \"position_metrics_update\". One event is emitted per timeframe window on each update.",
+        "required": [
+          "condition_id",
+          "position_id",
+          "timeframe",
+          "usd_volume",
+          "usd_buy_volume",
+          "usd_sell_volume",
+          "fees",
+          "txns",
+          "buys",
+          "sells",
+          "unique_traders",
+          "price_open",
+          "price_close",
+          "price_high",
+          "price_low",
+          "probability_open",
+          "probability_close",
+          "probability_high",
+          "probability_low",
+          "historical_confirmed_at",
+          "latest_confirmed_at",
+          "latest_block"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": "string",
+            "description": "64-char hex condition ID"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "ERC-1155 token ID (decimal string)"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "timeframe": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ]
+          },
+          "timestamp": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Optional event timestamp (Unix seconds)"
+          },
+          "usd_volume": {
+            "type": "string",
+            "description": "Total USD volume (decimal string)"
+          },
+          "usd_buy_volume": {
+            "type": "string",
+            "description": "USD buy volume (decimal string)"
+          },
+          "usd_sell_volume": {
+            "type": "string",
+            "description": "USD sell volume (decimal string)"
+          },
+          "fees": {
+            "type": "number"
+          },
+          "txns": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sells": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "price_open": {
+            "type": "number",
+            "description": "OHLC open price (0–1)"
+          },
+          "price_close": {
+            "type": "number",
+            "description": "OHLC close price (0–1)"
+          },
+          "price_high": {
+            "type": "number",
+            "description": "OHLC high price (0–1)"
+          },
+          "price_low": {
+            "type": "number",
+            "description": "OHLC low price (0–1)"
+          },
+          "probability_open": {
+            "type": "number",
+            "description": "Implied probability at open (0–1)"
+          },
+          "probability_close": {
+            "type": "number",
+            "description": "Implied probability at close (0–1)"
+          },
+          "probability_high": {
+            "type": "number",
+            "description": "Highest implied probability in window (0–1)"
+          },
+          "probability_low": {
+            "type": "number",
+            "description": "Lowest implied probability in window (0–1)"
+          },
+          "historical_confirmed_at": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "latest_confirmed_at": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "latest_block": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "TraderGlobalPnlEvent": {
+        "type": "object",
+        "description": "Server-pushed event: global (portfolio-level) PnL update for a trader. Envelope type: \"trader_global_pnl_update\".",
+        "required": [
+          "trader",
+          "realized_pnl_usd",
+          "total_volume_usd",
+          "buy_volume_usd",
+          "sell_volume_usd",
+          "redemption_volume_usd",
+          "merge_volume_usd",
+          "market_win_rate_pct",
+          "avg_pnl_per_market",
+          "avg_pnl_per_trade",
+          "avg_hold_time_seconds",
+          "total_fees",
+          "best_trade_pnl_usd",
+          "worst_trade_pnl_usd"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader EVM wallet address"
+          },
+          "realized_pnl_usd": {
+            "type": "string",
+            "description": "Total realized PnL in USD (decimal string)"
+          },
+          "events_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_volume_usd": {
+            "type": "string",
+            "description": "Total USD volume (decimal string)"
+          },
+          "buy_volume_usd": {
+            "type": "string"
+          },
+          "sell_volume_usd": {
+            "type": "string"
+          },
+          "redemption_volume_usd": {
+            "type": "string"
+          },
+          "merge_volume_usd": {
+            "type": "string"
+          },
+          "markets_won": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "markets_lost": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "market_win_rate_pct": {
+            "type": "string",
+            "description": "Win rate percentage (decimal string)"
+          },
+          "avg_pnl_per_market": {
+            "type": "string"
+          },
+          "avg_pnl_per_trade": {
+            "type": "string"
+          },
+          "avg_hold_time_seconds": {
+            "type": "string"
+          },
+          "total_fees": {
+            "type": "string"
+          },
+          "best_trade_pnl_usd": {
+            "type": "string"
+          },
+          "best_trade_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worst_trade_pnl_usd": {
+            "type": "string"
+          },
+          "worst_trade_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "timestamp": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          }
+        }
+      },
+      "TraderMarketPnlEvent": {
+        "type": "object",
+        "description": "Server-pushed event: per-market PnL update for a trader. Envelope type: \"trader_market_pnl_update\".",
+        "required": [
+          "trader",
+          "condition_id",
+          "buy_usd",
+          "sell_usd",
+          "redemption_usd",
+          "merge_usd",
+          "realized_pnl_usd",
+          "total_fees"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string",
+            "description": "64-char hex condition ID"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcomes_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "buy_usd": {
+            "type": "string",
+            "description": "Total buy volume in USD (decimal string)"
+          },
+          "sell_usd": {
+            "type": "string"
+          },
+          "redemption_usd": {
+            "type": "string"
+          },
+          "merge_usd": {
+            "type": "string"
+          },
+          "realized_pnl_usd": {
+            "type": "string",
+            "description": "Realized PnL in USD (decimal string)"
+          },
+          "winning_outcomes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_fees": {
+            "type": "string"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "timestamp": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          }
+        }
+      },
+      "TraderEventPnlEvent": {
+        "type": "object",
+        "description": "Server-pushed event: per-event PnL update for a trader. Envelope type: \"trader_event_pnl_update\".",
+        "required": [
+          "trader",
+          "event_slug",
+          "buy_usd",
+          "sell_usd",
+          "redemption_usd",
+          "merge_usd",
+          "total_volume_usd",
+          "realized_pnl_usd",
+          "total_fees"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "outcomes_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_volume_usd": {
+            "type": "string",
+            "description": "Total USD volume (decimal string)"
+          },
+          "buy_usd": {
+            "type": "string"
+          },
+          "sell_usd": {
+            "type": "string"
+          },
+          "redemption_usd": {
+            "type": "string"
+          },
+          "merge_usd": {
+            "type": "string"
+          },
+          "realized_pnl_usd": {
+            "type": "string",
+            "description": "Realized PnL in USD (decimal string)"
+          },
+          "winning_markets": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "losing_markets": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_fees": {
+            "type": "string"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "timestamp": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          }
+        }
+      },
+      "TraderPositionUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed event: full position snapshot for a tracked trader. Envelope type: \"trader_position_update\". Pushed whenever a position's PnL changes in the database.",
+        "required": [
+          "trader"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader EVM wallet address"
+          },
+          "position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ERC-1155 token ID (decimal string)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market title / question"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "won": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "True if this outcome resolved as winner"
+          },
+          "total_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_shares_bought": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total_shares_sold": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total_buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total_sell_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "redemption_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "avg_entry_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Average entry price (0–1)"
+          },
+          "avg_exit_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Average exit price (0–1)"
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total_fees": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "current_shares_balance": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Current ERC-1155 token balance"
+          },
+          "realized_pnl_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Realized PnL as a percentage of cost basis"
+          }
+        }
+      },
       "AccountsUpdateEvent": {
         "type": "object",
         "description": "Server-pushed event: ERC-1155 outcome token balance change for a wallet. Envelope type: \"accounts_update\".",
@@ -1726,7 +2632,7 @@
           },
           "balance": {
             "type": "string",
-            "description": "Current token balance (U256 as decimal string)"
+            "description": "Current token balance (decimal string)"
           },
           "block_number": {
             "type": "integer",
@@ -1758,15 +2664,15 @@
         "properties": {
           "address": {
             "type": "string",
-            "description": "Wallet address"
+            "description": "Wallet address (0x-prefixed hex)"
           },
           "token_address": {
             "type": "string",
             "description": "USDCe contract address — omitted when not available"
           },
           "balance": {
-            "type": "number",
-            "description": "Current USDCe balance — omitted when not available"
+            "type": "string",
+            "description": "Current USDCe balance (decimal string) — omitted when not available"
           },
           "block_number": {
             "type": "integer",

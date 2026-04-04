@@ -20,7 +20,8 @@ export type WsRoomId =
 	| "polymarket_trader_pnl"
 	| "polymarket_trader_positions"
 	| "polymarket_accounts"
-	| "polymarket_order_book";
+	| "polymarket_order_book"
+	| "polymarket_wallet_tracking";
 
 export type WsFiltersOptionalRoom = "polymarket_asset_prices";
 export type WsFiltersRequiredRoom = Exclude<WsRoomId, WsFiltersOptionalRoom>;
@@ -35,28 +36,16 @@ export type TraderPnlSubscribeFilters = Omit<WsSchemas["TraderPnlSubscribeMessag
 export type AccountsSubscribeFilters = Pick<WsSchemas["AccountsSubscribeMessage"], "wallets"> &
 	Partial<Pick<WsSchemas["AccountsSubscribeMessage"], "include_usdce" | "include_matic">>;
 export type OrderBookSubscribeFilters = Omit<WsSchemas["OrderBookSubscribeMessage"], "action">;
-
-export interface TraderPositionsSubscribeFilters {
-	traders: string[];
-}
-
-export interface TraderPositionsSubscribeResponse {
-	traders?: string[];
-	rejected?: string[];
-	error?: string | null;
-}
-
-export type TraderPositionUpdateEvent = Record<string, unknown>;
+export type TraderPositionsSubscribeFilters = Omit<WsSchemas["TraderPositionsSubscribeMessage"], "action">;
+export type WalletTrackingSubscribeFilters = Omit<WsSchemas["WalletTrackingSubscribeMessage"], "action">;
 
 export type TradeStreamEvent = WsSchemas["TradeStreamEvent"];
 export type AssetPriceTickEvent = WsSchemas["AssetPriceTickEvent"];
 export type AssetPriceWindowUpdateEvent = WsSchemas["AssetPriceWindowUpdateEvent"];
 export type AssetWindowUpdateEvent = WsSchemas["AssetWindowUpdateEvent"];
-export type WsMetricsTimeframe = WsSchemas["MetricsTimeframe"];
 export type MarketMetricsEvent = WsSchemas["MarketMetricsEvent"];
 export type EventMetricsEvent = WsSchemas["EventMetricsEvent"];
 export type PositionMetricsEvent = WsSchemas["PositionMetricsEvent"];
-export type WsPnlTimeframes = WsSchemas["PnlTimeframes"];
 export type TraderGlobalPnlEvent = WsSchemas["TraderGlobalPnlEvent"];
 export type TraderMarketPnlEvent = WsSchemas["TraderMarketPnlEvent"];
 export type TraderEventPnlEvent = WsSchemas["TraderEventPnlEvent"];
@@ -65,6 +54,10 @@ export type UsdceUpdateEvent = WsSchemas["UsdceUpdateEvent"];
 export type MaticUpdateEvent = WsSchemas["MaticUpdateEvent"];
 export type WsOrderBookLevel = WsSchemas["OrderBookLevel"];
 export type OrderBookUpdateEvent = WsSchemas["OrderBookUpdateEvent"];
+export type TraderPositionUpdateEvent = WsSchemas["TraderPositionUpdateEvent"];
+export type TraderPositionsSubscribeResponse = WsSchemas["TraderPositionsSubscribeResponse"];
+export type WalletTrackingAlertEvent = WsSchemas["WalletTrackingAlertEvent"];
+export type WsPredictionMarketMetadata = WsSchemas["PredictionMarketMetadata"];
 
 export type TradesStreamSubscribeResponse = WsSchemas["TradesStreamSubscribeResponse"];
 export type AssetPricesSubscribeResponse = WsSchemas["AssetPricesSubscribeResponse"];
@@ -92,6 +85,7 @@ export interface WebSocketEventMap {
 	matic_update: MaticUpdateEvent;
 	order_book_update: OrderBookUpdateEvent;
 	trader_position_update: TraderPositionUpdateEvent;
+	wallet_tracking_alert: WalletTrackingAlertEvent;
 	connected: void;
 	disconnected: { code: number; reason: string };
 	reconnecting: { attempt: number };
@@ -109,6 +103,7 @@ export interface WsSubscriptionMap {
 	polymarket_trader_positions: TraderPositionsSubscribeFilters;
 	polymarket_accounts: AccountsSubscribeFilters;
 	polymarket_order_book: OrderBookSubscribeFilters;
+	polymarket_wallet_tracking: WalletTrackingSubscribeFilters;
 }
 
 export interface WsSubscribeResponseMap {
@@ -122,4 +117,5 @@ export interface WsSubscribeResponseMap {
 	polymarket_trader_positions: TraderPositionsSubscribeResponse;
 	polymarket_accounts: AccountsSubscribeResponse;
 	polymarket_order_book: OrderBookSubscribeResponse;
+	polymarket_wallet_tracking: Record<string, unknown>;
 }
