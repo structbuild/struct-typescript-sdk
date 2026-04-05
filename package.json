@@ -1,6 +1,6 @@
 {
   "name": "@structbuild/sdk",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -32,7 +32,7 @@
     "generate:polymarket": "openapi-typescript openapi/polymarket.json -o src/generated/polymarket.ts",
     "fetch-spec:webhooks": "curl -s -o openapi/webhooks.json https://api.struct.to/webhookopenapi.json",
     "generate:webhooks": "openapi-typescript openapi/webhooks.json -o src/generated/webhooks.ts",
-    "fetch-spec:ws": "curl -s -o openapi/ws.json https://staging-api.struct.to/asyncapi.json",
+    "fetch-spec:ws": "curl -s --compressed -o openapi/ws.json https://staging-api.struct.to/asyncapi.json",
     "generate:ws": "bun run scripts/generate-ws-types.ts"
   },
   "devDependencies": {

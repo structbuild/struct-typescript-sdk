@@ -2140,7 +2140,7 @@ export interface components {
             position_outcome_indices?: number[];
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
             exclude_shortterm_markets?: boolean;
-        };
+        } | unknown | unknown;
         /** @description Subscription filters for the `market_created` event. All fields are optional. */
         MarketCreatedFilters: {
             /** @description Restrict to markets with these tags or category names (case-insensitive match). */

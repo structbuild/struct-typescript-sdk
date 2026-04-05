@@ -116,6 +116,7 @@ async function getExportedSchemas(typesContent: string): Promise<Set<string>> {
 	for (const m of typesContent.matchAll(/Schemas\["(\w+)"\]/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/WebhookSchemas\["(\w+)"\]/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/WsSchemas\["(\w+)"\]/g)) exported.add(m[1]);
+	for (const m of typesContent.matchAll(/components\["schemas"\]\["(\w+)"\]/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/export type (\w+)\s*=/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/export interface (\w+)/g)) exported.add(m[1]);
 	return exported;
@@ -144,7 +145,8 @@ let hasErrors = false;
 
 const typesContent = await readFile(TYPES_FILE, "utf-8");
 const wsTypesContent = await readFile(join(import.meta.dirname, "../src/types/ws.ts"), "utf-8");
-const combinedTypesContent = typesContent + "\n" + wsTypesContent;
+const wsGeneratedContent = await readFile(join(import.meta.dirname, "../src/generated/ws.ts"), "utf-8");
+const combinedTypesContent = typesContent + "\n" + wsTypesContent + "\n" + wsGeneratedContent;
 const exportedSchemas = await getExportedSchemas(combinedTypesContent);
 
 for (const config of specs) {

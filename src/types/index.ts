@@ -26,6 +26,7 @@ type TimeframeRecord<V> = Partial<Record<TimeframeKey, V>>;
 export type BondMarket = Schemas["BondMarket"];
 export type BondOutcome = Schemas["BondOutcome"];
 export type CandlestickResolution = Schemas["CandlestickResolution"];
+export type ChartResolution = Schemas["ChartResolution"];
 export type ClobReward = Schemas["ClobReward"];
 export type ConditionMetricsResponse = Schemas["ConditionMetricsResponse"];
 export type EventMarket = Schemas["EventMarket"];
@@ -97,6 +98,7 @@ export type MarketSortBy = Schemas["MarketSortBy"];
 export type MarketStatus = Schemas["MarketStatus"];
 export type OutcomeIndex = Schemas["OutcomeIndex"];
 export type PositionChartDataPoint = Schemas["PositionChartDataPoint"];
+export type PositionStatus = Schemas["PositionStatus"];
 export type TradeType = Schemas["TradeType"];
 export type WebhookAssetSymbol = Schemas["WebhookAssetSymbol"];
 export type WebhookTimeframe = Schemas["WebhookTimeframe"];
@@ -416,8 +418,23 @@ export type {
 	TraderPositionsSubscribeFilters,
 	TraderPositionsSubscribeResponse,
 	TraderPositionUpdateEvent,
+	ClobRewardsSubscribeFilters,
+	ClobRewardsUpdateEvent,
+	ClobRewardsSubscribeResponse,
 	WalletTrackingSubscribeFilters,
+	WalletTrackingSubscribeResponse,
 	WalletTrackingAlertEvent,
+	WsAlertSubscribedResponse,
+	WsAlertUnsubscribedResponse,
+	WsAlertErrorResponse,
+	WsAlertEventType,
+	AlertsSubscribeFilters,
+	WsAlertSubscribeMessage,
+	WsAlertUnsubscribeMessage,
+	WsAlertEventPayload,
+	WsAlertSubscribeMap,
+	WsAlertEventDataMap,
+	WsAlertEventName,
 	WsPredictionMarketMetadata,
 	TradeStreamEvent,
 	AssetPriceTickEvent,

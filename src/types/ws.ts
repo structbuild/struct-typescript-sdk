@@ -1,5 +1,5 @@
 import type { RetryConfig } from "./http.js";
-import type { WsSchemas } from "./ws-helpers.js";
+import type { WsSchemas, WsAlertSubscribeMap, WsAlertEventDataMap, WsAlertEventName } from "./ws-helpers.js";
 
 export type ConnectionState = "disconnected" | "connecting" | "connected" | "reconnecting";
 
@@ -21,9 +21,11 @@ export type WsRoomId =
 	| "polymarket_trader_positions"
 	| "polymarket_accounts"
 	| "polymarket_order_book"
-	| "polymarket_wallet_tracking";
+	| "polymarket_clob_rewards"
+	| "polymarket_wallet_tracking"
+	| "ws_alerts";
 
-export type WsFiltersOptionalRoom = "polymarket_asset_prices";
+export type WsFiltersOptionalRoom = "polymarket_asset_prices" | "polymarket_clob_rewards";
 export type WsFiltersRequiredRoom = Exclude<WsRoomId, WsFiltersOptionalRoom>;
 
 export type TradesSubscribeFilters = Omit<WsSchemas["TradesStreamSubscribeMessage"], "action">;
@@ -37,7 +39,9 @@ export type AccountsSubscribeFilters = Pick<WsSchemas["AccountsSubscribeMessage"
 	Partial<Pick<WsSchemas["AccountsSubscribeMessage"], "include_usdce" | "include_matic">>;
 export type OrderBookSubscribeFilters = Omit<WsSchemas["OrderBookSubscribeMessage"], "action">;
 export type TraderPositionsSubscribeFilters = Omit<WsSchemas["TraderPositionsSubscribeMessage"], "action">;
+export type ClobRewardsSubscribeFilters = Omit<WsSchemas["ClobRewardsSubscribeMessage"], "action">;
 export type WalletTrackingSubscribeFilters = Omit<WsSchemas["WalletTrackingSubscribeMessage"], "action">;
+export type AlertsSubscribeFilters = Omit<WsSchemas["WsAlertSubscribeMessage"], "op">;
 
 export type TradeStreamEvent = WsSchemas["TradeStreamEvent"];
 export type AssetPriceTickEvent = WsSchemas["AssetPriceTickEvent"];
@@ -56,8 +60,19 @@ export type WsOrderBookLevel = WsSchemas["OrderBookLevel"];
 export type OrderBookUpdateEvent = WsSchemas["OrderBookUpdateEvent"];
 export type TraderPositionUpdateEvent = WsSchemas["TraderPositionUpdateEvent"];
 export type TraderPositionsSubscribeResponse = WsSchemas["TraderPositionsSubscribeResponse"];
+export type ClobRewardsUpdateEvent = WsSchemas["ClobRewardsUpdateEvent"];
+export type ClobRewardsSubscribeResponse = WsSchemas["ClobRewardsSubscribeResponse"];
+export type WalletTrackingSubscribeResponse = WsSchemas["WalletTrackingSubscribeResponse"];
 export type WalletTrackingAlertEvent = WsSchemas["WalletTrackingAlertEvent"];
+export type WsAlertSubscribeMessage = WsSchemas["WsAlertSubscribeMessage"];
+export type WsAlertUnsubscribeMessage = WsSchemas["WsAlertUnsubscribeMessage"];
+export type WsAlertEventPayload = WsSchemas["WsAlertEventPayload"];
+export type WsAlertSubscribedResponse = WsSchemas["WsAlertSubscribedResponse"];
+export type WsAlertUnsubscribedResponse = WsSchemas["WsAlertUnsubscribedResponse"];
+export type WsAlertErrorResponse = WsSchemas["WsAlertErrorResponse"];
+export type WsAlertEventType = WsSchemas["WsAlertEventType"];
 export type WsPredictionMarketMetadata = WsSchemas["PredictionMarketMetadata"];
+export type { WsAlertSubscribeMap, WsAlertEventDataMap, WsAlertEventName };
 
 export type TradesStreamSubscribeResponse = WsSchemas["TradesStreamSubscribeResponse"];
 export type AssetPricesSubscribeResponse = WsSchemas["AssetPricesSubscribeResponse"];
@@ -85,7 +100,9 @@ export interface WebSocketEventMap {
 	matic_update: MaticUpdateEvent;
 	order_book_update: OrderBookUpdateEvent;
 	trader_position_update: TraderPositionUpdateEvent;
+	clob_rewards_update: ClobRewardsUpdateEvent;
 	wallet_tracking_alert: WalletTrackingAlertEvent;
+	ws_alert: WsAlertEventPayload;
 	connected: void;
 	disconnected: { code: number; reason: string };
 	reconnecting: { attempt: number };
@@ -103,7 +120,9 @@ export interface WsSubscriptionMap {
 	polymarket_trader_positions: TraderPositionsSubscribeFilters;
 	polymarket_accounts: AccountsSubscribeFilters;
 	polymarket_order_book: OrderBookSubscribeFilters;
+	polymarket_clob_rewards: ClobRewardsSubscribeFilters;
 	polymarket_wallet_tracking: WalletTrackingSubscribeFilters;
+	ws_alerts: AlertsSubscribeFilters;
 }
 
 export interface WsSubscribeResponseMap {
@@ -117,5 +136,7 @@ export interface WsSubscribeResponseMap {
 	polymarket_trader_positions: TraderPositionsSubscribeResponse;
 	polymarket_accounts: AccountsSubscribeResponse;
 	polymarket_order_book: OrderBookSubscribeResponse;
-	polymarket_wallet_tracking: Record<string, unknown>;
+	polymarket_clob_rewards: ClobRewardsSubscribeResponse;
+	polymarket_wallet_tracking: WalletTrackingSubscribeResponse;
+	ws_alerts: WsAlertSubscribedResponse;
 }

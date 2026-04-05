@@ -104,7 +104,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/events/slug/{slug}": {
+    "/polymarket/events/slug/{event_slug}": {
         parameters: {
             query?: never;
             header?: never;
@@ -404,7 +404,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/market/slug/{slug}": {
+    "/polymarket/market/slug/{market_slug}": {
         parameters: {
             query?: never;
             header?: never;
@@ -951,6 +951,8 @@ export interface components {
         };
         /** @enum {string} */
         CandlestickResolution: "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D";
+        /** @enum {string} */
+        ChartResolution: "1H" | "6H" | "1D" | "1W" | "1M" | "ALL";
         /** @description CLOB reward (public API format) */
         ClobReward: {
             id: string;
@@ -962,6 +964,18 @@ export interface components {
             rewards_daily_rate?: number | null;
             start_date?: string | null;
             end_date?: string | null;
+            /** Format: double */
+            rewards_max_spread?: number | null;
+            /** Format: double */
+            rewards_min_size?: number | null;
+            /** Format: double */
+            native_daily_rate?: number | null;
+            /** Format: double */
+            sponsored_daily_rate?: number | null;
+            /** Format: double */
+            total_daily_rate?: number | null;
+            /** Format: int32 */
+            sponsors_count?: number | null;
         };
         /** @description Response type for condition metrics query */
         ConditionMetricsResponse: {
@@ -1770,6 +1784,8 @@ export interface components {
         };
         /** @enum {string} */
         PositionPnlSortBy: "realized_pnl_usd" | "buy_usd" | "sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "title";
+        /** @enum {string} */
+        PositionStatus: "open" | "closed";
         PositionVolumeChartResponse: {
             volumes: components["schemas"]["PositionVolumeDataPoint"][];
             has_more: boolean;
@@ -1826,6 +1842,7 @@ export interface components {
             question?: string | null;
             image_url?: string | null;
             slug?: string | null;
+            event_slug?: string | null;
             /** Format: double */
             usd_amount: number;
             /** Format: double */
@@ -1934,7 +1951,7 @@ export interface components {
         /** @enum {string} */
         TradeSide: "0" | "1";
         /** @enum {string} */
-        TradeType: "0" | "1" | "2" | "4" | "6";
+        TradeType: "0" | "1" | "2" | "3" | "4" | "5" | "6";
         /**
          * @description Trader profile info embedded in API responses
          *
@@ -2439,7 +2456,7 @@ export interface operations {
             header?: never;
             path: {
                 /** @description Event slug */
-                slug: string;
+                event_slug: string;
             };
             cookie?: never;
         };
@@ -2721,6 +2738,8 @@ export interface operations {
                 limit?: number;
                 /** @description Cursor-based pagination key */
                 pagination_key?: string;
+                /** @description Only return markets that have CLOB rewards (default: false) */
+                has_rewards?: boolean;
                 /** @description Return truncated response optimized for AI consumers (default: false) */
                 ai?: boolean;
             };
@@ -3011,7 +3030,7 @@ export interface operations {
             header?: never;
             path: {
                 /** @description Market slug (e.g. `will-trump-win`) */
-                slug: string;
+                market_slug: string;
             };
             cookie?: never;
         };
@@ -3098,8 +3117,8 @@ export interface operations {
                 outcome?: string;
                 /** @description Outcome index: 0 (Yes), 1 (No) */
                 outcome_index?: components["schemas"]["OutcomeIndex"];
-                /** @description Trade type: 0 (OrderFilled), 1 (Redemption), 2 (Merge) */
-                trade_type?: components["schemas"]["TradeType"];
+                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched */
+                trade_types?: string;
                 /** @description Min USD amount */
                 min_usd_amount?: number;
                 /** @description Max USD amount */
@@ -3999,8 +4018,8 @@ export interface operations {
                 outcome?: string;
                 /** @description Outcome index: 0 (Yes), 1 (No) */
                 outcome_index?: components["schemas"]["OutcomeIndex"];
-                /** @description Trade type: 0 (OrderFilled), 1 (Redemption), 2 (Merge) */
-                trade_type?: components["schemas"]["TradeType"];
+                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched */
+                trade_types?: string;
                 /** @description Min USD amount */
                 min_usd_amount?: number;
                 /** @description Max USD amount */

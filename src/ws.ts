@@ -9,7 +9,9 @@ import type {
 	WsFiltersRequiredRoom,
 	WsSubscriptionMap,
 	WsSubscribeResponseMap,
+	WsAlertSubscribedResponse,
 } from "./types/ws.js";
+import type { WsAlertSubscribeMap, WsAlertEventName } from "./types/ws-helpers.js";
 
 const DEFAULT_WS_URL = "wss://api.struct.to/ws";
 const PING_INTERVAL_MS = 30_000;
@@ -99,7 +101,8 @@ export class StructWebSocket {
 	}
 
 	subscribe<R extends WsFiltersOptionalRoom>(room: R, filters?: WsSubscriptionMap[R]): Promise<WsSubscribeResponseMap[R]>;
-	subscribe<R extends WsFiltersRequiredRoom>(room: R, filters: WsSubscriptionMap[R]): Promise<WsSubscribeResponseMap[R]>;
+	subscribe<E extends WsAlertEventName>(room: "ws_alerts", filters: { event: E } & Omit<WsAlertSubscribeMap[E], "op" | "event">): Promise<WsAlertSubscribedResponse>;
+	subscribe<R extends Exclude<WsFiltersRequiredRoom, "ws_alerts">>(room: R, filters: WsSubscriptionMap[R]): Promise<WsSubscribeResponseMap[R]>;
 	subscribe<R extends WsRoomId>(room: R, filters?: WsSubscriptionMap[R]): Promise<WsSubscribeResponseMap[R]> {
 		const resolvedFilters = (filters ?? {}) as Record<string, unknown>;
 		const isNewRoom = !this.subscriptions.has(room);
