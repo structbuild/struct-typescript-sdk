@@ -11,17 +11,16 @@ TypeScript SDK (`@structbuild/sdk`) for prediction market APIs via `api.struct.t
 - **Build:** `bun run build` (outputs ESM + CJS to `dist/`, generates declaration files)
 - **Typecheck:** `bun run typecheck`
 - **Install deps:** `bun install`
-- **Fetch OpenAPI spec:** `bun run fetch-spec:polymarket`
-- **Generate types:** `bun run generate:polymarket`
-- **Full pipeline:** `bun run prep` (fetch specs, generate types, check routes, build)
-- **Check routes:** `bun run check-routes` (validates namespace routes match OpenAPI spec)
-- **Fetch webhook spec:** `bun run fetch-spec:webhooks`
-- **Generate webhook types:** `bun run generate:webhooks`
-- **Fetch WS spec:** `bun run fetch-spec:ws` (AsyncAPI format)
-- **Generate WS types:** `bun run generate:ws`
+- **Fetch all specs:** `bun run fetch-specs` (fetches from production by default; use `STRUCT_ENV=staging` for staging)
+- **Generate types:** `bun run generate:polymarket`, `bun run generate:webhooks`, `bun run generate:ws`
+- **Full pipeline (prod):** `bun run prep` (fetch specs from prod, generate types, check routes, build)
+- **Full pipeline (staging):** `bun run prep:staging` (same as prep but fetches from staging-api.struct.to)
+- **Check routes:** `bun run check-routes` (validates namespace routes match OpenAPI spec; warns if specs are from staging)
 - **Fix spec:** `bun run fix-spec` (fixes broken `$ref`s in the OpenAPI spec)
 - **Test:** `bun test` (integration tests against live API, requires `STRUCT_API_KEY`)
 - **Test watch:** `bun test --watch`
+- **Link for local dev:** `bun link` (then `bun link @structbuild/sdk` in consumer repo)
+- **Pack for testing:** `bun run pack` (builds and creates `.tgz`)
 
 ## Architecture
 

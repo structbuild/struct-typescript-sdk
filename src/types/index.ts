@@ -400,6 +400,7 @@ export type { Address, PaginationParams, SortParams, Venue } from "./common.js";
 export type {
 	ConnectionState,
 	StructWebSocketConfig,
+	AlertsWebSocketEventMap,
 	WsRoomId,
 	WsFiltersOptionalRoom,
 	WsFiltersRequiredRoom,
@@ -428,7 +429,6 @@ export type {
 	WsAlertUnsubscribedResponse,
 	WsAlertErrorResponse,
 	WsAlertEventType,
-	AlertsSubscribeFilters,
 	WsAlertSubscribeMessage,
 	WsAlertUnsubscribeMessage,
 	WsAlertEventPayload,

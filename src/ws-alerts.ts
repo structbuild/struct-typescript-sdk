@@ -3,13 +3,10 @@ import { WebSocketError } from "./errors.js";
 import type {
 	ConnectionState,
 	StructWebSocketConfig,
-	WebSocketEventMap,
-	WsRoomId,
-	WsFiltersOptionalRoom,
-	WsFiltersRequiredRoom,
-	WsSubscriptionMap,
-	WsSubscribeResponseMap,
+	AlertsWebSocketEventMap,
+	WsAlertSubscribedResponse,
 } from "./types/ws.js";
+import type { WsAlertSubscribeMap, WsAlertEventName } from "./types/ws-helpers.js";
 
 const DEFAULT_BASE_URL = "wss://api.struct.to";
 const PING_INTERVAL_MS = 30_000;
@@ -23,18 +20,18 @@ interface PendingSubscribe {
 	timer: ReturnType<typeof setTimeout>;
 }
 
-export class StructWebSocket {
+export class StructAlertsWebSocket {
 	private readonly transport: WebSocketTransport;
 	private readonly listeners = new Map<string, Set<Function>>();
-	private readonly subscriptions = new Map<WsRoomId, Record<string, unknown>>();
-	private readonly pendingSubscribes = new Map<WsRoomId, PendingSubscribe>();
+	private readonly subscriptions = new Map<WsAlertEventName, Record<string, unknown>>();
+	private readonly pendingSubscribes = new Map<WsAlertEventName, PendingSubscribe>();
 	private readonly subscribeTimeout: number;
 	private pingTimer: ReturnType<typeof setInterval> | null = null;
 
 	constructor(config: StructWebSocketConfig) {
 		this.subscribeTimeout = config.subscribeTimeout ?? DEFAULT_SUBSCRIBE_TIMEOUT_MS;
 		const base = (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
-		const url = `${base}/ws?api-key=${encodeURIComponent(config.apiKey)}`;
+		const url = `${base}/v1/ws/alerts?api-key=${encodeURIComponent(config.apiKey)}`;
 
 		this.transport = new WebSocketTransport(
 			url,
@@ -68,7 +65,7 @@ export class StructWebSocket {
 		this.transport.disconnect();
 	}
 
-	on<K extends keyof WebSocketEventMap>(event: K, listener: Listener<WebSocketEventMap[K]>): () => void {
+	on<K extends keyof AlertsWebSocketEventMap>(event: K, listener: Listener<AlertsWebSocketEventMap[K]>): () => void {
 		let set = this.listeners.get(event as string);
 		if (!set) {
 			set = new Set();
@@ -78,19 +75,19 @@ export class StructWebSocket {
 		return () => { set.delete(listener); };
 	}
 
-	off<K extends keyof WebSocketEventMap>(event: K, listener: Listener<WebSocketEventMap[K]>): void {
+	off<K extends keyof AlertsWebSocketEventMap>(event: K, listener: Listener<AlertsWebSocketEventMap[K]>): void {
 		this.listeners.get(event as string)?.delete(listener);
 	}
 
-	once<K extends keyof WebSocketEventMap>(event: K, listener: Listener<WebSocketEventMap[K]>): () => void {
-		const wrapper = (payload: WebSocketEventMap[K]) => {
+	once<K extends keyof AlertsWebSocketEventMap>(event: K, listener: Listener<AlertsWebSocketEventMap[K]>): () => void {
+		const wrapper = (payload: AlertsWebSocketEventMap[K]) => {
 			this.off(event, wrapper);
 			listener(payload);
 		};
 		return this.on(event, wrapper);
 	}
 
-	removeAllListeners(event?: keyof WebSocketEventMap): void {
+	removeAllListeners(event?: keyof AlertsWebSocketEventMap): void {
 		if (event) {
 			this.listeners.delete(event as string);
 		} else {
@@ -98,35 +95,29 @@ export class StructWebSocket {
 		}
 	}
 
-	subscribe<R extends WsFiltersOptionalRoom>(room: R, filters?: WsSubscriptionMap[R]): Promise<WsSubscribeResponseMap[R]>;
-	subscribe<R extends WsFiltersRequiredRoom>(room: R, filters: WsSubscriptionMap[R]): Promise<WsSubscribeResponseMap[R]>;
-	subscribe<R extends WsRoomId>(room: R, filters?: WsSubscriptionMap[R]): Promise<WsSubscribeResponseMap[R]> {
-		const resolvedFilters = (filters ?? {}) as Record<string, unknown>;
-		const isNewRoom = !this.subscriptions.has(room);
-		this.subscriptions.set(room, resolvedFilters);
+	subscribe<E extends WsAlertEventName>(
+		event: E,
+		filters: Omit<WsAlertSubscribeMap[E], "op" | "event">,
+	): Promise<WsAlertSubscribedResponse> {
+		const message = { op: "subscribe", event, ...filters } as Record<string, unknown>;
+		this.subscriptions.set(event, message);
 		this.rebuildReplay();
 
-		if (isNewRoom) {
-			this.transport.send({ type: "join_room", payload: { room_id: room } });
-		}
-		this.transport.send({
-			type: "room_message",
-			payload: { room_id: room, message: { action: "subscribe", ...resolvedFilters } },
-		});
+		this.transport.send(message);
 
-		const existing = this.pendingSubscribes.get(room);
+		const existing = this.pendingSubscribes.get(event);
 		if (existing) {
 			clearTimeout(existing.timer);
 			existing.reject(new WebSocketError("Superseded by new subscription"));
 		}
 
-		return new Promise<WsSubscribeResponseMap[R]>((resolve, reject) => {
+		return new Promise<WsAlertSubscribedResponse>((resolve, reject) => {
 			const timer = setTimeout(() => {
-				this.pendingSubscribes.delete(room);
-				reject(new WebSocketError(`Subscribe to ${room} timed out`));
+				this.pendingSubscribes.delete(event);
+				reject(new WebSocketError(`Subscribe to alert ${event} timed out`));
 			}, this.subscribeTimeout);
 
-			this.pendingSubscribes.set(room, {
+			this.pendingSubscribes.set(event, {
 				resolve: resolve as (data: unknown) => void,
 				reject,
 				timer,
@@ -134,33 +125,26 @@ export class StructWebSocket {
 		});
 	}
 
-	unsubscribe(room: WsRoomId): void {
-		if (!this.subscriptions.has(room)) return;
+	unsubscribe(event: WsAlertEventName): void {
+		const sub = this.subscriptions.get(event);
+		if (!sub) return;
 
-		const pending = this.pendingSubscribes.get(room);
+		const pending = this.pendingSubscribes.get(event);
 		if (pending) {
 			clearTimeout(pending.timer);
 			pending.reject(new WebSocketError("Unsubscribed"));
-			this.pendingSubscribes.delete(room);
+			this.pendingSubscribes.delete(event);
 		}
 
-		this.transport.send({
-			type: "room_message",
-			payload: { room_id: room, message: { action: "unsubscribe_all" } },
-		});
-		this.transport.send({ type: "leave_room", payload: { room_id: room } });
-		this.subscriptions.delete(room);
+		this.transport.send({ ...sub, op: "unsubscribe" });
+		this.subscriptions.delete(event);
 		this.rebuildReplay();
 	}
 
 	private rebuildReplay(): void {
 		this.transport.clearReplayMessages();
-		for (const [roomId, filters] of this.subscriptions) {
-			this.transport.addReplayMessage({ type: "join_room", payload: { room_id: roomId } });
-			this.transport.addReplayMessage({
-				type: "room_message",
-				payload: { room_id: roomId, message: { action: "subscribe", ...filters } },
-			});
+		for (const [, message] of this.subscriptions) {
+			this.transport.addReplayMessage(message);
 		}
 	}
 
@@ -175,29 +159,42 @@ export class StructWebSocket {
 	}
 
 	private handleMessage(raw: unknown): void {
-		const msg = raw as { type?: string; room_id?: string; data?: unknown };
-		if (!msg || typeof msg !== "object" || !msg.type) return;
-		if (msg.type === "pong") return;
+		const msg = raw as { op?: string; event?: string; error?: string; subscription_id?: string; timestamp?: number; data?: unknown };
+		if (!msg || typeof msg !== "object") return;
+		if (msg.op === "pong") return;
 
-		if (msg.type === "subscribed" && msg.room_id) {
-			const pending = this.pendingSubscribes.get(msg.room_id as WsRoomId);
+		if (msg.error) {
+			this.emit("error", new WebSocketError(msg.error));
+			return;
+		}
+
+		if (msg.op === "subscribed" && msg.event) {
+			const pending = this.pendingSubscribes.get(msg.event as WsAlertEventName);
 			if (pending) {
 				clearTimeout(pending.timer);
-				this.pendingSubscribes.delete(msg.room_id as WsRoomId);
-				pending.resolve(msg.data);
+				this.pendingSubscribes.delete(msg.event as WsAlertEventName);
+				pending.resolve({ op: "subscribed", event: msg.event, subscription_id: msg.subscription_id });
 			}
 			return;
 		}
 
-		this.emit(msg.type as keyof WebSocketEventMap, msg.data as never);
+		if (msg.op === "unsubscribed") return;
+
+		if (msg.event && msg.data !== undefined) {
+			this.emit(msg.event as keyof AlertsWebSocketEventMap, {
+				event: msg.event,
+				timestamp: msg.timestamp,
+				data: msg.data,
+			} as never);
+		}
 	}
 
-	private emit<K extends keyof WebSocketEventMap>(event: K, payload: WebSocketEventMap[K]): void {
+	private emit<K extends keyof AlertsWebSocketEventMap>(event: K, payload: AlertsWebSocketEventMap[K]): void {
 		const set = this.listeners.get(event as string);
 		if (!set) return;
 		for (const fn of set) {
 			try {
-				(fn as Listener<WebSocketEventMap[K]>)(payload);
+				(fn as Listener<AlertsWebSocketEventMap[K]>)(payload);
 			} catch {}
 		}
 	}

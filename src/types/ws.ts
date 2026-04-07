@@ -5,7 +5,7 @@ export type ConnectionState = "disconnected" | "connecting" | "connected" | "rec
 
 export interface StructWebSocketConfig {
 	apiKey: string;
-	wsUrl?: string;
+	baseUrl?: string;
 	reconnect?: RetryConfig;
 	subscribeTimeout?: number;
 }
@@ -22,8 +22,7 @@ export type WsRoomId =
 	| "polymarket_accounts"
 	| "polymarket_order_book"
 	| "polymarket_clob_rewards"
-	| "polymarket_wallet_tracking"
-	| "ws_alerts";
+	| "polymarket_wallet_tracking";
 
 export type WsFiltersOptionalRoom = "polymarket_asset_prices" | "polymarket_clob_rewards";
 export type WsFiltersRequiredRoom = Exclude<WsRoomId, WsFiltersOptionalRoom>;
@@ -41,7 +40,6 @@ export type OrderBookSubscribeFilters = Omit<WsSchemas["OrderBookSubscribeMessag
 export type TraderPositionsSubscribeFilters = Omit<WsSchemas["TraderPositionsSubscribeMessage"], "action">;
 export type ClobRewardsSubscribeFilters = Omit<WsSchemas["ClobRewardsSubscribeMessage"], "action">;
 export type WalletTrackingSubscribeFilters = Omit<WsSchemas["WalletTrackingSubscribeMessage"], "action">;
-export type AlertsSubscribeFilters = Omit<WsSchemas["WsAlertSubscribeMessage"], "op">;
 
 export type TradeStreamEvent = WsSchemas["TradeStreamEvent"];
 export type AssetPriceTickEvent = WsSchemas["AssetPriceTickEvent"];
@@ -102,7 +100,6 @@ export interface WebSocketEventMap {
 	trader_position_update: TraderPositionUpdateEvent;
 	clob_rewards_update: ClobRewardsUpdateEvent;
 	wallet_tracking_alert: WalletTrackingAlertEvent;
-	ws_alert: WsAlertEventPayload;
 	connected: void;
 	disconnected: { code: number; reason: string };
 	reconnecting: { attempt: number };
@@ -122,7 +119,6 @@ export interface WsSubscriptionMap {
 	polymarket_order_book: OrderBookSubscribeFilters;
 	polymarket_clob_rewards: ClobRewardsSubscribeFilters;
 	polymarket_wallet_tracking: WalletTrackingSubscribeFilters;
-	ws_alerts: AlertsSubscribeFilters;
 }
 
 export interface WsSubscribeResponseMap {
@@ -138,5 +134,13 @@ export interface WsSubscribeResponseMap {
 	polymarket_order_book: OrderBookSubscribeResponse;
 	polymarket_clob_rewards: ClobRewardsSubscribeResponse;
 	polymarket_wallet_tracking: WalletTrackingSubscribeResponse;
-	ws_alerts: WsAlertSubscribedResponse;
 }
+
+export type AlertsWebSocketEventMap = {
+	[E in WsAlertEventName]: { event: E; timestamp: number; data: WsAlertEventDataMap[E] };
+} & {
+	connected: void;
+	disconnected: { code: number; reason: string };
+	reconnecting: { attempt: number };
+	error: Error;
+};

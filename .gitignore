@@ -5,3 +5,4 @@ dist/
 .env
 logs/
 *.tgz
+openapi/.spec-source.json

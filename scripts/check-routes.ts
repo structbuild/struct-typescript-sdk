@@ -244,4 +244,12 @@ if (missingWsSchemas.length > 0) {
 	console.log(`\x1b[32m✓ [ws] All WS schemas exported.\x1b[0m`);
 }
 
+const specSourcePath = join(import.meta.dirname, "../openapi/.spec-source.json");
+try {
+	const specSource = JSON.parse(await readFile(specSourcePath, "utf-8"));
+	if (specSource.env === "staging") {
+		console.warn(`\n\x1b[33m⚠ Specs were fetched from staging-api.struct.to. Run 'bun run prep' before merging.\x1b[0m\n`);
+	}
+} catch {}
+
 process.exit(hasErrors ? 1 : 0);
