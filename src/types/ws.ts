@@ -5,6 +5,7 @@ export type ConnectionState = "disconnected" | "connecting" | "connected" | "rec
 
 export interface StructWebSocketConfig {
 	apiKey: string;
+	jwt?: string;
 	baseUrl?: string;
 	reconnect?: RetryConfig;
 }

@@ -104,7 +104,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/events/slug/{slug}": {
+    "/polymarket/events/slug/{event_slug}": {
         parameters: {
             query?: never;
             header?: never;
@@ -404,7 +404,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/market/slug/{slug}": {
+    "/polymarket/market/slug/{market_slug}": {
         parameters: {
             query?: never;
             header?: never;
@@ -962,6 +962,18 @@ export interface components {
             rewards_daily_rate?: number | null;
             start_date?: string | null;
             end_date?: string | null;
+            /** Format: double */
+            rewards_max_spread?: number | null;
+            /** Format: double */
+            rewards_min_size?: number | null;
+            /** Format: double */
+            native_daily_rate?: number | null;
+            /** Format: double */
+            sponsored_daily_rate?: number | null;
+            /** Format: double */
+            total_daily_rate?: number | null;
+            /** Format: int32 */
+            sponsors_count?: number | null;
         };
         /** @description Response type for condition metrics query */
         ConditionMetricsResponse: {
@@ -2222,6 +2234,8 @@ export interface operations {
                  * @example 10
                  */
                 limit?: number;
+                /** @description Cursor from previous response for keyset pagination. Pass the pagination_key from the previous page to fetch the next page. */
+                pagination_key?: string;
             };
             header?: never;
             path?: never;
@@ -2440,7 +2454,7 @@ export interface operations {
             header?: never;
             path: {
                 /** @description Event slug */
-                slug: string;
+                event_slug: string;
             };
             cookie?: never;
         };
@@ -3014,7 +3028,7 @@ export interface operations {
             header?: never;
             path: {
                 /** @description Market slug (e.g. `will-trump-win`) */
-                slug: string;
+                market_slug: string;
             };
             cookie?: never;
         };

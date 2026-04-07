@@ -24,7 +24,9 @@ export class StructWebSocket {
 	constructor(config: StructWebSocketConfig) {
 		const httpBase = (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
 		const wsBase = httpBase.replace(/^https:\/\//, "wss://").replace(/^http:\/\//, "ws://");
-		const url = `${wsBase}?token=${encodeURIComponent(config.apiKey)}`;
+		const url = config.jwt
+			? `${wsBase}?api-key=${encodeURIComponent(config.apiKey)}&token=${encodeURIComponent(config.jwt)}`
+			: `${wsBase}?token=${encodeURIComponent(config.apiKey)}`;
 
 		this.transport = new WebSocketTransport(
 			url,

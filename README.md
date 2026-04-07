@@ -139,6 +139,28 @@ function handleWebhook(payload: FirstTradePayload) {
 
 Available payload types: `FirstTradePayload`, `GlobalPnlPayload`, `MarketPnlPayload`, `EventPnlPayload`, `PositionPnlPayload`, `ConditionMetricsPayload`, `EventMetricsPayload`, `PositionMetricsPayload`, `VolumeMilestonePayload`, `EventVolumeMilestonePayload`, `PositionVolumeMilestonePayload`, `ProbabilitySpikePayload`.
 
+## JWT Auth
+
+Let your end users authenticate directly using JWTs from their own auth provider (Privy, Auth0, Google, Turnkey, etc.) without exposing your `sk_*` API key client-side.
+
+Create a JWT public key (`pk_jwt_*`) in your [Struct dashboard](https://struct.to), then pass it alongside the user's JWT:
+
+```typescript
+import { StructClient, StructWebSocket } from "@structbuild/sdk";
+
+const client = new StructClient({
+  apiKey: "pk_jwt_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+  jwt: userAccessToken,
+});
+
+const ws = new StructWebSocket({
+  apiKey: "pk_jwt_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+  jwt: userAccessToken,
+});
+```
+
+The `pk_jwt_*` key is safe to hardcode in frontend bundles — it is useless without a valid JWT from your configured auth provider.
+
 ## Pagination
 
 Use the `paginate` helper to iterate through all results:
