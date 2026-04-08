@@ -951,6 +951,8 @@ export interface components {
         };
         /** @enum {string} */
         CandlestickResolution: "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D";
+        /** @enum {string} */
+        ChartResolution: "1H" | "6H" | "1D" | "1W" | "1M" | "ALL";
         /** @description CLOB reward (public API format) */
         ClobReward: {
             id: string;
@@ -1782,6 +1784,11 @@ export interface components {
         };
         /** @enum {string} */
         PositionPnlSortBy: "realized_pnl_usd" | "buy_usd" | "sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "title";
+        /**
+         * @description Position status filter for open/closed positions.
+         * @enum {string}
+         */
+        PositionStatus: "open" | "closed";
         PositionVolumeChartResponse: {
             volumes: components["schemas"]["PositionVolumeDataPoint"][];
             has_more: boolean;
@@ -2111,7 +2118,7 @@ export interface components {
             /**
              * Format: double
              * @description Estimated current USD value of held shares: (balance / 1e6) * current_price.
-             *     Only meaningful for open positions (balance > 0).
+             *     Only meaningful for open positions (balance above dust threshold).
              */
             current_value?: number | null;
             /**
@@ -3925,7 +3932,7 @@ export interface operations {
                 market_slug?: string;
                 /** @description Filter by specific outcome token (position ID) */
                 position_id?: string;
-                /** @description Minimum shares balance to include (e.g. 1.0 to filter out dust positions) */
+                /** @description Minimum shares balance to include. Status filtering already treats balances below 0.01 shares as dust. */
                 min_shares?: number;
             };
             header?: never;

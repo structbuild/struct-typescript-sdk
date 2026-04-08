@@ -22,6 +22,7 @@ type TimeframeRecord<V> = Partial<Record<TimeframeKey, V>>;
 export type BondMarket = Schemas["BondMarket"];
 export type BondOutcome = Schemas["BondOutcome"];
 export type CandlestickResolution = Schemas["CandlestickResolution"];
+export type ChartResolution = Schemas["ChartResolution"];
 export type ClobReward = Schemas["ClobReward"];
 export type ConditionMetricsResponse = Schemas["ConditionMetricsResponse"];
 export type EventMarket = Schemas["EventMarket"];
@@ -59,6 +60,7 @@ export type PolymarketSeries = Schemas["PolymarketSeries"];
 export type Tag = Schemas["PolymarketTag"];
 export type UserProfile = Schemas["PolymarketUserProfile"];
 export type PositionHoldersResponse = Schemas["PositionHoldersResponse"];
+export type PositionStatus = Schemas["PositionStatus"];
 export type PositionMetricsResponse = Schemas["PositionMetricsResponse"];
 export type PositionVolumeChartResponse = Schemas["PositionVolumeChartResponse"];
 export type PositionVolumeDataPoint = Schemas["PositionVolumeDataPoint"];
@@ -221,7 +223,7 @@ export interface GetMarketParams extends OperationQuery<"get_market"> {
 }
 
 export interface GetMarketBySlugParams extends OperationQuery<"get_market_by_slug"> {
-	slug: string;
+	marketSlug: string;
 }
 
 export interface GetCandlestickParams extends OperationQuery<"get_market_candlestick"> {}

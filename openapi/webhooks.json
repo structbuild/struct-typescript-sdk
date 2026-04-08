@@ -4365,6 +4365,18 @@
       "CloseToBondFilters": {
         "type": "object",
         "description": "Subscription filters for the `close_to_bond` event. At least one of `min_probability` or `max_probability` is required.",
+        "anyOf": [
+          {
+            "required": [
+              "min_probability"
+            ]
+          },
+          {
+            "required": [
+              "max_probability"
+            ]
+          }
+        ],
         "properties": {
           "min_probability": {
             "type": "number",

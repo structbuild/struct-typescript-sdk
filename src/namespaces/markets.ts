@@ -2,7 +2,7 @@ import { Namespace } from "./base.js";
 import type { HttpResponse } from "../types/http.js";
 import type { Venue } from "../types/common.js";
 import type {
-	MarketMetadata,
+	MarketResponse,
 	ConditionMetricsResponse,
 	PositionMetricsResponse,
 	PositionVolumeChartResponse,
@@ -26,18 +26,18 @@ import type {
 } from "../types/index.js";
 
 export class MarketsNamespace extends Namespace {
-	async getMarkets(params?: GetMarketsParams, venue?: Venue): Promise<HttpResponse<MarketMetadata[]>> {
-		return this.get<MarketMetadata[]>(venue, "/market", { params: { ...params } });
+	async getMarkets(params?: GetMarketsParams, venue?: Venue): Promise<HttpResponse<MarketResponse[]>> {
+		return this.get<MarketResponse[]>(venue, "/market", { params: { ...params } });
 	}
 
-	async getMarket(params: GetMarketParams, venue?: Venue): Promise<HttpResponse<MarketMetadata>> {
+	async getMarket(params: GetMarketParams, venue?: Venue): Promise<HttpResponse<MarketResponse>> {
 		const { conditionId, ...query } = params;
-		return this.get<MarketMetadata>(venue, `/market/${encodeURIComponent(conditionId)}`, { params: { ...query } });
+		return this.get<MarketResponse>(venue, `/market/${encodeURIComponent(conditionId)}`, { params: { ...query } });
 	}
 
-	async getMarketBySlug(params: GetMarketBySlugParams, venue?: Venue): Promise<HttpResponse<MarketMetadata>> {
-		const { slug, ...query } = params;
-		return this.get<MarketMetadata>(venue, `/market/slug/${encodeURIComponent(slug)}`, { params: { ...query } });
+	async getMarketBySlug(params: GetMarketBySlugParams, venue?: Venue): Promise<HttpResponse<MarketResponse>> {
+		const { marketSlug, ...query } = params;
+		return this.get<MarketResponse>(venue, `/market/slug/${encodeURIComponent(marketSlug)}`, { params: { ...query } });
 	}
 
 	async getMarketChart(params: GetMarketChartParams, venue?: Venue): Promise<HttpResponse<PositionChartOutcome[]>> {
