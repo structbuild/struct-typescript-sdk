@@ -1441,6 +1441,32 @@ export interface components {
             txns: number;
             fees: number;
         };
+        PriceSpikePayload: {
+            /** @description Outcome token ID */
+            position_id: string;
+            /** @description Market condition ID */
+            condition_id?: string | null;
+            /** @description Event slug */
+            event_slug?: string | null;
+            /** @description Outcome name (e.g. "Yes", "No") */
+            outcome?: string | null;
+            /**
+             * Format: int16
+             * @description Outcome index
+             */
+            outcome_index?: number | null;
+            /** @description Price at the start of the observation window (baseline snapshot, 0.0–1.0) */
+            previous_price: number;
+            /** @description Current price that triggered the spike (0.0–1.0) */
+            current_price: number;
+            /**
+             * @description `"up"` = price rising, `"down"` = price falling
+             * @enum {string}
+             */
+            spike_direction: "up" | "down";
+            /** @description Percentage move that triggered this notification. Positive = up, negative = down. */
+            spike_pct: number;
+        };
         ProbabilitySpikePayload: {
             /** @description Outcome token ID */
             position_id: string;
@@ -1768,31 +1794,29 @@ export interface components {
             /** @description Trade type identifier */
             trade_type: string;
         };
-        PriceSpikePayload: {
-            /** @description Outcome token ID */
-            position_id: string;
-            /** @description Market condition ID */
-            condition_id?: string | null;
-            /** @description Event slug */
-            event_slug?: string | null;
-            /** @description Outcome name (e.g. "Yes", "No") */
-            outcome?: string | null;
+        /** @description Outer envelope for every webhook HTTP POST delivery. The `data` field contains the event-specific payload. Delivery headers sent with every POST: `X-Webhook-ID` (subscription UUID), `X-Delivery-ID` (this attempt's UUID), `X-Event-Type` (event name string, e.g. `trader_first_trade`), `X-Attempt` (attempt number, 1-indexed). When the webhook has a secret configured, `X-Webhook-Signature: sha256=<hmac-hex>` is also included — compute HMAC-SHA256 over the raw request body using your secret to verify. */
+        WebhookDeliveryEnvelope: {
             /**
-             * Format: int16
-             * @description Outcome index
+             * Format: uuid
+             * @description UUID of this specific delivery attempt (matches X-Delivery-ID header)
              */
-            outcome_index?: number | null;
-            /** @description Price at the start of the observation window (baseline snapshot, 0.0–1.0) */
-            previous_price: number;
-            /** @description Current price that triggered the spike (0.0–1.0) */
-            current_price: number;
+            id: string;
+            /** @description Event name (e.g. `trader_first_trade`). On test deliveries the suffix `_test` is appended. */
+            event: string;
+            /** @description Event-specific payload — schema varies by event type; see the individual callback definitions */
+            data: Record<string, never>;
             /**
-             * @description `"up"` = price rising, `"down"` = price falling
-             * @enum {string}
+             * Format: int64
+             * @description Unix timestamp in milliseconds when this delivery was created
              */
-            spike_direction: "up" | "down";
-            /** @description Percentage move that triggered this notification. Positive = up, negative = down. */
-            spike_pct: number;
+            timestamp: number;
+            /**
+             * Format: uuid
+             * @description UUID of the webhook subscription that fired (matches X-Webhook-ID header)
+             */
+            webhook_id: string;
+            /** @description Delivery attempt number. 1 = first attempt; increments on each retry. */
+            attempt: number;
         };
         /** @description Subscription filters for the `trader_first_trade` event. All fields are optional. */
         TraderFirstTradeFilters: {
@@ -2487,13 +2511,27 @@ export interface operations {
     "trader-first-trade": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["FirstTradePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["FirstTradePayload"];
+                };
             };
         };
         responses: {
@@ -2516,13 +2554,27 @@ export interface operations {
     "trader-new-market": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["NewMarketPayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["NewMarketPayload"];
+                };
             };
         };
         responses: {
@@ -2545,13 +2597,27 @@ export interface operations {
     "trader-whale-trade": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["WhaleTradePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["WhaleTradePayload"];
+                };
             };
         };
         responses: {
@@ -2574,13 +2640,27 @@ export interface operations {
     "trader-new-trade": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["NewTradePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["NewTradePayload"];
+                };
             };
         };
         responses: {
@@ -2603,13 +2683,27 @@ export interface operations {
     "trader-global-pnl": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["GlobalPnlPayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["GlobalPnlPayload"];
+                };
             };
         };
         responses: {
@@ -2632,13 +2726,27 @@ export interface operations {
     "trader-market-pnl": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["MarketPnlPayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["MarketPnlPayload"];
+                };
             };
         };
         responses: {
@@ -2661,13 +2769,27 @@ export interface operations {
     "trader-event-pnl": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["EventPnlPayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["EventPnlPayload"];
+                };
             };
         };
         responses: {
@@ -2690,13 +2812,27 @@ export interface operations {
     "market-metrics": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ConditionMetricsPayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["ConditionMetricsPayload"];
+                };
             };
         };
         responses: {
@@ -2719,13 +2855,27 @@ export interface operations {
     "event-metrics": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["EventMetricsPayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["EventMetricsPayload"];
+                };
             };
         };
         responses: {
@@ -2748,13 +2898,27 @@ export interface operations {
     "position-metrics": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PositionMetricsPayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["PositionMetricsPayload"];
+                };
             };
         };
         responses: {
@@ -2777,13 +2941,27 @@ export interface operations {
     "market-volume-milestone": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["VolumeMilestonePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["VolumeMilestonePayload"];
+                };
             };
         };
         responses: {
@@ -2806,13 +2984,27 @@ export interface operations {
     "event-volume-milestone": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["EventVolumeMilestonePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["EventVolumeMilestonePayload"];
+                };
             };
         };
         responses: {
@@ -2835,13 +3027,27 @@ export interface operations {
     "position-volume-milestone": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PositionVolumeMilestonePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["PositionVolumeMilestonePayload"];
+                };
             };
         };
         responses: {
@@ -2864,13 +3070,27 @@ export interface operations {
     "probability-spike": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ProbabilitySpikePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["ProbabilitySpikePayload"];
+                };
             };
         };
         responses: {
@@ -2893,13 +3113,27 @@ export interface operations {
     "price-spike": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PriceSpikePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["PriceSpikePayload"];
+                };
             };
         };
         responses: {
@@ -2922,13 +3156,27 @@ export interface operations {
     "market-volume-spike": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["MarketVolumeSpikePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["MarketVolumeSpikePayload"];
+                };
             };
         };
         responses: {
@@ -2951,13 +3199,27 @@ export interface operations {
     "event-volume-spike": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["EventVolumeSpikePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["EventVolumeSpikePayload"];
+                };
             };
         };
         responses: {
@@ -2980,13 +3242,27 @@ export interface operations {
     "position-volume-spike": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PositionVolumeSpikePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["PositionVolumeSpikePayload"];
+                };
             };
         };
         responses: {
@@ -3009,13 +3285,27 @@ export interface operations {
     "close-to-bond": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CloseToBondPayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["CloseToBondPayload"];
+                };
             };
         };
         responses: {
@@ -3038,13 +3328,27 @@ export interface operations {
     "market-created": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["MarketCreatedPayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["MarketCreatedPayload"];
+                };
             };
         };
         responses: {
@@ -3067,13 +3371,27 @@ export interface operations {
     "asset-price-tick": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AssetPriceTickPayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["AssetPriceTickPayload"];
+                };
             };
         };
         responses: {
@@ -3096,13 +3414,27 @@ export interface operations {
     "asset-price-window-update": {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
             path?: never;
             cookie?: never;
         };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AssetPriceWindowUpdatePayload"];
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["AssetPriceWindowUpdatePayload"];
+                };
             };
         };
         responses: {

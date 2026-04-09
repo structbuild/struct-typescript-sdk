@@ -45,44 +45,50 @@ const client = new StructClient({
 
 ```typescript
 const markets = await client.markets.getMarkets({ limit: 10 });
-const market = await client.markets.getMarket({ condition_id: "0x..." });
-const marketBySlug = await client.markets.getMarketBySlug({ slug: "will-x-happen" });
-const trades = await client.markets.getTrades({ condition_id: "0x..." });
-const candles = await client.markets.getCandlestick({ condition_id: "0x...", timeframe: "1d", interval: "1h" });
+const market = await client.markets.getMarket({ conditionId: "0x..." });
+const marketBySlug = await client.markets.getMarketBySlug({ marketSlug: "will-x-happen" });
+const trades = await client.markets.getTrades({ condition_ids: "0x..." });
+const candles = await client.markets.getCandlestick({ condition_id: "0x...", resolution: "1h" });
+const chart = await client.markets.getMarketChart({ condition_id: "0x..." });
 const metrics = await client.markets.getMarketMetrics({ condition_id: "0x..." });
 const volumeChart = await client.markets.getMarketVolumeChart({ condition_id: "0x..." });
+const priceJumps = await client.markets.getPriceJumps();
 ```
 
 ### Events
 
 ```typescript
 const events = await client.events.getEvents({ limit: 10 });
-const event = await client.events.getEvent({ id: "123" });
+const event = await client.events.getEvent({ identifier: "123" });
 const eventBySlug = await client.events.getEventBySlug({ slug: "us-election" });
-const eventMetrics = await client.events.getEventMetrics({ event_id: "123" });
+const eventMetrics = await client.events.getEventMetrics({ event_slug: "us-election", timeframe: "24h" });
+const outcomes = await client.events.getEventOutcomes({ event_slug: "us-election" });
+const chart = await client.events.getEventChart({ event_slug: "us-election" });
 ```
 
 ### Trader / Portfolio
 
 ```typescript
-const portfolio = await client.trader.getPortfolio({ address: "0x..." });
-const positions = await client.trader.getPortfolioPositions({ address: "0x..." });
 const trades = await client.trader.getTraderTrades({ address: "0x..." });
 const profile = await client.trader.getTraderProfile({ address: "0x..." });
+const profiles = await client.trader.getTraderProfilesBatch({ addresses: "0x...,0x..." });
 const pnl = await client.trader.getTraderPnl({ address: "0x..." });
 const pnlByMarket = await client.trader.getTraderMarketPnl({ address: "0x..." });
 const pnlByEvent = await client.trader.getTraderEventPnl({ address: "0x..." });
 const pnlCandles = await client.trader.getTraderPnlCandles({ address: "0x..." });
+const calendar = await client.trader.getTraderPnlCalendar({ address: "0x..." });
+const positionPnl = await client.trader.getTraderOutcomePnl({ address: "0x..." });
 const volumeChart = await client.trader.getTraderVolumeChart({ address: "0x..." });
+const leaderboard = await client.trader.getGlobalPnl();
 ```
 
 ### Holders
 
 ```typescript
 const marketHolders = await client.holders.getMarketHolders({ condition_id: "0x..." });
-const eventHolders = await client.holders.getEventHolders({ event_slug: "us-election" });
-const positionHolders = await client.holders.getPositionHolders({ position_id: "123" });
+const positionHolders = await client.holders.getPositionHolders({ positionId: "123" });
 const history = await client.holders.getMarketHoldersHistory({ condition_id: "0x..." });
+const posHistory = await client.holders.getPositionHoldersHistory({ positionId: "123" });
 ```
 
 ### Series
@@ -92,13 +98,52 @@ const series = await client.series.getSeriesList();
 const outcomes = await client.series.getSeriesOutcomes({ series_slug: "my-series" });
 ```
 
-### Search, Tags, Bonds
+### Assets, Search, Tags, Bonds
 
 ```typescript
+const assetHistory = await client.assets.getAssetHistory({ symbol: "BTC", variant: "1d" });
 const results = await client.search.search({ query: "election" });
 const tags = await client.tags.getTags();
+const tag = await client.tags.getTag({ identifier: "politics" });
 const bonds = await client.bonds.getBonds();
 ```
+
+### Trade Types
+
+Trade endpoints (`getTrades`, `getTraderTrades`) return a discriminated union of all on-chain event types. Use the `trade_type` field to narrow:
+
+```typescript
+import type { Trade, MarketTrade, OracleEvent, TradeEventType } from "@structbuild/sdk";
+
+const { data: trades } = await client.markets.getTrades();
+
+for (const trade of trades) {
+  switch (trade.trade_type) {
+    case "OrderFilled":
+    case "OrdersMatched":
+      console.log(trade.price, trade.usd_amount, trade.shares_amount);
+      break;
+    case "Redemption":
+      console.log(trade.winning_outcome_index, trade.position_details);
+      break;
+    case "Merge":
+    case "Split":
+      console.log(trade.usd_amount, trade.position_details);
+      break;
+    case "Resolution":
+      console.log(trade.payout_numerators);
+      break;
+  }
+}
+```
+
+The SDK exports convenience sub-unions for common filtering:
+
+- **`MarketTrade`** — actual on-chain trades: `OrderFilled`, `OrdersMatched`, `Redemption`, `Merge`, `Split`, `PositionsConverted`, `Cancelled`, `RegisterToken`, `Approval`
+- **`OracleEvent`** — protocol lifecycle events: `Initialization`, `Proposal`, `Dispute`, `Settled`, `Resolution`, `ConditionResolution`, `Reset`, `Flag`, `Unflag`, `Pause`, `Unpause`, `ManualResolution`, `NegRiskOutcomeReported`
+- **`TradeEventType`** — string literal union of all `trade_type` values for autocomplete
+
+Individual schemas are also exported: `OrderFilledTrade`, `RedemptionTrade`, `MergeTrade`, `SplitTrade`, `CancelledTrade`, `PositionsConvertedTrade`, `RegisterTokenTrade`, `ApprovalTrade`, and all oracle event types.
 
 ### Webhooks
 
@@ -117,7 +162,9 @@ const webhook = await client.webhooks.create({
 const detail = await client.webhooks.getWebhook({ webhookId: webhook.data.id });
 await client.webhooks.update({ webhookId: webhook.data.id, events: ["first_trade"] });
 await client.webhooks.test({ webhookId: webhook.data.id });
+await client.webhooks.rotateSecret({ webhookId: webhook.data.id });
 await client.webhooks.deleteWebhook({ webhookId: webhook.data.id });
+const events = await client.webhooks.listEvents();
 ```
 
 #### Webhook Payload Types
@@ -137,7 +184,7 @@ function handleWebhook(payload: FirstTradePayload) {
 }
 ```
 
-Available payload types: `FirstTradePayload`, `GlobalPnlPayload`, `MarketPnlPayload`, `EventPnlPayload`, `PositionPnlPayload`, `ConditionMetricsPayload`, `EventMetricsPayload`, `PositionMetricsPayload`, `VolumeMilestonePayload`, `EventVolumeMilestonePayload`, `PositionVolumeMilestonePayload`, `ProbabilitySpikePayload`.
+Available payload types: `FirstTradePayload`, `GlobalPnlPayload`, `MarketPnlPayload`, `EventPnlPayload`, `ConditionMetricsPayload`, `EventMetricsPayload`, `PositionMetricsPayload`, `VolumeMilestonePayload`, `EventVolumeMilestonePayload`, `PositionVolumeMilestonePayload`, `ProbabilitySpikePayload`.
 
 ## JWT Auth
 
@@ -184,7 +231,7 @@ for await (const market of paginate(
 import { HttpError, TimeoutError, NetworkError } from "@structbuild/sdk";
 
 try {
-  await client.markets.getMarket({ condition_id: "0x..." });
+  await client.markets.getMarket({ conditionId: "0x..." });
 } catch (error) {
   if (error instanceof HttpError) {
     console.log(error.status, error.body);

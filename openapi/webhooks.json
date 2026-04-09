@@ -2545,6 +2545,71 @@
           }
         }
       },
+      "PriceSpikePayload": {
+        "type": "object",
+        "required": [
+          "position_id",
+          "previous_price",
+          "current_price",
+          "spike_direction",
+          "spike_pct"
+        ],
+        "properties": {
+          "position_id": {
+            "type": "string",
+            "description": "Outcome token ID"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market condition ID"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int16",
+            "description": "Outcome index"
+          },
+          "previous_price": {
+            "type": "number",
+            "description": "Price at the start of the observation window (baseline snapshot, 0.0–1.0)"
+          },
+          "current_price": {
+            "type": "number",
+            "description": "Current price that triggered the spike (0.0–1.0)"
+          },
+          "spike_direction": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down"
+            ],
+            "description": "`\"up\"` = price rising, `\"down\"` = price falling"
+          },
+          "spike_pct": {
+            "type": "number",
+            "description": "Percentage move that triggered this notification. Positive = up, negative = down."
+          }
+        }
+      },
       "ProbabilitySpikePayload": {
         "type": "object",
         "required": [
@@ -3284,68 +3349,45 @@
           }
         }
       },
-      "PriceSpikePayload": {
+      "WebhookDeliveryEnvelope": {
         "type": "object",
+        "description": "Outer envelope for every webhook HTTP POST delivery. The `data` field contains the event-specific payload. Delivery headers sent with every POST: `X-Webhook-ID` (subscription UUID), `X-Delivery-ID` (this attempt's UUID), `X-Event-Type` (event name string, e.g. `trader_first_trade`), `X-Attempt` (attempt number, 1-indexed). When the webhook has a secret configured, `X-Webhook-Signature: sha256=<hmac-hex>` is also included — compute HMAC-SHA256 over the raw request body using your secret to verify.",
         "required": [
-          "position_id",
-          "previous_price",
-          "current_price",
-          "spike_direction",
-          "spike_pct"
+          "id",
+          "event",
+          "data",
+          "timestamp",
+          "webhook_id",
+          "attempt"
         ],
         "properties": {
-          "position_id": {
+          "id": {
             "type": "string",
-            "description": "Outcome token ID"
+            "format": "uuid",
+            "description": "UUID of this specific delivery attempt (matches X-Delivery-ID header)"
           },
-          "condition_id": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market condition ID"
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Event slug"
-          },
-          "outcome": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Outcome name (e.g. \"Yes\", \"No\")"
-          },
-          "outcome_index": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int16",
-            "description": "Outcome index"
-          },
-          "previous_price": {
-            "type": "number",
-            "description": "Price at the start of the observation window (baseline snapshot, 0.0–1.0)"
-          },
-          "current_price": {
-            "type": "number",
-            "description": "Current price that triggered the spike (0.0–1.0)"
-          },
-          "spike_direction": {
+          "event": {
             "type": "string",
-            "enum": [
-              "up",
-              "down"
-            ],
-            "description": "`\"up\"` = price rising, `\"down\"` = price falling"
+            "description": "Event name (e.g. `trader_first_trade`). On test deliveries the suffix `_test` is appended."
           },
-          "spike_pct": {
-            "type": "number",
-            "description": "Percentage move that triggered this notification. Positive = up, negative = down."
+          "data": {
+            "type": "object",
+            "description": "Event-specific payload — schema varies by event type; see the individual callback definitions"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds when this delivery was created"
+          },
+          "webhook_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the webhook subscription that fired (matches X-Webhook-ID header)"
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Delivery attempt number. 1 = first attempt; increments on each retry."
           }
         }
       },
@@ -4554,15 +4596,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderFirstTradeFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/FirstTradePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/FirstTradePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4585,15 +4691,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderNewMarketFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewMarketPayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/NewMarketPayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4616,15 +4786,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderWhaleTradeFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/WhaleTradePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/WhaleTradePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4647,15 +4881,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderNewTradeFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewTradePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/NewTradePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4678,15 +4976,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderGlobalPnlFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GlobalPnlPayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/GlobalPnlPayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4709,15 +5071,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderMarketPnlFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MarketPnlPayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/MarketPnlPayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4740,15 +5166,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderEventPnlFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EventPnlPayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/EventPnlPayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4771,15 +5261,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/MarketMetricsFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ConditionMetricsPayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/ConditionMetricsPayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4802,15 +5356,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/EventMetricsFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EventMetricsPayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/EventMetricsPayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4833,15 +5451,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/PositionMetricsFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PositionMetricsPayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/PositionMetricsPayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4864,15 +5546,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/MarketVolumeMilestoneFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VolumeMilestonePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/VolumeMilestonePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4895,15 +5641,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/EventVolumeMilestoneFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EventVolumeMilestonePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/EventVolumeMilestonePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4926,15 +5736,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/PositionVolumeMilestoneFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PositionVolumeMilestonePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/PositionVolumeMilestonePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4957,15 +5831,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/ProbabilitySpikeFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProbabilitySpikePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/ProbabilitySpikePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -4988,15 +5926,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/PriceSpikeFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PriceSpikePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/PriceSpikePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -5019,15 +6021,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/MarketVolumeSpikeFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MarketVolumeSpikePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/MarketVolumeSpikePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -5050,15 +6116,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/EventVolumeSpikeFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EventVolumeSpikePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/EventVolumeSpikePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -5081,15 +6211,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/PositionVolumeSpikeFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PositionVolumeSpikePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/PositionVolumeSpikePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -5112,15 +6306,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 2,
         "x-filters-schema": {
           "$ref": "#/components/schemas/CloseToBondFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CloseToBondPayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/CloseToBondPayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -5143,15 +6401,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/MarketCreatedFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MarketCreatedPayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/MarketCreatedPayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -5174,15 +6496,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/AssetPriceTickFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AssetPriceTickPayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/AssetPriceTickPayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -5205,15 +6591,79 @@
         "tags": [
           "Webhook Callbacks"
         ],
+        "x-credits-cost": 1,
         "x-filters-schema": {
           "$ref": "#/components/schemas/AssetPriceWindowUpdateFilters"
         },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
         "requestBody": {
           "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AssetPriceWindowUpdatePayload"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/AssetPriceWindowUpdatePayload"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
