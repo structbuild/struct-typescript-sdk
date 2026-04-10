@@ -40,9 +40,6 @@ export type Holder = Schemas["Holder"];
 export type HolderHistoryCandle = Schemas["HolderHistoryCandle"];
 export type HolderPnl = Schemas["HolderPnl"];
 export type MarketHoldersResponse = Schemas["MarketHoldersResponse"];
-export type MarketMetadata = Omit<Schemas["MarketMetadata"], "metrics"> & {
-	metrics: TimeframeRecord<number>;
-};
 export type MarketMetadataOutcome = Omit<Schemas["MarketMetadataOutcome"], "metrics"> & {
 	metrics?: TimeframeRecord<OutcomeTimeframeMetrics>;
 };
@@ -64,11 +61,11 @@ export type PolymarketSeries = Schemas["PolymarketSeries"];
 export type Tag = Schemas["PolymarketTag"];
 export type UserProfile = Schemas["PolymarketUserProfile"];
 export type PositionHoldersResponse = Schemas["PositionHoldersResponse"];
+export type PositionStatus = Schemas["PositionStatus"];
 export type PositionMetricsResponse = Schemas["PositionMetricsResponse"];
 export type PositionVolumeChartResponse = Schemas["PositionVolumeChartResponse"];
 export type PositionVolumeDataPoint = Schemas["PositionVolumeDataPoint"];
 export type PredictionCandlestickBar = Schemas["PredictionCandlestickBar"];
-export type PredictionTradeResponse = Schemas["PredictionTradeResponse"];
 export type SearchResponse = Schemas["SearchResponse"];
 export type SearchSortBy = Schemas["SearchSortBy"];
 export type SimpleTimeframeMetrics = Schemas["SimpleTimeframeMetrics"];
@@ -93,12 +90,10 @@ export type EventMarketChartDataPoint = Schemas["EventMarketChartDataPoint"];
 export type MarketResponse = Omit<Schemas["MarketResponse"], "metrics"> & {
 	metrics?: TimeframeRecord<SimpleTimeframeMetrics>;
 };
-export type MarketReward = Schemas["MarketReward"];
 export type MarketSortBy = Schemas["MarketSortBy"];
 export type MarketStatus = Schemas["MarketStatus"];
 export type OutcomeIndex = Schemas["OutcomeIndex"];
 export type PositionChartDataPoint = Schemas["PositionChartDataPoint"];
-export type PositionStatus = Schemas["PositionStatus"];
 export type TradeType = Schemas["TradeType"];
 export type WebhookAssetSymbol = Schemas["WebhookAssetSymbol"];
 export type WebhookTimeframe = Schemas["WebhookTimeframe"];
@@ -107,13 +102,77 @@ export type OrderbookHistoryRow = Schemas["OrderbookHistoryRow"];
 export type OrderbookLevel = Schemas["OrderbookLevel"];
 export type OrderbookSnapshotRow = Schemas["OrderbookSnapshotRow"];
 export type SpreadRow = Schemas["SpreadRow"];
+export type ApprovalTrade = Schemas["ApprovalTrade"];
+export type AssertionDisputedEvent = Schemas["AssertionDisputedEvent"];
+export type AssertionMadeEvent = Schemas["AssertionMadeEvent"];
+export type AssertionSettledEvent = Schemas["AssertionSettledEvent"];
+export type CancelledTrade = Schemas["CancelledTrade"];
+export type ConditionResolutionEvent = Schemas["ConditionResolutionEvent"];
+export type MergeTrade = Schemas["MergeTrade"];
+export type NegRiskOutcomeReportedEvent = Schemas["NegRiskOutcomeReportedEvent"];
+export type OrderFilledTrade = Schemas["OrderFilledTrade"];
+export type PolymarketExchange = Schemas["PolymarketExchange"];
+export type PositionDetail = Schemas["PositionDetail"];
+export type PositionsConvertedTrade = Schemas["PositionsConvertedTrade"];
+export type QuestionEmergencyResolvedEvent = Schemas["QuestionEmergencyResolvedEvent"];
+export type QuestionFlaggedEvent = Schemas["QuestionFlaggedEvent"];
+export type QuestionInitializedEvent = Schemas["QuestionInitializedEvent"];
+export type QuestionPausedEvent = Schemas["QuestionPausedEvent"];
+export type QuestionResetEvent = Schemas["QuestionResetEvent"];
+export type QuestionResolvedEvent = Schemas["QuestionResolvedEvent"];
+export type QuestionUnflaggedEvent = Schemas["QuestionUnflaggedEvent"];
+export type QuestionUnpausedEvent = Schemas["QuestionUnpausedEvent"];
+export type RedemptionTrade = Schemas["RedemptionTrade"];
+export type RegisterTokenTrade = Schemas["RegisterTokenTrade"];
+export type SplitTrade = Schemas["SplitTrade"];
+export type TradeEvent = Schemas["TradeEvent"];
 
 export type Series = Schemas["PolymarketSeries"];
-export type Trade = Schemas["PredictionTradeResponse"];
+export type Trade = Schemas["TradeEvent"];
 export type Candlestick = Schemas["PredictionCandlestickBar"];
 export type CandlestickResponse = Schemas["PredictionCandlestickBar"][];
 export type Timeframe = Schemas["MetricsTimeframe"];
 export type GlobalPnlTimeframe = Schemas["PnlTimeframe"];
+
+export type TradeEventType = Trade["trade_type"];
+
+type ExtractTradeEvent<T extends TradeEventType> = Extract<Trade, { trade_type: T }>;
+
+export type OrderFill = ExtractTradeEvent<"OrderFilled">;
+export type OrdersMatch = ExtractTradeEvent<"OrdersMatched">;
+export type Redemption = ExtractTradeEvent<"Redemption">;
+export type Merge = ExtractTradeEvent<"Merge">;
+export type Split = ExtractTradeEvent<"Split">;
+export type PositionsConverted = ExtractTradeEvent<"PositionsConverted">;
+export type Cancelled = ExtractTradeEvent<"Cancelled">;
+export type RegisterToken = ExtractTradeEvent<"RegisterToken">;
+export type Approval = ExtractTradeEvent<"Approval">;
+
+export type MarketTrade =
+	| OrderFill
+	| OrdersMatch
+	| Redemption
+	| Merge
+	| Split
+	| PositionsConverted
+	| Cancelled
+	| RegisterToken
+	| Approval;
+
+export type OracleEvent =
+	| ExtractTradeEvent<"Initialization">
+	| ExtractTradeEvent<"Proposal">
+	| ExtractTradeEvent<"Dispute">
+	| ExtractTradeEvent<"Settled">
+	| ExtractTradeEvent<"Resolution">
+	| ExtractTradeEvent<"ConditionResolution">
+	| ExtractTradeEvent<"Reset">
+	| ExtractTradeEvent<"Flag">
+	| ExtractTradeEvent<"Unflag">
+	| ExtractTradeEvent<"Pause">
+	| ExtractTradeEvent<"Unpause">
+	| ExtractTradeEvent<"ManualResolution">
+	| ExtractTradeEvent<"NegRiskOutcomeReported">;
 
 export type TradeSide = "Buy" | "Sell";
 export type EventStatus = "active" | "resolved" | "ended" | "archived";
@@ -227,7 +286,7 @@ export interface GetMarketParams extends OperationQuery<"get_market"> {
 }
 
 export interface GetMarketBySlugParams extends OperationQuery<"get_market_by_slug"> {
-	slug: string;
+	marketSlug: string;
 }
 
 export interface GetCandlestickParams extends OperationQuery<"get_market_candlestick"> {}
@@ -367,6 +426,7 @@ export type TraderNewTradeFilters = WebhookSchemas["TraderNewTradeFilters"];
 export type PriceSpikePayload = WebhookSchemas["PriceSpikePayload"];
 export type PriceSpikeFilters = WebhookSchemas["PriceSpikeFilters"];
 
+export type WebhookDeliveryEnvelope = WebhookSchemas["WebhookDeliveryEnvelope"];
 export type WebhookSpikeDirection = WebhookSchemas["SpikeDirection"];
 export type WebhookWebhookAssetSymbol = WebhookSchemas["WebhookAssetSymbol"];
 export type WebhookWebhookTimeframe = WebhookSchemas["WebhookTimeframe"];

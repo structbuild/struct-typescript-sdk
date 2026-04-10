@@ -633,7 +633,7 @@ export interface paths {
         };
         /**
          * Get tags
-         * @description Retrieve all available event tags/categories. Uses cursor-based pagination for efficient traversal.
+         * @description Retrieve all available event tags/categories. Supports both cursor-based and offset-based pagination.
          */
         get: operations["get_tags"];
         put?: never;
@@ -888,6 +888,113 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Output payload for ERC1155 setApprovalForAll events. */
+        ApprovalTrade: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            trader: components["schemas"]["TraderInfo"];
+            operator: string;
+            approved: boolean;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            exchange: components["schemas"]["PolymarketExchange"];
+        };
+        /** @description V3 UMA OOv3: an assertion was disputed. */
+        AssertionDisputedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            assertion_id: string;
+            caller: string;
+            disputer: string;
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description V3 UMA OOv3: a new assertion (resolution proposal) was made. */
+        AssertionMadeEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            assertion_id: string;
+            domain_id: string;
+            claim: string;
+            asserter: string;
+            callback_recipient: string;
+            escalation_manager: string;
+            caller: string;
+            /** Format: int64 */
+            expiration_time: number;
+            currency: string;
+            bond: string;
+            identifier: string;
+            condition_id?: string | null;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description V3 UMA OOv3: an assertion liveness period expired and was settled. */
+        AssertionSettledEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            assertion_id: string;
+            bond_recipient: string;
+            disputed: boolean;
+            settlement_resolution: boolean;
+            settle_caller: string;
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
         /** @description A single asset price history record from the `asset_price_history` table. */
         AssetPriceHistoryRow: {
             asset_symbol: string;
@@ -948,6 +1055,27 @@ export interface components {
             position_id: string;
             /** Format: double */
             price: number;
+        };
+        /** @description Output payload for Cancelled orders. */
+        CancelledTrade: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            order_hash?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            exchange: components["schemas"]["PolymarketExchange"];
         };
         /** @enum {string} */
         CandlestickResolution: "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D";
@@ -1014,6 +1142,29 @@ export interface components {
             bid_levels?: number | null;
             /** Format: int32 */
             ask_levels?: number | null;
+        };
+        /** @description CTF ConditionResolution: positions become redeemable on the Conditional Tokens contract. */
+        ConditionResolutionEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            oracle: string;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
         };
         /** @description Enriched market data for event API responses */
         EventMarket: {
@@ -1224,45 +1375,6 @@ export interface components {
             /** @description Holders grouped by outcome */
             outcomes: components["schemas"]["OutcomeHolders"][];
         };
-        /** @description Market metadata (enriched, cached version) */
-        MarketMetadata: {
-            condition_id: string;
-            question: string;
-            description: string;
-            slug: string;
-            event_slug?: string | null;
-            event_id?: string | null;
-            event_title?: string | null;
-            series_slug?: string | null;
-            neg_risk: boolean;
-            tokens: components["schemas"]["TokenOutcome"][];
-            image_url?: string | null;
-            tags: string[];
-            /** Format: int64 */
-            created_time?: number | null;
-            /** Format: int64 */
-            start_time?: number | null;
-            /** Format: int64 */
-            game_start_time?: number | null;
-            /** Format: int64 */
-            closed_time?: number | null;
-            /** Format: int64 */
-            end_time?: number | null;
-            title?: string | null;
-            id?: string | null;
-            /** Format: double */
-            volume_usd?: number | null;
-            /** Format: double */
-            liquidity_usd?: number | null;
-            outcomes: components["schemas"]["MarketOutcome"][];
-            metrics: {
-                [key: string]: number;
-            };
-            market_maker_address?: string | null;
-            creator?: string | null;
-            category?: string | null;
-            clob_rewards: components["schemas"]["ClobReward"][];
-        };
         /** @description Market outcome with timeframe metrics (websocket API format) */
         MarketMetadataOutcome: {
             token_id: string;
@@ -1329,9 +1441,10 @@ export interface components {
             highest_probability?: number | null;
             /** Format: int64 */
             total_holders?: number | null;
+            /** Format: double */
+            total_daily_rate?: number | null;
             winning_outcome?: null | components["schemas"]["MarketOutcome"];
             outcomes?: components["schemas"]["MarketOutcome"][];
-            rewards?: components["schemas"]["MarketReward"][];
             clob_rewards?: components["schemas"]["ClobReward"][];
             tags?: string[];
             event_slug?: string | null;
@@ -1342,26 +1455,8 @@ export interface components {
             /** Format: double */
             relevance_score?: number | null;
         };
-        /** @description Reward info for market API responses */
-        MarketReward: {
-            /**
-             * Format: double
-             * @default null
-             */
-            min_size: number | null;
-            /**
-             * Format: double
-             * @default null
-             */
-            max_spread: number | null;
-            /**
-             * Format: double
-             * @default null
-             */
-            daily_rate: number | null;
-        };
         /** @enum {string} */
-        MarketSortBy: "volume" | "txns" | "unique_traders" | "liquidity" | "holders" | "end_time" | "start_time" | "created_time" | "relevance";
+        MarketSortBy: "volume" | "txns" | "unique_traders" | "liquidity" | "holders" | "total_daily_rate" | "end_time" | "start_time" | "created_time" | "relevance";
         /** @enum {string} */
         MarketStatus: "open" | "closed" | "all";
         MarketVolumeChartResponse: {
@@ -1384,8 +1479,99 @@ export interface components {
             /** Format: int32 */
             ntc: number;
         };
+        /** @description Output payload for Merge trades (burn outcome tokens → receive collateral). */
+        MergeTrade: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            trader: components["schemas"]["TraderInfo"];
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            /** Format: double */
+            usd_amount: number;
+            /** @description Per-position burn amounts */
+            position_details?: components["schemas"]["PositionDetail"][];
+            exchange: components["schemas"]["PolymarketExchange"];
+        };
         /** @enum {string} */
         MetricsTimeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
+        /** @description NegRisk Adapter: outcome reported for a neg-risk market question. */
+        NegRiskOutcomeReportedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description Output payload for OrderFilled and OrdersMatched trades (actual buy/sell). */
+        OrderFilledTrade: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            order_hash?: string | null;
+            trader: components["schemas"]["TraderInfo"];
+            taker?: string | null;
+            side: string;
+            condition_id?: string | null;
+            position_id: string;
+            outcome?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            /** Format: double */
+            usd_amount: number;
+            /** Format: double */
+            shares_amount: number;
+            /** Format: double */
+            price: number;
+            /** Format: double */
+            probability?: number | null;
+            /** Format: double */
+            fee?: number | null;
+            /** Format: double */
+            fee_shares?: number | null;
+            /** Format: double */
+            fee_pct?: number | null;
+            exchange: components["schemas"]["PolymarketExchange"];
+        };
         OrderbookHistoryRow: {
             /** Format: int64 */
             ts: number;
@@ -1640,6 +1826,11 @@ export interface components {
             series: null | components["schemas"]["PolymarketSeries"];
         };
         /**
+         * @description Polymarket exchange contract types
+         * @enum {string}
+         */
+        PolymarketExchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+        /**
          * @description A Polymarket series from the Gamma API
          *     Series are parent groupings above events (e.g., "NBA Season 2024-25")
          */
@@ -1726,6 +1917,18 @@ export interface components {
             outcome_index: number;
             data: components["schemas"]["PositionChartDataPoint"][];
         };
+        /** @description Per-position detail for Split/Merge/Redemption trades. */
+        PositionDetail: {
+            /** @description ERC1155 position ID */
+            position_id: string;
+            /**
+             * Format: int32
+             * @description Outcome index (0 = Yes, 1 = No for binary)
+             */
+            outcome_index: number;
+            /** @description Amount of shares created/burned/redeemed for this position */
+            amount: string;
+        };
         /** @description Response for position (position_id) holders endpoint */
         PositionHoldersResponse: {
             /** @description Position ID (ERC1155 token ID) */
@@ -1784,7 +1987,10 @@ export interface components {
         };
         /** @enum {string} */
         PositionPnlSortBy: "realized_pnl_usd" | "buy_usd" | "sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "title";
-        /** @enum {string} */
+        /**
+         * @description Position status filter for open/closed positions.
+         * @enum {string}
+         */
         PositionStatus: "open" | "closed";
         PositionVolumeChartResponse: {
             volumes: components["schemas"]["PositionVolumeDataPoint"][];
@@ -1806,6 +2012,32 @@ export interface components {
             /** Format: int32 */
             stc: number;
         };
+        /**
+         * @description Output payload for NegRisk PositionsConverted trades
+         *     (convert NO-position tokens → YES tokens + collateral).
+         */
+        PositionsConvertedTrade: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            trader: components["schemas"]["TraderInfo"];
+            /** @description NegRisk umbrella market ID */
+            market_id: string;
+            /** @description Bitmask of question indices whose NO tokens are being converted */
+            index_set: string;
+            /** Format: double */
+            shares_amount: number;
+            exchange: components["schemas"]["PolymarketExchange"];
+        };
         PredictionCandlestickBar: {
             /** Format: double */
             l?: number | null;
@@ -1824,42 +2056,6 @@ export interface components {
             /** Format: double */
             m?: number | null;
         };
-        /** @description Response format for prediction trades */
-        PredictionTradeResponse: {
-            id: string;
-            hash: string;
-            /** Format: int64 */
-            block: number;
-            /** Format: int64 */
-            confirmed_at: number;
-            trader: components["schemas"]["TraderInfo"];
-            taker: string;
-            side?: string | null;
-            condition_id?: string | null;
-            outcome?: string | null;
-            /** Format: int32 */
-            outcome_index?: number | null;
-            question?: string | null;
-            image_url?: string | null;
-            slug?: string | null;
-            event_slug?: string | null;
-            /** Format: double */
-            usd_amount: number;
-            /** Format: double */
-            shares_amount: number;
-            /** Format: double */
-            price: number;
-            /** Format: double */
-            probability?: number | null;
-            /** Format: double */
-            fee: number;
-            exchange: string;
-            trade_type: string;
-            /** Format: int64 */
-            log_index: number;
-            order_hash: string;
-            position_id: string;
-        };
         PriceJump: {
             /** Format: int64 */
             from: number;
@@ -1877,6 +2073,236 @@ export interface components {
             /** Format: int32 */
             trades_count: number;
             condition_id: string;
+        };
+        /** @description UMA CTF Adapter: admin emergency resolution. */
+        QuestionEmergencyResolvedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: market flagged for emergency resolution. */
+        QuestionFlaggedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: questionID first initialized on-chain. */
+        QuestionInitializedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            creator: string;
+            reward_token: string;
+            reward: string;
+            proposal_bond: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: market paused by admin. */
+        QuestionPausedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: dispute succeeded, market returns to active. */
+        QuestionResetEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: market resolved with definitive outcome. */
+        QuestionResolvedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            /** Format: int64 */
+            settled_price: number;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: flag removed. */
+        QuestionUnflaggedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: market unpaused. */
+        QuestionUnpausedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description Output payload for Redemption trades (payout after market resolution). */
+        RedemptionTrade: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            trader: components["schemas"]["TraderInfo"];
+            condition_id?: string | null;
+            outcome?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            /** Format: double */
+            usd_amount: number;
+            /** Format: int32 */
+            winning_outcome_index?: number | null;
+            /** @description Per-position burn amounts */
+            position_details?: components["schemas"]["PositionDetail"][];
+            exchange: components["schemas"]["PolymarketExchange"];
+        };
+        /** @description Output payload for RegisterToken events (YES/NO token pair registered for a condition). */
+        RegisterTokenTrade: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            condition_id: string;
+            token0: string;
+            token1: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            exchange: components["schemas"]["PolymarketExchange"];
         };
         SearchResponse: {
             events?: components["schemas"]["PolymarketEvent"][] | null;
@@ -1920,6 +2346,32 @@ export interface components {
          * @enum {string}
          */
         SpikeDirection: "up" | "down" | "both";
+        /** @description Output payload for Split trades (deposit collateral → receive outcome tokens). */
+        SplitTrade: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            trader: components["schemas"]["TraderInfo"];
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            /** Format: double */
+            usd_amount: number;
+            /** @description Per-position mint amounts */
+            position_details?: components["schemas"]["PositionDetail"][];
+            exchange: components["schemas"]["PolymarketExchange"];
+        };
         /** @description Lightweight row — derived metrics only, no bids/asks JSONB. */
         SpreadRow: {
             /** Format: int64 */
@@ -1948,6 +2400,77 @@ export interface components {
             token_id: string;
             outcome: string;
         };
+        /**
+         * @description Tagged enum for all trade types — serializes with `"trade_type": "..."` discriminator
+         *     and only includes fields relevant to each type.
+         */
+        TradeEvent: (components["schemas"]["OrderFilledTrade"] & {
+            /** @enum {string} */
+            trade_type: "OrderFilled";
+        }) | (components["schemas"]["OrderFilledTrade"] & {
+            /** @enum {string} */
+            trade_type: "OrdersMatched";
+        }) | (components["schemas"]["RedemptionTrade"] & {
+            /** @enum {string} */
+            trade_type: "Redemption";
+        }) | (components["schemas"]["MergeTrade"] & {
+            /** @enum {string} */
+            trade_type: "Merge";
+        }) | (components["schemas"]["SplitTrade"] & {
+            /** @enum {string} */
+            trade_type: "Split";
+        }) | (components["schemas"]["PositionsConvertedTrade"] & {
+            /** @enum {string} */
+            trade_type: "PositionsConverted";
+        }) | (components["schemas"]["CancelledTrade"] & {
+            /** @enum {string} */
+            trade_type: "Cancelled";
+        }) | (components["schemas"]["QuestionInitializedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Initialization";
+        }) | (components["schemas"]["AssertionMadeEvent"] & {
+            /** @enum {string} */
+            trade_type: "Proposal";
+        }) | (components["schemas"]["AssertionDisputedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Dispute";
+        }) | (components["schemas"]["AssertionSettledEvent"] & {
+            /** @enum {string} */
+            trade_type: "Settled";
+        }) | (components["schemas"]["QuestionResolvedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Resolution";
+        }) | (components["schemas"]["ConditionResolutionEvent"] & {
+            /** @enum {string} */
+            trade_type: "ConditionResolution";
+        }) | (components["schemas"]["QuestionResetEvent"] & {
+            /** @enum {string} */
+            trade_type: "Reset";
+        }) | (components["schemas"]["QuestionFlaggedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Flag";
+        }) | (components["schemas"]["QuestionUnflaggedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Unflag";
+        }) | (components["schemas"]["QuestionPausedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Pause";
+        }) | (components["schemas"]["QuestionUnpausedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Unpause";
+        }) | (components["schemas"]["QuestionEmergencyResolvedEvent"] & {
+            /** @enum {string} */
+            trade_type: "ManualResolution";
+        }) | (components["schemas"]["NegRiskOutcomeReportedEvent"] & {
+            /** @enum {string} */
+            trade_type: "NegRiskOutcomeReported";
+        }) | (components["schemas"]["RegisterTokenTrade"] & {
+            /** @enum {string} */
+            trade_type: "RegisterToken";
+        }) | (components["schemas"]["ApprovalTrade"] & {
+            /** @enum {string} */
+            trade_type: "Approval";
+        });
         /** @enum {string} */
         TradeSide: "0" | "1";
         /** @enum {string} */
@@ -2115,7 +2638,7 @@ export interface components {
             /**
              * Format: double
              * @description Estimated current USD value of held shares: (balance / 1e6) * current_price.
-             *     Only meaningful for open positions (balance > 0).
+             *     Only meaningful for open positions (balance above dust threshold).
              */
             current_value?: number | null;
             /**
@@ -2238,6 +2761,8 @@ export interface operations {
                  * @example 10
                  */
                 limit?: number;
+                /** @description Cursor from previous response for keyset pagination. Pass the pagination_key from the previous page to fetch the next page. */
+                pagination_key?: string;
             };
             header?: never;
             path?: never;
@@ -2690,7 +3215,7 @@ export interface operations {
                 search?: string;
                 /** @description Filter by status: open, closed, or all (default: all) */
                 status?: components["schemas"]["MarketStatus"];
-                /** @description Sort: volume, txns, unique_traders, liquidity, holders, end_time, start_time, created_time, relevance */
+                /** @description Sort: volume, txns, unique_traders, liquidity, holders, total_daily_rate, end_time, start_time, created_time, relevance */
                 sort_by?: components["schemas"]["MarketSortBy"];
                 /** @description Sort direction: asc, desc (default: desc) */
                 sort_dir?: components["schemas"]["SortDirection"];
@@ -3076,9 +3601,10 @@ export interface operations {
                         highest_probability?: number | null;
                         /** Format: int64 */
                         total_holders?: number | null;
+                        /** Format: double */
+                        total_daily_rate?: number | null;
                         winning_outcome?: null | components["schemas"]["MarketOutcome"];
                         outcomes?: components["schemas"]["MarketOutcome"][];
-                        rewards?: components["schemas"]["MarketReward"][];
                         clob_rewards?: components["schemas"]["ClobReward"][];
                         tags?: string[];
                         event_slug?: string | null;
@@ -3139,8 +3665,10 @@ export interface operations {
                 all?: boolean;
                 /** @description Results per page (default: 10, max: 250) */
                 limit?: number;
-                /** @description Offset-based pagination key (integer offset into result set) */
-                pagination_key?: number;
+                /** @description Pagination offset (number of results to skip). Takes precedence over pagination_key. */
+                offset?: number;
+                /** @description Cursor-based pagination key obtained from previous response's pagination.pagination_key */
+                pagination_key?: string;
                 /** @description Sort newest first (default: true) */
                 sort_desc?: boolean;
                 /** @description Return truncated response optimized for AI consumers (default: false) */
@@ -3158,7 +3686,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PredictionTradeResponse"][];
+                    "application/json": components["schemas"]["TradeEvent"][];
                 };
             };
         };
@@ -3257,9 +3785,10 @@ export interface operations {
                         highest_probability?: number | null;
                         /** Format: int64 */
                         total_holders?: number | null;
+                        /** Format: double */
+                        total_daily_rate?: number | null;
                         winning_outcome?: null | components["schemas"]["MarketOutcome"];
                         outcomes?: components["schemas"]["MarketOutcome"][];
-                        rewards?: components["schemas"]["MarketReward"][];
                         clob_rewards?: components["schemas"]["ClobReward"][];
                         tags?: string[];
                         event_slug?: string | null;
@@ -3661,6 +4190,8 @@ export interface operations {
             query?: {
                 /** @description Results limit (default: 10, max: 250) */
                 limit?: number;
+                /** @description Offset-based pagination (number of results to skip). Takes precedence over pagination_key. */
+                offset?: number;
                 /** @description Cursor-based pagination key */
                 pagination_key?: string;
             };
@@ -3927,7 +4458,7 @@ export interface operations {
                 market_slug?: string;
                 /** @description Filter by specific outcome token (position ID) */
                 position_id?: string;
-                /** @description Minimum shares balance to include (e.g. 1.0 to filter out dust positions) */
+                /** @description Minimum shares balance to include. Status filtering already treats balances below 0.01 shares as dust. */
                 min_shares?: number;
             };
             header?: never;
@@ -4064,7 +4595,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PredictionTradeResponse"][];
+                    "application/json": components["schemas"]["TradeEvent"][];
                 };
             };
         };

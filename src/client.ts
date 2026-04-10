@@ -19,6 +19,7 @@ const DEFAULT_BASE_URL = "https://api.struct.to/v1";
 
 export interface StructClientConfig {
 	apiKey: string;
+	jwt?: string;
 	baseUrl?: string;
 	venue?: Venue;
 	headers?: Record<string, string>;
@@ -42,10 +43,17 @@ export class StructClient {
 	readonly webhooks: WebhooksNamespace;
 
 	constructor(config: StructClientConfig) {
+		const authHeaders: Record<string, string> = {
+			"X-API-Key": config.apiKey,
+		};
+		if (config.jwt) {
+			authHeaders["Authorization"] = `Bearer ${config.jwt}`;
+		}
+
 		const http = new HttpClient({
 			baseUrl: config.baseUrl ?? DEFAULT_BASE_URL,
 			defaultHeaders: {
-				"X-API-Key": config.apiKey,
+				...authHeaders,
 				...config.headers,
 			},
 			timeout: config.timeout,

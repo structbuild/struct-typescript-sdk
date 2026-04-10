@@ -34,7 +34,10 @@ export class StructWebSocket {
 	constructor(config: StructWebSocketConfig) {
 		this.subscribeTimeout = config.subscribeTimeout ?? DEFAULT_SUBSCRIBE_TIMEOUT_MS;
 		const base = (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
-		const url = `${base}/ws?api-key=${encodeURIComponent(config.apiKey)}`;
+		const wsBase = base.replace(/^https:\/\//, "wss://").replace(/^http:\/\//, "ws://");
+		const url = config.jwt
+			? `${wsBase}/ws?api-key=${encodeURIComponent(config.apiKey)}&token=${encodeURIComponent(config.jwt)}`
+			: `${wsBase}/ws?api-key=${encodeURIComponent(config.apiKey)}`;
 
 		this.transport = new WebSocketTransport(
 			url,
