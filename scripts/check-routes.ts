@@ -4,6 +4,7 @@ import { join } from "node:path";
 const NAMESPACES_DIR = join(import.meta.dirname, "../src/namespaces");
 const TYPES_FILE = join(import.meta.dirname, "../src/types/index.ts");
 const WS_TYPES_FILE = join(import.meta.dirname, "../src/types/ws.ts");
+const WS_ALERTS_FILE = join(import.meta.dirname, "../src/ws-alerts.ts");
 
 interface SpecConfig {
 	specPath: string;
@@ -138,6 +139,12 @@ async function getSdkWsRooms(): Promise<Set<string>> {
 			rooms.add(match[1]);
 		}
 	}
+	try {
+		const alertsContent = await readFile(WS_ALERTS_FILE, "utf-8");
+		if (/class\s+StructAlertsWebSocket\b/.test(alertsContent)) {
+			rooms.add("ws_alerts");
+		}
+	} catch {}
 	return rooms;
 }
 

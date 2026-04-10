@@ -34,7 +34,7 @@
     "generate:webhooks": "openapi-typescript openapi/webhooks.json -o src/generated/webhooks.ts",
     "generate:ws": "bun run scripts/generate-ws-types.ts",
     "link": "bun link",
-    "pack": "bun run build && bun pack"
+    "pack": "bun run build && bun pm pack"
   },
   "devDependencies": {
     "@types/bun": "latest",

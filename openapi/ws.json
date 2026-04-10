@@ -24,7 +24,7 @@
       "address": "polymarket_trades",
       "title": "Trades",
       "summary": "Trades stream",
-      "description": "Real-time stream of matched Polymarket prediction-market trades. At least one filter is required — open-ended subscriptions are rejected to prevent fan-out across all trades.\n\n**Filters (at least one required):**\n- `condition_ids` — 64-char hex condition IDs (with or without `0x` prefix)\n- `market_slugs` — market slugs\n- `event_slugs` — event slugs (delivers all markets under each event)\n- `position_ids` — ERC-1155 token IDs (decimal or hex)\n- `trade_types` — optional allowlist of trade types (e.g. `[\"OrderFilled\", \"OrdersMatched\"]`). Omit or pass `[]` for all types.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"` to clear all subscriptions.",
+      "description": "Real-time stream of Polymarket prediction-market events (trades + oracle lifecycle). Supports both confirmed (on-chain) and pending (mempool) trades.\n\n**Filters (optional):**\n- `condition_ids` — 64-char hex condition IDs (with or without `0x` prefix)\n- `market_slugs` — market slugs\n- `event_slugs` — event slugs (delivers all markets under each event)\n- `position_ids` — ERC-1155 token IDs (decimal or hex)\n- `traders` — trader wallet addresses\n- `trade_types` — optional allowlist (e.g. `[\"OrderFilled\", \"Resolution\"]`). Omit or pass `[]` for all types.\n- `status` — `\"confirmed\"` (default), `\"pending\"`, or `\"all\"`\n\nIf no filters are provided, subscribes to ALL trades (open-ended).\n\n**Pending trades:** Fields unavailable from mempool (`block`, `confirmed_at`, `log_index`, `block_index`, `order_hash`, `taker`, `fee`, `fee_shares`, `fee_pct`) are omitted. `received_at` (ms) is included instead.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"` to clear all subscriptions.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TradesStreamSubscribe"
@@ -112,7 +112,7 @@
       "address": "polymarket_position_metrics",
       "title": "Position Metrics",
       "summary": "Position (outcome token) metrics stream",
-      "description": "Real-time volume, trade-count, and OHLC price/probability metrics per outcome-token position, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required):** `position_ids` — ERC-1155 token IDs (decimal or hex; normalized to decimal strings internally).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time volume, trade-count, and OHLC price/probability metrics per outcome-token position, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required):** `position_ids` — ERC-1155 token IDs (decimal or hex).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/PositionMetricsSubscribe"
@@ -152,7 +152,7 @@
       "address": "polymarket_trader_positions",
       "title": "Trader Positions",
       "summary": "Trader position updates stream",
-      "description": "Real-time position updates for tracked traders. Streams full position snapshots whenever a position PnL changes in the database.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Events pushed:** `trader_position_update` — includes PnL fields, shares balance, market slug, outcome, and all enriched data.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time position updates for tracked traders. Streams full position snapshots whenever a position PnL changes.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Events pushed:** `trader_position_update` — includes PnL fields, shares balance, market slug, outcome, and all enriched data.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderPositionsSubscribe"
@@ -219,23 +219,6 @@
         },
         "clobRewardsUpdateEvent": {
           "$ref": "#/components/messages/ClobRewardsUpdateEvent"
-        }
-      }
-    },
-    "polymarket_wallet_tracking": {
-      "address": "polymarket_wallet_tracking",
-      "title": "Wallet Tracking",
-      "summary": "Wallet trade tracking stream",
-      "description": "Real-time trade alerts for tracked Polymarket wallets. Streams a `wallet_tracking_alert` event whenever a subscribed wallet executes a trade, enriched with market metadata (slug, question, outcome, image).\n\n**Filter (required):** `wallet_addresses` — EVM wallet addresses to track.\n\n**Unsubscribe:** Disconnect or re-subscribe with a new address list.",
-      "messages": {
-        "subscribe": {
-          "$ref": "#/components/messages/WalletTrackingSubscribe"
-        },
-        "subscribeResponse": {
-          "$ref": "#/components/messages/WalletTrackingSubscribeResponse"
-        },
-        "walletTrackingAlertEvent": {
-          "$ref": "#/components/messages/WalletTrackingAlertEvent"
         }
       }
     },
@@ -584,33 +567,6 @@
         }
       ]
     },
-    "subscribePolymarketWalletTracking": {
-      "action": "send",
-      "channel": {
-        "$ref": "#/channels/polymarket_wallet_tracking"
-      },
-      "summary": "Subscribe to wallet trade tracking stream",
-      "messages": [
-        {
-          "$ref": "#/channels/polymarket_wallet_tracking/messages/subscribe"
-        }
-      ]
-    },
-    "receivePolymarketWalletTracking": {
-      "action": "receive",
-      "channel": {
-        "$ref": "#/channels/polymarket_wallet_tracking"
-      },
-      "summary": "Receive wallet trade tracking stream events",
-      "messages": [
-        {
-          "$ref": "#/channels/polymarket_wallet_tracking/messages/subscribeResponse"
-        },
-        {
-          "$ref": "#/channels/polymarket_wallet_tracking/messages/walletTrackingAlertEvent"
-        }
-      ]
-    },
     "subscribeWsAlerts": {
       "action": "send",
       "channel": {
@@ -657,7 +613,7 @@
         }
       },
       "TradeStreamEvent": {
-        "summary": "a matched trade on a subscribed market/position/event/slug",
+        "summary": "Server-pushed event. Discriminated by `trade_type` — each variant only includes relevant fields.\n\nEnvelope: `{\"type\": \"trade_stream_update\", \"room_id\": \"polymarket_trades\", \"status\": \"confirmed\"|\"pending\", \"data\": {...}}`\n\n**Pending trades:** `block`, `confirmed_at`, `log_index`, `block_index` are absent. `received_at` (milliseconds) is included instead. For OrderFilled/OrdersMatched, `order_hash`, `taker`, `fee`, `fee_shares`, `fee_pct` are also absent",
         "payload": {
           "$ref": "#/components/schemas/TradeStreamEvent"
         }
@@ -876,24 +832,6 @@
         "summary": "Subscription acknowledgement for clob reward configuration changes stream",
         "payload": {
           "$ref": "#/components/schemas/ClobRewardsSubscribeResponse"
-        }
-      },
-      "WalletTrackingSubscribe": {
-        "summary": "Subscribe to wallet trade tracking stream",
-        "payload": {
-          "$ref": "#/components/schemas/WalletTrackingSubscribeMessage"
-        }
-      },
-      "WalletTrackingAlertEvent": {
-        "summary": "a trade executed by a tracked wallet",
-        "payload": {
-          "$ref": "#/components/schemas/WalletTrackingAlertEvent"
-        }
-      },
-      "WalletTrackingSubscribeResponse": {
-        "summary": "Subscription acknowledgement for wallet trade tracking stream",
-        "payload": {
-          "$ref": "#/components/schemas/WalletTrackingSubscribeResponse"
         }
       },
       "WsAlertSubscribe": {
@@ -1170,7 +1108,7 @@
       },
       "TradesStreamSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the trades stream. At least one filter field must be non-empty.",
+        "description": "Subscribe to the trades stream. No filters = subscribe to all trades.",
         "required": [
           "action"
         ],
@@ -1210,21 +1148,58 @@
             },
             "description": "ERC-1155 outcome token IDs (decimal or hex strings)"
           },
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Trader wallet addresses (lowercase 0x-prefixed)"
+          },
           "trade_types": {
             "type": "array",
             "items": {
               "type": "string",
               "enum": [
                 "OrderFilled",
+                "OrdersMatched",
                 "Redemption",
                 "Merge",
                 "Split",
                 "Cancelled",
                 "PositionsConverted",
-                "OrdersMatched"
+                "Initialization",
+                "Proposal",
+                "Dispute",
+                "Settled",
+                "Resolution",
+                "ConditionResolution",
+                "Reset",
+                "Flag",
+                "Unflag",
+                "Pause",
+                "Unpause",
+                "ManualResolution",
+                "NegRiskOutcomeReported",
+                "RegisterToken",
+                "Approval"
               ]
             },
-            "description": "Only receive trades of these types. Empty array = all types."
+            "description": "Only receive events of these types. Empty array = all types."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "pending",
+              "all"
+            ],
+            "default": "confirmed",
+            "description": "Trade status filter: \"confirmed\" (default) = on-chain only, \"pending\" = mempool only, \"all\" = both"
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Explicitly subscribe to all trades. Also implicitly true when no filters are provided."
           }
         }
       },
@@ -1256,194 +1231,1126 @@
               "type": "string"
             }
           },
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "trade_types": {
             "type": "array",
             "items": {
               "type": "string"
             }
           },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "pending",
+              "all"
+            ]
+          },
+          "subscribe_all": {
+            "type": "boolean"
+          },
           "rejected": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Filter values that were rejected (invalid format or unknown trade type)"
+            "description": "Filter values that were rejected (invalid format or unknown type)"
           }
         }
       },
       "TradeStreamEvent": {
-        "type": "object",
-        "description": "Server-pushed event: a matched trade on a subscribed market/position/event/slug. Envelope type: \"trade_stream_update\".",
-        "required": [
-          "id",
-          "trader",
-          "taker",
-          "position_id",
-          "hash",
-          "block",
-          "confirmed_at",
-          "usd_amount",
-          "shares_amount",
-          "fee",
-          "price"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Trade ID"
-          },
-          "hash": {
-            "type": "string",
-            "description": "Transaction hash (hex)"
-          },
-          "chain_id": {
-            "type": "integer",
-            "format": "uint64"
-          },
-          "block": {
-            "type": "integer",
-            "format": "uint64"
-          },
-          "confirmed_at": {
-            "type": "integer",
-            "format": "uint64",
-            "description": "Unix seconds"
-          },
-          "log_index": {
-            "type": "integer",
-            "format": "uint64"
-          },
-          "block_index": {
-            "type": "integer",
-            "format": "uint64"
-          },
-          "order_hash": {
-            "type": "string",
-            "description": "Order hash (hex)"
-          },
-          "trader": {
-            "type": "string",
-            "description": "Limit-order maker wallet address"
-          },
-          "taker": {
-            "type": "string",
-            "description": "Order taker wallet address"
-          },
-          "side": {
-            "type": [
-              "string",
-              "null"
+        "description": "Server-pushed event. Discriminated by `trade_type` — each variant only includes relevant fields.\n\nEnvelope: `{\"type\": \"trade_stream_update\", \"room_id\": \"polymarket_trades\", \"status\": \"confirmed\"|\"pending\", \"data\": {...}}`\n\n**Pending trades:** `block`, `confirmed_at`, `log_index`, `block_index` are absent. `received_at` (milliseconds) is included instead. For OrderFilled/OrdersMatched, `order_hash`, `taker`, `fee`, `fee_shares`, `fee_pct` are also absent.",
+        "oneOf": [
+          {
+            "title": "OrderFilled / OrdersMatched",
+            "description": "A buy/sell trade was matched on the exchange.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "trader",
+              "exchange"
             ],
-            "description": "\"Buy\" or \"Sell\" (null for non-trade operations like Redemption, Merge, Split)"
+            "properties": {
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "OrderFilled",
+                  "OrdersMatched"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "description": "Absent for pending trades"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "description": "Unix seconds. Absent for pending trades"
+              },
+              "received_at": {
+                "type": "integer",
+                "description": "Unix milliseconds. Present for pending trades only"
+              },
+              "log_index": {
+                "type": "integer",
+                "description": "Absent for pending trades"
+              },
+              "block_index": {
+                "type": "integer",
+                "description": "Absent for pending trades"
+              },
+              "order_hash": {
+                "type": "string",
+                "description": "Absent for pending trades"
+              },
+              "trader": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "taker": {
+                "type": "string",
+                "description": "Absent for pending trades"
+              },
+              "side": {
+                "type": "string",
+                "enum": [
+                  "Buy",
+                  "Sell"
+                ]
+              },
+              "condition_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "position_id": {
+                "type": "string"
+              },
+              "outcome": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "outcome_index": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "question": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "image_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "event_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "usd_amount": {
+                "type": "number"
+              },
+              "shares_amount": {
+                "type": "number"
+              },
+              "price": {
+                "type": "number"
+              },
+              "probability": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "fee": {
+                "type": "number",
+                "description": "Absent for pending trades"
+              },
+              "fee_shares": {
+                "type": "number",
+                "description": "Absent for pending trades"
+              },
+              "fee_pct": {
+                "type": "number",
+                "description": "Absent for pending trades"
+              },
+              "exchange": {
+                "type": "integer"
+              }
+            }
           },
-          "condition_id": {
-            "type": [
-              "string",
-              "null"
+          {
+            "title": "Redemption",
+            "description": "Positions redeemed after market resolution.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "trader",
+              "exchange"
             ],
-            "description": "64-char hex condition ID"
+            "properties": {
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Redemption"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              },
+              "confirmed_at": {
+                "type": "integer"
+              },
+              "received_at": {
+                "type": "integer"
+              },
+              "log_index": {
+                "type": "integer"
+              },
+              "block_index": {
+                "type": "integer"
+              },
+              "trader": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "condition_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "outcome": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "outcome_index": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "question": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "image_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "event_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "usd_amount": {
+                "type": "number"
+              },
+              "winning_outcome_index": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "position_details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "position_id": {
+                      "type": "string"
+                    },
+                    "outcome_index": {
+                      "type": "integer"
+                    },
+                    "amount": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "exchange": {
+                "type": "integer"
+              }
+            }
           },
-          "position_id": {
-            "type": "string",
-            "description": "ERC-1155 outcome token ID (decimal string)"
-          },
-          "outcome": {
-            "type": [
-              "string",
-              "null"
+          {
+            "title": "Merge",
+            "description": "Outcome tokens burned to receive collateral.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "trader",
+              "exchange"
             ],
-            "description": "Outcome name (e.g. \"Yes\")"
+            "properties": {
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Merge"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              },
+              "confirmed_at": {
+                "type": "integer"
+              },
+              "received_at": {
+                "type": "integer"
+              },
+              "log_index": {
+                "type": "integer"
+              },
+              "block_index": {
+                "type": "integer"
+              },
+              "trader": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "condition_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "question": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "image_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "event_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "usd_amount": {
+                "type": "number"
+              },
+              "position_details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "position_id": {
+                      "type": "string"
+                    },
+                    "outcome_index": {
+                      "type": "integer"
+                    },
+                    "amount": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "exchange": {
+                "type": "integer"
+              }
+            }
           },
-          "outcome_index": {
-            "type": [
-              "integer",
-              "null"
+          {
+            "title": "Split",
+            "description": "Collateral deposited to receive outcome tokens.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "trader",
+              "exchange"
             ],
-            "description": "0 = Yes, 1 = No"
+            "properties": {
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Split"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              },
+              "confirmed_at": {
+                "type": "integer"
+              },
+              "received_at": {
+                "type": "integer"
+              },
+              "log_index": {
+                "type": "integer"
+              },
+              "block_index": {
+                "type": "integer"
+              },
+              "trader": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "condition_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "question": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "image_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "event_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "usd_amount": {
+                "type": "number"
+              },
+              "position_details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "position_id": {
+                      "type": "string"
+                    },
+                    "outcome_index": {
+                      "type": "integer"
+                    },
+                    "amount": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "exchange": {
+                "type": "integer"
+              }
+            }
           },
-          "question": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "slug": {
-            "type": [
-              "string",
-              "null"
+          {
+            "title": "PositionsConverted",
+            "description": "NegRisk NO tokens converted to YES tokens + collateral.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "trader",
+              "exchange"
             ],
-            "description": "Market slug"
+            "properties": {
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "PositionsConverted"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              },
+              "confirmed_at": {
+                "type": "integer"
+              },
+              "received_at": {
+                "type": "integer"
+              },
+              "log_index": {
+                "type": "integer"
+              },
+              "block_index": {
+                "type": "integer"
+              },
+              "trader": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "market_id": {
+                "type": "string"
+              },
+              "index_set": {
+                "type": "string"
+              },
+              "shares_amount": {
+                "type": "number"
+              },
+              "exchange": {
+                "type": "integer"
+              }
+            }
           },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "usd_amount": {
-            "type": "string",
-            "description": "USD value of the trade (decimal string)"
-          },
-          "shares_amount": {
-            "type": "string",
-            "description": "Number of shares traded (decimal string)"
-          },
-          "price": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Trade price (0–1)"
-          },
-          "probability": {
-            "type": [
-              "number",
-              "null"
+          {
+            "title": "Cancelled",
+            "description": "Order cancelled on-chain.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "exchange"
             ],
-            "description": "Implied probability (0–1)"
+            "properties": {
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Cancelled"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              },
+              "confirmed_at": {
+                "type": "integer"
+              },
+              "received_at": {
+                "type": "integer"
+              },
+              "log_index": {
+                "type": "integer"
+              },
+              "block_index": {
+                "type": "integer"
+              },
+              "order_hash": {
+                "type": "string"
+              },
+              "question": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "image_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "event_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "exchange": {
+                "type": "integer"
+              }
+            }
           },
-          "fee": {
-            "type": "string",
-            "description": "Protocol fee paid (decimal string)"
-          },
-          "exchange": {
-            "type": "string",
-            "description": "Exchange identifier"
-          },
-          "trade_type": {
-            "type": "string",
-            "description": "\"OrderFilled\", \"Redemption\", \"Merge\", \"Split\", \"Cancelled\", \"PositionsConverted\", \"OrdersMatched\""
-          },
-          "winning_outcome_index": {
-            "type": [
-              "integer",
-              "null"
+          {
+            "title": "Oracle Lifecycle Event",
+            "description": "Market lifecycle events: Initialization, Proposal, Dispute, Settled, Resolution, ConditionResolution, Reset, Flag, Unflag, Pause, Unpause, ManualResolution, NegRiskOutcomeReported.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "oracle_contract",
+              "condition_id"
             ],
-            "description": "Resolved winning outcome index"
+            "properties": {
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Initialization",
+                  "Proposal",
+                  "Dispute",
+                  "Settled",
+                  "Resolution",
+                  "ConditionResolution",
+                  "Reset",
+                  "Flag",
+                  "Unflag",
+                  "Pause",
+                  "Unpause",
+                  "ManualResolution",
+                  "NegRiskOutcomeReported"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              },
+              "confirmed_at": {
+                "type": "integer"
+              },
+              "received_at": {
+                "type": "integer"
+              },
+              "log_index": {
+                "type": "integer"
+              },
+              "block_index": {
+                "type": "integer"
+              },
+              "oracle_contract": {
+                "type": "string"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "question": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "image_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "event_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "assertion_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "proposer": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "disputer": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "proposed_outcome": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "settled_price": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "disputed": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "settlement_resolution": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "bond": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "expiration_time": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "creator": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "reward_token": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "reward": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "proposal_bond": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
           },
-          "is_known_surebet": {
-            "type": "boolean"
+          {
+            "title": "RegisterToken",
+            "description": "YES/NO token pair registered for a condition.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "condition_id",
+              "exchange"
+            ],
+            "properties": {
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "RegisterToken"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              },
+              "confirmed_at": {
+                "type": "integer"
+              },
+              "received_at": {
+                "type": "integer"
+              },
+              "log_index": {
+                "type": "integer"
+              },
+              "block_index": {
+                "type": "integer"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "token0": {
+                "type": "string"
+              },
+              "token1": {
+                "type": "string"
+              },
+              "question": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "image_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "event_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "exchange": {
+                "type": "integer"
+              }
+            }
           },
-          "is_coordinated": {
-            "type": "boolean"
-          },
-          "is_surebet_trade": {
-            "type": "boolean"
-          },
-          "surebet_price_sum": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "is_bot": {
-            "type": "boolean"
-          },
-          "bot_reason": {
-            "type": [
-              "string",
-              "null"
-            ]
+          {
+            "title": "Approval",
+            "description": "ERC-1155 setApprovalForAll — operator approved/revoked.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "trader",
+              "exchange"
+            ],
+            "properties": {
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Approval"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              },
+              "confirmed_at": {
+                "type": "integer"
+              },
+              "received_at": {
+                "type": "integer"
+              },
+              "log_index": {
+                "type": "integer"
+              },
+              "block_index": {
+                "type": "integer"
+              },
+              "trader": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "operator": {
+                "type": "string"
+              },
+              "approved": {
+                "type": "boolean"
+              },
+              "question": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "image_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "event_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "exchange": {
+                "type": "integer"
+              }
+            }
           }
+        ],
+        "discriminator": {
+          "propertyName": "trade_type"
         }
       },
       "AssetPricesSubscribeMessage": {
@@ -1704,10 +2611,7 @@
           "usd_volume",
           "fees",
           "txns",
-          "unique_traders",
-          "historical_confirmed_at",
-          "latest_confirmed_at",
-          "latest_block"
+          "unique_traders"
         ],
         "properties": {
           "condition_id": {
@@ -1749,20 +2653,6 @@
             "description": "Number of transactions"
           },
           "unique_traders": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "historical_confirmed_at": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Earliest trade timestamp in window (Unix seconds)"
-          },
-          "latest_confirmed_at": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Latest trade timestamp in window (Unix seconds)"
-          },
-          "latest_block": {
             "type": "integer",
             "format": "int64"
           }
@@ -1826,10 +2716,7 @@
           "usd_volume",
           "fees",
           "txns",
-          "unique_traders",
-          "historical_confirmed_at",
-          "latest_confirmed_at",
-          "latest_block"
+          "unique_traders"
         ],
         "properties": {
           "event_slug": {
@@ -1868,18 +2755,6 @@
             "format": "int64"
           },
           "unique_traders": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "historical_confirmed_at": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "latest_confirmed_at": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "latest_block": {
             "type": "integer",
             "format": "int64"
           }
@@ -2600,7 +3475,7 @@
       },
       "TraderPositionUpdateEvent": {
         "type": "object",
-        "description": "Server-pushed event: full position snapshot for a tracked trader. Envelope type: \"trader_position_update\". Pushed whenever a position's PnL changes in the database.",
+        "description": "Server-pushed event: full position snapshot for a tracked trader. Envelope type: \"trader_position_update\". Pushed whenever a position's PnL changes.",
         "required": [
           "trader"
         ],
@@ -3271,172 +4146,45 @@
           }
         }
       },
-      "WalletTrackingSubscribeMessage": {
+      "WebhookDeliveryEnvelope": {
         "type": "object",
-        "description": "Subscribe to wallet trade alerts. wallet_addresses is required.",
+        "description": "Outer envelope for every webhook HTTP POST delivery. The `data` field contains the event-specific payload. Delivery headers sent with every POST: `X-Webhook-ID` (subscription UUID), `X-Delivery-ID` (this attempt's UUID), `X-Event-Type` (event name string, e.g. `trader_first_trade`), `X-Attempt` (attempt number, 1-indexed). When the webhook has a secret configured, `X-Webhook-Signature: sha256=<hmac-hex>` is also included — compute HMAC-SHA256 over the raw request body using your secret to verify.",
         "required": [
-          "action",
-          "wallet_addresses"
+          "id",
+          "event",
+          "data",
+          "timestamp",
+          "webhook_id",
+          "attempt"
         ],
         "properties": {
-          "action": {
+          "id": {
             "type": "string",
-            "enum": [
-              "subscribe"
-            ]
+            "format": "uuid",
+            "description": "UUID of this specific delivery attempt (matches X-Delivery-ID header)"
           },
-          "wallet_addresses": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "EVM wallet addresses to track",
-            "minItems": 1
-          }
-        }
-      },
-      "WalletTrackingSubscribeResponse": {
-        "type": "object",
-        "description": "Server acknowledgement for a wallet tracking subscription",
-        "required": [
-          "subscribed_count",
-          "current_user_wallets",
-          "total_wallets"
-        ],
-        "properties": {
-          "subscribed_count": {
-            "type": "integer",
-            "format": "uint64",
-            "description": "Number of wallets successfully subscribed"
-          },
-          "invalid_addresses": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Addresses rejected (invalid format)"
-          },
-          "current_user_wallets": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "All wallet addresses currently tracked by this user"
-          },
-          "total_wallets": {
-            "type": "integer",
-            "format": "uint64",
-            "description": "Total wallet count for this user"
-          }
-        }
-      },
-      "PredictionMarketMetadata": {
-        "type": "object",
-        "description": "Market metadata enrichment attached to wallet tracking alerts",
-        "properties": {
-          "slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market slug"
-          },
-          "question": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market question text"
-          },
-          "outcome": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Outcome name (e.g. \"Yes\")"
-          },
-          "outcome_index": {
-            "type": [
-              "integer",
-              "null"
-            ]
-          },
-          "image_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          }
-        }
-      },
-      "WalletTrackingAlertEvent": {
-        "type": "object",
-        "description": "Server-pushed event: a trade executed by a tracked wallet. Envelope type: \"wallet_tracking_alert\".",
-        "required": [
-          "is_buy",
-          "trader",
-          "position_id",
-          "usd_amount",
-          "shares_amount",
-          "price",
-          "confirmed_at"
-        ],
-        "properties": {
-          "is_buy": {
-            "type": "boolean",
-            "description": "True = buy, false = sell"
-          },
-          "trader": {
+          "event": {
             "type": "string",
-            "description": "Trader EVM wallet address (lowercase)"
+            "description": "Event name (e.g. `trader_first_trade`). On test deliveries the suffix `_test` is appended."
           },
-          "condition_id": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "64-char hex condition ID"
+          "data": {
+            "type": "object",
+            "description": "Event-specific payload — schema varies by event type; see the individual callback definitions"
           },
-          "position_id": {
-            "type": "string",
-            "description": "ERC-1155 outcome token ID (decimal string)"
-          },
-          "usd_amount": {
-            "type": "string",
-            "description": "USD value of the trade (decimal string, 6dp)"
-          },
-          "shares_amount": {
-            "type": "string",
-            "description": "Number of shares traded (decimal string, 6dp)"
-          },
-          "price": {
-            "type": "number",
-            "minimum": 0.0,
-            "maximum": 1.0,
-            "description": "Trade price (0–1)"
-          },
-          "probability": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Implied probability (0–1)"
-          },
-          "metadata": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/PredictionMarketMetadata"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Market metadata — null when enrichment is unavailable"
-          },
-          "confirmed_at": {
+          "timestamp": {
             "type": "integer",
             "format": "int64",
-            "description": "Unix seconds"
+            "description": "Unix timestamp in milliseconds when this delivery was created"
+          },
+          "webhook_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the webhook subscription that fired (matches X-Webhook-ID header)"
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Delivery attempt number. 1 = first attempt; increments on each retry."
           }
         }
       },

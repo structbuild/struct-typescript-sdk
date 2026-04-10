@@ -248,21 +248,6 @@ ws.on("ws_alert", (payload) => {
 });
 ```
 
-### Wallet tracking
-
-```typescript
-const res = await ws.subscribe("polymarket_wallet_tracking", {
-  wallet_addresses: ["0xd91..."],
-});
-res.subscribed_count;
-res.current_user_wallets;
-
-ws.on("wallet_tracking_alert", (event) => {
-  event.wallet_address;
-  event.trade;
-});
-```
-
 ### Available rooms
 
 | Room | Filters | Event |
@@ -278,7 +263,6 @@ ws.on("wallet_tracking_alert", (event) => {
 | `polymarket_accounts` | `wallets` | `accounts_update`, `usdce_update`, `matic_update` |
 | `polymarket_order_book` | `asset_ids` | `order_book_update` |
 | `polymarket_clob_rewards` | `condition_ids?`, `subscribe_all?` | `clob_rewards_update` |
-| `polymarket_wallet_tracking` | `wallet_addresses` | `wallet_tracking_alert` |
 | `ws_alerts` | per-event typed filters | `ws_alert` |
 
 ### Lifecycle events

@@ -31,7 +31,7 @@ export class StructAlertsWebSocket {
 	constructor(config: StructWebSocketConfig) {
 		this.subscribeTimeout = config.subscribeTimeout ?? DEFAULT_SUBSCRIBE_TIMEOUT_MS;
 		const base = (config.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
-		const url = `${base}/v1/ws/alerts?api-key=${encodeURIComponent(config.apiKey)}`;
+		const url = `${base}/ws/alerts?api-key=${encodeURIComponent(config.apiKey)}`;
 
 		this.transport = new WebSocketTransport(
 			url,
