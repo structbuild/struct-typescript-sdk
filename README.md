@@ -221,30 +221,32 @@ ws.on("clob_rewards_update", (event) => {
 
 ### Alerts
 
-Subscribe to typed alerts with per-event filter narrowing. TypeScript ensures you only use filters valid for the selected event:
+Alerts use a separate client with per-event typed filters and payloads:
 
 ```typescript
-await ws.subscribe("ws_alerts", {
-  event: "trader_whale_trade",
+import { StructAlertsWebSocket } from "@structbuild/sdk";
+
+const alerts = new StructAlertsWebSocket({ apiKey: "your-api-key" });
+await alerts.connect();
+
+await alerts.subscribe("trader_whale_trade", {
   wallet_addresses: ["0xd91..."],
   min_usd_value: 10000,
 });
 
-await ws.subscribe("ws_alerts", {
-  event: "probability_spike",
+await alerts.subscribe("probability_spike", {
   spike_direction: "up",
   min_probability_change_pct: 5,
 });
 
-ws.on("ws_alert", (payload) => {
-  if (payload.event === "trader_whale_trade") {
-    payload.data.trader;
-    payload.data.amount_usd;
-  }
-  if (payload.event === "probability_spike") {
-    payload.data.spike_direction;
-    payload.data.spike_pct;
-  }
+alerts.on("trader_whale_trade", (payload) => {
+  payload.data.trader;
+  payload.data.amount_usd;
+});
+
+alerts.on("probability_spike", (payload) => {
+  payload.data.spike_direction;
+  payload.data.spike_pct;
 });
 ```
 
@@ -263,7 +265,6 @@ ws.on("ws_alert", (payload) => {
 | `polymarket_accounts` | `wallets` | `accounts_update`, `usdce_update`, `matic_update` |
 | `polymarket_order_book` | `asset_ids` | `order_book_update` |
 | `polymarket_clob_rewards` | `condition_ids?`, `subscribe_all?` | `clob_rewards_update` |
-| `ws_alerts` | per-event typed filters | `ws_alert` |
 
 ### Lifecycle events
 
@@ -271,6 +272,9 @@ ws.on("ws_alert", (payload) => {
 ws.on("connected", () => {});
 ws.on("disconnected", ({ code, reason }) => {});
 ws.on("reconnecting", ({ attempt }) => {});
+ws.on("reconnect_failed", (err) => {});
+ws.on("auth_failed", (err) => {});
+ws.on("warning", (warning) => {});
 ws.on("error", (err) => {});
 ```
 
@@ -302,6 +306,15 @@ const ws = new StructWebSocket({
 ```
 
 The `pk_jwt_*` key is safe to hardcode in frontend bundles — it is useless without a valid JWT from your configured auth provider.
+
+If your JWT can rotate while a socket stays alive, prefer `getJwt` so reconnects always rebuild the URL with a fresh token:
+
+```typescript
+const ws = new StructWebSocket({
+  apiKey: "pk_jwt_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+  getJwt: () => userAccessToken,
+});
+```
 
 ## Pagination
 

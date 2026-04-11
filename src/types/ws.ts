@@ -1,11 +1,18 @@
 import type { RetryConfig } from "./http.js";
-import type { WsSchemas, WsAlertSubscribeMap, WsAlertEventDataMap, WsAlertEventName } from "./ws-helpers.js";
+import type {
+	WsSchemas,
+	WsAlertSchemas,
+	WsAlertSubscribeMap,
+	WsAlertEventDataMap,
+	WsAlertEventName,
+} from "./ws-helpers.js";
 
 export type ConnectionState = "disconnected" | "connecting" | "connected" | "reconnecting";
 
 export interface StructWebSocketConfig {
 	apiKey: string;
 	jwt?: string;
+	getJwt?: () => string | undefined;
 	baseUrl?: string;
 	reconnect?: RetryConfig;
 	subscribeTimeout?: number;
@@ -24,7 +31,7 @@ export type WsRoomId =
 	| "polymarket_order_book"
 	| "polymarket_clob_rewards";
 
-export type WsFiltersOptionalRoom = "polymarket_asset_prices" | "polymarket_clob_rewards";
+export type WsFiltersOptionalRoom = "polymarket_trades" | "polymarket_asset_prices" | "polymarket_clob_rewards";
 export type WsFiltersRequiredRoom = Exclude<WsRoomId, WsFiltersOptionalRoom>;
 
 export type TradesSubscribeFilters = Omit<WsSchemas["TradesStreamSubscribeMessage"], "action">;
@@ -34,11 +41,14 @@ export type MarketMetricsSubscribeFilters = Omit<WsSchemas["MarketMetricsSubscri
 export type EventMetricsSubscribeFilters = Omit<WsSchemas["EventMetricsSubscribeMessage"], "action">;
 export type PositionMetricsSubscribeFilters = Omit<WsSchemas["PositionMetricsSubscribeMessage"], "action">;
 export type TraderPnlSubscribeFilters = Omit<WsSchemas["TraderPnlSubscribeMessage"], "action">;
-export type AccountsSubscribeFilters = Pick<WsSchemas["AccountsSubscribeMessage"], "wallets"> &
-	Partial<Pick<WsSchemas["AccountsSubscribeMessage"], "include_usdce" | "include_matic">>;
+export type AccountsSubscribeFilters = Omit<WsSchemas["AccountsSubscribeMessage"], "action">;
 export type OrderBookSubscribeFilters = Omit<WsSchemas["OrderBookSubscribeMessage"], "action">;
 export type TraderPositionsSubscribeFilters = Omit<WsSchemas["TraderPositionsSubscribeMessage"], "action">;
 export type ClobRewardsSubscribeFilters = Omit<WsSchemas["ClobRewardsSubscribeMessage"], "action">;
+
+export type WsTradeType = NonNullable<TradesSubscribeFilters["trade_types"]>[number];
+export type WsTradeStatus = NonNullable<TradesSubscribeFilters["status"]>;
+export type WsAssetTimeframe = NonNullable<AssetWindowUpdatesSubscribeFilters["timeframes"]>[number];
 
 export type TradeStreamEvent = WsSchemas["TradeStreamEvent"];
 export type AssetPriceTickEvent = WsSchemas["AssetPriceTickEvent"];
@@ -59,13 +69,13 @@ export type TraderPositionUpdateEvent = WsSchemas["TraderPositionUpdateEvent"];
 export type TraderPositionsSubscribeResponse = WsSchemas["TraderPositionsSubscribeResponse"];
 export type ClobRewardsUpdateEvent = WsSchemas["ClobRewardsUpdateEvent"];
 export type ClobRewardsSubscribeResponse = WsSchemas["ClobRewardsSubscribeResponse"];
-export type WsAlertSubscribeMessage = WsSchemas["WsAlertSubscribeMessage"];
-export type WsAlertUnsubscribeMessage = WsSchemas["WsAlertUnsubscribeMessage"];
-export type WsAlertEventPayload = WsSchemas["WsAlertEventPayload"];
-export type WsAlertSubscribedResponse = WsSchemas["WsAlertSubscribedResponse"];
-export type WsAlertUnsubscribedResponse = WsSchemas["WsAlertUnsubscribedResponse"];
-export type WsAlertErrorResponse = WsSchemas["WsAlertErrorResponse"];
-export type WsAlertEventType = WsSchemas["WsAlertEventType"];
+export type WsAlertSubscribeMessage = WsAlertSchemas["WsAlertSubscribeMessage"];
+export type WsAlertUnsubscribeMessage = WsAlertSchemas["WsAlertUnsubscribeMessage"];
+export type WsAlertEventPayload = WsAlertSchemas["WsAlertEventPayload"];
+export type WsAlertSubscribedResponse = WsAlertSchemas["WsAlertSubscribedResponse"];
+export type WsAlertUnsubscribedResponse = WsAlertSchemas["WsAlertUnsubscribedResponse"];
+export type WsAlertErrorResponse = WsAlertSchemas["WsAlertErrorResponse"];
+export type WsAlertEventType = WsAlertSchemas["WsAlertEventType"];
 export type { WsAlertSubscribeMap, WsAlertEventDataMap, WsAlertEventName };
 
 export type TradesStreamSubscribeResponse = WsSchemas["TradesStreamSubscribeResponse"];
@@ -98,7 +108,10 @@ export interface WebSocketEventMap {
 	connected: void;
 	disconnected: { code: number; reason: string };
 	reconnecting: { attempt: number };
+	reconnect_failed: Error;
+	auth_failed: Error;
 	error: Error;
+	warning: Error;
 }
 
 export interface WsSubscriptionMap {
@@ -135,5 +148,8 @@ export type AlertsWebSocketEventMap = {
 	connected: void;
 	disconnected: { code: number; reason: string };
 	reconnecting: { attempt: number };
+	reconnect_failed: Error;
+	auth_failed: Error;
 	error: Error;
+	warning: Error;
 };

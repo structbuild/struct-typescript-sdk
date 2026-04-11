@@ -114,9 +114,7 @@ async function getSpecSchemas(jsonSpecPath: string): Promise<string[]> {
 
 async function getExportedSchemas(typesContent: string): Promise<Set<string>> {
 	const exported = new Set<string>();
-	for (const m of typesContent.matchAll(/Schemas\["(\w+)"\]/g)) exported.add(m[1]);
-	for (const m of typesContent.matchAll(/WebhookSchemas\["(\w+)"\]/g)) exported.add(m[1]);
-	for (const m of typesContent.matchAll(/WsSchemas\["(\w+)"\]/g)) exported.add(m[1]);
+	for (const m of typesContent.matchAll(/(?:\w+)?Schemas\["(\w+)"\]/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/components\["schemas"\]\["(\w+)"\]/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/export type (\w+)\s*=/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/export interface (\w+)/g)) exported.add(m[1]);
@@ -128,24 +126,34 @@ async function getWsSpecRooms(jsonSpecPath: string): Promise<string[]> {
 	return Object.keys(spec.channels ?? {});
 }
 
-async function getSdkWsRooms(): Promise<Set<string>> {
-	const content = await readFile(WS_TYPES_FILE, "utf-8");
-	const rooms = new Set<string>();
-	const subscriptionMapMatch = content.match(/interface WsSubscriptionMap\s*\{([^}]+)\}/);
-	if (subscriptionMapMatch) {
-		const regex = /(\w+)\s*:/g;
-		let match: RegExpExecArray | null;
-		while ((match = regex.exec(subscriptionMapMatch[1])) !== null) {
-			rooms.add(match[1]);
-		}
+function extractInterfaceKeys(content: string, interfaceName: string): Set<string> {
+	const keys = new Set<string>();
+	const re = new RegExp(`interface\\s+${interfaceName}\\s*\\{([\\s\\S]*?)\\n\\}`);
+	const match = content.match(re);
+	if (!match) return keys;
+	const body = match[1];
+	const keyRegex = /^\s*(\w+)\s*:/gm;
+	let km: RegExpExecArray | null;
+	while ((km = keyRegex.exec(body)) !== null) {
+		keys.add(km[1]);
 	}
+	return keys;
+}
+
+async function getSdkStreamingRooms(): Promise<Set<string>> {
+	const content = await readFile(WS_TYPES_FILE, "utf-8");
+	return extractInterfaceKeys(content, "WsSubscriptionMap");
+}
+
+async function getSdkAlertEvents(): Promise<Set<string>> {
 	try {
 		const alertsContent = await readFile(WS_ALERTS_FILE, "utf-8");
-		if (/class\s+StructAlertsWebSocket\b/.test(alertsContent)) {
-			rooms.add("ws_alerts");
-		}
-	} catch {}
-	return rooms;
+		if (!/class\s+StructAlertsWebSocket\b/.test(alertsContent)) return new Set();
+	} catch {
+		return new Set();
+	}
+	const generated = await readFile(join(import.meta.dirname, "../src/generated/ws-alerts.ts"), "utf-8");
+	return extractInterfaceKeys(generated, "WsAlertSubscribeMap");
 }
 
 let hasErrors = false;
@@ -153,7 +161,8 @@ let hasErrors = false;
 const typesContent = await readFile(TYPES_FILE, "utf-8");
 const wsTypesContent = await readFile(join(import.meta.dirname, "../src/types/ws.ts"), "utf-8");
 const wsGeneratedContent = await readFile(join(import.meta.dirname, "../src/generated/ws.ts"), "utf-8");
-const combinedTypesContent = typesContent + "\n" + wsTypesContent + "\n" + wsGeneratedContent;
+const wsAlertsGeneratedContent = await readFile(join(import.meta.dirname, "../src/generated/ws-alerts.ts"), "utf-8");
+const combinedTypesContent = [typesContent, wsTypesContent, wsGeneratedContent, wsAlertsGeneratedContent].join("\n");
 const exportedSchemas = await getExportedSchemas(combinedTypesContent);
 
 for (const config of specs) {
@@ -209,35 +218,51 @@ for (const config of specs) {
 }
 
 const wsJsonPath = join(import.meta.dirname, "../openapi/ws.json");
-const wsSpecRooms = await getWsSpecRooms(wsJsonPath);
-const sdkWsRooms = await getSdkWsRooms();
+const wsAlertsJsonPath = join(import.meta.dirname, "../openapi/ws-alerts.json");
 
-const phantomWsRooms = [...sdkWsRooms].filter((r) => !wsSpecRooms.includes(r));
-const missingWsRooms = wsSpecRooms.filter((r) => !sdkWsRooms.has(r));
+interface WsCheckConfig {
+	label: string;
+	specRooms: string[];
+	sdkRooms: Set<string>;
+}
 
-if (phantomWsRooms.length > 0) {
-	hasErrors = true;
-	console.error(`\x1b[31m✗ [ws] Phantom rooms (SDK rooms not in WS OpenAPI spec):\x1b[0m\n`);
-	for (const r of phantomWsRooms) {
-		console.error(`  ${r}`);
+const streamingSpecRooms = await getWsSpecRooms(wsJsonPath);
+const alertsSpecChannels = await getWsSpecRooms(wsAlertsJsonPath);
+const alertsSpecEvents = alertsSpecChannels
+	.filter((c) => c.startsWith("ws_alerts."))
+	.map((c) => c.slice("ws_alerts.".length));
+
+const wsChecks: WsCheckConfig[] = [
+	{ label: "ws", specRooms: streamingSpecRooms, sdkRooms: await getSdkStreamingRooms() },
+	{ label: "ws-alerts", specRooms: alertsSpecEvents, sdkRooms: await getSdkAlertEvents() },
+];
+
+for (const check of wsChecks) {
+	const phantom = [...check.sdkRooms].filter((r) => !check.specRooms.includes(r));
+	const missing = check.specRooms.filter((r) => !check.sdkRooms.has(r));
+
+	if (phantom.length > 0) {
+		hasErrors = true;
+		console.error(`\x1b[31m✗ [${check.label}] Phantom rooms (SDK rooms not in WS OpenAPI spec):\x1b[0m\n`);
+		for (const r of phantom) console.error(`  ${r}`);
+		console.error();
 	}
-	console.error();
-}
 
-if (missingWsRooms.length > 0) {
-	hasErrors = true;
-	console.error(`\x1b[31m✗ [ws] Unimplemented rooms (WS OpenAPI spec rooms missing from SDK):\x1b[0m\n`);
-	for (const r of missingWsRooms) {
-		console.error(`  ${r}`);
+	if (missing.length > 0) {
+		hasErrors = true;
+		console.error(`\x1b[31m✗ [${check.label}] Unimplemented rooms (WS OpenAPI spec rooms missing from SDK):\x1b[0m\n`);
+		for (const r of missing) console.error(`  ${r}`);
+		console.error();
 	}
-	console.error();
+
+	if (phantom.length === 0 && missing.length === 0) {
+		console.log(`\x1b[32m✓ [${check.label}] All SDK rooms match the WS OpenAPI spec.\x1b[0m`);
+	}
 }
 
-if (phantomWsRooms.length === 0 && missingWsRooms.length === 0) {
-	console.log(`\x1b[32m✓ [ws] All SDK rooms match the WS OpenAPI spec.\x1b[0m`);
-}
-
-const wsSpecSchemas = await getSpecSchemas(wsJsonPath);
+const wsJsonPaths = [wsJsonPath, wsAlertsJsonPath];
+const wsSpecSchemasList = (await Promise.all(wsJsonPaths.map(getSpecSchemas))).flat();
+const wsSpecSchemas = [...new Set(wsSpecSchemasList)];
 const missingWsSchemas = wsSpecSchemas.filter((s) => !exportedSchemas.has(s));
 
 if (missingWsSchemas.length > 0) {

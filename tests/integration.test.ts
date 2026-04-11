@@ -7,6 +7,7 @@ import { Namespace, PlatformNamespace } from "../src/namespaces/index.js";
 import { methodMeta, type MethodConfig } from "./integration.meta.js";
 
 const API_KEY = Bun.env.STRUCT_API_KEY ?? "";
+const RUN_INTEGRATION_TESTS = Bun.env.STRUCT_RUN_INTEGRATION_TESTS === "1";
 const REPORT_PATH = "logs/integration-report.md";
 
 type OpenAPISpec = {
@@ -354,7 +355,7 @@ function resolveParams(params: Record<string, unknown>, setupData: SetupData): R
 
 const EXCLUDED_METHODS = new Set(["constructor", "get", "post", "put", "delete"]);
 
-describe.skipIf(!API_KEY)("integration", () => {
+describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 	const client = new StructClient({
 		apiKey: API_KEY,
 		onRequest: (info) => {

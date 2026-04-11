@@ -1926,6 +1926,8 @@ export interface components {
              * @description Outcome index (0 = Yes, 1 = No for binary)
              */
             outcome_index: number;
+            /** @description Outcome name (e.g. "Yes", "No") — enriched from market metadata */
+            outcome?: string | null;
             /** @description Amount of shares created/burned/redeemed for this position */
             amount: string;
         };

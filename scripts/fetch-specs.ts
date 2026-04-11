@@ -12,6 +12,7 @@ const SPECS = [
 	{ name: "polymarket", path: "/api-docs/openapi.json", output: "openapi/polymarket.json" },
 	{ name: "webhooks", path: "/webhookopenapi.json", output: "openapi/webhooks.json" },
 	{ name: "ws", path: "/asyncapi.json", output: "openapi/ws.json" },
+	{ name: "ws-alerts", path: "/asyncapi-alerts.json", output: "openapi/ws-alerts.json" },
 ] as const;
 
 const raw = (Bun.env.STRUCT_ENV ?? "production").toLowerCase();

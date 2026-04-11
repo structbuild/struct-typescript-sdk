@@ -12,10 +12,13 @@ export type {
 	operations as WebhookOperations,
 	paths as WebhookPaths,
 } from "../generated/webhooks.js";
-export type { WsSchemas } from "./ws-helpers.js";
+export type { WsSchemas, WsAlertSchemas } from "./ws-helpers.js";
 export type {
 	components as WsComponents,
 } from "../generated/ws.js";
+export type {
+	components as WsAlertComponents,
+} from "../generated/ws-alerts.js";
 
 import type { Schemas, OperationQuery } from "./helpers.js";
 import type { WebhookSchemas, WebhookOperationQuery, WebhookOperationRequestBody } from "./webhook-helpers.js";
@@ -468,6 +471,9 @@ export type {
 	WsSubscriptionMap,
 	WsSubscribeResponseMap,
 	TradesSubscribeFilters,
+	WsTradeType,
+	WsTradeStatus,
+	WsAssetTimeframe,
 	AssetPricesSubscribeFilters,
 	AssetWindowUpdatesSubscribeFilters,
 	MarketMetricsSubscribeFilters,
