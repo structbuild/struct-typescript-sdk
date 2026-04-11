@@ -4,3 +4,5 @@ dist/
 .DS_Store
 .env
 logs/
+*.tgz
+openapi/.spec-source.json

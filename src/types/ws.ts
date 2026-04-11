@@ -1,115 +1,155 @@
-import type { Address } from "./common.js";
 import type { RetryConfig } from "./http.js";
+import type {
+	WsSchemas,
+	WsAlertSchemas,
+	WsAlertSubscribeMap,
+	WsAlertEventDataMap,
+	WsAlertEventName,
+} from "./ws-helpers.js";
 
 export type ConnectionState = "disconnected" | "connecting" | "connected" | "reconnecting";
 
 export interface StructWebSocketConfig {
 	apiKey: string;
 	jwt?: string;
+	getJwt?: () => string | undefined;
 	baseUrl?: string;
 	reconnect?: RetryConfig;
+	subscribeTimeout?: number;
 }
 
-export interface PredictionTrade {
-	id: string;
-	hash: string;
-	chain_id: number;
-	block: number;
-	confirmed_at: number;
-	log_index: number;
-	block_index?: number;
-	order_hash?: string;
-	trader: Address;
-	taker: Address;
-	side: number;
-	condition_id: string | null;
-	position_id: string;
-	outcome: string | null;
-	outcome_index: number | null;
-	question: string | null;
-	slug: string | null;
-	event_slug?: string | null;
-	usd_amount: string;
-	shares_amount: string;
-	price: number;
-	probability: number | null;
-	fee?: string;
-	exchange?: number;
-	trade_type?: number;
-}
+export type WsRoomId =
+	| "polymarket_trades"
+	| "polymarket_asset_prices"
+	| "polymarket_asset_window_updates"
+	| "polymarket_market_metrics"
+	| "polymarket_event_metrics"
+	| "polymarket_position_metrics"
+	| "polymarket_trader_pnl"
+	| "polymarket_trader_positions"
+	| "polymarket_accounts"
+	| "polymarket_order_book"
+	| "polymarket_clob_rewards";
 
-export interface EnrichedPredictionTrade {
-	id: string;
-	hash: string;
-	block: number;
-	confirmed_at: number;
-	trader: Address;
-	side: number;
-	position_id: string;
-	condition_id: string | null;
-	outcome: string | null;
-	outcome_index: number | null;
-	question: string;
-	slug: string;
-	event_slug: string;
-	image_url: string | null;
-	market_id: string | null;
-	title: string | null;
-	usd_amount: string;
-	shares_amount: string;
-	price: number;
-	probability: number | null;
-	smart_money_score: number;
-	insider_score: number;
-	categories: string[];
-}
+export type WsFiltersOptionalRoom = "polymarket_trades" | "polymarket_asset_prices" | "polymarket_clob_rewards";
+export type WsFiltersRequiredRoom = Exclude<WsRoomId, WsFiltersOptionalRoom>;
 
-export interface PredictionMarketMetadata {
-	slug: string | null;
-	question: string | null;
-	outcome: string | null;
-	outcome_index?: number | null;
-	image_url?: string | null;
-}
+export type TradesSubscribeFilters = Omit<WsSchemas["TradesStreamSubscribeMessage"], "action">;
+export type AssetPricesSubscribeFilters = Omit<WsSchemas["AssetPricesSubscribeMessage"], "action">;
+export type AssetWindowUpdatesSubscribeFilters = Omit<WsSchemas["AssetWindowUpdatesSubscribeMessage"], "action">;
+export type MarketMetricsSubscribeFilters = Omit<WsSchemas["MarketMetricsSubscribeMessage"], "action">;
+export type EventMetricsSubscribeFilters = Omit<WsSchemas["EventMetricsSubscribeMessage"], "action">;
+export type PositionMetricsSubscribeFilters = Omit<WsSchemas["PositionMetricsSubscribeMessage"], "action">;
+export type TraderPnlSubscribeFilters = Omit<WsSchemas["TraderPnlSubscribeMessage"], "action">;
+export type AccountsSubscribeFilters = Omit<WsSchemas["AccountsSubscribeMessage"], "action">;
+export type OrderBookSubscribeFilters = Omit<WsSchemas["OrderBookSubscribeMessage"], "action">;
+export type TraderPositionsSubscribeFilters = Omit<WsSchemas["TraderPositionsSubscribeMessage"], "action">;
+export type ClobRewardsSubscribeFilters = Omit<WsSchemas["ClobRewardsSubscribeMessage"], "action">;
 
-export interface PredictionWalletTrackingAlert {
-	is_buy: boolean;
-	trader: Address;
-	condition_id: string | null;
-	position_id: string;
-	usd_amount: string;
-	shares_amount: string;
-	price: number;
-	probability: number | null;
-	metadata: PredictionMarketMetadata | null;
-	confirmed_at: number;
-}
+export type WsTradeType = NonNullable<TradesSubscribeFilters["trade_types"]>[number];
+export type WsTradeStatus = NonNullable<TradesSubscribeFilters["status"]>;
+export type WsAssetTimeframe = NonNullable<AssetWindowUpdatesSubscribeFilters["timeframes"]>[number];
+
+export type TradeStreamEvent = WsSchemas["TradeStreamEvent"];
+export type AssetPriceTickEvent = WsSchemas["AssetPriceTickEvent"];
+export type AssetPriceWindowUpdateEvent = WsSchemas["AssetPriceWindowUpdateEvent"];
+export type AssetWindowUpdateEvent = WsSchemas["AssetWindowUpdateEvent"];
+export type MarketMetricsEvent = WsSchemas["MarketMetricsEvent"];
+export type EventMetricsEvent = WsSchemas["EventMetricsEvent"];
+export type PositionMetricsEvent = WsSchemas["PositionMetricsEvent"];
+export type TraderGlobalPnlEvent = WsSchemas["TraderGlobalPnlEvent"];
+export type TraderMarketPnlEvent = WsSchemas["TraderMarketPnlEvent"];
+export type TraderEventPnlEvent = WsSchemas["TraderEventPnlEvent"];
+export type AccountsUpdateEvent = WsSchemas["AccountsUpdateEvent"];
+export type UsdceUpdateEvent = WsSchemas["UsdceUpdateEvent"];
+export type MaticUpdateEvent = WsSchemas["MaticUpdateEvent"];
+export type WsOrderBookLevel = WsSchemas["OrderBookLevel"];
+export type OrderBookUpdateEvent = WsSchemas["OrderBookUpdateEvent"];
+export type TraderPositionUpdateEvent = WsSchemas["TraderPositionUpdateEvent"];
+export type TraderPositionsSubscribeResponse = WsSchemas["TraderPositionsSubscribeResponse"];
+export type ClobRewardsUpdateEvent = WsSchemas["ClobRewardsUpdateEvent"];
+export type ClobRewardsSubscribeResponse = WsSchemas["ClobRewardsSubscribeResponse"];
+export type WsAlertSubscribeMessage = WsAlertSchemas["WsAlertSubscribeMessage"];
+export type WsAlertUnsubscribeMessage = WsAlertSchemas["WsAlertUnsubscribeMessage"];
+export type WsAlertEventPayload = WsAlertSchemas["WsAlertEventPayload"];
+export type WsAlertSubscribedResponse = WsAlertSchemas["WsAlertSubscribedResponse"];
+export type WsAlertUnsubscribedResponse = WsAlertSchemas["WsAlertUnsubscribedResponse"];
+export type WsAlertErrorResponse = WsAlertSchemas["WsAlertErrorResponse"];
+export type WsAlertEventType = WsAlertSchemas["WsAlertEventType"];
+export type { WsAlertSubscribeMap, WsAlertEventDataMap, WsAlertEventName };
+
+export type TradesStreamSubscribeResponse = WsSchemas["TradesStreamSubscribeResponse"];
+export type AssetPricesSubscribeResponse = WsSchemas["AssetPricesSubscribeResponse"];
+export type AssetWindowUpdatesSubscribeResponse = WsSchemas["AssetWindowUpdatesSubscribeResponse"];
+export type MarketMetricsSubscribeResponse = WsSchemas["MarketMetricsSubscribeResponse"];
+export type EventMetricsSubscribeResponse = WsSchemas["EventMetricsSubscribeResponse"];
+export type PositionMetricsSubscribeResponse = WsSchemas["PositionMetricsSubscribeResponse"];
+export type TraderPnlSubscribeResponse = WsSchemas["TraderPnlSubscribeResponse"];
+export type AccountsSubscribeResponse = WsSchemas["AccountsSubscribeResponse"];
+export type OrderBookSubscribeResponse = WsSchemas["OrderBookSubscribeResponse"];
 
 export interface WebSocketEventMap {
-	market_trade: PredictionTrade;
-	whale_trade: EnrichedPredictionTrade;
-	smart_money_trade: EnrichedPredictionTrade;
-	insider_trade: EnrichedPredictionTrade;
-	wallet_tracking_alert: PredictionWalletTrackingAlert;
-	conditions_tracking_alert: PredictionTrade;
+	trade_stream_update: TradeStreamEvent;
+	asset_price_tick: AssetPriceTickEvent;
+	asset_price_window_update: AssetPriceWindowUpdateEvent;
+	asset_window_update: AssetWindowUpdateEvent;
+	market_metrics_update: MarketMetricsEvent;
+	event_metrics_update: EventMetricsEvent;
+	position_metrics_update: PositionMetricsEvent;
+	trader_global_pnl_update: TraderGlobalPnlEvent;
+	trader_market_pnl_update: TraderMarketPnlEvent;
+	trader_event_pnl_update: TraderEventPnlEvent;
+	accounts_update: AccountsUpdateEvent;
+	usdce_update: UsdceUpdateEvent;
+	matic_update: MaticUpdateEvent;
+	order_book_update: OrderBookUpdateEvent;
+	trader_position_update: TraderPositionUpdateEvent;
+	clob_rewards_update: ClobRewardsUpdateEvent;
 	connected: void;
 	disconnected: { code: number; reason: string };
 	reconnecting: { attempt: number };
+	reconnect_failed: Error;
+	auth_failed: Error;
 	error: Error;
+	warning: Error;
 }
 
-export interface WebSocketMessage {
-	type: string;
-	room_id?: string;
-	action?: string;
-	message?: Record<string, unknown>;
-	wallet_addresses?: string[];
-	condition_ids?: string[];
+export interface WsSubscriptionMap {
+	polymarket_trades: TradesSubscribeFilters;
+	polymarket_asset_prices: AssetPricesSubscribeFilters;
+	polymarket_asset_window_updates: AssetWindowUpdatesSubscribeFilters;
+	polymarket_market_metrics: MarketMetricsSubscribeFilters;
+	polymarket_event_metrics: EventMetricsSubscribeFilters;
+	polymarket_position_metrics: PositionMetricsSubscribeFilters;
+	polymarket_trader_pnl: TraderPnlSubscribeFilters;
+	polymarket_trader_positions: TraderPositionsSubscribeFilters;
+	polymarket_accounts: AccountsSubscribeFilters;
+	polymarket_order_book: OrderBookSubscribeFilters;
+	polymarket_clob_rewards: ClobRewardsSubscribeFilters;
 }
 
-export interface WebSocketServerMessage {
-	type: string;
-	data?: unknown;
-	room_id?: string;
-	message?: string;
+export interface WsSubscribeResponseMap {
+	polymarket_trades: TradesStreamSubscribeResponse;
+	polymarket_asset_prices: AssetPricesSubscribeResponse;
+	polymarket_asset_window_updates: AssetWindowUpdatesSubscribeResponse;
+	polymarket_market_metrics: MarketMetricsSubscribeResponse;
+	polymarket_event_metrics: EventMetricsSubscribeResponse;
+	polymarket_position_metrics: PositionMetricsSubscribeResponse;
+	polymarket_trader_pnl: TraderPnlSubscribeResponse;
+	polymarket_trader_positions: TraderPositionsSubscribeResponse;
+	polymarket_accounts: AccountsSubscribeResponse;
+	polymarket_order_book: OrderBookSubscribeResponse;
+	polymarket_clob_rewards: ClobRewardsSubscribeResponse;
 }
+
+export type AlertsWebSocketEventMap = {
+	[E in WsAlertEventName]: { event: E; timestamp: number; data: WsAlertEventDataMap[E] };
+} & {
+	connected: void;
+	disconnected: { code: number; reason: string };
+	reconnecting: { attempt: number };
+	reconnect_failed: Error;
+	auth_failed: Error;
+	error: Error;
+	warning: Error;
+};

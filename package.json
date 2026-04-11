@@ -24,14 +24,17 @@
     "build": "rm -rf dist && bun build ./src/index.ts --target browser --format esm --sourcemap --outdir ./dist && bun build ./src/index.ts --target browser --format cjs --sourcemap --outdir ./dist-cjs && mv ./dist-cjs/index.js ./dist/index.cjs && mv ./dist-cjs/index.js.map ./dist/index.cjs.map && rm -rf dist-cjs && tsc --emitDeclarationOnly",
     "check-routes": "bun run scripts/check-routes.ts",
     "fix-spec": "bun run scripts/fix-spec.ts",
-    "prep": "bun run fetch-spec:polymarket && bun run fix-spec && bun run generate:polymarket && bun run fetch-spec:webhooks && bun run generate:webhooks && bun run check-routes && bun run build",
+    "fetch-specs": "bun run scripts/fetch-specs.ts",
+    "prep": "bun run fetch-specs && bun run fix-spec && bun run generate:polymarket && bun run generate:webhooks && bun run generate:ws && bun run check-routes && bun run build",
+    "prep:staging": "STRUCT_ENV=staging bun run prep",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "typecheck": "bun run tsc -p tsconfig.check.json",
-    "fetch-spec:polymarket": "curl -s -o openapi/polymarket.json https://api.struct.to/api-docs/openapi.json",
     "generate:polymarket": "openapi-typescript openapi/polymarket.json -o src/generated/polymarket.ts",
-    "fetch-spec:webhooks": "curl -s -o openapi/webhooks.json https://api.struct.to/webhookopenapi.json",
-    "generate:webhooks": "openapi-typescript openapi/webhooks.json -o src/generated/webhooks.ts"
+    "generate:webhooks": "openapi-typescript openapi/webhooks.json -o src/generated/webhooks.ts",
+    "generate:ws": "bun run scripts/generate-ws-types.ts",
+    "link": "bun link",
+    "pack": "bun run build && bun pm pack"
   },
   "devDependencies": {
     "@types/bun": "latest",

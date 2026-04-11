@@ -633,7 +633,7 @@ export interface paths {
         };
         /**
          * Get tags
-         * @description Retrieve all available event tags/categories. Uses cursor-based pagination for efficient traversal.
+         * @description Retrieve all available event tags/categories. Supports both cursor-based and offset-based pagination.
          */
         get: operations["get_tags"];
         put?: never;
@@ -893,13 +893,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             trader: components["schemas"]["TraderInfo"];
             operator: string;
             approved: boolean;
@@ -914,13 +916,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             assertion_id: string;
             caller: string;
@@ -936,13 +940,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             assertion_id: string;
             domain_id: string;
@@ -968,13 +974,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             assertion_id: string;
             bond_recipient: string;
@@ -1053,14 +1061,16 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
-            order_hash: string;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            order_hash?: string | null;
             question?: string | null;
             image_url?: string | null;
             slug?: string | null;
@@ -1138,13 +1148,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             condition_id: string;
             oracle: string;
@@ -1472,13 +1484,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             trader: components["schemas"]["TraderInfo"];
             condition_id?: string | null;
             question?: string | null;
@@ -1498,13 +1512,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             condition_id: string;
             proposed_outcome?: string | null;
@@ -1518,16 +1534,18 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
-            order_hash: string;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            order_hash?: string | null;
             trader: components["schemas"]["TraderInfo"];
-            taker: string;
+            taker?: string | null;
             side: string;
             condition_id?: string | null;
             position_id: string;
@@ -1547,11 +1565,11 @@ export interface components {
             /** Format: double */
             probability?: number | null;
             /** Format: double */
-            fee: number;
+            fee?: number | null;
             /** Format: double */
-            fee_shares: number;
+            fee_shares?: number | null;
             /** Format: double */
-            fee_pct: number;
+            fee_pct?: number | null;
             exchange: components["schemas"]["PolymarketExchange"];
         };
         OrderbookHistoryRow: {
@@ -1908,6 +1926,8 @@ export interface components {
              * @description Outcome index (0 = Yes, 1 = No for binary)
              */
             outcome_index: number;
+            /** @description Outcome name (e.g. "Yes", "No") — enriched from market metadata */
+            outcome?: string | null;
             /** @description Amount of shares created/burned/redeemed for this position */
             amount: string;
         };
@@ -2002,13 +2022,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             trader: components["schemas"]["TraderInfo"];
             /** @description NegRisk umbrella market ID */
             market_id: string;
@@ -2059,13 +2081,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             condition_id: string;
             proposed_outcome?: string | null;
@@ -2079,13 +2103,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             condition_id: string;
             question?: string | null;
@@ -2098,13 +2124,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             condition_id: string;
             creator: string;
@@ -2121,13 +2149,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             condition_id: string;
             question?: string | null;
@@ -2140,13 +2170,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             condition_id: string;
             question?: string | null;
@@ -2159,13 +2191,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             condition_id: string;
             /** Format: int64 */
@@ -2181,13 +2215,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             condition_id: string;
             question?: string | null;
@@ -2200,13 +2236,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             oracle_contract: string;
             condition_id: string;
             question?: string | null;
@@ -2219,13 +2257,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             trader: components["schemas"]["TraderInfo"];
             condition_id?: string | null;
             outcome?: string | null;
@@ -2248,13 +2288,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             condition_id: string;
             token0: string;
             token1: string;
@@ -2311,13 +2353,15 @@ export interface components {
             id: string;
             hash: string;
             /** Format: int64 */
-            block: number;
+            block?: number | null;
             /** Format: int64 */
-            confirmed_at: number;
+            confirmed_at?: number | null;
             /** Format: int64 */
-            log_index: number;
+            received_at?: number | null;
             /** Format: int64 */
-            block_index: number;
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
             trader: components["schemas"]["TraderInfo"];
             condition_id?: string | null;
             question?: string | null;
@@ -4148,6 +4192,8 @@ export interface operations {
             query?: {
                 /** @description Results limit (default: 10, max: 250) */
                 limit?: number;
+                /** @description Offset-based pagination (number of results to skip). Takes precedence over pagination_key. */
+                offset?: number;
                 /** @description Cursor-based pagination key */
                 pagination_key?: string;
             };

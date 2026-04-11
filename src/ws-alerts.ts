@@ -3,13 +3,10 @@ import { WebSocketError } from "./errors.js";
 import type {
 	ConnectionState,
 	StructWebSocketConfig,
-	WebSocketEventMap,
-	WsRoomId,
-	WsFiltersOptionalRoom,
-	WsFiltersRequiredRoom,
-	WsSubscriptionMap,
-	WsSubscribeResponseMap,
+	AlertsWebSocketEventMap,
+	WsAlertSubscribedResponse,
 } from "./types/ws.js";
+import type { WsAlertSubscribeMap, WsAlertEventName } from "./types/ws-helpers.js";
 
 const DEFAULT_BASE_URL = "wss://api.struct.to";
 const PING_INTERVAL_MS = 30_000;
@@ -23,11 +20,11 @@ interface PendingSubscribe {
 	timer: ReturnType<typeof setTimeout> | null;
 }
 
-export class StructWebSocket {
+export class StructAlertsWebSocket {
 	private readonly transport: WebSocketTransport;
 	private readonly listeners = new Map<string, Set<Listener<any>>>();
-	private readonly subscriptions = new Map<WsRoomId, Record<string, unknown>>();
-	private readonly pendingSubscribes = new Map<WsRoomId, PendingSubscribe>();
+	private readonly subscriptions = new Map<WsAlertEventName, Record<string, unknown>>();
+	private readonly pendingSubscribes = new Map<WsAlertEventName, PendingSubscribe>();
 	private readonly subscribeTimeout: number;
 	private pingTimer: ReturnType<typeof setInterval> | null = null;
 	private pongTimer: ReturnType<typeof setTimeout> | null = null;
@@ -35,7 +32,7 @@ export class StructWebSocket {
 
 	constructor(config: StructWebSocketConfig) {
 		this.subscribeTimeout = config.subscribeTimeout ?? DEFAULT_SUBSCRIBE_TIMEOUT_MS;
-		const getUrl = () => buildWebSocketUrl("/ws", {
+		const getUrl = () => buildWebSocketUrl("/ws/alerts", {
 			apiKey: config.apiKey,
 			jwt: config.getJwt?.() ?? config.jwt,
 			baseUrl: config.baseUrl,
@@ -76,7 +73,7 @@ export class StructWebSocket {
 		this.transport.disconnect();
 	}
 
-	on<K extends keyof WebSocketEventMap>(event: K, listener: Listener<WebSocketEventMap[K]>): () => void {
+	on<K extends keyof AlertsWebSocketEventMap>(event: K, listener: Listener<AlertsWebSocketEventMap[K]>): () => void {
 		let set = this.listeners.get(event as string);
 		if (!set) {
 			set = new Set();
@@ -86,19 +83,19 @@ export class StructWebSocket {
 		return () => { set.delete(listener); };
 	}
 
-	off<K extends keyof WebSocketEventMap>(event: K, listener: Listener<WebSocketEventMap[K]>): void {
+	off<K extends keyof AlertsWebSocketEventMap>(event: K, listener: Listener<AlertsWebSocketEventMap[K]>): void {
 		this.listeners.get(event as string)?.delete(listener);
 	}
 
-	once<K extends keyof WebSocketEventMap>(event: K, listener: Listener<WebSocketEventMap[K]>): () => void {
-		const wrapper = (payload: WebSocketEventMap[K]) => {
+	once<K extends keyof AlertsWebSocketEventMap>(event: K, listener: Listener<AlertsWebSocketEventMap[K]>): () => void {
+		const wrapper = (payload: AlertsWebSocketEventMap[K]) => {
 			this.off(event, wrapper);
 			listener(payload);
 		};
 		return this.on(event, wrapper);
 	}
 
-	removeAllListeners(event?: keyof WebSocketEventMap): void {
+	removeAllListeners(event?: keyof AlertsWebSocketEventMap): void {
 		if (event) {
 			this.listeners.delete(event as string);
 		} else {
@@ -106,65 +103,56 @@ export class StructWebSocket {
 		}
 	}
 
-	subscribe<R extends WsFiltersOptionalRoom>(room: R, filters?: WsSubscriptionMap[R]): Promise<WsSubscribeResponseMap[R]>;
-	subscribe<R extends WsFiltersRequiredRoom>(room: R, filters: WsSubscriptionMap[R]): Promise<WsSubscribeResponseMap[R]>;
-	subscribe<R extends WsRoomId>(room: R, filters?: WsSubscriptionMap[R]): Promise<WsSubscribeResponseMap[R]> {
-		const resolvedFilters = (filters ?? {}) as Record<string, unknown>;
-		const isNewRoom = !this.subscriptions.has(room);
+	subscribe<E extends WsAlertEventName>(
+		event: E,
+		filters: Omit<WsAlertSubscribeMap[E], "op" | "event">,
+	): Promise<WsAlertSubscribedResponse> {
+		const message = { op: "subscribe", event, ...filters } as Record<string, unknown>;
 
-		const existing = this.pendingSubscribes.get(room);
+		const existing = this.pendingSubscribes.get(event);
 		if (existing) {
 			this.clearSubscribeTimer(existing);
 			existing.reject(new WebSocketError("Superseded by new subscription"));
 		}
 
-		this.subscriptions.set(room, resolvedFilters);
+		this.subscriptions.set(event, message);
 		this.rebuildReplay();
 
-		return new Promise<WsSubscribeResponseMap[R]>((resolve, reject) => {
+		return new Promise<WsAlertSubscribedResponse>((resolve, reject) => {
 			const pending: PendingSubscribe = {
 				resolve: resolve as (data: unknown) => void,
 				reject,
 				timer: null,
 			};
-			this.pendingSubscribes.set(room, pending);
-			if (this.sendSubscription(room, resolvedFilters, isNewRoom)) {
-				this.armSubscribeTimer(room, pending);
+			this.pendingSubscribes.set(event, pending);
+			if (this.sendSubscription(message)) {
+				this.armSubscribeTimer(event, pending);
 			}
 		});
 	}
 
-	unsubscribe(room: WsRoomId): void {
-		if (!this.subscriptions.has(room)) return;
+	unsubscribe(event: WsAlertEventName): void {
+		const sub = this.subscriptions.get(event);
+		if (!sub) return;
 
-		const pending = this.pendingSubscribes.get(room);
+		const pending = this.pendingSubscribes.get(event);
 		if (pending) {
 			this.clearSubscribeTimer(pending);
 			pending.reject(new WebSocketError("Unsubscribed"));
-			this.pendingSubscribes.delete(room);
+			this.pendingSubscribes.delete(event);
 		}
 
-		this.subscriptions.delete(room);
+		this.subscriptions.delete(event);
 		this.rebuildReplay();
 		if (this.state === "connected") {
-			this.transport.sendNow({
-				type: "room_message",
-				payload: { room_id: room, message: { action: "unsubscribe_all" } },
-			});
-			this.transport.sendNow({ type: "leave_room", payload: { room_id: room } });
+			this.transport.sendNow({ ...sub, op: "unsubscribe" });
 		}
 	}
 
 	private rebuildReplay(): void {
 		this.transport.clearReplayMessages();
-		for (const [roomId, filters] of this.subscriptions) {
-			this.transport.addReplayMessages([
-				{ type: "join_room", payload: { room_id: roomId } },
-				{
-					type: "room_message",
-					payload: { room_id: roomId, message: { action: "subscribe", ...filters } },
-				},
-			]);
+		for (const [, message] of this.subscriptions) {
+			this.transport.addReplayMessage(message);
 		}
 	}
 
@@ -181,39 +169,54 @@ export class StructWebSocket {
 	}
 
 	private handleMessage(raw: unknown): void {
-		const msg = raw as { type?: string; room_id?: string; data?: unknown };
-		if (!msg || typeof msg !== "object" || !msg.type) return;
-		if (msg.type === "pong") {
+		const msg = raw as { op?: string; type?: string; event?: string; error?: string; subscription_id?: string; timestamp?: number; data?: unknown };
+		if (!msg || typeof msg !== "object") return;
+		if (msg.op === "pong" || msg.type === "pong") {
 			this.clearPongTimer();
 			return;
 		}
 
-		if (msg.type === "subscribed" && msg.room_id) {
-			const pending = this.pendingSubscribes.get(msg.room_id as WsRoomId);
+		if (msg.error) {
+			const error = new WebSocketError(msg.error);
+			if (msg.event) {
+				const pending = this.pendingSubscribes.get(msg.event as WsAlertEventName);
+				if (pending) {
+					this.clearSubscribeTimer(pending);
+					this.pendingSubscribes.delete(msg.event as WsAlertEventName);
+					pending.reject(error);
+				}
+			}
+			this.emit("error", error);
+			return;
+		}
+
+		if (msg.op === "subscribed" && msg.event) {
+			const pending = this.pendingSubscribes.get(msg.event as WsAlertEventName);
 			if (pending) {
 				this.clearSubscribeTimer(pending);
-				this.pendingSubscribes.delete(msg.room_id as WsRoomId);
-				const subscribeError = this.getSubscribeError(msg.data);
-				if (subscribeError) {
-					const error = new WebSocketError(subscribeError);
-					pending.reject(error);
-					this.emit("error", error);
-				} else {
-					pending.resolve(msg.data);
-				}
+				this.pendingSubscribes.delete(msg.event as WsAlertEventName);
+				pending.resolve({ op: "subscribed", event: msg.event, subscription_id: msg.subscription_id });
 			}
 			return;
 		}
 
-		this.emit(msg.type as keyof WebSocketEventMap, msg.data as never);
+		if (msg.op === "unsubscribed") return;
+
+		if (msg.event && msg.data !== undefined) {
+			this.emit(msg.event as keyof AlertsWebSocketEventMap, {
+				event: msg.event,
+				timestamp: msg.timestamp,
+				data: msg.data,
+			} as never);
+		}
 	}
 
-	private emit<K extends keyof WebSocketEventMap>(event: K, payload: WebSocketEventMap[K]): void {
+	private emit<K extends keyof AlertsWebSocketEventMap>(event: K, payload: AlertsWebSocketEventMap[K]): void {
 		const set = this.listeners.get(event as string);
 		if (!set) return;
 		for (const fn of set) {
 			try {
-				(fn as Listener<WebSocketEventMap[K]>)(payload);
+				(fn as Listener<AlertsWebSocketEventMap[K]>)(payload);
 			} catch (error) {
 				this.handleListenerError(error);
 			}
@@ -237,23 +240,15 @@ export class StructWebSocket {
 		this.clearPongTimer();
 	}
 
-	private sendSubscription(room: WsRoomId, filters: Record<string, unknown>, joinRoom: boolean): boolean {
+	private sendSubscription(message: Record<string, unknown>): boolean {
 		if (this.state !== "connected") return false;
-		let sent = true;
-		if (joinRoom) {
-			sent = this.transport.sendNow({ type: "join_room", payload: { room_id: room } }) && sent;
-		}
-		sent = this.transport.sendNow({
-			type: "room_message",
-			payload: { room_id: room, message: { action: "subscribe", ...filters } },
-		}) && sent;
-		return sent;
+		return this.transport.sendNow(message);
 	}
 
 	private restartPendingSubscribes(): void {
-		for (const [room, pending] of this.pendingSubscribes) {
+		for (const [event, pending] of this.pendingSubscribes) {
 			if (pending.timer === null) {
-				this.armSubscribeTimer(room, pending);
+				this.armSubscribeTimer(event, pending);
 			}
 		}
 	}
@@ -264,12 +259,12 @@ export class StructWebSocket {
 		}
 	}
 
-	private armSubscribeTimer(room: WsRoomId, pending: PendingSubscribe): void {
+	private armSubscribeTimer(event: WsAlertEventName, pending: PendingSubscribe): void {
 		this.clearSubscribeTimer(pending);
 		pending.timer = setTimeout(() => {
 			pending.timer = null;
-			this.pendingSubscribes.delete(room);
-			pending.reject(new WebSocketError(`Subscribe to ${room} timed out`));
+			this.pendingSubscribes.delete(event);
+			pending.reject(new WebSocketError(`Subscribe to alert ${event} timed out`));
 		}, this.subscribeTimeout);
 	}
 
@@ -293,12 +288,6 @@ export class StructWebSocket {
 			clearTimeout(this.pongTimer);
 			this.pongTimer = null;
 		}
-	}
-
-	private getSubscribeError(data: unknown): string | null {
-		if (!data || typeof data !== "object") return null;
-		const error = (data as { error?: unknown }).error;
-		return typeof error === "string" && error.length > 0 ? error : null;
 	}
 
 	private handleListenerError(error: unknown): void {

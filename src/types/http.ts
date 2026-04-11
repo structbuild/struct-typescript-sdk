@@ -2,6 +2,7 @@ export interface RetryConfig {
 	maxRetries?: number;
 	initialDelayMs?: number;
 	maxDelayMs?: number;
+	maxPendingMessages?: number;
 }
 
 export interface RequestHookInfo {

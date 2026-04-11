@@ -7,8 +7,6 @@ TypeScript SDK for prediction market data via [api.struct.to](https://api.struct
 ```bash
 npm install @structbuild/sdk
 # or
-pnpm add @structbuild/sdk
-# or
 bun add @structbuild/sdk
 ```
 
@@ -73,11 +71,11 @@ const trades = await client.trader.getTraderTrades({ address: "0x..." });
 const profile = await client.trader.getTraderProfile({ address: "0x..." });
 const profiles = await client.trader.getTraderProfilesBatch({ addresses: "0x...,0x..." });
 const pnl = await client.trader.getTraderPnl({ address: "0x..." });
-const pnlByMarket = await client.trader.getTraderMarketPnl({ address: "0x..." });
-const pnlByEvent = await client.trader.getTraderEventPnl({ address: "0x..." });
+const marketPnl = await client.trader.getTraderMarketPnl({ address: "0x..." });
+const eventPnl = await client.trader.getTraderEventPnl({ address: "0x..." });
+const outcomePnl = await client.trader.getTraderOutcomePnl({ address: "0x..." });
 const pnlCandles = await client.trader.getTraderPnlCandles({ address: "0x..." });
-const calendar = await client.trader.getTraderPnlCalendar({ address: "0x..." });
-const positionPnl = await client.trader.getTraderOutcomePnl({ address: "0x..." });
+const pnlCalendar = await client.trader.getTraderPnlCalendar({ address: "0x..." });
 const volumeChart = await client.trader.getTraderVolumeChart({ address: "0x..." });
 const leaderboard = await client.trader.getGlobalPnl();
 ```
@@ -91,16 +89,20 @@ const history = await client.holders.getMarketHoldersHistory({ condition_id: "0x
 const posHistory = await client.holders.getPositionHoldersHistory({ positionId: "123" });
 ```
 
-### Series
+### Order Book
+
+```typescript
+const orderBook = await client.orderBook.getOrderBook({ asset_id: "0x..." });
+const history = await client.orderBook.getOrderBookHistory();
+const marketBook = await client.orderBook.getMarketOrderBook();
+const spreads = await client.orderBook.getSpreadHistory();
+```
+
+### Series, Search, Tags, Assets, Bonds
 
 ```typescript
 const series = await client.series.getSeriesList();
 const outcomes = await client.series.getSeriesOutcomes({ series_slug: "my-series" });
-```
-
-### Assets, Search, Tags, Bonds
-
-```typescript
 const assetHistory = await client.assets.getAssetHistory({ symbol: "BTC", variant: "1d" });
 const results = await client.search.search({ query: "election" });
 const tags = await client.tags.getTags();
@@ -147,7 +149,7 @@ Individual schemas are also exported: `OrderFilledTrade`, `RedemptionTrade`, `Me
 
 ### Webhooks
 
-Manage webhook subscriptions for real-time event notifications. Webhook endpoints are platform-level (not venue-scoped).
+Manage webhook subscriptions for real-time event notifications:
 
 ```typescript
 const webhooks = await client.webhooks.list();
@@ -159,32 +161,129 @@ const webhook = await client.webhooks.create({
     min_usd_value: 100,
   },
 });
-const detail = await client.webhooks.getWebhook({ webhookId: webhook.data.id });
-await client.webhooks.update({ webhookId: webhook.data.id, events: ["first_trade"] });
 await client.webhooks.test({ webhookId: webhook.data.id });
 await client.webhooks.rotateSecret({ webhookId: webhook.data.id });
 await client.webhooks.deleteWebhook({ webhookId: webhook.data.id });
 const events = await client.webhooks.listEvents();
 ```
 
-#### Webhook Payload Types
+## WebSocket API
 
-The SDK exports typed payload schemas for building webhook receivers:
+Real-time streaming via room-based subscriptions with fully typed filters, responses, and events.
 
 ```typescript
-import type {
-  FirstTradePayload,
-  ProbabilitySpikePayload,
-  GlobalPnlPayload,
-  VolumeMilestonePayload,
-} from "@structbuild/sdk";
+import { StructWebSocket } from "@structbuild/sdk";
 
-function handleWebhook(payload: FirstTradePayload) {
-  console.log(payload.trader, payload.price, payload.side);
-}
+const ws = new StructWebSocket({ apiKey: "your-api-key" });
+await ws.connect();
 ```
 
-Available payload types: `FirstTradePayload`, `GlobalPnlPayload`, `MarketPnlPayload`, `EventPnlPayload`, `ConditionMetricsPayload`, `EventMetricsPayload`, `PositionMetricsPayload`, `VolumeMilestonePayload`, `EventVolumeMilestonePayload`, `PositionVolumeMilestonePayload`, `ProbabilitySpikePayload`.
+### Subscribing to rooms
+
+Each room has typed filters and a typed subscribe response:
+
+```typescript
+const res = await ws.subscribe("polymarket_trades", {
+  condition_ids: ["0xabc123"],
+});
+
+await ws.subscribe("polymarket_order_book", {
+  asset_ids: ["0xabc123"],
+});
+
+// Some rooms have optional filters
+await ws.subscribe("polymarket_asset_prices");
+await ws.subscribe("polymarket_clob_rewards", { subscribe_all: true });
+```
+
+### Listening for events
+
+```typescript
+ws.on("trade_stream_update", (event) => {
+  event.condition_id;
+  event.price;
+  event.size;
+  event.side;
+});
+
+ws.on("order_book_update", (event) => {
+  event.asset_id;
+  event.bids;
+  event.asks;
+});
+
+ws.on("clob_rewards_update", (event) => {
+  event.event_type;    // "added" | "removed" | "updated"
+  event.condition_id;
+  event.reward;
+});
+```
+
+### Alerts
+
+Alerts use a separate client with per-event typed filters and payloads:
+
+```typescript
+import { StructAlertsWebSocket } from "@structbuild/sdk";
+
+const alerts = new StructAlertsWebSocket({ apiKey: "your-api-key" });
+await alerts.connect();
+
+await alerts.subscribe("trader_whale_trade", {
+  wallet_addresses: ["0xd91..."],
+  min_usd_value: 10000,
+});
+
+await alerts.subscribe("probability_spike", {
+  spike_direction: "up",
+  min_probability_change_pct: 5,
+});
+
+alerts.on("trader_whale_trade", (payload) => {
+  payload.data.trader;
+  payload.data.amount_usd;
+});
+
+alerts.on("probability_spike", (payload) => {
+  payload.data.spike_direction;
+  payload.data.spike_pct;
+});
+```
+
+### Available rooms
+
+| Room | Filters | Event |
+|------|---------|-------|
+| `polymarket_trades` | `condition_ids` | `trade_stream_update` |
+| `polymarket_asset_prices` | `condition_ids?` | `asset_price_tick`, `asset_price_window_update` |
+| `polymarket_asset_window_updates` | `condition_ids` | `asset_window_update` |
+| `polymarket_market_metrics` | `condition_ids` | `market_metrics_update` |
+| `polymarket_event_metrics` | `event_slugs` | `event_metrics_update` |
+| `polymarket_position_metrics` | `position_ids` | `position_metrics_update` |
+| `polymarket_trader_pnl` | `addresses` | `trader_global_pnl_update`, `trader_market_pnl_update`, `trader_event_pnl_update` |
+| `polymarket_trader_positions` | `addresses` | `trader_position_update` |
+| `polymarket_accounts` | `wallets` | `accounts_update`, `usdce_update`, `matic_update` |
+| `polymarket_order_book` | `asset_ids` | `order_book_update` |
+| `polymarket_clob_rewards` | `condition_ids?`, `subscribe_all?` | `clob_rewards_update` |
+
+### Lifecycle events
+
+```typescript
+ws.on("connected", () => {});
+ws.on("disconnected", ({ code, reason }) => {});
+ws.on("reconnecting", ({ attempt }) => {});
+ws.on("reconnect_failed", (err) => {});
+ws.on("auth_failed", (err) => {});
+ws.on("warning", (warning) => {});
+ws.on("error", (err) => {});
+```
+
+### Cleanup
+
+```typescript
+ws.unsubscribe("polymarket_trades");
+ws.disconnect();
+```
 
 ## JWT Auth
 
@@ -207,6 +306,15 @@ const ws = new StructWebSocket({
 ```
 
 The `pk_jwt_*` key is safe to hardcode in frontend bundles — it is useless without a valid JWT from your configured auth provider.
+
+If your JWT can rotate while a socket stays alive, prefer `getJwt` so reconnects always rebuild the URL with a fresh token:
+
+```typescript
+const ws = new StructWebSocket({
+  apiKey: "pk_jwt_a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+  getJwt: () => userAccessToken,
+});
+```
 
 ## Pagination
 

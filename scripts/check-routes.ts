@@ -3,6 +3,8 @@ import { join } from "node:path";
 
 const NAMESPACES_DIR = join(import.meta.dirname, "../src/namespaces");
 const TYPES_FILE = join(import.meta.dirname, "../src/types/index.ts");
+const WS_TYPES_FILE = join(import.meta.dirname, "../src/types/ws.ts");
+const WS_ALERTS_FILE = join(import.meta.dirname, "../src/ws-alerts.ts");
 
 interface SpecConfig {
 	specPath: string;
@@ -112,17 +114,56 @@ async function getSpecSchemas(jsonSpecPath: string): Promise<string[]> {
 
 async function getExportedSchemas(typesContent: string): Promise<Set<string>> {
 	const exported = new Set<string>();
-	for (const m of typesContent.matchAll(/Schemas\["(\w+)"\]/g)) exported.add(m[1]);
-	for (const m of typesContent.matchAll(/WebhookSchemas\["(\w+)"\]/g)) exported.add(m[1]);
+	for (const m of typesContent.matchAll(/(?:\w+)?Schemas\["(\w+)"\]/g)) exported.add(m[1]);
+	for (const m of typesContent.matchAll(/components\["schemas"\]\["(\w+)"\]/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/export type (\w+)\s*=/g)) exported.add(m[1]);
 	for (const m of typesContent.matchAll(/export interface (\w+)/g)) exported.add(m[1]);
 	return exported;
 }
 
+async function getWsSpecRooms(jsonSpecPath: string): Promise<string[]> {
+	const spec = JSON.parse(await readFile(jsonSpecPath, "utf-8"));
+	return Object.keys(spec.channels ?? {});
+}
+
+function extractInterfaceKeys(content: string, interfaceName: string): Set<string> {
+	const keys = new Set<string>();
+	const re = new RegExp(`interface\\s+${interfaceName}\\s*\\{([\\s\\S]*?)\\n\\}`);
+	const match = content.match(re);
+	if (!match) return keys;
+	const body = match[1];
+	const keyRegex = /^\s*(\w+)\s*:/gm;
+	let km: RegExpExecArray | null;
+	while ((km = keyRegex.exec(body)) !== null) {
+		keys.add(km[1]);
+	}
+	return keys;
+}
+
+async function getSdkStreamingRooms(): Promise<Set<string>> {
+	const content = await readFile(WS_TYPES_FILE, "utf-8");
+	return extractInterfaceKeys(content, "WsSubscriptionMap");
+}
+
+async function getSdkAlertEvents(): Promise<Set<string>> {
+	try {
+		const alertsContent = await readFile(WS_ALERTS_FILE, "utf-8");
+		if (!/class\s+StructAlertsWebSocket\b/.test(alertsContent)) return new Set();
+	} catch {
+		return new Set();
+	}
+	const generated = await readFile(join(import.meta.dirname, "../src/generated/ws-alerts.ts"), "utf-8");
+	return extractInterfaceKeys(generated, "WsAlertSubscribeMap");
+}
+
 let hasErrors = false;
 
 const typesContent = await readFile(TYPES_FILE, "utf-8");
-const exportedSchemas = await getExportedSchemas(typesContent);
+const wsTypesContent = await readFile(join(import.meta.dirname, "../src/types/ws.ts"), "utf-8");
+const wsGeneratedContent = await readFile(join(import.meta.dirname, "../src/generated/ws.ts"), "utf-8");
+const wsAlertsGeneratedContent = await readFile(join(import.meta.dirname, "../src/generated/ws-alerts.ts"), "utf-8");
+const combinedTypesContent = [typesContent, wsTypesContent, wsGeneratedContent, wsAlertsGeneratedContent].join("\n");
+const exportedSchemas = await getExportedSchemas(combinedTypesContent);
 
 for (const config of specs) {
 	const specName = config.venuePrefix ?? "platform";
@@ -175,5 +216,72 @@ for (const config of specs) {
 		console.log(`\x1b[32m✓ [${specName}] All schemas exported.\x1b[0m`);
 	}
 }
+
+const wsJsonPath = join(import.meta.dirname, "../openapi/ws.json");
+const wsAlertsJsonPath = join(import.meta.dirname, "../openapi/ws-alerts.json");
+
+interface WsCheckConfig {
+	label: string;
+	specRooms: string[];
+	sdkRooms: Set<string>;
+}
+
+const streamingSpecRooms = await getWsSpecRooms(wsJsonPath);
+const alertsSpecChannels = await getWsSpecRooms(wsAlertsJsonPath);
+const alertsSpecEvents = alertsSpecChannels
+	.filter((c) => c.startsWith("ws_alerts."))
+	.map((c) => c.slice("ws_alerts.".length));
+
+const wsChecks: WsCheckConfig[] = [
+	{ label: "ws", specRooms: streamingSpecRooms, sdkRooms: await getSdkStreamingRooms() },
+	{ label: "ws-alerts", specRooms: alertsSpecEvents, sdkRooms: await getSdkAlertEvents() },
+];
+
+for (const check of wsChecks) {
+	const phantom = [...check.sdkRooms].filter((r) => !check.specRooms.includes(r));
+	const missing = check.specRooms.filter((r) => !check.sdkRooms.has(r));
+
+	if (phantom.length > 0) {
+		hasErrors = true;
+		console.error(`\x1b[31m✗ [${check.label}] Phantom rooms (SDK rooms not in WS OpenAPI spec):\x1b[0m\n`);
+		for (const r of phantom) console.error(`  ${r}`);
+		console.error();
+	}
+
+	if (missing.length > 0) {
+		hasErrors = true;
+		console.error(`\x1b[31m✗ [${check.label}] Unimplemented rooms (WS OpenAPI spec rooms missing from SDK):\x1b[0m\n`);
+		for (const r of missing) console.error(`  ${r}`);
+		console.error();
+	}
+
+	if (phantom.length === 0 && missing.length === 0) {
+		console.log(`\x1b[32m✓ [${check.label}] All SDK rooms match the WS OpenAPI spec.\x1b[0m`);
+	}
+}
+
+const wsJsonPaths = [wsJsonPath, wsAlertsJsonPath];
+const wsSpecSchemasList = (await Promise.all(wsJsonPaths.map(getSpecSchemas))).flat();
+const wsSpecSchemas = [...new Set(wsSpecSchemasList)];
+const missingWsSchemas = wsSpecSchemas.filter((s) => !exportedSchemas.has(s));
+
+if (missingWsSchemas.length > 0) {
+	hasErrors = true;
+	console.error(`\x1b[31m✗ [ws] Missing schema exports:\x1b[0m\n`);
+	for (const schema of missingWsSchemas) {
+		console.error(`  WsSchemas["${schema}"]`);
+	}
+	console.error();
+} else {
+	console.log(`\x1b[32m✓ [ws] All WS schemas exported.\x1b[0m`);
+}
+
+const specSourcePath = join(import.meta.dirname, "../openapi/.spec-source.json");
+try {
+	const specSource = JSON.parse(await readFile(specSourcePath, "utf-8"));
+	if (specSource.env === "staging") {
+		console.warn(`\n\x1b[33m⚠ Specs were fetched from staging-api.struct.to. Run 'bun run prep' before merging.\x1b[0m\n`);
+	}
+} catch {}
 
 process.exit(hasErrors ? 1 : 0);
