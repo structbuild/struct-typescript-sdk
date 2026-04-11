@@ -25,11 +25,29 @@ export function buildWebSocketUrl(
 	config: { apiKey: string; jwt?: string; baseUrl?: string },
 	defaultBaseUrl: string,
 ): string {
-	const base = (config.baseUrl ?? defaultBaseUrl).replace(/\/+$/, "");
-	const wsBase = base.replace(/^https:\/\//, "wss://").replace(/^http:\/\//, "ws://");
+	const base = trimTrailingSlashes(config.baseUrl ?? defaultBaseUrl);
+	const wsBase = toWebSocketBaseUrl(base);
 	const params = new URLSearchParams({ "api-key": config.apiKey });
 	if (config.jwt) params.set("token", config.jwt);
 	return `${wsBase}${path}?${params.toString()}`;
+}
+
+function trimTrailingSlashes(value: string): string {
+	let end = value.length;
+	while (end > 0 && value.charCodeAt(end - 1) === 47) {
+		end--;
+	}
+	return end === value.length ? value : value.slice(0, end);
+}
+
+function toWebSocketBaseUrl(baseUrl: string): string {
+	if (baseUrl.startsWith("https://")) {
+		return `wss://${baseUrl.slice("https://".length)}`;
+	}
+	if (baseUrl.startsWith("http://")) {
+		return `ws://${baseUrl.slice("http://".length)}`;
+	}
+	return baseUrl;
 }
 
 export interface WebSocketTransportCallbacks {

@@ -47,6 +47,20 @@ async function getRejectedError<T>(promise: Promise<T>): Promise<Error> {
 }
 
 describe("WebSocketTransport", () => {
+	test("buildWebSocketUrl normalizes trailing slashes and websocket protocol", () => {
+		expect(
+			buildWebSocketUrl("/ws", { apiKey: "api-key", baseUrl: "https://api.struct.to///" }, "http://ignored"),
+		).toBe("wss://api.struct.to/ws?api-key=api-key");
+
+		expect(
+			buildWebSocketUrl("/ws", { apiKey: "api-key", baseUrl: "http://localhost:3000/" }, "https://ignored"),
+		).toBe("ws://localhost:3000/ws?api-key=api-key");
+
+		expect(
+			buildWebSocketUrl("/ws", { apiKey: "api-key", baseUrl: "wss://stream.struct.to/" }, "https://ignored"),
+		).toBe("wss://stream.struct.to/ws?api-key=api-key");
+	});
+
 	test("rebuilds the websocket URL on reconnect and resolves connect after a retry", async () => {
 		let jwt = "jwt-1";
 		const callbacks = createCallbacks();
