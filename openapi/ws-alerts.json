@@ -26,7 +26,7 @@
       ],
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": {
@@ -62,7 +62,7 @@
       ],
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": {
@@ -98,7 +98,7 @@
       ],
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": {
@@ -134,7 +134,7 @@
       ],
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": {
@@ -170,7 +170,7 @@
       ],
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": {
@@ -206,7 +206,7 @@
       ],
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": {
@@ -242,7 +242,7 @@
       ],
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": {
@@ -278,7 +278,7 @@
       ],
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": {
@@ -314,7 +314,7 @@
       ],
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": {
@@ -350,7 +350,7 @@
       ],
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": {
@@ -386,7 +386,7 @@
       ],
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": {
@@ -422,7 +422,7 @@
       ],
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": {
@@ -458,7 +458,7 @@
       ],
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": {
@@ -494,7 +494,7 @@
       ],
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": {
@@ -530,7 +530,7 @@
       ],
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": {
@@ -566,7 +566,7 @@
       ],
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": {
@@ -602,7 +602,7 @@
       ],
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": {
@@ -638,7 +638,7 @@
       ],
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": {
@@ -674,7 +674,7 @@
       ],
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": {
@@ -710,7 +710,7 @@
       ],
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": {
@@ -746,7 +746,7 @@
       ],
       "tags": [
         {
-          "name": "assets"
+          "name": "Assets"
         }
       ],
       "messages": {
@@ -782,7 +782,7 @@
       ],
       "tags": [
         {
-          "name": "assets"
+          "name": "Assets"
         }
       ],
       "messages": {
@@ -818,7 +818,7 @@
       "description": "Fired when a tracked trader executes their first trade on Polymarket",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -837,7 +837,7 @@
       "description": "Stop receiving `trader_first_trade` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -856,7 +856,7 @@
       "description": "Fired when a tracked trader executes their first trade on Polymarket\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -875,7 +875,7 @@
       "description": "Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -894,7 +894,7 @@
       "description": "Stop receiving `trader_new_market` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -913,7 +913,7 @@
       "description": "Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -932,7 +932,7 @@
       "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -951,7 +951,7 @@
       "description": "Stop receiving `trader_whale_trade` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -970,7 +970,7 @@
       "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -989,7 +989,7 @@
       "description": "Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1008,7 +1008,7 @@
       "description": "Stop receiving `trader_new_trade` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1027,7 +1027,7 @@
       "description": "Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1046,7 +1046,7 @@
       "description": "Fired when a trader's global PnL crosses a configured threshold",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1065,7 +1065,7 @@
       "description": "Stop receiving `trader_global_pnl` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1084,7 +1084,7 @@
       "description": "Fired when a trader's global PnL crosses a configured threshold\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1103,7 +1103,7 @@
       "description": "Fired when a trader's market-level PnL crosses a configured threshold",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1122,7 +1122,7 @@
       "description": "Stop receiving `trader_market_pnl` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1141,7 +1141,7 @@
       "description": "Fired when a trader's market-level PnL crosses a configured threshold\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1160,7 +1160,7 @@
       "description": "Fired when a trader's event-level PnL crosses a configured threshold",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1179,7 +1179,7 @@
       "description": "Stop receiving `trader_event_pnl` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1198,7 +1198,7 @@
       "description": "Fired when a trader's event-level PnL crosses a configured threshold\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "trader"
+          "name": "Trader"
         }
       ],
       "messages": [
@@ -1217,7 +1217,7 @@
       "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1236,7 +1236,7 @@
       "description": "Stop receiving `condition_metrics` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1255,7 +1255,7 @@
       "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1274,7 +1274,7 @@
       "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).",
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": [
@@ -1293,7 +1293,7 @@
       "description": "Stop receiving `event_metrics` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": [
@@ -1312,7 +1312,7 @@
       "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": [
@@ -1331,7 +1331,7 @@
       "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1350,7 +1350,7 @@
       "description": "Stop receiving `position_metrics` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1369,7 +1369,7 @@
       "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1388,7 +1388,7 @@
       "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1407,7 +1407,7 @@
       "description": "Stop receiving `market_volume_milestone` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1426,7 +1426,7 @@
       "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1445,7 +1445,7 @@
       "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.",
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": [
@@ -1464,7 +1464,7 @@
       "description": "Stop receiving `event_volume_milestone` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": [
@@ -1483,7 +1483,7 @@
       "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": [
@@ -1502,7 +1502,7 @@
       "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1521,7 +1521,7 @@
       "description": "Stop receiving `position_volume_milestone` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1540,7 +1540,7 @@
       "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1559,7 +1559,7 @@
       "description": "Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1578,7 +1578,7 @@
       "description": "Stop receiving `probability_spike` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1597,7 +1597,7 @@
       "description": "Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1616,7 +1616,7 @@
       "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1635,7 +1635,7 @@
       "description": "Stop receiving `price_spike` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1654,7 +1654,7 @@
       "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1673,7 +1673,7 @@
       "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`. Optional `condition_ids` restricts to specific markets.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1692,7 +1692,7 @@
       "description": "Stop receiving `market_volume_spike` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1711,7 +1711,7 @@
       "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`. Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1730,7 +1730,7 @@
       "description": "Fired when an event's aggregated trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` and `event_slugs` to narrow scope.",
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": [
@@ -1749,7 +1749,7 @@
       "description": "Stop receiving `event_volume_spike` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": [
@@ -1768,7 +1768,7 @@
       "description": "Fired when an event's aggregated trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` and `event_slugs` to narrow scope.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "event"
+          "name": "Event"
         }
       ],
       "messages": [
@@ -1787,7 +1787,7 @@
       "description": "Fired when a position's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` to narrow scope.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1806,7 +1806,7 @@
       "description": "Stop receiving `position_volume_spike` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1825,7 +1825,7 @@
       "description": "Fired when a position's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` to narrow scope.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "position"
+          "name": "Position"
         }
       ],
       "messages": [
@@ -1844,7 +1844,7 @@
       "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1863,7 +1863,7 @@
       "description": "Stop receiving `close_to_bond` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1882,7 +1882,7 @@
       "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.\n\n**Credits cost:** 2 per delivered alert.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1901,7 +1901,7 @@
       "description": "Fired when a new prediction market is created on Polymarket. Filterable by `tags` and `event_slugs`.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1920,7 +1920,7 @@
       "description": "Stop receiving `market_created` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1939,7 +1939,7 @@
       "description": "Fired when a new prediction market is created on Polymarket. Filterable by `tags` and `event_slugs`.\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "market"
+          "name": "Market"
         }
       ],
       "messages": [
@@ -1958,7 +1958,7 @@
       "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Use `asset_symbols` to restrict to specific assets (empty = all).",
       "tags": [
         {
-          "name": "assets"
+          "name": "Assets"
         }
       ],
       "messages": [
@@ -1977,7 +1977,7 @@
       "description": "Stop receiving `asset_price_tick` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "assets"
+          "name": "Assets"
         }
       ],
       "messages": [
@@ -1996,7 +1996,7 @@
       "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Use `asset_symbols` to restrict to specific assets (empty = all).\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "assets"
+          "name": "Assets"
         }
       ],
       "messages": [
@@ -2015,7 +2015,7 @@
       "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"`, `\"24h\"`.",
       "tags": [
         {
-          "name": "assets"
+          "name": "Assets"
         }
       ],
       "messages": [
@@ -2034,7 +2034,7 @@
       "description": "Stop receiving `asset_price_window_update` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "assets"
+          "name": "Assets"
         }
       ],
       "messages": [
@@ -2053,7 +2053,7 @@
       "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"`, `\"24h\"`.\n\n**Credits cost:** 1 per delivered alert.",
       "tags": [
         {
-          "name": "assets"
+          "name": "Assets"
         }
       ],
       "messages": [
@@ -2072,7 +2072,7 @@
         "description": "Fired when a tracked trader executes their first trade on Polymarket\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2086,7 +2086,7 @@
         "description": "Unsubscribe from `trader_first_trade` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2100,7 +2100,7 @@
         "description": "Fired when a tracked trader executes their first trade on Polymarket\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2114,7 +2114,7 @@
         "description": "Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `condition_ids`, `event_slugs`, `min_usd_value`, `min_probability`, `max_probability`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2128,7 +2128,7 @@
         "description": "Unsubscribe from `trader_new_market` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2142,7 +2142,7 @@
         "description": "Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2156,7 +2156,7 @@
         "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2170,7 +2170,7 @@
         "description": "Unsubscribe from `trader_whale_trade` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2184,7 +2184,7 @@
         "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2198,7 +2198,7 @@
         "description": "Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2212,7 +2212,7 @@
         "description": "Unsubscribe from `trader_new_trade` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2226,7 +2226,7 @@
         "description": "Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2240,7 +2240,7 @@
         "description": "Fired when a trader's global PnL crosses a configured threshold\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `traders`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2254,7 +2254,7 @@
         "description": "Unsubscribe from `trader_global_pnl` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2268,7 +2268,7 @@
         "description": "Fired when a trader's global PnL crosses a configured threshold\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2282,7 +2282,7 @@
         "description": "Fired when a trader's market-level PnL crosses a configured threshold\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `timeframes`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2296,7 +2296,7 @@
         "description": "Unsubscribe from `trader_market_pnl` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2310,7 +2310,7 @@
         "description": "Fired when a trader's market-level PnL crosses a configured threshold\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2324,7 +2324,7 @@
         "description": "Fired when a trader's event-level PnL crosses a configured threshold\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `traders`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_markets_traded`, `timeframes`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2338,7 +2338,7 @@
         "description": "Unsubscribe from `trader_event_pnl` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2352,7 +2352,7 @@
         "description": "Fired when a trader's event-level PnL crosses a configured threshold\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "trader"
+            "name": "Trader"
           }
         ],
         "payload": {
@@ -2366,7 +2366,7 @@
         "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2380,7 +2380,7 @@
         "description": "Unsubscribe from `condition_metrics` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2394,7 +2394,7 @@
         "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2408,7 +2408,7 @@
         "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "event"
+            "name": "Event"
           }
         ],
         "payload": {
@@ -2422,7 +2422,7 @@
         "description": "Unsubscribe from `event_metrics` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "event"
+            "name": "Event"
           }
         ],
         "payload": {
@@ -2436,7 +2436,7 @@
         "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "event"
+            "name": "Event"
           }
         ],
         "payload": {
@@ -2450,7 +2450,7 @@
         "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `outcomes`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_fees`, `min_txns`, `min_price_change_pct`, `min_probability_change_pct`, `timeframes`",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2464,7 +2464,7 @@
         "description": "Unsubscribe from `position_metrics` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2478,7 +2478,7 @@
         "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2492,7 +2492,7 @@
         "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `timeframes`, `milestone_amounts`",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2506,7 +2506,7 @@
         "description": "Unsubscribe from `market_volume_milestone` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2520,7 +2520,7 @@
         "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2534,7 +2534,7 @@
         "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `timeframes`, `milestone_amounts`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "event"
+            "name": "Event"
           }
         ],
         "payload": {
@@ -2548,7 +2548,7 @@
         "description": "Unsubscribe from `event_volume_milestone` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "event"
+            "name": "Event"
           }
         ],
         "payload": {
@@ -2562,7 +2562,7 @@
         "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "event"
+            "name": "Event"
           }
         ],
         "payload": {
@@ -2576,7 +2576,7 @@
         "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `outcomes`, `timeframes`, `milestone_amounts`",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2590,7 +2590,7 @@
         "description": "Unsubscribe from `position_volume_milestone` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2604,7 +2604,7 @@
         "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2618,7 +2618,7 @@
         "description": "Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `event_slugs`, `outcomes`, `min_probability_change_pct`, `spike_direction`, `window_secs`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2632,7 +2632,7 @@
         "description": "Unsubscribe from `probability_spike` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2646,7 +2646,7 @@
         "description": "Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2660,7 +2660,7 @@
         "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `event_slugs`, `outcomes`, `min_price_change_pct`, `spike_direction`, `window_secs`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2674,7 +2674,7 @@
         "description": "Unsubscribe from `price_spike` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2688,7 +2688,7 @@
         "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2702,7 +2702,7 @@
         "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`. Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `condition_ids`, `timeframes`",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2716,7 +2716,7 @@
         "description": "Unsubscribe from `market_volume_spike` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2730,7 +2730,7 @@
         "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`. Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2744,7 +2744,7 @@
         "description": "Fired when an event's aggregated trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` and `event_slugs` to narrow scope.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `event_slugs`, `timeframes`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "event"
+            "name": "Event"
           }
         ],
         "payload": {
@@ -2758,7 +2758,7 @@
         "description": "Unsubscribe from `event_volume_spike` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "event"
+            "name": "Event"
           }
         ],
         "payload": {
@@ -2772,7 +2772,7 @@
         "description": "Fired when an event's aggregated trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` and `event_slugs` to narrow scope.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "event"
+            "name": "Event"
           }
         ],
         "payload": {
@@ -2786,7 +2786,7 @@
         "description": "Fired when a position's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` to narrow scope.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `position_ids`, `condition_ids`, `outcomes`, `timeframes`",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2800,7 +2800,7 @@
         "description": "Unsubscribe from `position_volume_spike` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2814,7 +2814,7 @@
         "description": "Fired when a position's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` to narrow scope.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "position"
+            "name": "Position"
           }
         ],
         "payload": {
@@ -2828,7 +2828,7 @@
         "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.\n\n**Credits cost:** 2 per delivered alert.\n\n**Applicable filters:** `min_probability`, `max_probability`, `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices`, `event_slugs`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2842,7 +2842,7 @@
         "description": "Unsubscribe from `close_to_bond` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2856,7 +2856,7 @@
         "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.\n\n**Credits cost:** 2 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2870,7 +2870,7 @@
         "description": "Fired when a new prediction market is created on Polymarket. Filterable by `tags` and `event_slugs`.\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `tags`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2884,7 +2884,7 @@
         "description": "Unsubscribe from `market_created` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2898,7 +2898,7 @@
         "description": "Fired when a new prediction market is created on Polymarket. Filterable by `tags` and `event_slugs`.\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "market"
+            "name": "Market"
           }
         ],
         "payload": {
@@ -2912,7 +2912,7 @@
         "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Use `asset_symbols` to restrict to specific assets (empty = all).\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `asset_symbols`",
         "tags": [
           {
-            "name": "assets"
+            "name": "Assets"
           }
         ],
         "payload": {
@@ -2926,7 +2926,7 @@
         "description": "Unsubscribe from `asset_price_tick` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "assets"
+            "name": "Assets"
           }
         ],
         "payload": {
@@ -2940,7 +2940,7 @@
         "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Use `asset_symbols` to restrict to specific assets (empty = all).\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "assets"
+            "name": "Assets"
           }
         ],
         "payload": {
@@ -2954,7 +2954,7 @@
         "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"`, `\"24h\"`.\n\n**Credits cost:** 1 per delivered alert.\n\n**Applicable filters:** `asset_symbols`, `timeframes`",
         "tags": [
           {
-            "name": "assets"
+            "name": "Assets"
           }
         ],
         "payload": {
@@ -2968,7 +2968,7 @@
         "description": "Unsubscribe from `asset_price_window_update` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "assets"
+            "name": "Assets"
           }
         ],
         "payload": {
@@ -2982,7 +2982,7 @@
         "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"`, `\"24h\"`.\n\n**Credits cost:** 1 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "assets"
+            "name": "Assets"
           }
         ],
         "payload": {
