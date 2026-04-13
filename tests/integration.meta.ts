@@ -4,6 +4,7 @@ export interface MethodConfig {
 	operationId?: string;
 	paginate?: boolean;
 	paginateParams?: Record<string, unknown>;
+	shape?: "array" | "object" | "defined";
 }
 
 export const methodMeta: Record<string, MethodConfig> = {
@@ -17,6 +18,16 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "list_markets",
 		paginate: true,
 	},
+	"markets.getMarket": {
+		params: { conditionId: "$conditionId" },
+		operationId: "get_market",
+		shape: "object",
+	},
+	"markets.getMarketBySlug": {
+		params: { marketSlug: "$marketSlug" },
+		operationId: "get_market_by_slug",
+		shape: "object",
+	},
 	"markets.getMarketChart": {
 		params: { condition_id: "$conditionId", resolution: "1D", count_back: 10 },
 		operationId: "get_chart",
@@ -24,6 +35,7 @@ export const methodMeta: Record<string, MethodConfig> = {
 	"markets.getMarketMetrics": {
 		params: { condition_id: "$conditionId", timeframe: "24h" },
 		operationId: "get_market_metrics",
+		shape: "object",
 	},
 	"markets.getTrades": {
 		params: { condition_ids: "$conditionId", limit: 2 },
@@ -41,6 +53,7 @@ export const methodMeta: Record<string, MethodConfig> = {
 	"markets.getPositionMetrics": {
 		params: { position_id: "$positionId", timeframe: "24h" },
 		operationId: "get_position_metrics",
+		shape: "object",
 	},
 	"markets.getPositionVolumeChart": {
 		params: { position_id: "$positionId" },
@@ -67,6 +80,7 @@ export const methodMeta: Record<string, MethodConfig> = {
 	"events.getEventMetrics": {
 		params: { event_slug: "$eventSlug", timeframe: "24h" },
 		operationId: "get_event_metrics",
+		shape: "object",
 	},
 	"events.getEventOutcomes": {
 		params: { event_slug: "$eventSlug", limit: 2 },
@@ -111,6 +125,12 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { series_slug: "$seriesId", limit: 2 },
 		operationId: "get_series_outcomes",
 	},
+	"series.getSeriesEvents": {
+		skip: true,
+		params: { identifier: "$seriesId", limit: 2 },
+		operationId: "get_series_events",
+		paginate: true,
+	},
 
 	"trader.getTraderTrades": {
 		params: { address: "$address", limit: 2 },
@@ -153,10 +173,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "get_trader_pnl_candles",
 	},
 	"trader.getTraderOutcomePnl": {
-		params: { address: "$address", sort_by: "buy_usd", limit: 2 },
+		params: { address: "$address", sort_by: "total_buy_usd", status: "open", limit: 2 },
 		operationId: "get_trader_position_pnl",
 		paginate: true,
-		paginateParams: { address: "0xaf3909f0123a907b22d7add2cd1a59a072013101", sort_by: "buy_usd" },
+		paginateParams: { address: "0xaf3909f0123a907b22d7add2cd1a59a072013101", sort_by: "total_buy_usd", status: "open" },
 	},
 	"trader.getGlobalPnl": {
 		params: { limit: 2 },
@@ -195,6 +215,7 @@ export const methodMeta: Record<string, MethodConfig> = {
 	"webhooks.list": {
 		operationId: "list_webhooks",
 	},
+	"webhooks.rotateSecret": { skip: true },
 	"webhooks.create": { skip: true },
 	"webhooks.update": { skip: true },
 	"webhooks.deleteWebhook": { skip: true },

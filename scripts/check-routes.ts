@@ -80,7 +80,7 @@ async function getSdkRoutes(namespaceFiles: string[]): Promise<SdkRoute[]> {
 
 	for (const file of namespaceFiles) {
 		const content = await readFile(join(NAMESPACES_DIR, file), "utf-8");
-		const venueRegex = /async\s+(\w+)\([\s\S]*?return\s+this\.(get|post|put|patch|delete)\b[^(]*\([^,]*,\s*(`[^`]+`|"[^"]+"|'[^']+')/g;
+		const venueRegex = /async\s+(\w+)\([\s\S]*?(?:return|await)\s+this\.(get|post|put|patch|delete)\b[^(]*\([^,]*,\s*(`[^`]+`|"[^"]+"|'[^']+')/g;
 		let match: RegExpExecArray | null;
 		while ((match = venueRegex.exec(content)) !== null) {
 			const raw = match[3].slice(1, -1);
@@ -124,6 +124,16 @@ async function getExportedSchemas(typesContent: string): Promise<Set<string>> {
 async function getWsSpecRooms(jsonSpecPath: string): Promise<string[]> {
 	const spec = JSON.parse(await readFile(jsonSpecPath, "utf-8"));
 	return Object.keys(spec.channels ?? {});
+}
+
+async function getWsSpecRoomAddresses(jsonSpecPath: string): Promise<string[]> {
+	const spec = JSON.parse(await readFile(jsonSpecPath, "utf-8"));
+	const channels = spec.channels ?? {};
+	const rooms = new Set<string>();
+	for (const [key, def] of Object.entries(channels) as [string, { address?: string }][]) {
+		rooms.add(def.address ?? key);
+	}
+	return [...rooms];
 }
 
 function extractInterfaceKeys(content: string, interfaceName: string): Set<string> {
@@ -226,7 +236,7 @@ interface WsCheckConfig {
 	sdkRooms: Set<string>;
 }
 
-const streamingSpecRooms = await getWsSpecRooms(wsJsonPath);
+const streamingSpecRooms = await getWsSpecRoomAddresses(wsJsonPath);
 const alertsSpecChannels = await getWsSpecRooms(wsAlertsJsonPath);
 const alertsSpecEvents = alertsSpecChannels
 	.filter((c) => c.startsWith("ws_alerts."))

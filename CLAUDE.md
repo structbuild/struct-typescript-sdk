@@ -17,7 +17,8 @@ TypeScript SDK (`@structbuild/sdk`) for prediction market APIs via `api.struct.t
 - **Full pipeline (staging):** `bun run prep:staging` (same as prep but fetches from staging-api.struct.to)
 - **Check routes:** `bun run check-routes` (validates namespace routes match OpenAPI spec; warns if specs are from staging)
 - **Fix spec:** `bun run fix-spec` (fixes broken `$ref`s in the OpenAPI spec)
-- **Test:** `bun test` (integration tests against live API, requires `STRUCT_API_KEY`)
+- **Test:** `bun test` (fast suite; env-gated live integration tests are skipped by default)
+- **Live WS soak:** `STRUCT_RUN_WS_LIVE_TESTS=1 STRUCT_API_KEY=... bun run test:ws:live` (defaults to 5 minutes; override with `STRUCT_WS_SOAK_DURATION_MS`)
 - **Test watch:** `bun test --watch`
 - **Link for local dev:** `bun link` (then `bun link @structbuild/sdk` in consumer repo)
 - **Pack for testing:** `bun run pack` (builds and creates `.tgz`)
@@ -37,7 +38,9 @@ TypeScript SDK (`@structbuild/sdk`) for prediction market APIs via `api.struct.t
 - `src/generated/webhooks.ts` — Auto-generated types from the Webhooks OpenAPI spec. Do not edit manually.
 - `src/generated/ws.ts` — Auto-generated types from the WS AsyncAPI spec (`scripts/generate-ws-types.ts`). Do not edit manually.
 - `src/index.ts` — Public barrel export.
-- `tests/integration.test.ts` — Auto-discovers namespace methods and runs them against the live API. Test config in `tests/integration.meta.ts` defines params and operationId mappings per method.
+- `tests/integration.test.ts` — Auto-discovers namespace methods and runs them against the live API when `STRUCT_RUN_INTEGRATION_TESTS=1`. Test config in `tests/integration.meta.ts` defines params and operationId mappings per method.
+- `tests/ws.live.test.ts` — Env-gated live websocket soak test for `StructWebSocket` against the real service.
+- `tests/ws.typecheck.ts` — Compile-time websocket subscription and event typing assertions, enforced by `bun run typecheck`.
 
 ## Conventions
 

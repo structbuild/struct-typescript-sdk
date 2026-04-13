@@ -61,6 +61,27 @@ describe("StructWebSocket", () => {
 		await expect(subscribePromise).resolves.toEqual({ subscribe_all: true });
 	});
 
+	test("resolves subscribe promises for room-specific subscribe response envelope types", async () => {
+		const ws = new StructWebSocket({ apiKey: "api-key" });
+		const connectPromise = ws.connect();
+		const socket = latestSocket();
+
+		socket.open();
+		await connectPromise;
+
+		const subscribePromise = ws.subscribe("polymarket_asset_prices", {
+			asset_symbols: ["BTC"],
+		});
+
+		socket.serverSend({
+			type: "asset_prices_stream_subscribe_response",
+			room_id: "polymarket_asset_prices",
+			data: { asset_symbols: ["BTC"] },
+		});
+
+		await expect(subscribePromise).resolves.toEqual({ asset_symbols: ["BTC"] });
+	});
+
 	test("keeps room replays intact when the replay queue is capped", async () => {
 		const ws = new StructWebSocket({
 			apiKey: "api-key",

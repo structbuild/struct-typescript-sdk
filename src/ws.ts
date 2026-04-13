@@ -188,7 +188,7 @@ export class StructWebSocket {
 			return;
 		}
 
-		if (msg.type === "subscribed" && msg.room_id) {
+		if (this.isSubscribeResponseMessage(msg)) {
 			const pending = this.pendingSubscribes.get(msg.room_id as WsRoomId);
 			if (pending) {
 				this.clearSubscribeTimer(pending);
@@ -206,6 +206,11 @@ export class StructWebSocket {
 		}
 
 		this.emit(msg.type as keyof WebSocketEventMap, msg.data as never);
+	}
+
+	private isSubscribeResponseMessage(msg: { type?: string; room_id?: string; data?: unknown }): msg is { type: string; room_id: string; data?: unknown } {
+		if (!msg.type || !msg.room_id) return false;
+		return msg.type === "subscribed" || msg.type.endsWith("_subscribe_response");
 	}
 
 	private emit<K extends keyof WebSocketEventMap>(event: K, payload: WebSocketEventMap[K]): void {

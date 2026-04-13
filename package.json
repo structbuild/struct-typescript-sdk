@@ -28,6 +28,7 @@
     "prep": "bun run fetch-specs && bun run fix-spec && bun run generate:polymarket && bun run generate:webhooks && bun run generate:ws && bun run check-routes && bun run build",
     "prep:staging": "STRUCT_ENV=staging bun run prep",
     "test": "bun test",
+    "test:ws:live": "bun test tests/ws.live.test.ts --timeout 900000",
     "test:watch": "bun test --watch",
     "typecheck": "bun run tsc -p tsconfig.check.json",
     "generate:polymarket": "openapi-typescript openapi/polymarket.json -o src/generated/polymarket.ts",

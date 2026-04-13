@@ -602,24 +602,28 @@ export interface components {
             probability_high: number;
             /** @description Lowest implied probability in window (0–1) */
             probability_low: number;
-            /** Format: int64 */
-            historical_confirmed_at: number;
-            /** Format: int64 */
-            latest_confirmed_at: number;
-            /** Format: int64 */
-            latest_block: number;
         };
-        /** @description Subscribe to the trader PnL stream. traders is required and must be non-empty. */
+        /** @description Subscribe to the trader PnL stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. */
         TraderPnlSubscribeMessage: {
             /** @enum {string} */
             action: "subscribe" | "unsubscribe_all";
             /** @description EVM wallet addresses */
             traders: string[];
+            /** @description Restrict pushed updates to this subset of PnL granularities. Empty/omitted = all three. Unknown values reject the subscription. */
+            update_types?: ("global" | "market" | "event")[];
+            /** @description Restrict pushed updates to these aggregation timeframes. Empty/omitted = all four. Unknown values reject the subscription. */
+            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
         };
-        /** @description Server acknowledgement for a trader PnL subscription */
+        /** @description Server acknowledgement for a trader PnL subscription. Echoes the accepted (normalized) filter sets so clients can confirm the active subscription. */
         TraderPnlSubscribeResponse: {
             traders?: string[];
+            /** @description Accepted update types. Empty = all. */
+            update_types?: ("global" | "market" | "event")[];
+            /** @description Accepted timeframes. Empty = all. */
+            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
+            /** @description Trader addresses that were rejected (invalid EVM format). */
             rejected?: string[];
+            /** @description Set if the entire subscription was rejected (e.g. empty traders, or an invalid update_type / timeframe value). */
             error?: string | null;
         };
         /** @description Server-pushed event: global (portfolio-level) PnL update for a trader. Envelope type: "trader_global_pnl_update". */
@@ -909,6 +913,302 @@ export interface components {
             position_ids?: string[];
             /** @description Filter values that were rejected (invalid format or limit exceeded) */
             rejected?: string[];
+        };
+        /**
+         * OrderFilled / OrdersMatched
+         * @description A buy/sell trade was matched on the exchange.
+         */
+        TradeOrderFilledEvent: {
+            /** @enum {string} */
+            trade_type: "OrderFilled" | "OrdersMatched";
+            id: string;
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            /** @description Absent for pending trades */
+            order_hash?: string;
+            trader: {
+                address?: string;
+                name?: string | null;
+                pseudonym?: string | null;
+                profile_image?: string | null;
+                x_username?: string | null;
+                verified_badge?: boolean;
+            };
+            /** @description Absent for pending trades */
+            taker?: string;
+            /** @enum {string} */
+            side?: "Buy" | "Sell";
+            condition_id?: string | null;
+            position_id?: string;
+            outcome?: string | null;
+            outcome_index?: number | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            usd_amount?: number;
+            shares_amount?: number;
+            price?: number;
+            probability?: number | null;
+            /** @description Absent for pending trades */
+            fee?: number;
+            /** @description Absent for pending trades */
+            fee_shares?: number;
+            /** @description Absent for pending trades */
+            fee_pct?: number;
+            exchange: number;
+        };
+        /**
+         * Redemption
+         * @description Positions redeemed after market resolution.
+         */
+        TradeRedemptionEvent: {
+            /** @enum {string} */
+            trade_type: "Redemption";
+            id: string;
+            hash: string;
+            block?: number;
+            confirmed_at?: number;
+            received_at?: number;
+            log_index?: number;
+            block_index?: number;
+            trader: {
+                address?: string;
+                name?: string | null;
+                pseudonym?: string | null;
+                profile_image?: string | null;
+                x_username?: string | null;
+                verified_badge?: boolean;
+            };
+            condition_id?: string | null;
+            outcome?: string | null;
+            outcome_index?: number | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            usd_amount?: number;
+            winning_outcome_index?: number | null;
+            position_details?: {
+                position_id?: string;
+                outcome_index?: number;
+                amount?: string;
+            }[];
+            exchange: number;
+        };
+        /**
+         * Merge
+         * @description Outcome tokens burned to receive collateral.
+         */
+        TradeMergeEvent: {
+            /** @enum {string} */
+            trade_type: "Merge";
+            id: string;
+            hash: string;
+            block?: number;
+            confirmed_at?: number;
+            received_at?: number;
+            log_index?: number;
+            block_index?: number;
+            trader: {
+                address?: string;
+                name?: string | null;
+                pseudonym?: string | null;
+                profile_image?: string | null;
+                x_username?: string | null;
+                verified_badge?: boolean;
+            };
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            usd_amount?: number;
+            position_details?: {
+                position_id?: string;
+                outcome_index?: number;
+                amount?: string;
+            }[];
+            exchange: number;
+        };
+        /**
+         * Split
+         * @description Collateral deposited to receive outcome tokens.
+         */
+        TradeSplitEvent: {
+            /** @enum {string} */
+            trade_type: "Split";
+            id: string;
+            hash: string;
+            block?: number;
+            confirmed_at?: number;
+            received_at?: number;
+            log_index?: number;
+            block_index?: number;
+            trader: {
+                address?: string;
+                name?: string | null;
+                pseudonym?: string | null;
+                profile_image?: string | null;
+                x_username?: string | null;
+                verified_badge?: boolean;
+            };
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            usd_amount?: number;
+            position_details?: {
+                position_id?: string;
+                outcome_index?: number;
+                amount?: string;
+            }[];
+            exchange: number;
+        };
+        /**
+         * PositionsConverted
+         * @description NegRisk NO tokens converted to YES tokens + collateral.
+         */
+        TradePositionsConvertedEvent: {
+            /** @enum {string} */
+            trade_type: "PositionsConverted";
+            id: string;
+            hash: string;
+            block?: number;
+            confirmed_at?: number;
+            received_at?: number;
+            log_index?: number;
+            block_index?: number;
+            trader: {
+                address?: string;
+                name?: string | null;
+                pseudonym?: string | null;
+                profile_image?: string | null;
+                x_username?: string | null;
+                verified_badge?: boolean;
+            };
+            market_id?: string;
+            index_set?: string;
+            shares_amount?: number;
+            exchange: number;
+        };
+        /**
+         * Cancelled
+         * @description Order cancelled on-chain.
+         */
+        TradeCancelledEvent: {
+            /** @enum {string} */
+            trade_type: "Cancelled";
+            id: string;
+            hash: string;
+            block?: number;
+            confirmed_at?: number;
+            received_at?: number;
+            log_index?: number;
+            block_index?: number;
+            order_hash?: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            exchange: number;
+        };
+        /**
+         * Oracle Lifecycle Event
+         * @description Market lifecycle events: Initialization, Proposal, Dispute, Settled, Resolution, ConditionResolution, Reset, Flag, Unflag, Pause, Unpause, ManualResolution, NegRiskOutcomeReported.
+         */
+        TradeOracleLifecycleEvent: {
+            /** @enum {string} */
+            trade_type: "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported";
+            id: string;
+            hash: string;
+            block?: number;
+            confirmed_at?: number;
+            received_at?: number;
+            log_index?: number;
+            block_index?: number;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            assertion_id?: string | null;
+            proposer?: string | null;
+            disputer?: string | null;
+            proposed_outcome?: string | null;
+            settled_price?: number | null;
+            disputed?: boolean | null;
+            settlement_resolution?: boolean | null;
+            bond?: string | null;
+            expiration_time?: number | null;
+            creator?: string | null;
+            reward_token?: string | null;
+            reward?: string | null;
+            proposal_bond?: string | null;
+        };
+        /**
+         * RegisterToken
+         * @description YES/NO token pair registered for a condition.
+         */
+        TradeRegisterTokenEvent: {
+            /** @enum {string} */
+            trade_type: "RegisterToken";
+            id: string;
+            hash: string;
+            block?: number;
+            confirmed_at?: number;
+            received_at?: number;
+            log_index?: number;
+            block_index?: number;
+            condition_id: string;
+            token0?: string;
+            token1?: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            exchange: number;
+        };
+        /**
+         * Approval
+         * @description ERC-1155 setApprovalForAll — operator approved/revoked.
+         */
+        TradeApprovalEvent: {
+            /** @enum {string} */
+            trade_type: "Approval";
+            id: string;
+            hash: string;
+            block?: number;
+            confirmed_at?: number;
+            received_at?: number;
+            log_index?: number;
+            block_index?: number;
+            trader: {
+                address?: string;
+                name?: string | null;
+                pseudonym?: string | null;
+                profile_image?: string | null;
+                x_username?: string | null;
+                verified_badge?: boolean;
+            };
+            operator?: string;
+            approved?: boolean;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            exchange: number;
         };
     };
     responses: never;

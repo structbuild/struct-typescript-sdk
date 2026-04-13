@@ -9,6 +9,7 @@ import { methodMeta, type MethodConfig } from "./integration.meta.js";
 const API_KEY = Bun.env.STRUCT_API_KEY ?? "";
 const RUN_INTEGRATION_TESTS = Bun.env.STRUCT_RUN_INTEGRATION_TESTS === "1";
 const REPORT_PATH = "logs/integration-report.md";
+const TEST_TIMEOUT_MS = 30_000;
 
 type OpenAPISpec = {
 	paths: Record<string, Record<string, { operationId?: string; responses?: Record<string, { content?: Record<string, { schema?: Record<string, unknown> }> }> }>>;
@@ -380,6 +381,7 @@ describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 
 		const market = marketsRes.data[0]!;
 		setupData.conditionId = market.condition_id;
+		setupData.marketSlug = market.market_slug!;
 		setupData.positionId = market.outcomes![0]!.position_id!;
 
 		const event = eventsRes.data[0]!;
@@ -423,7 +425,7 @@ describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 				test(method, async () => {
 					const { schema, formatted: openApiSchema } = getExpectedSchema(meta);
 					const derived = deriveShapeFromSchema(schema);
-					const shape = derived.shape;
+					const shape = meta?.shape ?? derived.shape;
 					const requiredKeys = derived.requiredKeys.length > 0 ? derived.requiredKeys : undefined;
 					const shapeLabel = `${shape}${requiredKeys ? ` with keys [${requiredKeys.join(", ")}]` : ""}`;
 
@@ -434,10 +436,10 @@ describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 					} catch (err) {
 						handleHttpError(ns, method, shapeLabel, openApiSchema, err);
 					}
-				});
+				}, TEST_TIMEOUT_MS);
 
 				if (meta?.paginate) {
-					test(`${method} (paginate)`, async () => {
+					test(`${method} (paginate)`, { timeout: TEST_TIMEOUT_MS }, async () => {
 						const paginateMethod = `${method} (paginate)`;
 						const { formatted: openApiSchema } = getExpectedSchema(meta);
 

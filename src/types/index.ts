@@ -308,6 +308,10 @@ export interface GetSeriesListParams extends OperationQuery<"get_series_list"> {
 
 export interface GetSeriesOutcomesParams extends OperationQuery<"get_series_outcomes"> {}
 
+export interface GetSeriesEventsParams extends OperationQuery<"get_series_events"> {
+	identifier: string;
+}
+
 export interface GetTagsParams extends OperationQuery<"get_tags"> {}
 
 export interface GetTagParams {
@@ -522,4 +526,13 @@ export type {
 	TraderPnlSubscribeResponse,
 	AccountsSubscribeResponse,
 	OrderBookSubscribeResponse,
+	TradeOrderFilledEvent,
+	TradeRedemptionEvent,
+	TradeMergeEvent,
+	TradeSplitEvent,
+	TradePositionsConvertedEvent,
+	TradeCancelledEvent,
+	TradeOracleLifecycleEvent,
+	TradeRegisterTokenEvent,
+	TradeApprovalEvent,
 } from "./ws.js";

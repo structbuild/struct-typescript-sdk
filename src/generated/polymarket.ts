@@ -253,7 +253,7 @@ export interface paths {
         };
         /**
          * Get bonds
-         * @description Retrieve a list of bond markets sorted by yield, filtered by probability and time to expiry
+         * @description Retrieve bond markets with sorting, probability range filter, and offset pagination
          */
         get: operations["get_bonds"];
         put?: never;
@@ -413,7 +413,7 @@ export interface paths {
         };
         /**
          * Get market by slug
-         * @description Retrieve a single market by its slug with optional nested tags, event, and metrics
+         * @description Retrieve one or more markets by slug. Supports batch lookups via query params. Returns an array of MarketResponse objects.
          */
         get: operations["get_market_by_slug"];
         put?: never;
@@ -473,7 +473,7 @@ export interface paths {
         };
         /**
          * Get market by condition ID
-         * @description Retrieve a single market by its condition ID with optional nested tags, event, and metrics
+         * @description Retrieve one or more markets by condition ID. Supports batch lookups via query params. Returns an array of MarketResponse objects.
          */
         get: operations["get_market"];
         put?: never;
@@ -616,6 +616,26 @@ export interface paths {
          * @description Returns the winning outcome name for each resolved market across all events in a series, keyed by market slug. Useful for checking historical results across recurring series (e.g., btc-updown-5m).
          */
         get: operations["get_series_outcomes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/series/{identifier}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get series events
+         * @description Returns a paginated list of events belonging to a specific Polymarket series, with full market data for each event.
+         */
+        get: operations["get_series_events"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1046,6 +1066,8 @@ export interface components {
             apy: number;
             /** Format: double */
             volume_24h?: number | null;
+            /** Format: double */
+            liquidity?: number | null;
             outcomes: components["schemas"]["BondOutcome"][];
         };
         BondOutcome: {
@@ -1403,6 +1425,18 @@ export interface components {
              * @default null
              */
             outcome_index: number | null;
+            /**
+             * Format: int64
+             * @description Block of the most recent price update for this outcome.
+             * @default null
+             */
+            latest_block: number | null;
+            /**
+             * Format: int64
+             * @description Unix-seconds timestamp of the most recent price update.
+             * @default null
+             */
+            latest_confirmed_at: number | null;
         };
         /** @enum {string} */
         MarketPnlSortBy: "realized_pnl_usd" | "buy_usd" | "total_buys" | "total_fees" | "outcomes_traded" | "realized_pnl_pct";
@@ -1988,7 +2022,7 @@ export interface components {
             price_close: number;
         };
         /** @enum {string} */
-        PositionPnlSortBy: "realized_pnl_usd" | "buy_usd" | "sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "title";
+        PositionPnlSortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "title";
         /**
          * @description Position status filter for open/closed positions.
          * @enum {string}
@@ -2534,6 +2568,8 @@ export interface components {
             first_trade_at?: number | null;
             /** Format: int64 */
             last_trade_at?: number | null;
+            /** Format: double */
+            realized_pnl_pct?: number | null;
         };
         /** @description Trader profile info - backwards compatibility */
         TraderInfo: {
@@ -2547,6 +2583,7 @@ export interface components {
         /** @description Market-level PnL entry */
         TraderMarketPnlEntry: {
             condition_id?: string | null;
+            market_slug?: string | null;
             event_slug?: string | null;
             question?: string | null;
             image_url?: string | null;
@@ -2578,6 +2615,8 @@ export interface components {
             first_trade_at?: number | null;
             /** Format: int64 */
             last_trade_at?: number | null;
+            /** Format: double */
+            realized_pnl_pct?: number | null;
         };
         /** @description Outcome-level PnL entry (per outcome token / position_id) */
         TraderOutcomePnlEntry: {
@@ -2748,12 +2787,12 @@ export interface operations {
                  * @description Asset ticker: BTC, ETH, XRP, SOL, DOGE, BNB, HYPE
                  * @example BTC
                  */
-                asset_symbol: string;
+                asset_symbol: components["schemas"]["AssetSymbol"];
                 /**
                  * @description Time window: 5m, 15m, 1h, 4h, 1d
                  * @example 1h
                  */
-                variant: string;
+                variant: components["schemas"]["AssetVariant"];
                 /** @description Start timestamp in seconds (Unix epoch, inclusive) */
                 from?: number;
                 /** @description End timestamp in seconds (Unix epoch, inclusive) */
@@ -2914,13 +2953,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Event metrics for the specified timeframe(s). Returns single object for one timeframe, array for multiple. */
+            /** @description Event metrics. **Note:** returns a single object for one timeframe, or an array of objects for comma-separated timeframes or 'all'. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["EventMetricsResponse"];
+                    "application/json": components["schemas"]["EventMetricsResponse"][];
                 };
             };
             /** @description Invalid timeframe */
@@ -3095,8 +3134,16 @@ export interface operations {
                 condition_id?: string;
                 /** @description Market slug (e.g. `will-trump-win`) */
                 market_slug?: string;
-                /** @description Time range in hours (default: 24, max: 336 = 14 days) */
+                /** @description Start timestamp (Unix seconds). If omitted, derived from `hours` param. */
+                from?: number;
+                /** @description End timestamp (Unix seconds). Defaults to now. */
+                to?: number;
+                /** @description Number of candles to return (default: 500, max: 2500) */
+                count_back?: number;
+                /** @description Fallback time range in hours when `from`/`to` are not provided (default: 24, max: 336 = 14 days) */
                 hours?: number;
+                /** @description Cursor-based pagination key from previous response */
+                pagination_key?: string;
             };
             header?: never;
             path?: never;
@@ -3168,8 +3215,16 @@ export interface operations {
     get_position_holders_history: {
         parameters: {
             query?: {
-                /** @description Time range in hours (default: 24, max: 336 = 14 days) */
+                /** @description Start timestamp (Unix seconds). If omitted, derived from `hours` param. */
+                from?: number;
+                /** @description End timestamp (Unix seconds). Defaults to now. */
+                to?: number;
+                /** @description Number of candles to return (default: 500, max: 2500) */
+                count_back?: number;
+                /** @description Fallback time range in hours when `from`/`to` are not provided (default: 24, max: 336 = 14 days) */
                 hours?: number;
+                /** @description Cursor-based pagination key from previous response */
+                pagination_key?: string;
             };
             header?: never;
             path: {
@@ -3299,12 +3354,16 @@ export interface operations {
             query?: {
                 /** @description Minimum probability threshold (default: 0.85) */
                 min_probability?: number;
+                /** @description Maximum probability threshold (e.g. 0.99) */
+                max_probability?: number;
                 /** @description Maximum hours until market end */
                 max_hours?: number;
+                /** @description Sort by: apy, liquidity, volume, end_date (default: end_date) */
+                sort_by?: string;
                 /** @description Number of results (default: 10, max: 250) */
                 limit?: number;
-                /** @description Cursor for pagination: end_date (unix epoch) of the last item from the previous page */
-                pagination_key?: number;
+                /** @description Offset for pagination (default: 0) */
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -3312,7 +3371,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description List of bond markets sorted by yield */
+            /** @description List of bond markets */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -3336,6 +3395,8 @@ export interface operations {
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
                 to?: number;
+                /** @description Cursor-based pagination key from previous response */
+                pagination_key?: string;
             };
             header?: never;
             path?: never;
@@ -3397,13 +3458,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Market metrics for the specified timeframe(s). Returns single object for one timeframe, array for multiple. */
+            /** @description Market metrics. **Note:** returns a single object for one timeframe, or an array of objects for comma-separated timeframes or 'all'. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ConditionMetricsResponse"];
+                    "application/json": components["schemas"]["ConditionMetricsResponse"][];
                 };
             };
             /** @description Invalid timeframe */
@@ -3428,6 +3489,8 @@ export interface operations {
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
                 to?: number;
+                /** @description Cursor-based pagination key from previous response */
+                pagination_key?: string;
             };
             header?: never;
             path?: never;
@@ -3460,13 +3523,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Position metrics for the specified timeframe(s). Returns single object for one timeframe, array for multiple. */
+            /** @description Position metrics. **Note:** returns a single object for one timeframe, or an array of objects for comma-separated timeframes or 'all'. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PositionMetricsResponse"];
+                    "application/json": components["schemas"]["PositionMetricsResponse"][];
                 };
             };
             /** @description Invalid timeframe */
@@ -3491,6 +3554,8 @@ export interface operations {
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
                 to?: number;
+                /** @description Cursor-based pagination key from previous response */
+                pagination_key?: string;
             };
             header?: never;
             path?: never;
@@ -3545,6 +3610,24 @@ export interface operations {
     get_market_by_slug: {
         parameters: {
             query?: {
+                /** @description Comma-separated condition IDs (max 50) */
+                condition_ids?: string;
+                /** @description Comma-separated question IDs (max 50) */
+                question_ids?: string;
+                /** @description Comma-separated market IDs (max 50) */
+                market_ids?: string;
+                /** @description Comma-separated market slugs (max 50) */
+                market_slugs?: string;
+                /** @description Comma-separated event slugs (max 50) */
+                event_slugs?: string;
+                /** @description Comma-separated tag filters (max 50) */
+                tags?: string;
+                /** @description Comma-separated position IDs to resolve to markets (max 50) */
+                position_ids?: string;
+                /** @description Search string (3-100 characters) */
+                search?: string;
+                /** @description Metrics timeframe (default: 24h) */
+                timeframe?: components["schemas"]["MetricsTimeframe"];
                 /** @description Include tags array (default: true) */
                 include_tags?: boolean;
                 /** @description Include event object (default: true) */
@@ -3563,7 +3646,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Market with metadata, outcomes, tags, event, and metrics */
+            /** @description Array of markets with metadata, outcomes, tags, event, and metrics */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -3616,7 +3699,7 @@ export interface operations {
                         };
                         /** Format: double */
                         relevance_score?: number | null;
-                    };
+                    }[];
                 };
             };
             /** @description Market not found */
@@ -3708,6 +3791,8 @@ export interface operations {
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
                 to?: number;
+                /** @description Cursor-based pagination key from previous response */
+                pagination_key?: string;
             };
             header?: never;
             path?: never;
@@ -3729,6 +3814,24 @@ export interface operations {
     get_market: {
         parameters: {
             query?: {
+                /** @description Comma-separated condition IDs (max 50) */
+                condition_ids?: string;
+                /** @description Comma-separated question IDs (max 50) */
+                question_ids?: string;
+                /** @description Comma-separated market IDs (max 50) */
+                market_ids?: string;
+                /** @description Comma-separated market slugs (max 50) */
+                market_slugs?: string;
+                /** @description Comma-separated event slugs (max 50) */
+                event_slugs?: string;
+                /** @description Comma-separated tag filters (max 50) */
+                tags?: string;
+                /** @description Comma-separated position IDs to resolve to markets (max 50) */
+                position_ids?: string;
+                /** @description Search string (3-100 characters) */
+                search?: string;
+                /** @description Metrics timeframe (default: 24h) */
+                timeframe?: components["schemas"]["MetricsTimeframe"];
                 /** @description Include tags array (default: true) */
                 include_tags?: boolean;
                 /** @description Include event object (default: true) */
@@ -3747,7 +3850,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Market with metadata, outcomes, tags, event, and metrics */
+            /** @description Array of markets with metadata, outcomes, tags, event, and metrics */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -3800,7 +3903,7 @@ export interface operations {
                         };
                         /** Format: double */
                         relevance_score?: number | null;
-                    };
+                    }[];
                 };
             };
             /** @description Market not found */
@@ -4013,7 +4116,7 @@ export interface operations {
                 max_spread?: number;
                 /** @description Only return rows where total liquidity (bid + ask) >= this value */
                 min_liquidity?: number;
-                /** @description Number of results (default: 100, max: 1000) */
+                /** @description Number of results (default: 20, max: 200) */
                 limit?: number;
                 /** @description Cursor from previous response's pagination.pagination_key */
                 pagination_key?: string;
@@ -4180,6 +4283,49 @@ export interface operations {
             };
             /** @description Missing series_slug parameter */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_series_events: {
+        parameters: {
+            query?: {
+                /** @description Filter by active events only (default: false) */
+                active?: boolean;
+                /** @description Include tags array (default: true) */
+                include_tags?: boolean;
+                /** @description Include markets array (default: true) */
+                include_markets?: boolean;
+                /** @description Include metrics (default: true) */
+                include_metrics?: boolean;
+                /** @description Number of events to return (default: 20, max: 250) */
+                limit?: number;
+                /** @description Offset for pagination (default: 0) */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Series slug (e.g. 'btc-weekly-close') or series ID */
+                identifier: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of events in this series */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolymarketEvent"][];
+                };
+            };
+            /** @description Series not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4362,7 +4508,7 @@ export interface operations {
             query?: {
                 /** @description Timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Sort: realized_pnl_usd, total_volume_usd, markets_traded, total_fees (default: realized_pnl_usd) */
+                /** @description Sort: realized_pnl_usd, total_volume_usd, markets_traded, total_fees, realized_pnl_pct (default: realized_pnl_usd) */
                 sort_by?: components["schemas"]["EventPnlSortBy"];
                 /** @description Sort direction: asc, desc (default: desc) */
                 sort_direction?: components["schemas"]["SortDirection"];
@@ -4400,7 +4546,7 @@ export interface operations {
             query?: {
                 /** @description Timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Sort: realized_pnl_usd, buy_usd, total_buys, total_fees, outcomes_traded (default: realized_pnl_usd) */
+                /** @description Sort: realized_pnl_usd, buy_usd, total_buys, total_fees, outcomes_traded, realized_pnl_pct (default: realized_pnl_usd) */
                 sort_by?: components["schemas"]["MarketPnlSortBy"];
                 /** @description Sort direction: asc, desc (default: desc) */
                 sort_direction?: components["schemas"]["SortDirection"];

@@ -254,16 +254,16 @@ alerts.on("probability_spike", (payload) => {
 
 | Room | Filters | Event |
 |------|---------|-------|
-| `polymarket_trades` | `condition_ids` | `trade_stream_update` |
-| `polymarket_asset_prices` | `condition_ids?` | `asset_price_tick`, `asset_price_window_update` |
-| `polymarket_asset_window_updates` | `condition_ids` | `asset_window_update` |
+| `polymarket_trades` | `condition_ids?`, `market_slugs?`, `event_slugs?`, `position_ids?`, `traders?`, `trade_types?`, `status?`, `subscribe_all?` | `trade_stream_update` |
+| `polymarket_asset_prices` | `asset_symbols?` | `asset_price_tick`, `asset_price_window_update` |
+| `polymarket_asset_window_updates` | `asset_symbols?`, `timeframes?` | `asset_window_update` |
 | `polymarket_market_metrics` | `condition_ids` | `market_metrics_update` |
 | `polymarket_event_metrics` | `event_slugs` | `event_metrics_update` |
 | `polymarket_position_metrics` | `position_ids` | `position_metrics_update` |
-| `polymarket_trader_pnl` | `addresses` | `trader_global_pnl_update`, `trader_market_pnl_update`, `trader_event_pnl_update` |
-| `polymarket_trader_positions` | `addresses` | `trader_position_update` |
-| `polymarket_accounts` | `wallets` | `accounts_update`, `usdce_update`, `matic_update` |
-| `polymarket_order_book` | `asset_ids` | `order_book_update` |
+| `polymarket_trader_pnl` | `traders` | `trader_global_pnl_update`, `trader_market_pnl_update`, `trader_event_pnl_update` |
+| `polymarket_trader_positions` | `traders` | `trader_position_update` |
+| `polymarket_accounts` | `wallets`, `include_usdce?`, `include_matic?` | `accounts_update`, `usdce_update`, `matic_update` |
+| `polymarket_order_book` | `condition_ids?`, `position_ids?` | `order_book_update` |
 | `polymarket_clob_rewards` | `condition_ids?`, `subscribe_all?` | `clob_rewards_update` |
 
 ### Lifecycle events
@@ -363,6 +363,32 @@ const client = new StructClient({
     console.log(`${info.status} in ${info.duration}ms`);
   },
 });
+```
+
+## Testing
+
+WebSocket unit tests stay in the default fast suite:
+
+```bash
+bun test
+bun run typecheck
+```
+
+The live websocket soak test is opt-in and env-gated. It first calls the REST API to fetch a recent market, event, position, and trader, then subscribes across the main websocket rooms and keeps the socket alive for 5 minutes by default.
+
+```bash
+STRUCT_RUN_WS_LIVE_TESTS=1 \
+STRUCT_API_KEY=your-api-key \
+bun run test:ws:live
+```
+
+To run longer than 5 minutes, set `STRUCT_WS_SOAK_DURATION_MS`:
+
+```bash
+STRUCT_RUN_WS_LIVE_TESTS=1 \
+STRUCT_API_KEY=your-api-key \
+STRUCT_WS_SOAK_DURATION_MS=420000 \
+bun run test:ws:live
 ```
 
 ## License

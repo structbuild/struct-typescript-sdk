@@ -5,9 +5,9 @@ import type {
 	MarketResponse,
 	ConditionMetricsResponse,
 	PositionMetricsResponse,
-	PositionVolumeChartResponse,
+	PositionVolumeDataPoint,
 	PositionChartOutcome,
-	MarketVolumeChartResponse,
+	MarketVolumeDataPoint,
 	Trade,
 	CandlestickResponse,
 	GetMarketsParams,
@@ -32,12 +32,14 @@ export class MarketsNamespace extends Namespace {
 
 	async getMarket(params: GetMarketParams, venue?: Venue): Promise<HttpResponse<MarketResponse>> {
 		const { conditionId, ...query } = params;
-		return this.get<MarketResponse>(venue, `/market/${encodeURIComponent(conditionId)}`, { params: { ...query } });
+		const res = await this.get<MarketResponse[]>(venue, `/market/${encodeURIComponent(conditionId)}`, { params: { ...query } });
+		return { ...res, data: res.data[0]! };
 	}
 
 	async getMarketBySlug(params: GetMarketBySlugParams, venue?: Venue): Promise<HttpResponse<MarketResponse>> {
 		const { marketSlug, ...query } = params;
-		return this.get<MarketResponse>(venue, `/market/slug/${encodeURIComponent(marketSlug)}`, { params: { ...query } });
+		const res = await this.get<MarketResponse[]>(venue, `/market/slug/${encodeURIComponent(marketSlug)}`, { params: { ...query } });
+		return { ...res, data: res.data[0]! };
 	}
 
 	async getMarketChart(params: GetMarketChartParams, venue?: Venue): Promise<HttpResponse<PositionChartOutcome[]>> {
@@ -64,12 +66,12 @@ export class MarketsNamespace extends Namespace {
 		return this.get<PositionMetricsResponse>(venue, "/market/position/metrics", { params: { ...params } });
 	}
 
-	async getPositionVolumeChart(params: GetPositionVolumeChartParams, venue?: Venue): Promise<HttpResponse<PositionVolumeChartResponse>> {
-		return this.get<PositionVolumeChartResponse>(venue, "/market/position/volume-chart", { params: { ...params } });
+	async getPositionVolumeChart(params: GetPositionVolumeChartParams, venue?: Venue): Promise<HttpResponse<PositionVolumeDataPoint[]>> {
+		return this.get<PositionVolumeDataPoint[]>(venue, "/market/position/volume-chart", { params: { ...params } });
 	}
 
-	async getMarketVolumeChart(params: GetMarketVolumeChartParams, venue?: Venue): Promise<HttpResponse<MarketVolumeChartResponse>> {
-		return this.get<MarketVolumeChartResponse>(venue, "/market/volume-chart", { params: { ...params } });
+	async getMarketVolumeChart(params: GetMarketVolumeChartParams, venue?: Venue): Promise<HttpResponse<MarketVolumeDataPoint[]>> {
+		return this.get<MarketVolumeDataPoint[]>(venue, "/market/volume-chart", { params: { ...params } });
 	}
 
 	async getPriceJumps(params?: GetPriceJumpsParams, venue?: Venue): Promise<HttpResponse<PriceJump[]>> {

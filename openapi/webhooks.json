@@ -643,7 +643,18 @@
               "string",
               "null"
             ],
-            "description": "Aggregation window (e.g. \"1h\", \"24h\")"
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d",
+              null
+            ],
+            "description": "Aggregation window"
           },
           "volume_usd": {
             "type": [
@@ -748,7 +759,18 @@
               "string",
               "null"
             ],
-            "description": "Aggregation window (e.g. \"1h\", \"24h\")"
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d",
+              null
+            ],
+            "description": "Aggregation window"
           },
           "volume_usd": {
             "type": [
@@ -950,7 +972,17 @@
           },
           "timeframe": {
             "type": "string",
-            "description": "Aggregation window (e.g. \"1h\", \"24h\")"
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ],
+            "description": "Aggregation window"
           },
           "milestone_usd": {
             "type": "number",
@@ -991,7 +1023,18 @@
           },
           "timeframe": {
             "type": "string",
-            "description": "Aggregation window (e.g. \"1h\", \"24h\")"
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "1d",
+              "24h",
+              "7d",
+              "30d"
+            ],
+            "description": "Aggregation window"
           },
           "current_volume_usd": {
             "type": "number",
@@ -1138,11 +1181,22 @@
           },
           "exchange": {
             "type": "string",
-            "description": "Exchange identifier"
+            "enum": [
+              "CTFExchange",
+              "NegRiskExchange",
+              "ConditionalTokens",
+              "NegRiskAdapter",
+              "Unknown"
+            ],
+            "description": "Exchange contract that processed the trade"
           },
           "trade_type": {
             "type": "string",
-            "description": "Trade type identifier"
+            "enum": [
+              "OrderFilled",
+              "OrdersMatched"
+            ],
+            "description": "Trade type (webhook events only fire on order fills)"
           }
         }
       },
@@ -1641,7 +1695,18 @@
           },
           "timeframe": {
             "type": "string",
-            "description": "Aggregation window (e.g. \"1h\", \"24h\")"
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "1d",
+              "24h",
+              "7d",
+              "30d"
+            ],
+            "description": "Aggregation window"
           },
           "current_volume_usd": {
             "type": "number",
@@ -1799,11 +1864,22 @@
           },
           "exchange": {
             "type": "string",
-            "description": "Exchange identifier"
+            "enum": [
+              "CTFExchange",
+              "NegRiskExchange",
+              "ConditionalTokens",
+              "NegRiskAdapter",
+              "Unknown"
+            ],
+            "description": "Exchange contract that processed the trade"
           },
           "trade_type": {
             "type": "string",
-            "description": "Trade type identifier"
+            "enum": [
+              "OrderFilled",
+              "OrdersMatched"
+            ],
+            "description": "Trade type (webhook events only fire on order fills)"
           }
         }
       },
@@ -1936,11 +2012,22 @@
           },
           "exchange": {
             "type": "string",
-            "description": "Exchange identifier"
+            "enum": [
+              "CTFExchange",
+              "NegRiskExchange",
+              "ConditionalTokens",
+              "NegRiskAdapter",
+              "Unknown"
+            ],
+            "description": "Exchange contract that processed the trade"
           },
           "trade_type": {
             "type": "string",
-            "description": "Trade type identifier"
+            "enum": [
+              "OrderFilled",
+              "OrdersMatched"
+            ],
+            "description": "Trade type (webhook events only fire on order fills)"
           }
         }
       },
@@ -2275,7 +2362,18 @@
               "string",
               "null"
             ],
-            "description": "Aggregation window (e.g. \"1h\", \"24h\")"
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d",
+              null
+            ],
+            "description": "Aggregation window"
           },
           "volume_usd": {
             "type": [
@@ -2443,7 +2541,17 @@
           },
           "timeframe": {
             "type": "string",
-            "description": "Aggregation window (e.g. \"1h\", \"24h\")"
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ],
+            "description": "Aggregation window"
           },
           "milestone_usd": {
             "type": "number",
@@ -2518,7 +2626,18 @@
           },
           "timeframe": {
             "type": "string",
-            "description": "Aggregation window (e.g. \"1h\", \"24h\")"
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "1d",
+              "24h",
+              "7d",
+              "30d"
+            ],
+            "description": "Aggregation window"
           },
           "current_volume_usd": {
             "type": "number",
@@ -2781,7 +2900,17 @@
           },
           "timeframe": {
             "type": "string",
-            "description": "Aggregation window that crossed the milestone (e.g. \"1h\", \"24h\")"
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ],
+            "description": "Aggregation window that crossed the milestone"
           },
           "milestone_usd": {
             "type": "number",
@@ -2822,7 +2951,7 @@
           "event",
           "description",
           "category",
-          "credits_cost",
+          "millicredits_cost",
           "applicable_filters"
         ],
         "properties": {
@@ -2836,12 +2965,19 @@
           },
           "category": {
             "type": "string",
-            "description": "Category grouping: \"trader\", \"market\", \"event\", or \"position\""
+            "enum": [
+              "trader",
+              "market",
+              "event",
+              "position",
+              "assets"
+            ],
+            "description": "Category grouping for the event type"
           },
-          "credits_cost": {
+          "millicredits_cost": {
             "type": "integer",
             "format": "int64",
-            "description": "Credits consumed per webhook delivery",
+            "description": "Millicredits consumed per webhook delivery (1 credit = 1000 mc)",
             "minimum": 0
           },
           "applicable_filters": {
@@ -2891,6 +3027,13 @@
               "type": "string"
             },
             "description": "Filter by event slugs. Max 500 entries."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by tags or category names (case-insensitive) — for market_created. Max 500 entries."
           },
           "outcomes": {
             "type": "array",
@@ -2996,6 +3139,22 @@
             "format": "int64",
             "description": "Minimum markets traded — for global_pnl / event_pnl"
           },
+          "min_net_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum net shares held — for position-level filters"
+          },
+          "max_net_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum net shares held — for position-level filters"
+          },
           "min_fees": {
             "type": [
               "number",
@@ -3059,6 +3218,30 @@
             "format": "double",
             "description": "Spike ratio multiplier (must be > 1.0) — for volume_spike. E.g. 2.0 for 2x baseline"
           },
+          "spike_direction": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SpikeDirection",
+                "description": "Direction filter for spike webhooks — \"up\", \"down\", or \"both\""
+              }
+            ]
+          },
+          "window_secs": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Observation window in seconds (max 600) — for probability_spike, price_spike, volume_spike",
+            "minimum": 0
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When true, suppress webhooks for short-term \"updown\" markets"
+          },
           "asset_symbols": {
             "type": "array",
             "items": {
@@ -3121,7 +3304,13 @@
           },
           "status": {
             "type": "string",
-            "description": "Current status: \"active\", \"paused\", or \"disabled\""
+            "enum": [
+              "active",
+              "paused",
+              "disabled",
+              "suspended"
+            ],
+            "description": "Current webhook status"
           },
           "created_at": {
             "type": "integer",
@@ -3341,11 +3530,22 @@
           },
           "exchange": {
             "type": "string",
-            "description": "Exchange identifier"
+            "enum": [
+              "CTFExchange",
+              "NegRiskExchange",
+              "ConditionalTokens",
+              "NegRiskAdapter",
+              "Unknown"
+            ],
+            "description": "Exchange contract that processed the trade"
           },
           "trade_type": {
             "type": "string",
-            "description": "Trade type identifier"
+            "enum": [
+              "OrderFilled",
+              "OrdersMatched"
+            ],
+            "description": "Trade type (webhook events only fire on order fills)"
           }
         }
       },
@@ -3468,6 +3668,22 @@
             },
             "maxItems": 500,
             "description": "Restrict to markets belonging to these events."
+          },
+          "min_usd_value": {
+            "type": "number",
+            "description": "Minimum trade size in USD. Omit to match all sizes."
+          },
+          "min_probability": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Only fire when the outcome probability is ≥ this value."
+          },
+          "max_probability": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Only fire when the outcome probability is ≤ this value."
           },
           "exclude_shortterm_markets": {
             "type": "boolean",
@@ -3789,14 +4005,6 @@
             },
             "maxItems": 500,
             "description": "Restrict to these markets. Empty = all markets."
-          },
-          "event_slugs": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "maxItems": 500,
-            "description": "Restrict to markets in these events."
           },
           "timeframes": {
             "type": "array",
@@ -4492,14 +4700,6 @@
             "maxItems": 500,
             "description": "Restrict to markets with these tags or category names (case-insensitive match)."
           },
-          "condition_ids": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "maxItems": 500,
-            "description": "Restrict to these specific markets."
-          },
           "event_slugs": {
             "type": "array",
             "items": {
@@ -4596,7 +4796,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderFirstTradeFilters"
         },
@@ -4691,7 +4891,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderNewMarketFilters"
         },
@@ -4786,7 +4986,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderWhaleTradeFilters"
         },
@@ -4881,7 +5081,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderNewTradeFilters"
         },
@@ -4976,7 +5176,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderGlobalPnlFilters"
         },
@@ -5071,7 +5271,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderMarketPnlFilters"
         },
@@ -5166,7 +5366,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/TraderEventPnlFilters"
         },
@@ -5261,7 +5461,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/MarketMetricsFilters"
         },
@@ -5356,7 +5556,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/EventMetricsFilters"
         },
@@ -5451,7 +5651,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/PositionMetricsFilters"
         },
@@ -5546,7 +5746,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/MarketVolumeMilestoneFilters"
         },
@@ -5641,7 +5841,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/EventVolumeMilestoneFilters"
         },
@@ -5736,7 +5936,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/PositionVolumeMilestoneFilters"
         },
@@ -5831,7 +6031,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/ProbabilitySpikeFilters"
         },
@@ -5926,7 +6126,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/PriceSpikeFilters"
         },
@@ -6021,7 +6221,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/MarketVolumeSpikeFilters"
         },
@@ -6116,7 +6316,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/EventVolumeSpikeFilters"
         },
@@ -6211,7 +6411,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/PositionVolumeSpikeFilters"
         },
@@ -6306,7 +6506,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 2,
+        "x-credits-cost": 200,
         "x-filters-schema": {
           "$ref": "#/components/schemas/CloseToBondFilters"
         },
@@ -6401,7 +6601,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/MarketCreatedFilters"
         },
@@ -6496,7 +6696,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/AssetPriceTickFilters"
         },
@@ -6591,7 +6791,7 @@
         "tags": [
           "Webhook Callbacks"
         ],
-        "x-credits-cost": 1,
+        "x-credits-cost": 100,
         "x-filters-schema": {
           "$ref": "#/components/schemas/AssetPriceWindowUpdateFilters"
         },
