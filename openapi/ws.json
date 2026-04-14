@@ -3,7 +3,7 @@
   "info": {
     "title": "Polymarket WebSocket Streams API",
     "version": "1.0.0",
-    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
+    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
   },
   "servers": {
     "production": {
@@ -394,6 +394,46 @@
         },
         "clobRewardsUpdateEvent": {
           "$ref": "#/components/messages/ClobRewardsUpdateEvent"
+        }
+      }
+    },
+    "polymarket_events_stream": {
+      "address": "polymarket_events_stream",
+      "title": "Events Stream",
+      "summary": "Real-time Polymarket events stream — filter or ids mode, 500ms to 10s cadence",
+      "description": "Low-latency push feed of `PolymarketEvent` rows — same row shape `GET /polymarket/events` returns. Server maintains an in-memory cache of **open** events only, refreshed via a slow full poll + a fast (500ms) newest-first poll, and merged live from the `prediction_event_metrics` and `prediction_trades` Kafka streams with per-timeframe block/timestamp ordering.\n\n**Seeding:** No initial snapshot is pushed on subscribe. Clients seed local state from `GET /polymarket/events` and then apply deltas from this stream.\n\n**Subscription model:** A client has up to 8 active slots per room (4 cadences × 2 modes). Re-subscribing to the same `(interval_ms, mode)` replaces the previous subscription. Unsubscribe one slot with `action: \"unsubscribe\" + interval_ms + mode`, or clear everything with `action: \"unsubscribe_all\"`.\n\n**Cadence (`interval_ms`):** `500`, `1000`, `3000`, or `10000`. Each cadence is a separate flush bucket — ids/filters subscribed at 500ms see updates up to 2× per second, 10000ms once per 10s.\n\n**Filter mode:** Evaluated in-memory on every flush against rows that actually changed since the last tick. Same validation as the REST list endpoint (timeframe, search length, list size caps). `search` is a case-insensitive substring match on `title` (not FTS). No sort / limit — you get every matching row that changed.\n\n**Ids mode:** Filter by explicit `event_slugs` and/or `event_ids`. Max 500 ids per subscription. Updates push when a matching id changes in cache.\n\n**When updates fire:** only when a cache row is dirtied by (a) a fresh Kafka metric snapshot with `latest_block >= cached`, (b) a confirmed trade with `block >= cached`, (c) a slow-poll field diff, or (d) the fast new-entries poll discovering a brand-new event. Quiet events produce zero messages.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/EventsStreamSubscribe"
+        },
+        "subscribeResponse": {
+          "$ref": "#/components/messages/EventsStreamSubscribeResponse"
+        },
+        "eventsStreamSubscribeResponse": {
+          "$ref": "#/components/messages/EventsStreamSubscribeResponse"
+        },
+        "eventsStreamUpdateEvent": {
+          "$ref": "#/components/messages/EventsStreamUpdateEvent"
+        }
+      }
+    },
+    "polymarket_markets_stream": {
+      "address": "polymarket_markets_stream",
+      "title": "Markets Stream",
+      "summary": "Real-time Polymarket markets stream — filter or ids mode, 500ms to 10s cadence",
+      "description": "Low-latency push feed of market rows — same row shape `GET /polymarket/market` returns, including per-outcome price with `latest_block` + `latest_confirmed_at` watermarks. Server maintains an in-memory cache of **open** markets only, refreshed via a slow full poll + a fast (500ms) newest-first poll, and merged live from the `prediction_condition_metrics` and `prediction_trades` Kafka streams with per-timeframe block/timestamp ordering.\n\n**Seeding:** No initial snapshot is pushed on subscribe. Clients seed from `GET /polymarket/market` and then apply deltas from this stream.\n\n**Subscription model:** A client has up to 8 active slots per room (4 cadences × 2 modes). Re-subscribing to the same `(interval_ms, mode)` replaces the previous subscription. Unsubscribe one slot with `action: \"unsubscribe\" + interval_ms + mode`, or clear everything with `action: \"unsubscribe_all\"`.\n\n**Cadence (`interval_ms`):** `500`, `1000`, `3000`, or `10000`.\n\n**Filter mode:** Same validation as the REST list endpoint (timeframe, search length, list caps). `search` is a case-insensitive substring match on `title`. No sort / limit — you get every matching row that changed.\n\n**Ids mode:** Any combination of `condition_ids`, `market_slugs`, and `event_slugs` (matches all child markets of those events). Max 500 total per subscription.\n\n**When updates fire:** only when a cache row is dirtied by (a) a fresh Kafka metric snapshot with `latest_block >= cached`, (b) a confirmed trade with `block >= cached`, (c) a slow-poll field diff, or (d) the fast new-entries poll discovering a brand-new market. Quiet markets produce zero messages.\n\n**Outcome prices:** Each outcome in `outcomes[]` carries `latest_block` and `latest_confirmed_at` (Unix seconds) — the block/ts of the most recent price write from `prediction_position_metrics`. Consumers can use these to reject out-of-order price merges locally.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/MarketsStreamSubscribe"
+        },
+        "subscribeResponse": {
+          "$ref": "#/components/messages/MarketsStreamSubscribeResponse"
+        },
+        "marketsStreamSubscribeResponse": {
+          "$ref": "#/components/messages/MarketsStreamSubscribeResponse"
+        },
+        "marketsStreamUpdateEvent": {
+          "$ref": "#/components/messages/MarketsStreamUpdateEvent"
         }
       }
     }
@@ -987,6 +1027,66 @@
         },
         {
           "$ref": "#/channels/polymarket_clob_rewards/messages/clobRewardsUpdateEvent"
+        }
+      ]
+    },
+    "subscribePolymarketEventsStream": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_events_stream"
+      },
+      "summary": "Subscribe to real-time polymarket events stream — filter or ids mode, 500ms to 10s cadence",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_events_stream/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketEventsStream": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_events_stream"
+      },
+      "summary": "Receive real-time polymarket events stream — filter or ids mode, 500ms to 10s cadence events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_events_stream/messages/subscribeResponse"
+        },
+        {
+          "$ref": "#/channels/polymarket_events_stream/messages/eventsStreamSubscribeResponse"
+        },
+        {
+          "$ref": "#/channels/polymarket_events_stream/messages/eventsStreamUpdateEvent"
+        }
+      ]
+    },
+    "subscribePolymarketMarketsStream": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_markets_stream"
+      },
+      "summary": "Subscribe to real-time polymarket markets stream — filter or ids mode, 500ms to 10s cadence",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_markets_stream/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketMarketsStream": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_markets_stream"
+      },
+      "summary": "Receive real-time polymarket markets stream — filter or ids mode, 500ms to 10s cadence events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_markets_stream/messages/subscribeResponse"
+        },
+        {
+          "$ref": "#/channels/polymarket_markets_stream/messages/marketsStreamSubscribeResponse"
+        },
+        {
+          "$ref": "#/channels/polymarket_markets_stream/messages/marketsStreamUpdateEvent"
         }
       ]
     }
@@ -2008,144 +2108,258 @@
             }
           }
         ]
+      },
+      "EventsStreamSubscribe": {
+        "summary": "Subscribe to real-time polymarket events stream — filter or ids mode, 500ms to 10s cadence",
+        "payload": {
+          "$ref": "#/components/schemas/EventsStreamSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "action": "subscribe"
+            }
+          }
+        ]
+      },
+      "EventsStreamSubscribeResponse": {
+        "summary": "Server acknowledgement for an events_stream subscribe/unsubscribe",
+        "payload": {
+          "$ref": "#/components/schemas/EventsStreamSubscribeResponse"
+        }
+      },
+      "EventsStreamUpdateEvent": {
+        "summary": "one or more open events matching this subscription had a field change since the last tick",
+        "payload": {
+          "$ref": "#/components/schemas/EventsStreamUpdateEvent"
+        }
+      },
+      "MarketsStreamSubscribe": {
+        "summary": "Subscribe to real-time polymarket markets stream — filter or ids mode, 500ms to 10s cadence",
+        "payload": {
+          "$ref": "#/components/schemas/MarketsStreamSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "action": "subscribe"
+            }
+          }
+        ]
+      },
+      "MarketsStreamSubscribeResponse": {
+        "summary": "Server acknowledgement for a markets_stream subscribe/unsubscribe",
+        "payload": {
+          "$ref": "#/components/schemas/MarketsStreamSubscribeResponse"
+        }
+      },
+      "MarketsStreamUpdateEvent": {
+        "summary": "one or more open markets matching this subscription had a field change since the last tick",
+        "payload": {
+          "$ref": "#/components/schemas/MarketsStreamUpdateEvent"
+        }
       }
     },
     "schemas": {
-      "ClobRewardsUpdateEvent": {
+      "MarketsStreamUpdateEvent": {
         "type": "object",
-        "description": "Server-pushed CLOB reward change event. Envelope type: \"clob_rewards_update\".",
+        "description": "Server-pushed event: one or more open markets matching this subscription had a field change since the last tick. Envelope type: \"markets_stream_update\". Only rows that changed AND matched are in `data`. Client merges by `condition_id`. Each outcome in `data[i].outcomes` carries `latest_block` + `latest_confirmed_at` price-update watermarks.",
+        "required": [
+          "type",
+          "room_id",
+          "mode",
+          "interval_ms",
+          "data"
+        ],
         "properties": {
-          "event_type": {
+          "type": {
             "type": "string",
             "enum": [
-              "added",
-              "removed",
-              "updated"
-            ],
-            "description": "Type of change"
+              "markets_stream_update"
+            ]
           },
-          "condition_id": {
+          "room_id": {
             "type": "string",
-            "description": "Affected market condition ID"
+            "enum": [
+              "polymarket_markets_stream"
+            ]
           },
-          "reward": {
-            "type": [
-              "object",
-              "null"
-            ],
-            "description": "Full reward state (null for 'removed' events)",
-            "properties": {
-              "condition_id": {
-                "type": "string"
-              },
-              "rewards_config": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "asset_address": {
-                      "type": "string",
-                      "description": "Reward token address (e.g. USDC)"
-                    },
-                    "start_date": {
-                      "type": "string",
-                      "format": "date"
-                    },
-                    "end_date": {
-                      "type": "string",
-                      "format": "date"
-                    },
-                    "rate_per_day": {
-                      "type": "number",
-                      "description": "Daily reward rate in USDC"
-                    },
-                    "total_rewards": {
-                      "type": "number",
-                      "description": "Cumulative rewards distributed"
-                    }
-                  }
-                }
-              },
-              "rewards_max_spread": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Max spread to qualify for rewards"
-              },
-              "rewards_min_size": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Min order size to qualify for rewards"
-              },
-              "native_daily_rate": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Native (non-sponsored) daily rate"
-              },
-              "sponsored_daily_rate": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Sponsored daily rate"
-              },
-              "total_daily_rate": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Combined daily rate (native + sponsored)"
-              },
-              "sponsors_count": {
-                "type": [
-                  "integer",
-                  "null"
-                ],
-                "description": "Number of sponsors"
-              }
-            }
+          "mode": {
+            "type": "string",
+            "enum": [
+              "filter",
+              "ids"
+            ]
           },
-          "timestamp_ms": {
+          "interval_ms": {
             "type": "integer",
-            "description": "Unix timestamp in milliseconds"
+            "enum": [
+              500,
+              1000,
+              3000,
+              10000
+            ]
+          },
+          "data": {
+            "type": "array",
+            "description": "Full market rows (same shape as `GET /polymarket/market`). Not a delta — each element is a complete row replacement.",
+            "items": {
+              "type": "object"
+            }
           }
         }
       },
-      "ClobRewardsSubscribeResponse": {
+      "MarketsStreamSubscribeResponse": {
         "type": "object",
-        "description": "Server acknowledgement for a CLOB rewards subscription. Envelope type: \"clob_rewards_stream_subscribe_response\".",
+        "description": "Server acknowledgement for a markets_stream subscribe/unsubscribe. Envelope type: \"markets_stream_subscribe_response\".",
         "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "filter",
+              "ids",
+              ""
+            ]
+          },
+          "interval_ms": {
+            "type": "integer"
+          },
           "condition_ids": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Accepted condition IDs"
+            "description": "Accepted condition_ids (ids mode)."
           },
-          "subscribe_all": {
-            "type": "boolean",
-            "description": "Whether subscribed to all changes"
+          "market_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "rejected": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Filter values that were rejected"
+            "description": "Ids that failed normalization or exceeded the per-sub cap."
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Non-null when the subscribe was rejected."
           }
         }
       },
-      "ClobRewardsSubscribeMessage": {
+      "MarketsStreamFilter": {
         "type": "object",
-        "description": "Subscribe to CLOB reward changes. Either provide specific condition_ids or set subscribe_all to true.",
+        "description": "List-API-shaped filter evaluated in-memory against changed rows. `status` is NOT accepted — the cache only holds open markets.",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Case-insensitive substring match on `title`. 3–100 chars."
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "exclude_categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "exclude_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "min_volume": {
+            "type": "number"
+          },
+          "max_volume": {
+            "type": "number"
+          },
+          "min_txns": {
+            "type": "integer"
+          },
+          "max_txns": {
+            "type": "integer"
+          },
+          "min_unique_traders": {
+            "type": "integer"
+          },
+          "max_unique_traders": {
+            "type": "integer"
+          },
+          "min_liquidity": {
+            "type": "number"
+          },
+          "max_liquidity": {
+            "type": "number"
+          },
+          "min_holders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "max_holders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "start_time": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Filter markets with `end_time >= start_time` (Unix seconds)."
+          },
+          "end_time": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Filter markets with `end_time <= end_time` (Unix seconds)."
+          },
+          "has_rewards": {
+            "type": "boolean",
+            "description": "When true, only markets with at least one CLOB reward."
+          },
+          "timeframe": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ],
+            "description": "Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`."
+          }
+        }
+      },
+      "MarketsStreamSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe / unsubscribe message for polymarket_markets_stream.",
         "required": [
           "action"
         ],
@@ -2154,133 +2368,103 @@
             "type": "string",
             "enum": [
               "subscribe",
+              "unsubscribe",
               "unsubscribe_all"
-            ]
+            ],
+            "description": "`subscribe` creates/replaces a slot. `unsubscribe` removes one slot (needs `mode` + `interval_ms`). `unsubscribe_all` removes every slot this client holds in the room."
+          },
+          "interval_ms": {
+            "type": "integer",
+            "enum": [
+              500,
+              1000,
+              3000,
+              10000
+            ],
+            "description": "Flush cadence. Required for subscribe / unsubscribe. Default 1000 if omitted."
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "filter",
+              "ids"
+            ],
+            "description": "Subscription mode. Default `filter`."
+          },
+          "filter": {
+            "$ref": "#/components/schemas/MarketsStreamFilter",
+            "description": "Filter body (only used when `mode=filter`). All fields optional."
           },
           "condition_ids": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Condition IDs to watch for reward changes.",
-            "maxItems": 500
+            "description": "Ids mode: 0x-prefixed lowercase 32-byte hex. Counts toward the 500-id cap."
           },
-          "subscribe_all": {
-            "type": "boolean",
-            "description": "If true, receive ALL reward changes across all markets. Overrides condition_ids.",
-            "default": false
+          "market_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids mode: market slug strings."
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids mode: event slug strings — matches every child market of each event."
           }
         }
       },
-      "OrderBookUpdateEvent": {
+      "EventsStreamUpdateEvent": {
         "type": "object",
-        "description": "Server-pushed event: full CLOB orderbook snapshot for an outcome token. Envelope type: \"order_book_update\". Delivered whenever the book changes for a subscribed condition or position.",
+        "description": "Server-pushed event: one or more open events matching this subscription had a field change since the last tick. Envelope type: \"events_stream_update\". Only rows that changed AND matched are in `data`. Client merges into its local state by `id`.",
         "required": [
-          "asset_id",
-          "market",
-          "bids",
-          "asks",
-          "timestamp",
-          "hash"
+          "type",
+          "room_id",
+          "mode",
+          "interval_ms",
+          "data"
         ],
         "properties": {
-          "asset_id": {
+          "type": {
             "type": "string",
-            "description": "Hex token ID (position / outcome token)"
+            "enum": [
+              "events_stream_update"
+            ]
           },
-          "market": {
+          "room_id": {
             "type": "string",
-            "description": "Condition ID (hex)"
+            "enum": [
+              "polymarket_events_stream"
+            ]
           },
-          "bids": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrderBookLevel"
-            },
-            "description": "Bid levels sorted best-first (highest price first)"
+          "mode": {
+            "type": "string",
+            "enum": [
+              "filter",
+              "ids"
+            ]
           },
-          "asks": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrderBookLevel"
-            },
-            "description": "Ask levels sorted best-first (lowest price first)"
-          },
-          "timestamp": {
+          "interval_ms": {
             "type": "integer",
-            "format": "int64",
-            "description": "Unix milliseconds from CLOB message"
+            "enum": [
+              500,
+              1000,
+              3000,
+              10000
+            ]
           },
-          "hash": {
-            "type": "string",
-            "description": "Orderbook content hash — identical hash means no change"
-          },
-          "best_bid": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Best bid price (0–1)"
-          },
-          "best_ask": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Best ask price (0–1)"
-          },
-          "mid_price": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "(best_bid + best_ask) / 2"
-          },
-          "spread": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "best_ask − best_bid"
-          },
-          "bid_liquidity_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Total USD value of all bid levels"
-          },
-          "ask_liquidity_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Total USD value of all ask levels"
-          },
-          "bid_levels": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "Number of bid price levels"
-          },
-          "ask_levels": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "Number of ask price levels"
+          "data": {
+            "type": "array",
+            "description": "Full `PolymarketEvent` rows (same shape as `GET /polymarket/events`). Not a delta — each array element is a complete row replacement.",
+            "items": {
+              "type": "object"
+            }
           }
         }
-      },
-      "OrderBookLevel": {
-        "type": "array",
-        "description": "A single price level: [price_string, size_string]",
-        "items": {
-          "type": "string"
-        },
-        "minItems": 2,
-        "maxItems": 2
       },
       "TradesStreamSubscribeMessage": {
         "type": "object",
@@ -5085,6 +5269,440 @@
               "type": "string"
             },
             "description": "Filter values that were rejected (invalid format or limit exceeded)"
+          }
+        }
+      },
+      "OrderBookLevel": {
+        "type": "array",
+        "description": "A single price level: [price_string, size_string]",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "OrderBookUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed event: full CLOB orderbook snapshot for an outcome token. Envelope type: \"order_book_update\". Delivered whenever the book changes for a subscribed condition or position.",
+        "required": [
+          "asset_id",
+          "market",
+          "bids",
+          "asks",
+          "timestamp",
+          "hash"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "description": "Hex token ID (position / outcome token)"
+          },
+          "market": {
+            "type": "string",
+            "description": "Condition ID (hex)"
+          },
+          "bids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderBookLevel"
+            },
+            "description": "Bid levels sorted best-first (highest price first)"
+          },
+          "asks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderBookLevel"
+            },
+            "description": "Ask levels sorted best-first (lowest price first)"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix milliseconds from CLOB message"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Orderbook content hash — identical hash means no change"
+          },
+          "best_bid": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Best bid price (0–1)"
+          },
+          "best_ask": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Best ask price (0–1)"
+          },
+          "mid_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "(best_bid + best_ask) / 2"
+          },
+          "spread": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "best_ask − best_bid"
+          },
+          "bid_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Total USD value of all bid levels"
+          },
+          "ask_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Total USD value of all ask levels"
+          },
+          "bid_levels": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Number of bid price levels"
+          },
+          "ask_levels": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Number of ask price levels"
+          }
+        }
+      },
+      "ClobRewardsSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to CLOB reward changes. Either provide specific condition_ids or set subscribe_all to true.",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Condition IDs to watch for reward changes.",
+            "maxItems": 500
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "If true, receive ALL reward changes across all markets. Overrides condition_ids.",
+            "default": false
+          }
+        }
+      },
+      "ClobRewardsSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a CLOB rewards subscription. Envelope type: \"clob_rewards_stream_subscribe_response\".",
+        "properties": {
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted condition IDs"
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether subscribed to all changes"
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter values that were rejected"
+          }
+        }
+      },
+      "ClobRewardsUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed CLOB reward change event. Envelope type: \"clob_rewards_update\".",
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "added",
+              "removed",
+              "updated"
+            ],
+            "description": "Type of change"
+          },
+          "condition_id": {
+            "type": "string",
+            "description": "Affected market condition ID"
+          },
+          "reward": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Full reward state (null for 'removed' events)",
+            "properties": {
+              "condition_id": {
+                "type": "string"
+              },
+              "rewards_config": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "asset_address": {
+                      "type": "string",
+                      "description": "Reward token address (e.g. USDC)"
+                    },
+                    "start_date": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "end_date": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "rate_per_day": {
+                      "type": "number",
+                      "description": "Daily reward rate in USDC"
+                    },
+                    "total_rewards": {
+                      "type": "number",
+                      "description": "Cumulative rewards distributed"
+                    }
+                  }
+                }
+              },
+              "rewards_max_spread": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Max spread to qualify for rewards"
+              },
+              "rewards_min_size": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Min order size to qualify for rewards"
+              },
+              "native_daily_rate": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Native (non-sponsored) daily rate"
+              },
+              "sponsored_daily_rate": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Sponsored daily rate"
+              },
+              "total_daily_rate": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Combined daily rate (native + sponsored)"
+              },
+              "sponsors_count": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Number of sponsors"
+              }
+            }
+          },
+          "timestamp_ms": {
+            "type": "integer",
+            "description": "Unix timestamp in milliseconds"
+          }
+        }
+      },
+      "EventsStreamSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe / unsubscribe message for polymarket_events_stream.",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe",
+              "unsubscribe_all"
+            ],
+            "description": "`subscribe` creates/replaces a slot. `unsubscribe` removes one slot (needs `mode` + `interval_ms`). `unsubscribe_all` removes every slot this client holds in the room."
+          },
+          "interval_ms": {
+            "type": "integer",
+            "enum": [
+              500,
+              1000,
+              3000,
+              10000
+            ],
+            "description": "Flush cadence. Required for subscribe / unsubscribe. Default 1000 if omitted."
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "filter",
+              "ids"
+            ],
+            "description": "Subscription mode. Default `filter`."
+          },
+          "filter": {
+            "$ref": "#/components/schemas/EventsStreamFilter",
+            "description": "Filter body (only used when `mode=filter`). All fields optional; omitted fields are unconstrained."
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids mode: event slugs to watch. Combined with `event_ids` up to 500 total."
+          },
+          "event_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids mode: event ids to watch. Combined with `event_slugs` up to 500 total."
+          }
+        }
+      },
+      "EventsStreamFilter": {
+        "type": "object",
+        "description": "List-API-shaped filter evaluated in-memory against changed rows. `status` is NOT an accepted field — the cache only holds open events.",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Case-insensitive substring match on `title`. 3–100 chars."
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "exclude_categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "description": "Match by tag slug OR label (case-insensitive)."
+          },
+          "exclude_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "min_volume": {
+            "type": "number"
+          },
+          "max_volume": {
+            "type": "number"
+          },
+          "min_txns": {
+            "type": "integer"
+          },
+          "max_txns": {
+            "type": "integer"
+          },
+          "min_unique_traders": {
+            "type": "integer"
+          },
+          "max_unique_traders": {
+            "type": "integer"
+          },
+          "timeframe": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ],
+            "description": "Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`."
+          }
+        }
+      },
+      "EventsStreamSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for an events_stream subscribe/unsubscribe. Envelope type: \"events_stream_subscribe_response\".",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "filter",
+              "ids",
+              ""
+            ]
+          },
+          "interval_ms": {
+            "type": "integer"
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted ids (ids mode only). Empty in filter mode."
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids that failed normalization (ids mode)."
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Non-null when the subscribe was rejected (invalid cadence, bad filter, too many subs, …)."
           }
         }
       },

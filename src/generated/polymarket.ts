@@ -704,6 +704,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/leaderboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader leaderboard
+         * @description Global trader leaderboard ranked by PnL or volume over the selected timeframe. Each entry carries the trader's identity, ranking score (`pnl`), and the full set of Struct trading metrics (volumes split by side, markets_won / markets_lost, win rate, average PnL per market and per trade, average hold time, best trade, fees, and first / last trade timestamps). Enrichment fields are `null` when we don't yet have a row for that address in the selected timeframe.
+         */
+        get: operations["get_polymarket_leaderboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/pnl/{address}": {
         parameters: {
             query?: never;
@@ -1381,6 +1401,76 @@ export interface components {
             /** Format: int64 */
             last_trade_at?: number | null;
         };
+        /**
+         * @description Market category filter for the trader leaderboard.
+         *     Mirrors `common::gamma::categories::Category` plus `overall` (= all).
+         * @enum {string}
+         */
+        LeaderboardCategory: "overall" | "politics" | "sports" | "crypto" | "finance" | "culture" | "mentions" | "weather" | "economics" | "tech";
+        /**
+         * @description Flat response row. `trader` is the canonical `TraderInfo` used across all
+         *     our other endpoints; all enrichment fields sit at the top level. Fields
+         *     other than `trader`, `rank`, `pnl`, and `timeframe` are sourced from our
+         *     `prediction_trader_pnl_*_v2` tables and are `null` when we don't yet have
+         *     a row for that address in the selected timeframe.
+         */
+        LeaderboardEntry: {
+            /** Format: int64 */
+            rank?: number | null;
+            trader: components["schemas"]["TraderInfo"];
+            /** Format: double */
+            pnl?: number | null;
+            /** Format: int64 */
+            events_traded?: number | null;
+            /** Format: int64 */
+            markets_traded?: number | null;
+            /** Format: int64 */
+            markets_won?: number | null;
+            /** Format: int64 */
+            markets_lost?: number | null;
+            /** Format: double */
+            market_win_rate_pct?: number | null;
+            /** Format: double */
+            total_volume_usd?: number | null;
+            /** Format: double */
+            buy_volume_usd?: number | null;
+            /** Format: double */
+            sell_volume_usd?: number | null;
+            /** Format: double */
+            redemption_volume_usd?: number | null;
+            /** Format: double */
+            merge_volume_usd?: number | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: int64 */
+            total_redemptions?: number | null;
+            /** Format: int64 */
+            total_merges?: number | null;
+            /** Format: int64 */
+            total_trades?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: double */
+            avg_pnl_per_market?: number | null;
+            /** Format: double */
+            avg_pnl_per_trade?: number | null;
+            /** Format: double */
+            avg_hold_time_seconds?: number | null;
+            /** Format: double */
+            best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+        };
+        /**
+         * @description Sort key for the trader leaderboard (`GET /polymarket/trader/leaderboard`).
+         * @enum {string}
+         */
+        LeaderboardSortBy: "pnl" | "volume";
         /** @description Response for market (condition_id) holders endpoint */
         MarketHoldersResponse: {
             /** @description Market condition ID */
@@ -4418,6 +4508,51 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["GlobalPnlTrader"][];
                 };
+            };
+        };
+    };
+    get_polymarket_leaderboard: {
+        parameters: {
+            query?: {
+                /** @description Aggregation window (default: lifetime) */
+                timeframe?: components["schemas"]["PnlTimeframe"];
+                /** @description Order by: pnl or volume (default: pnl). Case-insensitive. */
+                sort_by?: components["schemas"]["LeaderboardSortBy"];
+                /** @description Rows per page, 1..=50 (default: 20) */
+                limit?: number;
+                /** @description Offset for pagination (default: 0) */
+                offset?: number;
+                /** @description Market category filter. Case-insensitive. Default: overall. */
+                category?: components["schemas"]["LeaderboardCategory"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Leaderboard rows with full trader metrics. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeaderboardEntry"][];
+                };
+            };
+            /** @description Bad request — invalid timeframe, sort_by, or category */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Leaderboard unavailable */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

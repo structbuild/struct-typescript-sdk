@@ -42,6 +42,9 @@ export type GlobalPnlTrader = Schemas["GlobalPnlTrader"];
 export type Holder = Schemas["Holder"];
 export type HolderHistoryCandle = Schemas["HolderHistoryCandle"];
 export type HolderPnl = Schemas["HolderPnl"];
+export type LeaderboardCategory = Schemas["LeaderboardCategory"];
+export type LeaderboardEntry = Schemas["LeaderboardEntry"];
+export type LeaderboardSortBy = Schemas["LeaderboardSortBy"];
 export type MarketHoldersResponse = Schemas["MarketHoldersResponse"];
 export type MarketMetadataOutcome = Omit<Schemas["MarketMetadataOutcome"], "metrics"> & {
 	metrics?: TimeframeRecord<OutcomeTimeframeMetrics>;
@@ -328,6 +331,8 @@ export interface GetPriceJumpsParams extends OperationQuery<"get_price_jumps"> {
 
 export interface GetGlobalPnlParams extends OperationQuery<"get_global_pnl"> {}
 
+export interface GetLeaderboardParams extends OperationQuery<"get_polymarket_leaderboard"> {}
+
 export interface GetTraderPnlParams {
 	address: string;
 	timeframe?: PnlTimeframe;
@@ -527,6 +532,12 @@ export type {
 	ClobRewardsSubscribeFilters,
 	ClobRewardsUpdateEvent,
 	ClobRewardsSubscribeResponse,
+	EventsStreamSubscribeFilters,
+	EventsStreamSubscribeResponse,
+	EventsStreamUpdateEvent,
+	MarketsStreamSubscribeFilters,
+	MarketsStreamSubscribeResponse,
+	MarketsStreamUpdateEvent,
 	WsAlertSubscribedResponse,
 	WsAlertUnsubscribedResponse,
 	WsAlertErrorResponse,

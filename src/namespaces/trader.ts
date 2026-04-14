@@ -21,6 +21,8 @@ import type {
 	GetGlobalPnlParams,
 	GetTraderPositionPnlParams,
 	TraderOutcomePnlEntry,
+	GetLeaderboardParams,
+	LeaderboardEntry,
 } from "../types/index.js";
 
 export class TraderNamespace extends Namespace {
@@ -74,5 +76,9 @@ export class TraderNamespace extends Namespace {
 
 	async getGlobalPnl(params?: GetGlobalPnlParams, venue?: Venue): Promise<HttpResponse<GlobalPnlTrader[]>> {
 		return this.get<GlobalPnlTrader[]>(venue, "/trader/global_pnl", { params: { ...params } });
+	}
+
+	async getLeaderboard(params?: GetLeaderboardParams, venue?: Venue): Promise<HttpResponse<LeaderboardEntry[]>> {
+		return this.get<LeaderboardEntry[]>(venue, "/trader/leaderboard", { params: { ...params } });
 	}
 }

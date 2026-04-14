@@ -183,6 +183,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "get_global_pnl",
 		paginate: true,
 	},
+	"trader.getLeaderboard": {
+		params: { limit: 2 },
+		operationId: "get_polymarket_leaderboard",
+	},
 
 	"search.search": {
 		params: { q: "president" },

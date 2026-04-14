@@ -2,101 +2,110 @@ export type paths = Record<string, never>;
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @description Server-pushed CLOB reward change event. Envelope type: "clob_rewards_update". */
-        ClobRewardsUpdateEvent: {
-            /**
-             * @description Type of change
-             * @enum {string}
-             */
-            event_type?: "added" | "removed" | "updated";
-            /** @description Affected market condition ID */
-            condition_id?: string;
-            /** @description Full reward state (null for 'removed' events) */
-            reward?: {
-                condition_id?: string;
-                rewards_config?: {
-                    id?: number;
-                    /** @description Reward token address (e.g. USDC) */
-                    asset_address?: string;
-                    /** Format: date */
-                    start_date?: string;
-                    /** Format: date */
-                    end_date?: string;
-                    /** @description Daily reward rate in USDC */
-                    rate_per_day?: number;
-                    /** @description Cumulative rewards distributed */
-                    total_rewards?: number;
-                }[];
-                /** @description Max spread to qualify for rewards */
-                rewards_max_spread?: number | null;
-                /** @description Min order size to qualify for rewards */
-                rewards_min_size?: number | null;
-                /** @description Native (non-sponsored) daily rate */
-                native_daily_rate?: number | null;
-                /** @description Sponsored daily rate */
-                sponsored_daily_rate?: number | null;
-                /** @description Combined daily rate (native + sponsored) */
-                total_daily_rate?: number | null;
-                /** @description Number of sponsors */
-                sponsors_count?: number | null;
-            } | null;
-            /** @description Unix timestamp in milliseconds */
-            timestamp_ms?: number;
-        };
-        /** @description Server acknowledgement for a CLOB rewards subscription. Envelope type: "clob_rewards_stream_subscribe_response". */
-        ClobRewardsSubscribeResponse: {
-            /** @description Accepted condition IDs */
-            condition_ids?: string[];
-            /** @description Whether subscribed to all changes */
-            subscribe_all?: boolean;
-            /** @description Filter values that were rejected */
-            rejected?: string[];
-        };
-        /** @description Subscribe to CLOB reward changes. Either provide specific condition_ids or set subscribe_all to true. */
-        ClobRewardsSubscribeMessage: {
+        /** @description Server-pushed event: one or more open markets matching this subscription had a field change since the last tick. Envelope type: "markets_stream_update". Only rows that changed AND matched are in `data`. Client merges by `condition_id`. Each outcome in `data[i].outcomes` carries `latest_block` + `latest_confirmed_at` price-update watermarks. */
+        MarketsStreamUpdateEvent: {
             /** @enum {string} */
-            action: "subscribe" | "unsubscribe_all";
-            /** @description Condition IDs to watch for reward changes. */
-            condition_ids?: string[];
-            /** @description If true, receive ALL reward changes across all markets. Overrides condition_ids. */
-            subscribe_all?: boolean;
+            type: "markets_stream_update";
+            /** @enum {string} */
+            room_id: "polymarket_markets_stream";
+            /** @enum {string} */
+            mode: "filter" | "ids";
+            /** @enum {integer} */
+            interval_ms: 500 | 1000 | 3000 | 10000;
+            /** @description Full market rows (same shape as `GET /polymarket/market`). Not a delta — each element is a complete row replacement. */
+            data: Record<string, never>[];
         };
-        /** @description Server-pushed event: full CLOB orderbook snapshot for an outcome token. Envelope type: "order_book_update". Delivered whenever the book changes for a subscribed condition or position. */
-        OrderBookUpdateEvent: {
-            /** @description Hex token ID (position / outcome token) */
-            asset_id: string;
-            /** @description Condition ID (hex) */
-            market: string;
-            /** @description Bid levels sorted best-first (highest price first) */
-            bids: components["schemas"]["OrderBookLevel"][];
-            /** @description Ask levels sorted best-first (lowest price first) */
-            asks: components["schemas"]["OrderBookLevel"][];
+        /** @description Server acknowledgement for a markets_stream subscribe/unsubscribe. Envelope type: "markets_stream_subscribe_response". */
+        MarketsStreamSubscribeResponse: {
+            /** @enum {string} */
+            mode?: "filter" | "ids" | "";
+            interval_ms?: number;
+            /** @description Accepted condition_ids (ids mode). */
+            condition_ids?: string[];
+            market_slugs?: string[];
+            event_slugs?: string[];
+            /** @description Ids that failed normalization or exceeded the per-sub cap. */
+            rejected?: string[];
+            /** @description Non-null when the subscribe was rejected. */
+            error?: string | null;
+        };
+        /** @description List-API-shaped filter evaluated in-memory against changed rows. `status` is NOT accepted — the cache only holds open markets. */
+        MarketsStreamFilter: {
+            /** @description Case-insensitive substring match on `title`. 3–100 chars. */
+            search?: string;
+            categories?: string[];
+            exclude_categories?: string[];
+            tags?: string[];
+            exclude_tags?: string[];
+            min_volume?: number;
+            max_volume?: number;
+            min_txns?: number;
+            max_txns?: number;
+            min_unique_traders?: number;
+            max_unique_traders?: number;
+            min_liquidity?: number;
+            max_liquidity?: number;
+            /** Format: int64 */
+            min_holders?: number;
+            /** Format: int64 */
+            max_holders?: number;
             /**
              * Format: int64
-             * @description Unix milliseconds from CLOB message
+             * @description Filter markets with `end_time >= start_time` (Unix seconds).
              */
-            timestamp: number;
-            /** @description Orderbook content hash — identical hash means no change */
-            hash: string;
-            /** @description Best bid price (0–1) */
-            best_bid?: number | null;
-            /** @description Best ask price (0–1) */
-            best_ask?: number | null;
-            /** @description (best_bid + best_ask) / 2 */
-            mid_price?: number | null;
-            /** @description best_ask − best_bid */
-            spread?: number | null;
-            /** @description Total USD value of all bid levels */
-            bid_liquidity_usd?: number | null;
-            /** @description Total USD value of all ask levels */
-            ask_liquidity_usd?: number | null;
-            /** @description Number of bid price levels */
-            bid_levels?: number | null;
-            /** @description Number of ask price levels */
-            ask_levels?: number | null;
+            start_time?: number;
+            /**
+             * Format: int64
+             * @description Filter markets with `end_time <= end_time` (Unix seconds).
+             */
+            end_time?: number;
+            /** @description When true, only markets with at least one CLOB reward. */
+            has_rewards?: boolean;
+            /**
+             * @description Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`.
+             * @enum {string}
+             */
+            timeframe?: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
         };
-        /** @description A single price level: [price_string, size_string] */
-        OrderBookLevel: string[];
+        /** @description Subscribe / unsubscribe message for polymarket_markets_stream. */
+        MarketsStreamSubscribeMessage: {
+            /**
+             * @description `subscribe` creates/replaces a slot. `unsubscribe` removes one slot (needs `mode` + `interval_ms`). `unsubscribe_all` removes every slot this client holds in the room.
+             * @enum {string}
+             */
+            action: "subscribe" | "unsubscribe" | "unsubscribe_all";
+            /**
+             * @description Flush cadence. Required for subscribe / unsubscribe. Default 1000 if omitted.
+             * @enum {integer}
+             */
+            interval_ms?: 500 | 1000 | 3000 | 10000;
+            /**
+             * @description Subscription mode. Default `filter`.
+             * @enum {string}
+             */
+            mode?: "filter" | "ids";
+            /** @description Filter body (only used when `mode=filter`). All fields optional. */
+            filter?: components["schemas"]["MarketsStreamFilter"];
+            /** @description Ids mode: 0x-prefixed lowercase 32-byte hex. Counts toward the 500-id cap. */
+            condition_ids?: string[];
+            /** @description Ids mode: market slug strings. */
+            market_slugs?: string[];
+            /** @description Ids mode: event slug strings — matches every child market of each event. */
+            event_slugs?: string[];
+        };
+        /** @description Server-pushed event: one or more open events matching this subscription had a field change since the last tick. Envelope type: "events_stream_update". Only rows that changed AND matched are in `data`. Client merges into its local state by `id`. */
+        EventsStreamUpdateEvent: {
+            /** @enum {string} */
+            type: "events_stream_update";
+            /** @enum {string} */
+            room_id: "polymarket_events_stream";
+            /** @enum {string} */
+            mode: "filter" | "ids";
+            /** @enum {integer} */
+            interval_ms: 500 | 1000 | 3000 | 10000;
+            /** @description Full `PolymarketEvent` rows (same shape as `GET /polymarket/events`). Not a delta — each array element is a complete row replacement. */
+            data: Record<string, never>[];
+        };
         /** @description Subscribe to the trades stream. No filters = subscribe to all trades. */
         TradesStreamSubscribeMessage: {
             /** @enum {string} */
@@ -913,6 +922,158 @@ export interface components {
             position_ids?: string[];
             /** @description Filter values that were rejected (invalid format or limit exceeded) */
             rejected?: string[];
+        };
+        /** @description A single price level: [price_string, size_string] */
+        OrderBookLevel: string[];
+        /** @description Server-pushed event: full CLOB orderbook snapshot for an outcome token. Envelope type: "order_book_update". Delivered whenever the book changes for a subscribed condition or position. */
+        OrderBookUpdateEvent: {
+            /** @description Hex token ID (position / outcome token) */
+            asset_id: string;
+            /** @description Condition ID (hex) */
+            market: string;
+            /** @description Bid levels sorted best-first (highest price first) */
+            bids: components["schemas"]["OrderBookLevel"][];
+            /** @description Ask levels sorted best-first (lowest price first) */
+            asks: components["schemas"]["OrderBookLevel"][];
+            /**
+             * Format: int64
+             * @description Unix milliseconds from CLOB message
+             */
+            timestamp: number;
+            /** @description Orderbook content hash — identical hash means no change */
+            hash: string;
+            /** @description Best bid price (0–1) */
+            best_bid?: number | null;
+            /** @description Best ask price (0–1) */
+            best_ask?: number | null;
+            /** @description (best_bid + best_ask) / 2 */
+            mid_price?: number | null;
+            /** @description best_ask − best_bid */
+            spread?: number | null;
+            /** @description Total USD value of all bid levels */
+            bid_liquidity_usd?: number | null;
+            /** @description Total USD value of all ask levels */
+            ask_liquidity_usd?: number | null;
+            /** @description Number of bid price levels */
+            bid_levels?: number | null;
+            /** @description Number of ask price levels */
+            ask_levels?: number | null;
+        };
+        /** @description Subscribe to CLOB reward changes. Either provide specific condition_ids or set subscribe_all to true. */
+        ClobRewardsSubscribeMessage: {
+            /** @enum {string} */
+            action: "subscribe" | "unsubscribe_all";
+            /** @description Condition IDs to watch for reward changes. */
+            condition_ids?: string[];
+            /** @description If true, receive ALL reward changes across all markets. Overrides condition_ids. */
+            subscribe_all?: boolean;
+        };
+        /** @description Server acknowledgement for a CLOB rewards subscription. Envelope type: "clob_rewards_stream_subscribe_response". */
+        ClobRewardsSubscribeResponse: {
+            /** @description Accepted condition IDs */
+            condition_ids?: string[];
+            /** @description Whether subscribed to all changes */
+            subscribe_all?: boolean;
+            /** @description Filter values that were rejected */
+            rejected?: string[];
+        };
+        /** @description Server-pushed CLOB reward change event. Envelope type: "clob_rewards_update". */
+        ClobRewardsUpdateEvent: {
+            /**
+             * @description Type of change
+             * @enum {string}
+             */
+            event_type?: "added" | "removed" | "updated";
+            /** @description Affected market condition ID */
+            condition_id?: string;
+            /** @description Full reward state (null for 'removed' events) */
+            reward?: {
+                condition_id?: string;
+                rewards_config?: {
+                    id?: number;
+                    /** @description Reward token address (e.g. USDC) */
+                    asset_address?: string;
+                    /** Format: date */
+                    start_date?: string;
+                    /** Format: date */
+                    end_date?: string;
+                    /** @description Daily reward rate in USDC */
+                    rate_per_day?: number;
+                    /** @description Cumulative rewards distributed */
+                    total_rewards?: number;
+                }[];
+                /** @description Max spread to qualify for rewards */
+                rewards_max_spread?: number | null;
+                /** @description Min order size to qualify for rewards */
+                rewards_min_size?: number | null;
+                /** @description Native (non-sponsored) daily rate */
+                native_daily_rate?: number | null;
+                /** @description Sponsored daily rate */
+                sponsored_daily_rate?: number | null;
+                /** @description Combined daily rate (native + sponsored) */
+                total_daily_rate?: number | null;
+                /** @description Number of sponsors */
+                sponsors_count?: number | null;
+            } | null;
+            /** @description Unix timestamp in milliseconds */
+            timestamp_ms?: number;
+        };
+        /** @description Subscribe / unsubscribe message for polymarket_events_stream. */
+        EventsStreamSubscribeMessage: {
+            /**
+             * @description `subscribe` creates/replaces a slot. `unsubscribe` removes one slot (needs `mode` + `interval_ms`). `unsubscribe_all` removes every slot this client holds in the room.
+             * @enum {string}
+             */
+            action: "subscribe" | "unsubscribe" | "unsubscribe_all";
+            /**
+             * @description Flush cadence. Required for subscribe / unsubscribe. Default 1000 if omitted.
+             * @enum {integer}
+             */
+            interval_ms?: 500 | 1000 | 3000 | 10000;
+            /**
+             * @description Subscription mode. Default `filter`.
+             * @enum {string}
+             */
+            mode?: "filter" | "ids";
+            /** @description Filter body (only used when `mode=filter`). All fields optional; omitted fields are unconstrained. */
+            filter?: components["schemas"]["EventsStreamFilter"];
+            /** @description Ids mode: event slugs to watch. Combined with `event_ids` up to 500 total. */
+            event_slugs?: string[];
+            /** @description Ids mode: event ids to watch. Combined with `event_slugs` up to 500 total. */
+            event_ids?: string[];
+        };
+        /** @description List-API-shaped filter evaluated in-memory against changed rows. `status` is NOT an accepted field — the cache only holds open events. */
+        EventsStreamFilter: {
+            /** @description Case-insensitive substring match on `title`. 3–100 chars. */
+            search?: string;
+            categories?: string[];
+            exclude_categories?: string[];
+            /** @description Match by tag slug OR label (case-insensitive). */
+            tags?: string[];
+            exclude_tags?: string[];
+            min_volume?: number;
+            max_volume?: number;
+            min_txns?: number;
+            max_txns?: number;
+            min_unique_traders?: number;
+            max_unique_traders?: number;
+            /**
+             * @description Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`.
+             * @enum {string}
+             */
+            timeframe?: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
+        };
+        /** @description Server acknowledgement for an events_stream subscribe/unsubscribe. Envelope type: "events_stream_subscribe_response". */
+        EventsStreamSubscribeResponse: {
+            /** @enum {string} */
+            mode?: "filter" | "ids" | "";
+            interval_ms?: number;
+            /** @description Accepted ids (ids mode only). Empty in filter mode. */
+            event_slugs?: string[];
+            /** @description Ids that failed normalization (ids mode). */
+            rejected?: string[];
+            /** @description Non-null when the subscribe was rejected (invalid cadence, bad filter, too many subs, …). */
+            error?: string | null;
         };
         /**
          * OrderFilled / OrdersMatched
