@@ -126,7 +126,7 @@
       "address": "/ws/alerts",
       "title": "New Trade",
       "summary": "Real-time `trader_new_trade` alert subscription",
-      "description": "Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -146,6 +146,42 @@
         },
         "event": {
           "$ref": "#/components/messages/WsAlertTraderNewTradeEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
+    "ws_alerts.trade_event": {
+      "address": "/ws/alerts",
+      "title": "Typed Trade-event",
+      "summary": "Real-time `trade_event` alert subscription",
+      "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Trade"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertTradeEventSubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertTradeEventUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertTradeEventEvent"
         },
         "subscribed": {
           "$ref": "#/components/messages/WsAlertSubscribed"
@@ -986,7 +1022,7 @@
       },
       "title": "Subscribe — New Trade",
       "summary": "Subscribe to `trader_new_trade` alerts",
-      "description": "Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.",
+      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.",
       "tags": [
         {
           "name": "Trader"
@@ -1024,7 +1060,7 @@
       },
       "title": "Event — New Trade",
       "summary": "Receive `trader_new_trade` alerts",
-      "description": "Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.",
+      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.",
       "tags": [
         {
           "name": "Trader"
@@ -1033,6 +1069,63 @@
       "messages": [
         {
           "$ref": "#/channels/ws_alerts.trader_new_trade/messages/event"
+        }
+      ]
+    },
+    "subscribeTradeEvent": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.trade_event"
+      },
+      "title": "Subscribe — Typed Trade-event",
+      "summary": "Subscribe to `trade_event` alerts",
+      "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.",
+      "tags": [
+        {
+          "name": "Trade"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.trade_event/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribeTradeEvent": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.trade_event"
+      },
+      "title": "Unsubscribe — Typed Trade-event",
+      "summary": "Unsubscribe from `trade_event` alerts",
+      "description": "Stop receiving `trade_event` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Trade"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.trade_event/messages/unsubscribe"
+        }
+      ]
+    },
+    "receiveTradeEvent": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.trade_event"
+      },
+      "title": "Event — Typed Trade-event",
+      "summary": "Receive `trade_event` alerts",
+      "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert.",
+      "tags": [
+        {
+          "name": "Trade"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.trade_event/messages/event"
         }
       ]
     },
@@ -2413,7 +2506,7 @@
         "name": "WsAlertTraderNewTradeSubscribe",
         "title": "New Trade — Subscribe",
         "summary": "Subscribe to `trader_new_trade` alerts",
-        "description": "Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`",
+        "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`",
         "tags": [
           {
             "name": "Trader"
@@ -2483,7 +2576,7 @@
         "name": "WsAlertTraderNewTradeEvent",
         "title": "New Trade — Event",
         "summary": "`trader_new_trade` alert pushed from server",
-        "description": "Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
             "name": "Trader"
@@ -2519,6 +2612,128 @@
                 "probability": 0.5,
                 "exchange": "polymarket",
                 "trade_type": "OrderFilled"
+              }
+            }
+          }
+        ]
+      },
+      "WsAlertTradeEventSubscribe": {
+        "name": "WsAlertTradeEventSubscribe",
+        "title": "Typed Trade-event — Subscribe",
+        "summary": "Subscribe to `trade_event` alerts",
+        "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`",
+        "tags": [
+          {
+            "name": "Trade"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertTradeEventSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "trade_event",
+              "wallet_addresses": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "min_usd_value": 10000.0,
+              "min_probability": 0.95,
+              "max_probability": 0.05,
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          }
+        ]
+      },
+      "WsAlertTradeEventUnsubscribe": {
+        "name": "WsAlertTradeEventUnsubscribe",
+        "title": "Typed Trade-event — Unsubscribe",
+        "summary": "Unsubscribe from `trade_event` alerts",
+        "description": "Unsubscribe from `trade_event` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Trade"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertTradeEventUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "trade_event",
+              "wallet_addresses": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "min_usd_value": 10000.0,
+              "min_probability": 0.95,
+              "max_probability": 0.05,
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          }
+        ]
+      },
+      "WsAlertTradeEventEvent": {
+        "name": "WsAlertTradeEventEvent",
+        "title": "Typed Trade-event — Event",
+        "summary": "`trade_event` alert pushed from server",
+        "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Trade"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertTradeEventEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "trade_event",
+              "timestamp": 1743500000000,
+              "data": {
+                "trade_type": "OrderFilled",
+                "id": "00000000-0000-0000-0000-000000000000",
+                "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "block": 65000000,
+                "confirmed_at": 1700000000,
+                "log_index": 0,
+                "block_index": 0,
+                "order_hash": "0x1111111111111111111111111111111111111111111111111111111111111111",
+                "trader": {
+                  "address": "0x0000000000000000000000000000000000000000"
+                },
+                "taker": "0x0000000000000000000000000000000000000000",
+                "side": "Buy",
+                "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+                "outcome": "Yes",
+                "outcome_index": 0,
+                "question": "Will this typed trade-event webhook fire correctly?",
+                "slug": "test-market-0000000000",
+                "event_slug": "test-event-0000000000",
+                "usd_amount": 25.0,
+                "shares_amount": 50.0,
+                "price": 0.5,
+                "probability": 0.5,
+                "fee": 0.025,
+                "fee_shares": 0.0,
+                "fee_pct": 0.1,
+                "exchange": "CTFExchange"
               }
             }
           }
@@ -5067,6 +5282,1755 @@
           }
         }
       },
+      "WebhookTradeEventPayload": {
+        "description": "Exact payload union for `trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent.",
+        "oneOf": [
+          {
+            "title": "OrderFilled / OrdersMatched",
+            "description": "A confirmed buy or sell matched on the exchange.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "order_hash",
+              "trader",
+              "taker",
+              "side",
+              "condition_id",
+              "position_id",
+              "outcome_index",
+              "usd_amount",
+              "shares_amount",
+              "price",
+              "fee",
+              "fee_shares",
+              "fee_pct",
+              "exchange"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "order_hash": {
+                "type": "string"
+              },
+              "trader": {
+                "type": "object",
+                "required": [
+                  "address",
+                  "name",
+                  "pseudonym",
+                  "profile_image",
+                  "x_username",
+                  "verified_badge"
+                ],
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "taker": {
+                "type": "string"
+              },
+              "side": {
+                "type": "string",
+                "enum": [
+                  "Buy",
+                  "Sell"
+                ]
+              },
+              "condition_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "position_id": {
+                "type": "string"
+              },
+              "outcome": {
+                "type": "string"
+              },
+              "outcome_index": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "usd_amount": {
+                "type": "number"
+              },
+              "shares_amount": {
+                "type": "number"
+              },
+              "price": {
+                "type": "number"
+              },
+              "probability": {
+                "type": "number"
+              },
+              "fee": {
+                "type": "number"
+              },
+              "fee_shares": {
+                "type": "number"
+              },
+              "fee_pct": {
+                "type": "number"
+              },
+              "exchange": {
+                "type": "string",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "Unknown"
+                ],
+                "description": "Exchange contract that processed the event"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "OrderFilled",
+                  "OrdersMatched"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Redemption",
+            "description": "Positions redeemed after market resolution.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "trader",
+              "condition_id",
+              "outcome_index",
+              "usd_amount",
+              "exchange"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "trader": {
+                "type": "object",
+                "required": [
+                  "address",
+                  "name",
+                  "pseudonym",
+                  "profile_image",
+                  "x_username",
+                  "verified_badge"
+                ],
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "condition_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "outcome": {
+                "type": "string"
+              },
+              "outcome_index": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "usd_amount": {
+                "type": "number"
+              },
+              "winning_outcome_index": {
+                "type": "integer"
+              },
+              "position_details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "position_id",
+                    "outcome_index",
+                    "amount"
+                  ],
+                  "properties": {
+                    "position_id": {
+                      "type": "string"
+                    },
+                    "outcome_index": {
+                      "type": "integer"
+                    },
+                    "outcome": {
+                      "type": "string"
+                    },
+                    "amount": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "exchange": {
+                "type": "string",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "Unknown"
+                ],
+                "description": "Exchange contract that processed the event"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Redemption"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Merge",
+            "description": "Outcome tokens burned to receive collateral.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "trader",
+              "condition_id",
+              "usd_amount",
+              "exchange"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "trader": {
+                "type": "object",
+                "required": [
+                  "address",
+                  "name",
+                  "pseudonym",
+                  "profile_image",
+                  "x_username",
+                  "verified_badge"
+                ],
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "condition_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "usd_amount": {
+                "type": "number"
+              },
+              "position_details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "position_id",
+                    "outcome_index",
+                    "amount"
+                  ],
+                  "properties": {
+                    "position_id": {
+                      "type": "string"
+                    },
+                    "outcome_index": {
+                      "type": "integer"
+                    },
+                    "outcome": {
+                      "type": "string"
+                    },
+                    "amount": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "exchange": {
+                "type": "string",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "Unknown"
+                ],
+                "description": "Exchange contract that processed the event"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Merge"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Split",
+            "description": "Collateral deposited to receive outcome tokens.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "trader",
+              "condition_id",
+              "usd_amount",
+              "exchange"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "trader": {
+                "type": "object",
+                "required": [
+                  "address",
+                  "name",
+                  "pseudonym",
+                  "profile_image",
+                  "x_username",
+                  "verified_badge"
+                ],
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "condition_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "usd_amount": {
+                "type": "number"
+              },
+              "position_details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "position_id",
+                    "outcome_index",
+                    "amount"
+                  ],
+                  "properties": {
+                    "position_id": {
+                      "type": "string"
+                    },
+                    "outcome_index": {
+                      "type": "integer"
+                    },
+                    "outcome": {
+                      "type": "string"
+                    },
+                    "amount": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "exchange": {
+                "type": "string",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "Unknown"
+                ],
+                "description": "Exchange contract that processed the event"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Split"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "PositionsConverted",
+            "description": "NegRisk NO tokens converted into YES tokens plus collateral.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "trader",
+              "market_id",
+              "index_set",
+              "shares_amount",
+              "exchange"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "trader": {
+                "type": "object",
+                "required": [
+                  "address",
+                  "name",
+                  "pseudonym",
+                  "profile_image",
+                  "x_username",
+                  "verified_badge"
+                ],
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "market_id": {
+                "type": "string"
+              },
+              "index_set": {
+                "type": "string"
+              },
+              "shares_amount": {
+                "type": "number"
+              },
+              "exchange": {
+                "type": "string",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "Unknown"
+                ],
+                "description": "Exchange contract that processed the event"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "PositionsConverted"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Cancelled",
+            "description": "Order cancelled on-chain.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "order_hash",
+              "exchange"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "order_hash": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "exchange": {
+                "type": "string",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "Unknown"
+                ],
+                "description": "Exchange contract that processed the event"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Cancelled"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Initialization",
+            "description": "Question initialized on-chain.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "oracle_contract",
+              "condition_id",
+              "creator",
+              "reward_token",
+              "reward",
+              "proposal_bond"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "oracle_contract": {
+                "type": "string"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "creator": {
+                "type": "string"
+              },
+              "reward_token": {
+                "type": "string"
+              },
+              "reward": {
+                "type": "string"
+              },
+              "proposal_bond": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Initialization"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Proposal",
+            "description": "Resolution proposal submitted to the oracle.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "oracle_contract",
+              "assertion_id",
+              "domain_id",
+              "claim",
+              "asserter",
+              "callback_recipient",
+              "escalation_manager",
+              "caller",
+              "expiration_time",
+              "currency",
+              "bond",
+              "identifier",
+              "condition_id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "oracle_contract": {
+                "type": "string"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "assertion_id": {
+                "type": "string"
+              },
+              "domain_id": {
+                "type": "string"
+              },
+              "claim": {
+                "type": "string"
+              },
+              "asserter": {
+                "type": "string"
+              },
+              "callback_recipient": {
+                "type": "string"
+              },
+              "escalation_manager": {
+                "type": "string"
+              },
+              "caller": {
+                "type": "string"
+              },
+              "expiration_time": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "currency": {
+                "type": "string"
+              },
+              "bond": {
+                "type": "string"
+              },
+              "identifier": {
+                "type": "string"
+              },
+              "proposed_outcome": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Proposal"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Dispute",
+            "description": "Resolution proposal disputed.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "oracle_contract",
+              "assertion_id",
+              "caller",
+              "disputer",
+              "condition_id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "oracle_contract": {
+                "type": "string"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "assertion_id": {
+                "type": "string"
+              },
+              "caller": {
+                "type": "string"
+              },
+              "disputer": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Dispute"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Settled",
+            "description": "Oracle assertion settled after liveness elapsed.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "oracle_contract",
+              "assertion_id",
+              "bond_recipient",
+              "disputed",
+              "settlement_resolution",
+              "settle_caller",
+              "condition_id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "oracle_contract": {
+                "type": "string"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "assertion_id": {
+                "type": "string"
+              },
+              "bond_recipient": {
+                "type": "string"
+              },
+              "disputed": {
+                "type": "boolean"
+              },
+              "settlement_resolution": {
+                "type": "boolean"
+              },
+              "settle_caller": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Settled"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Resolution",
+            "description": "Market resolved with a definitive outcome.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "oracle_contract",
+              "condition_id",
+              "settled_price"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "oracle_contract": {
+                "type": "string"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "settled_price": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "proposed_outcome": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Resolution"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "ConditionResolution",
+            "description": "Conditional Tokens condition resolved and positions became redeemable.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "oracle_contract",
+              "condition_id",
+              "oracle"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "oracle_contract": {
+                "type": "string"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "oracle": {
+                "type": "string"
+              },
+              "proposed_outcome": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "ConditionResolution"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Lifecycle Event",
+            "description": "Simple lifecycle state change with no additional oracle-specific fields.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "oracle_contract",
+              "condition_id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "oracle_contract": {
+                "type": "string"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Reset",
+                  "Flag",
+                  "Unflag",
+                  "Pause",
+                  "Unpause"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "ManualResolution",
+            "description": "Market resolved via emergency admin action.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "oracle_contract",
+              "condition_id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "oracle_contract": {
+                "type": "string"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "proposed_outcome": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "ManualResolution"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "NegRiskOutcomeReported",
+            "description": "NegRisk market outcome reported for a question.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "oracle_contract",
+              "condition_id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "oracle_contract": {
+                "type": "string"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "proposed_outcome": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "NegRiskOutcomeReported"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "RegisterToken",
+            "description": "YES and NO token IDs registered for a condition.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "condition_id",
+              "token0",
+              "token1",
+              "exchange"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "condition_id": {
+                "type": "string"
+              },
+              "token0": {
+                "type": "string"
+              },
+              "token1": {
+                "type": "string"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "exchange": {
+                "type": "string",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "Unknown"
+                ],
+                "description": "Exchange contract that processed the event"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "RegisterToken"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "title": "Approval",
+            "description": "ERC-1155 operator approval toggled for a trader.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "trader",
+              "operator",
+              "approved",
+              "exchange"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "trader": {
+                "type": "object",
+                "required": [
+                  "address",
+                  "name",
+                  "pseudonym",
+                  "profile_image",
+                  "x_username",
+                  "verified_badge"
+                ],
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "operator": {
+                "type": "string"
+              },
+              "approved": {
+                "type": "boolean"
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "exchange": {
+                "type": "string",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "Unknown"
+                ],
+                "description": "Exchange contract that processed the event"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "Approval"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        ],
+        "discriminator": {
+          "propertyName": "trade_type"
+        }
+      },
       "GlobalPnlPayload": {
         "type": "object",
         "description": "Payload delivered when a trader's global PnL (across all markets) crosses a configured threshold",
@@ -6907,9 +8871,104 @@
             "maximum": 1.0,
             "description": "Only fire when outcome probability is ≤ this value."
           },
+          "trade_types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "OrderFilled",
+                "OrdersMatched"
+              ]
+            },
+            "maxItems": 500,
+            "description": "Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default)."
+          },
           "exclude_shortterm_markets": {
             "type": "boolean",
             "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "TradeEventFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload.",
+        "properties": {
+          "wallet_addresses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Only fire for events associated with these wallet addresses. Empty = all traders."
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to these markets. For `PositionsConverted`, this also matches the NegRisk `market_id`."
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to markets belonging to these events. Requires explicit `trade_types` that exclude `PositionsConverted`."
+          },
+          "min_usd_value": {
+            "type": "number",
+            "default": 0,
+            "description": "Minimum USD amount for the underlying event. Defaults to 0 (matches all events)."
+          },
+          "min_probability": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Only fire when event probability is ≥ this value. Events without probability data do not match."
+          },
+          "max_probability": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Only fire when event probability is ≤ this value. Events without probability data do not match."
+          },
+          "trade_types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "OrderFilled",
+                "Redemption",
+                "Merge",
+                "Split",
+                "Cancelled",
+                "PositionsConverted",
+                "OrdersMatched",
+                "Initialization",
+                "Proposal",
+                "Dispute",
+                "Settled",
+                "Resolution",
+                "ConditionResolution",
+                "Reset",
+                "Flag",
+                "Unflag",
+                "Pause",
+                "Unpause",
+                "ManualResolution",
+                "NegRiskOutcomeReported",
+                "RegisterToken",
+                "Approval"
+              ]
+            },
+            "maxItems": 500,
+            "description": "Only fire for these trade types currently emitted through the webhook pipeline. Empty = all supported trade-event variants."
+          },
+          "exclude_shortterm_markets": {
+            "type": "boolean",
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`."
           }
         }
       },
@@ -7903,6 +9962,7 @@
           "trader_new_market",
           "trader_whale_trade",
           "trader_new_trade",
+          "trade_event",
           "trader_global_pnl",
           "trader_market_pnl",
           "trader_event_pnl",
@@ -8413,7 +10473,7 @@
         "allOf": [
           {
             "type": "object",
-            "description": "Subscribe to `trader_new_trade` alerts. Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.",
+            "description": "Subscribe to `trader_new_trade` alerts. Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.",
             "required": [
               "op",
               "event"
@@ -8550,6 +10610,157 @@
             "probability": 0.5,
             "exchange": "polymarket",
             "trade_type": "OrderFilled"
+          }
+        }
+      },
+      "WsAlertTradeEventSubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `trade_event` alerts. Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "trade_event"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "trade_event",
+              "wallet_addresses": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "min_usd_value": 10000.0,
+              "min_probability": 0.95,
+              "max_probability": 0.05,
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          },
+          {
+            "$ref": "#/components/schemas/TradeEventFilters"
+          }
+        ]
+      },
+      "WsAlertTradeEventUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `trade_event` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "trade_event"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "trade_event",
+              "wallet_addresses": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "min_usd_value": 10000.0,
+              "min_probability": 0.95,
+              "max_probability": 0.05,
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          },
+          {
+            "$ref": "#/components/schemas/TradeEventFilters"
+          }
+        ]
+      },
+      "WsAlertTradeEventEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `trade_event` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "trade_event"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/WebhookTradeEventPayload"
+          }
+        },
+        "example": {
+          "event": "trade_event",
+          "timestamp": 1743500000000,
+          "data": {
+            "trade_type": "OrderFilled",
+            "id": "00000000-0000-0000-0000-000000000000",
+            "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "block": 65000000,
+            "confirmed_at": 1700000000,
+            "log_index": 0,
+            "block_index": 0,
+            "order_hash": "0x1111111111111111111111111111111111111111111111111111111111111111",
+            "trader": {
+              "address": "0x0000000000000000000000000000000000000000"
+            },
+            "taker": "0x0000000000000000000000000000000000000000",
+            "side": "Buy",
+            "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+            "outcome": "Yes",
+            "outcome_index": 0,
+            "question": "Will this typed trade-event webhook fire correctly?",
+            "slug": "test-market-0000000000",
+            "event_slug": "test-event-0000000000",
+            "usd_amount": 25.0,
+            "shares_amount": 50.0,
+            "price": 0.5,
+            "probability": 0.5,
+            "fee": 0.025,
+            "fee_shares": 0.0,
+            "fee_pct": 0.1,
+            "exchange": "CTFExchange"
           }
         }
       },
@@ -11013,6 +13224,9 @@
             "$ref": "#/components/schemas/WsAlertTraderNewTradeSubscribeMessage"
           },
           {
+            "$ref": "#/components/schemas/WsAlertTradeEventSubscribeMessage"
+          },
+          {
             "$ref": "#/components/schemas/WsAlertTraderGlobalPnlSubscribeMessage"
           },
           {
@@ -11085,6 +13299,9 @@
             "$ref": "#/components/schemas/WsAlertTraderNewTradeUnsubscribeMessage"
           },
           {
+            "$ref": "#/components/schemas/WsAlertTradeEventUnsubscribeMessage"
+          },
+          {
             "$ref": "#/components/schemas/WsAlertTraderGlobalPnlUnsubscribeMessage"
           },
           {
@@ -11155,6 +13372,9 @@
           },
           {
             "$ref": "#/components/schemas/WsAlertTraderNewTradeEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertTradeEventEvent"
           },
           {
             "$ref": "#/components/schemas/WsAlertTraderGlobalPnlEvent"

@@ -189,9 +189,29 @@ export interface webhooks {
         put?: never;
         /**
          * New trade callback
-         * @description Fired on every order-filled trade. Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.
+         * @description Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.
          */
         post: operations["trader-new-trade"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "trade-event": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Typed trade-event callback
+         * @description Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.
+         */
+        post: operations["trade-event"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1206,7 +1226,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -1225,6 +1245,8 @@ export interface components {
          *     - market_created: event_slugs, tags, exclude_shortterm_markets
          *     - probability_spike: condition_ids, event_slugs, outcomes, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets
          *     - price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets
+         *     - trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
+         *     - trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
          *     - trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets
          *     - trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets
          *     - trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets
@@ -1313,6 +1335,8 @@ export interface components {
              *     When non-empty, only trades whose outcome_index is in this list will match. Max 500 entries.
              */
             position_outcome_indices?: number[];
+            /** @description Filter by trade type (e.g. "OrderFilled", "Redemption", "Merge", "Split"). Empty = default behavior per handler. */
+            trade_types?: string[];
             /**
              * Format: double
              * @description Minimum fees - for metrics webhooks
@@ -1598,7 +1622,7 @@ export interface components {
              * @description Category grouping for the event type
              * @enum {string}
              */
-            category: "trader" | "market" | "event" | "position" | "assets";
+            category: "trader" | "trade" | "market" | "event" | "position" | "assets";
             /**
              * Format: int64
              * @description Millicredits consumed per webhook delivery (1 credit = 1000 mc)
@@ -1625,6 +1649,8 @@ export interface components {
             outcomes?: string[];
             /** @description Filter by position outcome index — for close_to_bond. Position 0 = Yes/Up, 1 = No. Max 500 entries. */
             position_outcome_indices?: number[];
+            /** @description Filter by trade type — for `trader_new_trade` and `trade_event`. Max 500 entries. */
+            trade_types?: string[];
             /**
              * Format: double
              * @description Minimum USD trade size (for whale_trade / first_trade)
@@ -1895,6 +1921,482 @@ export interface components {
             /** @description Delivery attempt number. 1 = first attempt; increments on each retry. */
             attempt: number;
         };
+        /** @description Exact payload union for `trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent. */
+        WebhookTradeEventPayload: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            order_hash: string;
+            trader: {
+                address: string;
+                name: string | null;
+                pseudonym: string | null;
+                profile_image: string | null;
+                x_username: string | null;
+                verified_badge: boolean;
+            };
+            taker: string;
+            /** @enum {string} */
+            side: "Buy" | "Sell";
+            condition_id: string | null;
+            position_id: string;
+            outcome?: string;
+            outcome_index: number | null;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            usd_amount: number;
+            shares_amount: number;
+            price: number;
+            probability?: number;
+            fee: number;
+            fee_shares: number;
+            fee_pct: number;
+            /**
+             * @description Exchange contract that processed the event
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @enum {string} */
+            trade_type: "OrderFilled" | "OrdersMatched";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            trader: {
+                address: string;
+                name: string | null;
+                pseudonym: string | null;
+                profile_image: string | null;
+                x_username: string | null;
+                verified_badge: boolean;
+            };
+            condition_id: string | null;
+            outcome?: string;
+            outcome_index: number | null;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            usd_amount: number;
+            winning_outcome_index?: number;
+            position_details?: {
+                position_id: string;
+                outcome_index: number;
+                outcome?: string;
+                amount: string;
+            }[];
+            /**
+             * @description Exchange contract that processed the event
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @enum {string} */
+            trade_type: "Redemption";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            trader: {
+                address: string;
+                name: string | null;
+                pseudonym: string | null;
+                profile_image: string | null;
+                x_username: string | null;
+                verified_badge: boolean;
+            };
+            condition_id: string | null;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            usd_amount: number;
+            position_details?: {
+                position_id: string;
+                outcome_index: number;
+                outcome?: string;
+                amount: string;
+            }[];
+            /**
+             * @description Exchange contract that processed the event
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @enum {string} */
+            trade_type: "Merge";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            trader: {
+                address: string;
+                name: string | null;
+                pseudonym: string | null;
+                profile_image: string | null;
+                x_username: string | null;
+                verified_badge: boolean;
+            };
+            condition_id: string | null;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            usd_amount: number;
+            position_details?: {
+                position_id: string;
+                outcome_index: number;
+                outcome?: string;
+                amount: string;
+            }[];
+            /**
+             * @description Exchange contract that processed the event
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @enum {string} */
+            trade_type: "Split";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            trader: {
+                address: string;
+                name: string | null;
+                pseudonym: string | null;
+                profile_image: string | null;
+                x_username: string | null;
+                verified_badge: boolean;
+            };
+            market_id: string;
+            index_set: string;
+            shares_amount: number;
+            /**
+             * @description Exchange contract that processed the event
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @enum {string} */
+            trade_type: "PositionsConverted";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            order_hash: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /**
+             * @description Exchange contract that processed the event
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @enum {string} */
+            trade_type: "Cancelled";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            oracle_contract: string;
+            condition_id: string;
+            creator: string;
+            reward_token: string;
+            reward: string;
+            proposal_bond: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /** @enum {string} */
+            trade_type: "Initialization";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            oracle_contract: string;
+            condition_id: string;
+            assertion_id: string;
+            domain_id: string;
+            claim: string;
+            asserter: string;
+            callback_recipient: string;
+            escalation_manager: string;
+            caller: string;
+            /** Format: int64 */
+            expiration_time: number;
+            currency: string;
+            bond: string;
+            identifier: string;
+            proposed_outcome?: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /** @enum {string} */
+            trade_type: "Proposal";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            oracle_contract: string;
+            condition_id: string;
+            assertion_id: string;
+            caller: string;
+            disputer: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /** @enum {string} */
+            trade_type: "Dispute";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            oracle_contract: string;
+            condition_id: string;
+            assertion_id: string;
+            bond_recipient: string;
+            disputed: boolean;
+            settlement_resolution: boolean;
+            settle_caller: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /** @enum {string} */
+            trade_type: "Settled";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            oracle_contract: string;
+            condition_id: string;
+            /** Format: int64 */
+            settled_price: number;
+            proposed_outcome?: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /** @enum {string} */
+            trade_type: "Resolution";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            oracle_contract: string;
+            condition_id: string;
+            oracle: string;
+            proposed_outcome?: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /** @enum {string} */
+            trade_type: "ConditionResolution";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /** @enum {string} */
+            trade_type: "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            oracle_contract: string;
+            condition_id: string;
+            proposed_outcome?: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /** @enum {string} */
+            trade_type: "ManualResolution";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            oracle_contract: string;
+            condition_id: string;
+            proposed_outcome?: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /** @enum {string} */
+            trade_type: "NegRiskOutcomeReported";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            condition_id: string;
+            token0: string;
+            token1: string;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /**
+             * @description Exchange contract that processed the event
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @enum {string} */
+            trade_type: "RegisterToken";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
+            trader: {
+                address: string;
+                name: string | null;
+                pseudonym: string | null;
+                profile_image: string | null;
+                x_username: string | null;
+                verified_badge: boolean;
+            };
+            operator: string;
+            approved: boolean;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            /**
+             * @description Exchange contract that processed the event
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @enum {string} */
+            trade_type: "Approval";
+        };
         /** @description Subscription filters for the `trader_first_trade` event. All fields are optional. */
         TraderFirstTradeFilters: {
             /** @description Only fire for trades by these wallet addresses (lowercase). Empty = all traders. */
@@ -1966,7 +2468,31 @@ export interface components {
             min_probability?: number;
             /** @description Only fire when outcome probability is ≤ this value. */
             max_probability?: number;
+            /** @description Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default). */
+            trade_types?: ("OrderFilled" | "OrdersMatched")[];
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload. */
+        TradeEventFilters: {
+            /** @description Only fire for events associated with these wallet addresses. Empty = all traders. */
+            wallet_addresses?: string[];
+            /** @description Restrict to these markets. For `PositionsConverted`, this also matches the NegRisk `market_id`. */
+            condition_ids?: string[];
+            /** @description Restrict to markets belonging to these events. Requires explicit `trade_types` that exclude `PositionsConverted`. */
+            event_slugs?: string[];
+            /**
+             * @description Minimum USD amount for the underlying event. Defaults to 0 (matches all events).
+             * @default 0
+             */
+            min_usd_value: number;
+            /** @description Only fire when event probability is ≥ this value. Events without probability data do not match. */
+            min_probability?: number;
+            /** @description Only fire when event probability is ≤ this value. Events without probability data do not match. */
+            max_probability?: number;
+            /** @description Only fire for these trade types currently emitted through the webhook pipeline. Empty = all supported trade-event variants. */
+            trade_types?: ("OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[];
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
             exclude_shortterm_markets?: boolean;
         };
         /** @description Subscription filters for the `trader_global_pnl` event. All fields are optional. */
@@ -2739,6 +3265,49 @@ export interface operations {
             content: {
                 "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
                     data?: components["schemas"]["NewTradePayload"];
+                };
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "trade-event": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["WebhookTradeEventPayload"];
                 };
             };
         };
