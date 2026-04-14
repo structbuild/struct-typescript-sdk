@@ -264,8 +264,8 @@ export interface components {
              */
             trade_type: "OrderFilled" | "OrdersMatched";
         };
-        /** @description Exact payload union for `trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent. */
-        WebhookTradeEventPayload: {
+        /** @description Exact payload union for `trader_trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent. */
+        WebhookTraderTradeEventPayload: {
             id: string;
             hash: string;
             /** Format: int64 */
@@ -1424,8 +1424,8 @@ export interface components {
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
             exclude_shortterm_markets?: boolean;
         };
-        /** @description Subscription filters for the `trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload. */
-        TradeEventFilters: {
+        /** @description Subscription filters for the `trader_trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload. */
+        TraderTradeEventFilters: {
             /** @description Only fire for events associated with these wallet addresses. Empty = all traders. */
             wallet_addresses?: string[];
             /** @description Restrict to these markets. For `PositionsConverted`, this also matches the NegRisk `market_id`. */
@@ -1745,7 +1745,7 @@ export interface components {
          * @description All alert event types supported by both HTTP webhooks and the alerts WebSocket.
          * @enum {string}
          */
-        WsAlertEventType: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "price_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update";
+        WsAlertEventType: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "price_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update";
         /** @description Server acknowledgement for a successful alert subscription. */
         WsAlertSubscribedResponse: {
             /** @enum {string} */
@@ -2031,34 +2031,34 @@ export interface components {
             timestamp: number;
             data: components["schemas"]["NewTradePayload"];
         };
-        WsAlertTradeEventSubscribeMessage: {
+        WsAlertTraderTradeEventSubscribeMessage: {
             /** @enum {string} */
             op: "subscribe";
             /** @enum {string} */
-            event: "trade_event";
-        } & components["schemas"]["TradeEventFilters"] & {
+            event: "trader_trade_event";
+        } & components["schemas"]["TraderTradeEventFilters"] & {
             /**
              * @description discriminator enum property added by openapi-typescript
              * @enum {string}
              */
-            event: "trade_event";
+            event: "trader_trade_event";
         };
-        WsAlertTradeEventUnsubscribeMessage: {
+        WsAlertTraderTradeEventUnsubscribeMessage: {
             /** @enum {string} */
             op: "unsubscribe";
             /** @enum {string} */
-            event: "trade_event";
-        } & components["schemas"]["TradeEventFilters"] & {
+            event: "trader_trade_event";
+        } & components["schemas"]["TraderTradeEventFilters"] & {
             /**
              * @description discriminator enum property added by openapi-typescript
              * @enum {string}
              */
-            event: "trade_event";
+            event: "trader_trade_event";
         };
         /**
-         * @description Pushed `trade_event` alert. The `data` payload matches the corresponding HTTP webhook payload schema.
+         * @description Pushed `trader_trade_event` alert. The `data` payload matches the corresponding HTTP webhook payload schema.
          * @example {
-         *       "event": "trade_event",
+         *       "event": "trader_trade_event",
          *       "timestamp": 1743500000000,
          *       "data": {
          *         "trade_type": "OrderFilled",
@@ -2092,18 +2092,18 @@ export interface components {
          *       }
          *     }
          */
-        WsAlertTradeEventEvent: {
+        WsAlertTraderTradeEventEvent: {
             /**
              * @description discriminator enum property added by openapi-typescript
              * @enum {string}
              */
-            event: "trade_event";
+            event: "trader_trade_event";
             /**
              * Format: int64
              * @description Unix timestamp in milliseconds
              */
             timestamp: number;
-            data: components["schemas"]["WebhookTradeEventPayload"];
+            data: components["schemas"]["WebhookTraderTradeEventPayload"];
         };
         WsAlertTraderGlobalPnlSubscribeMessage: {
             /** @enum {string} */
@@ -3158,11 +3158,11 @@ export interface components {
             data: components["schemas"]["AssetPriceWindowUpdatePayload"];
         };
         /** @description Typed subscribe request for the alerts WebSocket. The request shape depends on `event` and reuses the matching webhook filter schema. */
-        WsAlertSubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketSubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeSubscribeMessage"] | components["schemas"]["WsAlertTradeEventSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlSubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsSubscribeMessage"] | components["schemas"]["WsAlertEventMetricsSubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeSubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertCloseToBondSubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateSubscribeMessage"];
+        WsAlertSubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketSubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlSubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsSubscribeMessage"] | components["schemas"]["WsAlertEventMetricsSubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeSubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertCloseToBondSubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateSubscribeMessage"];
         /** @description Typed unsubscribe request for the alerts WebSocket. The request shape depends on `event` and must match the original subscription filters. */
-        WsAlertUnsubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketUnsubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTradeEventUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlUnsubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertEventMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertCloseToBondUnsubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateUnsubscribeMessage"];
+        WsAlertUnsubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketUnsubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlUnsubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertEventMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertCloseToBondUnsubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateUnsubscribeMessage"];
         /** @description Typed pushed-event envelope for the alerts WebSocket. The `data` payload depends on `event` and matches the corresponding HTTP webhook payload schema. */
-        WsAlertEventPayload: components["schemas"]["WsAlertTraderFirstTradeEvent"] | components["schemas"]["WsAlertTraderNewMarketEvent"] | components["schemas"]["WsAlertTraderWhaleTradeEvent"] | components["schemas"]["WsAlertTraderNewTradeEvent"] | components["schemas"]["WsAlertTradeEventEvent"] | components["schemas"]["WsAlertTraderGlobalPnlEvent"] | components["schemas"]["WsAlertTraderMarketPnlEvent"] | components["schemas"]["WsAlertTraderEventPnlEvent"] | components["schemas"]["WsAlertConditionMetricsEvent"] | components["schemas"]["WsAlertEventMetricsEvent"] | components["schemas"]["WsAlertPositionMetricsEvent"] | components["schemas"]["WsAlertMarketVolumeMilestoneEvent"] | components["schemas"]["WsAlertEventVolumeMilestoneEvent"] | components["schemas"]["WsAlertPositionVolumeMilestoneEvent"] | components["schemas"]["WsAlertProbabilitySpikeEvent"] | components["schemas"]["WsAlertPriceSpikeEvent"] | components["schemas"]["WsAlertMarketVolumeSpikeEvent"] | components["schemas"]["WsAlertEventVolumeSpikeEvent"] | components["schemas"]["WsAlertPositionVolumeSpikeEvent"] | components["schemas"]["WsAlertCloseToBondEvent"] | components["schemas"]["WsAlertMarketCreatedEvent"] | components["schemas"]["WsAlertAssetPriceTickEvent"] | components["schemas"]["WsAlertAssetPriceWindowUpdateEvent"];
+        WsAlertEventPayload: components["schemas"]["WsAlertTraderFirstTradeEvent"] | components["schemas"]["WsAlertTraderNewMarketEvent"] | components["schemas"]["WsAlertTraderWhaleTradeEvent"] | components["schemas"]["WsAlertTraderNewTradeEvent"] | components["schemas"]["WsAlertTraderTradeEventEvent"] | components["schemas"]["WsAlertTraderGlobalPnlEvent"] | components["schemas"]["WsAlertTraderMarketPnlEvent"] | components["schemas"]["WsAlertTraderEventPnlEvent"] | components["schemas"]["WsAlertConditionMetricsEvent"] | components["schemas"]["WsAlertEventMetricsEvent"] | components["schemas"]["WsAlertPositionMetricsEvent"] | components["schemas"]["WsAlertMarketVolumeMilestoneEvent"] | components["schemas"]["WsAlertEventVolumeMilestoneEvent"] | components["schemas"]["WsAlertPositionVolumeMilestoneEvent"] | components["schemas"]["WsAlertProbabilitySpikeEvent"] | components["schemas"]["WsAlertPriceSpikeEvent"] | components["schemas"]["WsAlertMarketVolumeSpikeEvent"] | components["schemas"]["WsAlertEventVolumeSpikeEvent"] | components["schemas"]["WsAlertPositionVolumeSpikeEvent"] | components["schemas"]["WsAlertCloseToBondEvent"] | components["schemas"]["WsAlertMarketCreatedEvent"] | components["schemas"]["WsAlertAssetPriceTickEvent"] | components["schemas"]["WsAlertAssetPriceWindowUpdateEvent"];
     };
     responses: never;
     parameters: never;
@@ -3178,7 +3178,7 @@ export interface WsAlertSubscribeMap {
 	trader_new_market: components["schemas"]["WsAlertTraderNewMarketSubscribeMessage"];
 	trader_whale_trade: components["schemas"]["WsAlertTraderWhaleTradeSubscribeMessage"];
 	trader_new_trade: components["schemas"]["WsAlertTraderNewTradeSubscribeMessage"];
-	trade_event: components["schemas"]["WsAlertTradeEventSubscribeMessage"];
+	trader_trade_event: components["schemas"]["WsAlertTraderTradeEventSubscribeMessage"];
 	trader_global_pnl: components["schemas"]["WsAlertTraderGlobalPnlSubscribeMessage"];
 	trader_market_pnl: components["schemas"]["WsAlertTraderMarketPnlSubscribeMessage"];
 	trader_event_pnl: components["schemas"]["WsAlertTraderEventPnlSubscribeMessage"];
@@ -3204,7 +3204,7 @@ export interface WsAlertEventDataMap {
 	trader_new_market: components["schemas"]["NewMarketPayload"];
 	trader_whale_trade: components["schemas"]["WhaleTradePayload"];
 	trader_new_trade: components["schemas"]["NewTradePayload"];
-	trade_event: components["schemas"]["WebhookTradeEventPayload"];
+	trader_trade_event: components["schemas"]["WebhookTraderTradeEventPayload"];
 	trader_global_pnl: components["schemas"]["GlobalPnlPayload"];
 	trader_market_pnl: components["schemas"]["MarketPnlPayload"];
 	trader_event_pnl: components["schemas"]["EventPnlPayload"];

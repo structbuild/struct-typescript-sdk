@@ -432,11 +432,46 @@ export type NewTradePayload = WebhookSchemas["NewTradePayload"];
 export type TraderNewTradeFilters = WebhookSchemas["TraderNewTradeFilters"];
 export type PriceSpikePayload = WebhookSchemas["PriceSpikePayload"];
 export type PriceSpikeFilters = WebhookSchemas["PriceSpikeFilters"];
+export type TraderTradeEventFilters = WebhookSchemas["TraderTradeEventFilters"];
 
 export type WebhookDeliveryEnvelope = WebhookSchemas["WebhookDeliveryEnvelope"];
+export type WebhookTraderTradeEventPayload = WebhookSchemas["WebhookTraderTradeEventPayload"];
 export type WebhookSpikeDirection = WebhookSchemas["SpikeDirection"];
 export type WebhookWebhookAssetSymbol = WebhookSchemas["WebhookAssetSymbol"];
 export type WebhookWebhookTimeframe = WebhookSchemas["WebhookTimeframe"];
+
+export interface WebhookEventPayloadMap {
+	trader_first_trade: FirstTradePayload;
+	trader_new_market: NewMarketPayload;
+	trader_whale_trade: WhaleTradePayload;
+	trader_new_trade: NewTradePayload;
+	trader_trade_event: WebhookTraderTradeEventPayload;
+	trader_global_pnl: GlobalPnlPayload;
+	trader_market_pnl: MarketPnlPayload;
+	trader_event_pnl: EventPnlPayload;
+	condition_metrics: ConditionMetricsPayload;
+	event_metrics: EventMetricsPayload;
+	position_metrics: PositionMetricsPayload;
+	market_volume_milestone: VolumeMilestonePayload;
+	event_volume_milestone: EventVolumeMilestonePayload;
+	position_volume_milestone: PositionVolumeMilestonePayload;
+	probability_spike: ProbabilitySpikePayload;
+	price_spike: PriceSpikePayload;
+	market_volume_spike: MarketVolumeSpikePayload;
+	event_volume_spike: EventVolumeSpikePayload;
+	position_volume_spike: PositionVolumeSpikePayload;
+	close_to_bond: CloseToBondPayload;
+	market_created: MarketCreatedPayload;
+	asset_price_tick: AssetPriceTickPayload;
+	asset_price_window_update: AssetPriceWindowUpdatePayload;
+}
+
+export type WebhookEvent = {
+	[E in PolymarketWebhookEvent]: Omit<WebhookDeliveryEnvelope, "data" | "event"> & {
+		event: E;
+		data: WebhookEventPayloadMap[E];
+	};
+}[PolymarketWebhookEvent];
 
 export interface ListWebhooksParams extends WebhookOperationQuery<"list_webhooks"> {}
 

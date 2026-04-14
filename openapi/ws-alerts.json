@@ -158,11 +158,11 @@
         }
       }
     },
-    "ws_alerts.trade_event": {
+    "ws_alerts.trader_trade_event": {
       "address": "/ws/alerts",
       "title": "Typed Trade-event",
-      "summary": "Real-time `trade_event` alert subscription",
-      "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "summary": "Real-time `trader_trade_event` alert subscription",
+      "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTraderTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -170,18 +170,18 @@
       ],
       "tags": [
         {
-          "name": "Trade"
+          "name": "Trader"
         }
       ],
       "messages": {
         "subscribe": {
-          "$ref": "#/components/messages/WsAlertTradeEventSubscribe"
+          "$ref": "#/components/messages/WsAlertTraderTradeEventSubscribe"
         },
         "unsubscribe": {
-          "$ref": "#/components/messages/WsAlertTradeEventUnsubscribe"
+          "$ref": "#/components/messages/WsAlertTraderTradeEventUnsubscribe"
         },
         "event": {
-          "$ref": "#/components/messages/WsAlertTradeEventEvent"
+          "$ref": "#/components/messages/WsAlertTraderTradeEventEvent"
         },
         "subscribed": {
           "$ref": "#/components/messages/WsAlertSubscribed"
@@ -1072,60 +1072,60 @@
         }
       ]
     },
-    "subscribeTradeEvent": {
+    "subscribeTraderTradeEvent": {
       "action": "send",
       "channel": {
-        "$ref": "#/channels/ws_alerts.trade_event"
+        "$ref": "#/channels/ws_alerts.trader_trade_event"
       },
       "title": "Subscribe — Typed Trade-event",
-      "summary": "Subscribe to `trade_event` alerts",
-      "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.",
+      "summary": "Subscribe to `trader_trade_event` alerts",
+      "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTraderTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.",
       "tags": [
         {
-          "name": "Trade"
+          "name": "Trader"
         }
       ],
       "messages": [
         {
-          "$ref": "#/channels/ws_alerts.trade_event/messages/subscribe"
+          "$ref": "#/channels/ws_alerts.trader_trade_event/messages/subscribe"
         }
       ]
     },
-    "unsubscribeTradeEvent": {
+    "unsubscribeTraderTradeEvent": {
       "action": "send",
       "channel": {
-        "$ref": "#/channels/ws_alerts.trade_event"
+        "$ref": "#/channels/ws_alerts.trader_trade_event"
       },
       "title": "Unsubscribe — Typed Trade-event",
-      "summary": "Unsubscribe from `trade_event` alerts",
-      "description": "Stop receiving `trade_event` alerts. Filter fields must match the original subscription exactly.",
+      "summary": "Unsubscribe from `trader_trade_event` alerts",
+      "description": "Stop receiving `trader_trade_event` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
-          "name": "Trade"
+          "name": "Trader"
         }
       ],
       "messages": [
         {
-          "$ref": "#/channels/ws_alerts.trade_event/messages/unsubscribe"
+          "$ref": "#/channels/ws_alerts.trader_trade_event/messages/unsubscribe"
         }
       ]
     },
-    "receiveTradeEvent": {
+    "receiveTraderTradeEvent": {
       "action": "receive",
       "channel": {
-        "$ref": "#/channels/ws_alerts.trade_event"
+        "$ref": "#/channels/ws_alerts.trader_trade_event"
       },
       "title": "Event — Typed Trade-event",
-      "summary": "Receive `trade_event` alerts",
-      "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert.",
+      "summary": "Receive `trader_trade_event` alerts",
+      "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTraderTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert.",
       "tags": [
         {
-          "name": "Trade"
+          "name": "Trader"
         }
       ],
       "messages": [
         {
-          "$ref": "#/channels/ws_alerts.trade_event/messages/event"
+          "$ref": "#/channels/ws_alerts.trader_trade_event/messages/event"
         }
       ]
     },
@@ -2617,24 +2617,24 @@
           }
         ]
       },
-      "WsAlertTradeEventSubscribe": {
-        "name": "WsAlertTradeEventSubscribe",
+      "WsAlertTraderTradeEventSubscribe": {
+        "name": "WsAlertTraderTradeEventSubscribe",
         "title": "Typed Trade-event — Subscribe",
-        "summary": "Subscribe to `trade_event` alerts",
-        "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`",
+        "summary": "Subscribe to `trader_trade_event` alerts",
+        "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTraderTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`",
         "tags": [
           {
-            "name": "Trade"
+            "name": "Trader"
           }
         ],
         "payload": {
-          "$ref": "#/components/schemas/WsAlertTradeEventSubscribeMessage"
+          "$ref": "#/components/schemas/WsAlertTraderTradeEventSubscribeMessage"
         },
         "examples": [
           {
             "payload": {
               "op": "subscribe",
-              "event": "trade_event",
+              "event": "trader_trade_event",
               "wallet_addresses": [
                 "0x0000000000000000000000000000000000000000"
               ],
@@ -2652,24 +2652,24 @@
           }
         ]
       },
-      "WsAlertTradeEventUnsubscribe": {
-        "name": "WsAlertTradeEventUnsubscribe",
+      "WsAlertTraderTradeEventUnsubscribe": {
+        "name": "WsAlertTraderTradeEventUnsubscribe",
         "title": "Typed Trade-event — Unsubscribe",
-        "summary": "Unsubscribe from `trade_event` alerts",
-        "description": "Unsubscribe from `trade_event` alerts. The filter fields must match the original subscription exactly.",
+        "summary": "Unsubscribe from `trader_trade_event` alerts",
+        "description": "Unsubscribe from `trader_trade_event` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
-            "name": "Trade"
+            "name": "Trader"
           }
         ],
         "payload": {
-          "$ref": "#/components/schemas/WsAlertTradeEventUnsubscribeMessage"
+          "$ref": "#/components/schemas/WsAlertTraderTradeEventUnsubscribeMessage"
         },
         "examples": [
           {
             "payload": {
               "op": "unsubscribe",
-              "event": "trade_event",
+              "event": "trader_trade_event",
               "wallet_addresses": [
                 "0x0000000000000000000000000000000000000000"
               ],
@@ -2687,23 +2687,23 @@
           }
         ]
       },
-      "WsAlertTradeEventEvent": {
-        "name": "WsAlertTradeEventEvent",
+      "WsAlertTraderTradeEventEvent": {
+        "name": "WsAlertTraderTradeEventEvent",
         "title": "Typed Trade-event — Event",
-        "summary": "`trade_event` alert pushed from server",
-        "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "summary": "`trader_trade_event` alert pushed from server",
+        "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTraderTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
-            "name": "Trade"
+            "name": "Trader"
           }
         ],
         "payload": {
-          "$ref": "#/components/schemas/WsAlertTradeEventEvent"
+          "$ref": "#/components/schemas/WsAlertTraderTradeEventEvent"
         },
         "examples": [
           {
             "payload": {
-              "event": "trade_event",
+              "event": "trader_trade_event",
               "timestamp": 1743500000000,
               "data": {
                 "trade_type": "OrderFilled",
@@ -5282,8 +5282,8 @@
           }
         }
       },
-      "WebhookTradeEventPayload": {
-        "description": "Exact payload union for `trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent.",
+      "WebhookTraderTradeEventPayload": {
+        "description": "Exact payload union for `trader_trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent.",
         "oneOf": [
           {
             "title": "OrderFilled / OrdersMatched",
@@ -8889,9 +8889,9 @@
           }
         }
       },
-      "TradeEventFilters": {
+      "TraderTradeEventFilters": {
         "type": "object",
-        "description": "Subscription filters for the `trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload.",
+        "description": "Subscription filters for the `trader_trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload.",
         "properties": {
           "wallet_addresses": {
             "type": "array",
@@ -9962,7 +9962,7 @@
           "trader_new_market",
           "trader_whale_trade",
           "trader_new_trade",
-          "trade_event",
+          "trader_trade_event",
           "trader_global_pnl",
           "trader_market_pnl",
           "trader_event_pnl",
@@ -10613,11 +10613,11 @@
           }
         }
       },
-      "WsAlertTradeEventSubscribeMessage": {
+      "WsAlertTraderTradeEventSubscribeMessage": {
         "allOf": [
           {
             "type": "object",
-            "description": "Subscribe to `trade_event` alerts. Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.",
+            "description": "Subscribe to `trader_trade_event` alerts. Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTraderTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.",
             "required": [
               "op",
               "event"
@@ -10632,13 +10632,13 @@
               "event": {
                 "type": "string",
                 "enum": [
-                  "trade_event"
+                  "trader_trade_event"
                 ]
               }
             },
             "example": {
               "op": "subscribe",
-              "event": "trade_event",
+              "event": "trader_trade_event",
               "wallet_addresses": [
                 "0x0000000000000000000000000000000000000000"
               ],
@@ -10655,15 +10655,15 @@
             }
           },
           {
-            "$ref": "#/components/schemas/TradeEventFilters"
+            "$ref": "#/components/schemas/TraderTradeEventFilters"
           }
         ]
       },
-      "WsAlertTradeEventUnsubscribeMessage": {
+      "WsAlertTraderTradeEventUnsubscribeMessage": {
         "allOf": [
           {
             "type": "object",
-            "description": "Unsubscribe from `trade_event` alerts. The filter fields must match the original subscription exactly.",
+            "description": "Unsubscribe from `trader_trade_event` alerts. The filter fields must match the original subscription exactly.",
             "required": [
               "op",
               "event"
@@ -10678,13 +10678,13 @@
               "event": {
                 "type": "string",
                 "enum": [
-                  "trade_event"
+                  "trader_trade_event"
                 ]
               }
             },
             "example": {
               "op": "unsubscribe",
-              "event": "trade_event",
+              "event": "trader_trade_event",
               "wallet_addresses": [
                 "0x0000000000000000000000000000000000000000"
               ],
@@ -10701,23 +10701,23 @@
             }
           },
           {
-            "$ref": "#/components/schemas/TradeEventFilters"
+            "$ref": "#/components/schemas/TraderTradeEventFilters"
           }
         ]
       },
-      "WsAlertTradeEventEvent": {
+      "WsAlertTraderTradeEventEvent": {
         "type": "object",
         "required": [
           "event",
           "timestamp",
           "data"
         ],
-        "description": "Pushed `trade_event` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "description": "Pushed `trader_trade_event` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "properties": {
           "event": {
             "type": "string",
             "enum": [
-              "trade_event"
+              "trader_trade_event"
             ]
           },
           "timestamp": {
@@ -10726,11 +10726,11 @@
             "description": "Unix timestamp in milliseconds"
           },
           "data": {
-            "$ref": "#/components/schemas/WebhookTradeEventPayload"
+            "$ref": "#/components/schemas/WebhookTraderTradeEventPayload"
           }
         },
         "example": {
-          "event": "trade_event",
+          "event": "trader_trade_event",
           "timestamp": 1743500000000,
           "data": {
             "trade_type": "OrderFilled",
@@ -13224,7 +13224,7 @@
             "$ref": "#/components/schemas/WsAlertTraderNewTradeSubscribeMessage"
           },
           {
-            "$ref": "#/components/schemas/WsAlertTradeEventSubscribeMessage"
+            "$ref": "#/components/schemas/WsAlertTraderTradeEventSubscribeMessage"
           },
           {
             "$ref": "#/components/schemas/WsAlertTraderGlobalPnlSubscribeMessage"
@@ -13299,7 +13299,7 @@
             "$ref": "#/components/schemas/WsAlertTraderNewTradeUnsubscribeMessage"
           },
           {
-            "$ref": "#/components/schemas/WsAlertTradeEventUnsubscribeMessage"
+            "$ref": "#/components/schemas/WsAlertTraderTradeEventUnsubscribeMessage"
           },
           {
             "$ref": "#/components/schemas/WsAlertTraderGlobalPnlUnsubscribeMessage"
@@ -13374,7 +13374,7 @@
             "$ref": "#/components/schemas/WsAlertTraderNewTradeEvent"
           },
           {
-            "$ref": "#/components/schemas/WsAlertTradeEventEvent"
+            "$ref": "#/components/schemas/WsAlertTraderTradeEventEvent"
           },
           {
             "$ref": "#/components/schemas/WsAlertTraderGlobalPnlEvent"

@@ -2049,7 +2049,7 @@
           "trader_new_market",
           "trader_whale_trade",
           "trader_new_trade",
-          "trade_event",
+          "trader_trade_event",
           "trader_global_pnl",
           "trader_market_pnl",
           "trader_event_pnl",
@@ -2072,7 +2072,7 @@
       },
       "PolymarketWebhookFilter": {
         "type": "object",
-        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets\n- market_created: event_slugs, tags, exclude_shortterm_markets\n- probability_spike: condition_ids, event_slugs, outcomes, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets\n- trader_event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded, exclude_shortterm_markets\n- trader_market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, exclude_shortterm_markets\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
+        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets\n- market_created: event_slugs, tags, exclude_shortterm_markets\n- probability_spike: condition_ids, event_slugs, outcomes, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets\n- trader_event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded, exclude_shortterm_markets\n- trader_market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, exclude_shortterm_markets\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
         "properties": {
           "wallet_addresses": {
             "type": "array",
@@ -3065,7 +3065,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Filter by trade type — for `trader_new_trade` and `trade_event`. Max 500 entries."
+            "description": "Filter by trade type — for `trader_new_trade` and `trader_trade_event`. Max 500 entries."
           },
           "min_usd_value": {
             "type": [
@@ -3607,8 +3607,8 @@
           }
         }
       },
-      "WebhookTradeEventPayload": {
-        "description": "Exact payload union for `trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent.",
+      "WebhookTraderTradeEventPayload": {
+        "description": "Exact payload union for `trader_trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent.",
         "oneOf": [
           {
             "title": "OrderFilled / OrdersMatched",
@@ -5570,9 +5570,9 @@
           }
         }
       },
-      "TradeEventFilters": {
+      "TraderTradeEventFilters": {
         "type": "object",
-        "description": "Subscription filters for the `trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload.",
+        "description": "Subscription filters for the `trader_trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload.",
         "properties": {
           "wallet_addresses": {
             "type": "array",
@@ -7028,17 +7028,17 @@
         }
       }
     },
-    "trade-event": {
+    "trader-trade-event": {
       "post": {
         "summary": "Typed trade-event callback",
-        "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.",
-        "operationId": "trade-event",
+        "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTraderTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.",
+        "operationId": "trader-trade-event",
         "tags": [
           "Webhook Callbacks"
         ],
         "x-credits-cost": 200,
         "x-filters-schema": {
-          "$ref": "#/components/schemas/TradeEventFilters"
+          "$ref": "#/components/schemas/TraderTradeEventFilters"
         },
         "parameters": [
           {
@@ -7104,7 +7104,7 @@
                   {
                     "properties": {
                       "data": {
-                        "$ref": "#/components/schemas/WebhookTradeEventPayload"
+                        "$ref": "#/components/schemas/WebhookTraderTradeEventPayload"
                       }
                     }
                   }

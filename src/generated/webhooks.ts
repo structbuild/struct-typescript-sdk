@@ -198,7 +198,7 @@ export interface webhooks {
         patch?: never;
         trace?: never;
     };
-    "trade-event": {
+    "trader-trade-event": {
         parameters: {
             query?: never;
             header?: never;
@@ -209,9 +209,9 @@ export interface webhooks {
         put?: never;
         /**
          * Typed trade-event callback
-         * @description Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.
+         * @description Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTraderTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.
          */
-        post: operations["trade-event"];
+        post: operations["trader-trade-event"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1226,7 +1226,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -1246,7 +1246,7 @@ export interface components {
          *     - probability_spike: condition_ids, event_slugs, outcomes, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets
          *     - price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets
          *     - trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
-         *     - trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
+         *     - trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
          *     - trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets
          *     - trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets
          *     - trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets
@@ -1649,7 +1649,7 @@ export interface components {
             outcomes?: string[];
             /** @description Filter by position outcome index — for close_to_bond. Position 0 = Yes/Up, 1 = No. Max 500 entries. */
             position_outcome_indices?: number[];
-            /** @description Filter by trade type — for `trader_new_trade` and `trade_event`. Max 500 entries. */
+            /** @description Filter by trade type — for `trader_new_trade` and `trader_trade_event`. Max 500 entries. */
             trade_types?: string[];
             /**
              * Format: double
@@ -1921,8 +1921,8 @@ export interface components {
             /** @description Delivery attempt number. 1 = first attempt; increments on each retry. */
             attempt: number;
         };
-        /** @description Exact payload union for `trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent. */
-        WebhookTradeEventPayload: {
+        /** @description Exact payload union for `trader_trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent. */
+        WebhookTraderTradeEventPayload: {
             id: string;
             hash: string;
             /** Format: int64 */
@@ -2473,8 +2473,8 @@ export interface components {
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
             exclude_shortterm_markets?: boolean;
         };
-        /** @description Subscription filters for the `trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload. */
-        TradeEventFilters: {
+        /** @description Subscription filters for the `trader_trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload. */
+        TraderTradeEventFilters: {
             /** @description Only fire for events associated with these wallet addresses. Empty = all traders. */
             wallet_addresses?: string[];
             /** @description Restrict to these markets. For `PositionsConverted`, this also matches the NegRisk `market_id`. */
@@ -3285,7 +3285,7 @@ export interface operations {
             };
         };
     };
-    "trade-event": {
+    "trader-trade-event": {
         parameters: {
             query?: never;
             header: {
@@ -3307,7 +3307,7 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
-                    data?: components["schemas"]["WebhookTradeEventPayload"];
+                    data?: components["schemas"]["WebhookTraderTradeEventPayload"];
                 };
             };
         };
