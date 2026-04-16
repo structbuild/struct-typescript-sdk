@@ -1630,7 +1630,7 @@ export interface components {
             exchange: components["schemas"]["PolymarketExchange"];
         };
         /** @enum {string} */
-        MetricsTimeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
+        MetricsTimeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime";
         /** @description NegRisk Adapter: outcome reported for a neg-risk market question. */
         NegRiskOutcomeReportedEvent: {
             id: string;
