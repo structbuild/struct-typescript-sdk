@@ -1,4 +1,4 @@
-import { Namespace } from "./base.js";
+import { Namespace, encodePathParam } from "./base.js";
 import type { HttpResponse } from "../types/http.js";
 import type { Venue } from "../types/common.js";
 import type {
@@ -13,6 +13,6 @@ export class TagsNamespace extends Namespace {
 	}
 
 	async getTag(params: GetTagParams, venue?: Venue): Promise<HttpResponse<Tag>> {
-		return this.get<Tag>(venue, `/tags/${encodeURIComponent(params.identifier)}`);
+		return this.get<Tag>(venue, `/tags/${encodePathParam(params.identifier)}`);
 	}
 }

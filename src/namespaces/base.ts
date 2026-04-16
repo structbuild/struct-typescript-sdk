@@ -2,6 +2,14 @@ import type { HttpClient } from "../http.js";
 import type { HttpResponse, RequestOptions } from "../types/http.js";
 import type { Venue } from "../types/common.js";
 
+export function encodePathParam(value: string): string {
+	try {
+		return encodeURIComponent(decodeURIComponent(value));
+	} catch {
+		return encodeURIComponent(value);
+	}
+}
+
 export class Namespace {
 	protected readonly http: HttpClient;
 	protected readonly defaultVenue: Venue;
