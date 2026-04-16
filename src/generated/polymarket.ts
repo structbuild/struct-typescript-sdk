@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get counts
+         * @description Returns total counts of Polymarket events, markets, tags, positions, and traders.
+         */
+        get: operations["get_counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/events": {
         parameters: {
             query?: never;
@@ -1207,6 +1227,18 @@ export interface components {
             image_url?: string | null;
             slug?: string | null;
             event_slug?: string | null;
+        };
+        CountsResponse: {
+            /** Format: int64 */
+            tags: number;
+            /** Format: int64 */
+            events: number;
+            /** Format: int64 */
+            markets: number;
+            /** Format: int64 */
+            positions: number;
+            /** Format: int64 */
+            traders: number;
         };
         /** @description Enriched market data for event API responses */
         EventMarket: {
@@ -2923,6 +2955,26 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    get_counts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Total counts */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CountsResponse"];
+                };
             };
         };
     };

@@ -216,6 +216,11 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "get_spread_history",
 	},
 
+	"misc.getCounts": {
+		operationId: "get_counts",
+		shape: "object",
+	},
+
 	"webhooks.list": {
 		operationId: "list_webhooks",
 	},

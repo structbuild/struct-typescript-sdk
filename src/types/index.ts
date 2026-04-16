@@ -32,6 +32,7 @@ export type CandlestickResolution = Schemas["CandlestickResolution"];
 export type ChartResolution = Schemas["ChartResolution"];
 export type ClobReward = Schemas["ClobReward"];
 export type ConditionMetricsResponse = Schemas["ConditionMetricsResponse"];
+export type CountsResponse = Schemas["CountsResponse"];
 export type EventMarket = Schemas["EventMarket"];
 export type EventMarketOutcome = Schemas["EventMarketOutcome"];
 export type EventMetricsResponse = Schemas["EventMetricsResponse"];
