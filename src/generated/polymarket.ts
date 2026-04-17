@@ -3086,7 +3086,7 @@ export interface operations {
             query: {
                 /** @description Event slug */
                 event_slug: string;
-                /** @description Timeframe: single (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d), comma-separated (1m,5m,1h), or 'all' */
+                /** @description Timeframe: single (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d, lifetime), comma-separated (1m,5m,1h), or 'all' */
                 timeframe: string;
             };
             header?: never;
@@ -3591,7 +3591,7 @@ export interface operations {
             query: {
                 /** @description Market condition ID */
                 condition_id: string;
-                /** @description Timeframe: single (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d), comma-separated (1m,5m,1h), or 'all' */
+                /** @description Timeframe: single (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d, lifetime), comma-separated (1m,5m,1h), or 'all' */
                 timeframe: string;
             };
             header?: never;
