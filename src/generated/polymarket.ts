@@ -393,7 +393,7 @@ export interface paths {
         };
         /**
          * Get bonds
-         * @description Retrieve bond markets with sorting, probability range filter, and offset pagination
+         * @description Retrieve bond markets with sorting, probability range filter, and deterministic keyset pagination.
          */
         get: operations["get_bonds"];
         put?: never;
@@ -1418,6 +1418,8 @@ export interface components {
             /** Format: double */
             price: number;
         };
+        /** @enum {string} */
+        BondsSortBy: "end_date" | "apy" | "liquidity" | "volume";
         /** @description Output payload for Cancelled orders. */
         CancelledTrade: {
             id: string;
@@ -1630,6 +1632,77 @@ export interface components {
         EventPnlSortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "total_fees" | "realized_pnl_pct";
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
+        /**
+         * @description Response body for `GET /polymarket/analytics/counts`.
+         *     Cumulative analytics metrics (from ClickHouse `analytics_global`) plus
+         *     entity-count enrichment (from Postgres `pg_class.reltuples` estimates).
+         */
+        GlobalCountsResponse: {
+            /**
+             * Format: int32
+             * @description Unix-second timestamp of the latest block reflected in the metrics.
+             */
+            ts: number;
+            /**
+             * Format: int64
+             * @description Latest block number processed.
+             */
+            block: number;
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /** Format: int64 */
+            unique_traders: number;
+            /** Format: int64 */
+            txn_count: number;
+            /** Format: int64 */
+            buy_count: number;
+            /** Format: int64 */
+            sell_count: number;
+            /** Format: int64 */
+            redemption_count: number;
+            /** Format: double */
+            redemption_volume_usd: number;
+            /** Format: int64 */
+            merge_count: number;
+            /** Format: int64 */
+            split_count: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            shares_volume: number;
+            /** Format: double */
+            yes_volume_usd: number;
+            /** Format: double */
+            no_volume_usd: number;
+            /** Format: int64 */
+            yes_count: number;
+            /** Format: int64 */
+            no_count: number;
+            /**
+             * Format: int64
+             * @description Estimated row count of `polymarket_tags` (Postgres pg_class.reltuples).
+             */
+            tags: number;
+            /**
+             * Format: int64
+             * @description Estimated row count of `polymarket_events`.
+             */
+            events: number;
+            /**
+             * Format: int64
+             * @description Estimated row count of `prediction_markets`.
+             */
+            markets: number;
+            /**
+             * Format: int64
+             * @description Estimated row count of `polymarket_accounts` (traders / positions).
+             */
+            positions: number;
+        };
         /** @enum {string} */
         GlobalPnlSortBy: "realized_pnl_usd" | "buys" | "sells" | "redemptions" | "merges" | "avg_hold_time" | "markets_traded" | "events_traded" | "markets_won" | "volume_usd" | "fees" | "best_trade";
         /** @description Individual trader entry in the global PnL leaderboard */
@@ -1725,47 +1798,6 @@ export interface components {
             first_trade_at?: number | null;
             /** Format: int64 */
             last_trade_at?: number | null;
-        };
-        /** @description Latest cumulative metrics snapshot — read from `analytics_global_all FINAL`. */
-        LatestMetricsRow: {
-            /** Format: int32 */
-            ts: number;
-            /** Format: int64 */
-            block: number;
-            /** Format: double */
-            volume_usd: number;
-            /** Format: double */
-            buy_volume_usd: number;
-            /** Format: double */
-            sell_volume_usd: number;
-            /** Format: int64 */
-            unique_traders: number;
-            /** Format: int64 */
-            txn_count: number;
-            /** Format: int64 */
-            buy_count: number;
-            /** Format: int64 */
-            sell_count: number;
-            /** Format: int64 */
-            redemption_count: number;
-            /** Format: double */
-            redemption_volume_usd: number;
-            /** Format: int64 */
-            merge_count: number;
-            /** Format: int64 */
-            split_count: number;
-            /** Format: double */
-            fees_usd: number;
-            /** Format: double */
-            shares_volume: number;
-            /** Format: double */
-            yes_volume_usd: number;
-            /** Format: double */
-            no_volume_usd: number;
-            /** Format: int64 */
-            yes_count: number;
-            /** Format: int64 */
-            no_count: number;
         };
         /**
          * @description Market category filter for the trader leaderboard.
@@ -3367,7 +3399,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["LatestMetricsRow"];
+                    "application/json": components["schemas"]["GlobalCountsResponse"];
                 };
             };
         };
@@ -4076,12 +4108,12 @@ export interface operations {
                 /** @description Maximum hours until market end */
                 max_hours?: number;
                 /** @description Sort by: apy, liquidity, volume, end_date (default: end_date) */
-                sort_by?: string;
+                sort_by?: components["schemas"]["BondsSortBy"];
                 /** @description Number of results (default: 10, max: 250) */
                 limit?: number;
-                /** @description Offset for pagination (default: 0). Ignored if pagination_key is present. */
+                /** @description Initial skip (default: 0). Applied only on the first page; ignored when pagination_key is supplied. */
                 offset?: number;
-                /** @description Cursor from previous response — encodes the next offset. */
+                /** @description Keyset cursor from previous response. Opaque token — pass verbatim to fetch the next page. */
                 pagination_key?: string;
             };
             header?: never;

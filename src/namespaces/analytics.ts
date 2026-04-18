@@ -2,7 +2,7 @@ import { Namespace } from "./base.js";
 import type { HttpResponse } from "../types/http.js";
 import type { Venue } from "../types/common.js";
 import type {
-	LatestMetricsRow,
+	GlobalCountsResponse,
 	MetricPctChange,
 	TimeBucketRow,
 	GetGlobalAnalyticsCandlesParams,
@@ -23,8 +23,8 @@ import type {
 } from "../types/index.js";
 
 export class AnalyticsNamespace extends Namespace {
-	async getCounts(venue?: Venue): Promise<HttpResponse<LatestMetricsRow>> {
-		return this.get<LatestMetricsRow>(venue, "/analytics/counts");
+	async getCounts(venue?: Venue): Promise<HttpResponse<GlobalCountsResponse>> {
+		return this.get<GlobalCountsResponse>(venue, "/analytics/counts");
 	}
 
 	async getCandles(params?: GetGlobalAnalyticsCandlesParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {

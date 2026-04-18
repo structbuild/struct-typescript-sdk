@@ -28,6 +28,7 @@ type TimeframeRecord<V> = Partial<Record<TimeframeKey, V>>;
 
 export type BondMarket = Schemas["BondMarket"];
 export type BondOutcome = Schemas["BondOutcome"];
+export type BondsSortBy = Schemas["BondsSortBy"];
 export type CandlestickResolution = Schemas["CandlestickResolution"];
 export type ChangeTimeframe = Schemas["ChangeTimeframe"];
 export type ChartResolution = Schemas["ChartResolution"];
@@ -42,8 +43,8 @@ export type GlobalPnlSortBy = Schemas["GlobalPnlSortBy"];
 export type GlobalPnlTrader = Schemas["GlobalPnlTrader"];
 export type Holder = Schemas["Holder"];
 export type HolderHistoryCandle = Schemas["HolderHistoryCandle"];
+export type GlobalCountsResponse = Schemas["GlobalCountsResponse"];
 export type HolderPnl = Schemas["HolderPnl"];
-export type LatestMetricsRow = Schemas["LatestMetricsRow"];
 export type LeaderboardCategory = Schemas["LeaderboardCategory"];
 export type LeaderboardEntry = Schemas["LeaderboardEntry"];
 export type LeaderboardSortBy = Schemas["LeaderboardSortBy"];
