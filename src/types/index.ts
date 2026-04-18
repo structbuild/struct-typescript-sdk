@@ -29,10 +29,10 @@ type TimeframeRecord<V> = Partial<Record<TimeframeKey, V>>;
 export type BondMarket = Schemas["BondMarket"];
 export type BondOutcome = Schemas["BondOutcome"];
 export type CandlestickResolution = Schemas["CandlestickResolution"];
+export type ChangeTimeframe = Schemas["ChangeTimeframe"];
 export type ChartResolution = Schemas["ChartResolution"];
 export type ClobReward = Schemas["ClobReward"];
 export type ConditionMetricsResponse = Schemas["ConditionMetricsResponse"];
-export type CountsResponse = Schemas["CountsResponse"];
 export type EventMarket = Schemas["EventMarket"];
 export type EventMarketOutcome = Schemas["EventMarketOutcome"];
 export type EventMetricsResponse = Schemas["EventMetricsResponse"];
@@ -43,6 +43,7 @@ export type GlobalPnlTrader = Schemas["GlobalPnlTrader"];
 export type Holder = Schemas["Holder"];
 export type HolderHistoryCandle = Schemas["HolderHistoryCandle"];
 export type HolderPnl = Schemas["HolderPnl"];
+export type LatestMetricsRow = Schemas["LatestMetricsRow"];
 export type LeaderboardCategory = Schemas["LeaderboardCategory"];
 export type LeaderboardEntry = Schemas["LeaderboardEntry"];
 export type LeaderboardSortBy = Schemas["LeaderboardSortBy"];
@@ -54,6 +55,7 @@ export type MarketOutcome = Schemas["MarketOutcome"];
 export type MarketPnlSortBy = Schemas["MarketPnlSortBy"];
 export type MarketVolumeChartResponse = Schemas["MarketVolumeChartResponse"];
 export type MarketVolumeDataPoint = Schemas["MarketVolumeDataPoint"];
+export type MetricPctChange = Schemas["MetricPctChange"];
 export type MetricsTimeframe = Schemas["MetricsTimeframe"];
 export type OutcomeHolders = Schemas["OutcomeHolders"];
 export type OutcomeTimeframeMetrics = Schemas["OutcomeTimeframeMetrics"];
@@ -73,11 +75,13 @@ export type PositionMetricsResponse = Schemas["PositionMetricsResponse"];
 export type PositionVolumeChartResponse = Schemas["PositionVolumeChartResponse"];
 export type PositionVolumeDataPoint = Schemas["PositionVolumeDataPoint"];
 export type PredictionCandlestickBar = Schemas["PredictionCandlestickBar"];
+export type PriceJumpResolution = Schemas["PriceJumpResolution"];
 export type SearchResponse = Schemas["SearchResponse"];
 export type SearchSortBy = Schemas["SearchSortBy"];
 export type SimpleTimeframeMetrics = Schemas["SimpleTimeframeMetrics"];
 export type SortDirection = Schemas["SortDirection"];
 export type SpikeDirection = Schemas["SpikeDirection"];
+export type TimeBucketRow = Schemas["TimeBucketRow"];
 export type TokenOutcome = Schemas["TokenOutcome"];
 export type Trader = Schemas["Trader"];
 export type TraderInfo = Schemas["TraderInfo"];
@@ -375,6 +379,60 @@ export interface GetTraderProfilesBatchParams {
 }
 
 export interface GetTraderVolumeChartParams extends OperationQuery<"get_trader_volume_chart"> {
+	address: string;
+}
+
+export interface GetGlobalAnalyticsCandlesParams extends OperationQuery<"get_global_analytics_candles"> {}
+
+export interface GetGlobalAnalyticsChangesParams extends OperationQuery<"get_global_analytics_changes"> {}
+
+export interface GetGlobalAnalyticsTimeseriesParams extends OperationQuery<"get_global_analytics_timeseries"> {}
+
+export interface GetEventAnalyticsCandlesParams extends OperationQuery<"get_event_analytics_candles"> {
+	event_slug: string;
+}
+
+export interface GetEventAnalyticsChangesParams extends OperationQuery<"get_event_analytics_changes"> {
+	event_slug: string;
+}
+
+export interface GetEventAnalyticsTimeseriesParams extends OperationQuery<"get_event_analytics_timeseries"> {
+	event_slug: string;
+}
+
+export interface GetMarketAnalyticsCandlesParams extends OperationQuery<"get_market_analytics_candles"> {
+	condition_id: string;
+}
+
+export interface GetMarketAnalyticsChangesParams extends OperationQuery<"get_market_analytics_changes"> {
+	condition_id: string;
+}
+
+export interface GetMarketAnalyticsTimeseriesParams extends OperationQuery<"get_market_analytics_timeseries"> {
+	condition_id: string;
+}
+
+export interface GetTagAnalyticsCandlesParams extends OperationQuery<"get_tag_analytics_candles"> {
+	tag: string;
+}
+
+export interface GetTagAnalyticsChangesParams extends OperationQuery<"get_tag_analytics_changes"> {
+	tag: string;
+}
+
+export interface GetTagAnalyticsTimeseriesParams extends OperationQuery<"get_tag_analytics_timeseries"> {
+	tag: string;
+}
+
+export interface GetTraderAnalyticsCandlesParams extends OperationQuery<"get_trader_analytics_candles"> {
+	address: string;
+}
+
+export interface GetTraderAnalyticsChangesParams extends OperationQuery<"get_trader_analytics_changes"> {
+	address: string;
+}
+
+export interface GetTraderAnalyticsTimeseriesParams extends OperationQuery<"get_trader_analytics_timeseries"> {
 	address: string;
 }
 

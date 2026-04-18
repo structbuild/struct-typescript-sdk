@@ -7,6 +7,11 @@ allowed-tools: Bash, Read, Grep, Glob
 
 # Release — Commit, Version, Publish, Push
 
+## Modes
+
+- **Default (prod):** publishes to the `latest` dist-tag. Users on `@structbuild/sdk` get this.
+- **Staging:** user passes `staging` as the argument. Publishes under the `staging` dist-tag so `latest` stays pinned to the last prod release. Consumers opt in with `@structbuild/sdk@staging`.
+
 ## Step 1: Check for changes
 
 Run `git status` and `git diff --stat` to see what needs to be committed. If there are no changes, skip to Step 3 (version bump).
@@ -20,16 +25,22 @@ Run `git status` and `git diff --stat` to see what needs to be committed. If the
 
 ## Step 3: Version bump
 
-If the user specifies a version type (e.g. `minor`, `major`, `prepatch`, `preminor`, `premajor`, `prerelease`), use that: `npm version <type>`. Otherwise default to `npm version patch`. This auto-commits the version bump.
+- **Staging mode:** `npm version prerelease --preid=staging` (produces e.g. `0.3.10-staging.0`, bumpable repeatedly).
+- **Prod mode:** if the user specifies a version type (e.g. `minor`, `major`, `prepatch`, `preminor`, `premajor`, `prerelease`), use that: `npm version <type>`. Otherwise default to `npm version patch`.
+
+`npm version` auto-commits the version bump.
 
 ## Step 4: Publish
 
-Run `npm publish` and confirm it succeeds.
+- **Staging mode:** `npm publish --tag staging`. Never omit `--tag` in staging mode — bare `npm publish` would move the `latest` tag and break prod consumers.
+- **Prod mode:** `npm publish`.
+
+Confirm the publish succeeds and note which dist-tag was moved.
 
 ## Step 5: Push
 
-Run `git push` to push all commits to origin.
+Run `git push` to push all commits to origin. Then `git push --tags` so the version tag created by `npm version` reaches the remote.
 
 ## Step 6: Report
 
-Print the new version number and confirm all steps completed.
+Print the new version number, the dist-tag it was published under, and the install command consumers should use (`@structbuild/sdk` for prod, `@structbuild/sdk@staging` for staging).

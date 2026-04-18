@@ -216,9 +216,72 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "get_spread_history",
 	},
 
-	"misc.getCounts": {
-		operationId: "get_counts",
+	"analytics.getCounts": {
+		operationId: "get_analytics_counts",
 		shape: "object",
+	},
+	"analytics.getCandles": {
+		operationId: "get_global_analytics_candles",
+	},
+	"analytics.getChanges": {
+		params: { timeframe: "24h" },
+		operationId: "get_global_analytics_changes",
+		shape: "object",
+	},
+	"analytics.getTimeseries": {
+		operationId: "get_global_analytics_timeseries",
+	},
+	"analytics.getEventCandles": {
+		params: { event_slug: "$eventSlug" },
+		operationId: "get_event_analytics_candles",
+	},
+	"analytics.getEventChanges": {
+		params: { event_slug: "$eventSlug", timeframe: "24h" },
+		operationId: "get_event_analytics_changes",
+		shape: "object",
+	},
+	"analytics.getEventTimeseries": {
+		params: { event_slug: "$eventSlug" },
+		operationId: "get_event_analytics_timeseries",
+	},
+	"analytics.getMarketCandles": {
+		params: { condition_id: "$conditionId" },
+		operationId: "get_market_analytics_candles",
+	},
+	"analytics.getMarketChanges": {
+		params: { condition_id: "$conditionId", timeframe: "24h" },
+		operationId: "get_market_analytics_changes",
+		shape: "object",
+	},
+	"analytics.getMarketTimeseries": {
+		params: { condition_id: "$conditionId" },
+		operationId: "get_market_analytics_timeseries",
+	},
+	"analytics.getTagCandles": {
+		params: { tag: "$tagId" },
+		operationId: "get_tag_analytics_candles",
+	},
+	"analytics.getTagChanges": {
+		params: { tag: "$tagId", timeframe: "24h" },
+		operationId: "get_tag_analytics_changes",
+		shape: "object",
+	},
+	"analytics.getTagTimeseries": {
+		params: { tag: "$tagId" },
+		operationId: "get_tag_analytics_timeseries",
+	},
+	"analytics.getTraderCandles": {
+		params: { address: "$address" },
+		operationId: "get_trader_analytics_candles",
+	},
+	"analytics.getTraderChanges": {
+		params: { address: "$address", timeframe: "24h" },
+		operationId: "get_trader_analytics_changes",
+		shape: "object",
+	},
+	"analytics.getTraderTimeseries": {
+		params: { address: "$address" },
+		operationId: "get_trader_analytics_timeseries",
 	},
 
 	"webhooks.list": {
