@@ -26,6 +26,7 @@ import type { WebhookSchemas, WebhookOperationQuery, WebhookOperationRequestBody
 type TimeframeKey = Schemas["MetricsTimeframe"];
 type TimeframeRecord<V> = Partial<Record<TimeframeKey, V>>;
 
+export type AnalyticsResolution = Schemas["AnalyticsResolution"];
 export type BondMarket = Schemas["BondMarket"];
 export type BondOutcome = Schemas["BondOutcome"];
 export type BondsSortBy = Schemas["BondsSortBy"];

@@ -1248,6 +1248,14 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * @description Resolution for `/analytics/timeseries` and `/analytics/deltas`.
+         *     Superset of `CandlestickResolution` — adds 7-day (`W`/`1W`) and calendar
+         *     month (`M`/`1M`) buckets, which are pre-aggregated for global and tag
+         *     domains and re-bucketed from the `_1d` MV for market/event/trader.
+         * @enum {string}
+         */
+        AnalyticsResolution: "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D" | "W" | "1W" | "M" | "1M";
         /** @description Output payload for ERC1155 setApprovalForAll events. */
         ApprovalTrade: {
             id: string;
@@ -3333,7 +3341,7 @@ export interface operations {
     get_global_analytics_changes: {
         parameters: {
             query: {
-                /** @description Lookback window: 1h, 24h, 7d, 30d, 1y */
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y */
                 timeframe: components["schemas"]["ChangeTimeframe"];
             };
             header?: never;
@@ -3376,8 +3384,8 @@ export interface operations {
     get_global_analytics_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds). Omit for all-time. */
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
@@ -3407,8 +3415,8 @@ export interface operations {
     get_global_analytics_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds). Omit for all-time. */
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
@@ -3730,8 +3738,8 @@ export interface operations {
     get_event_analytics_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
@@ -3764,8 +3772,8 @@ export interface operations {
     get_event_analytics_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
@@ -4695,8 +4703,8 @@ export interface operations {
     get_market_analytics_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
@@ -4729,8 +4737,8 @@ export interface operations {
     get_market_analytics_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
@@ -5264,8 +5272,8 @@ export interface operations {
     get_tag_analytics_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
@@ -5298,8 +5306,8 @@ export interface operations {
     get_tag_analytics_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
@@ -5793,8 +5801,8 @@ export interface operations {
     get_trader_analytics_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
@@ -5827,8 +5835,8 @@ export interface operations {
     get_trader_analytics_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
                 /** @description End timestamp (Unix seconds) */
