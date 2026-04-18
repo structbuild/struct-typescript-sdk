@@ -853,7 +853,7 @@ export interface paths {
         };
         /**
          * Get tags
-         * @description Retrieve all available event tags/categories. Supports both cursor-based and offset-based pagination. Pass `sort=<metric>` to order tags by a traded-volume-style metric — requires `timeframe` to pick the window.
+         * @description Retrieve all available event tags/categories. Default listing is alphabetical (cursor-paginated). If either `sort` or `timeframe` is provided, the listing is ranked by the chosen metric+window (offset-paginated): sort defaults to `volume` when only `timeframe` is set, timeframe defaults to `24h` when only `sort` is set.
          */
         get: operations["get_tags"];
         put?: never;
@@ -873,7 +873,7 @@ export interface paths {
         };
         /**
          * Get tag by slug
-         * @description Retrieve a single tag by its ID or slug
+         * @description Retrieve a single tag by its ID or slug. Pass `include_metrics=true` to attach analytics metrics (volume_usd, txn_count, unique_traders, fees_usd) — adds +1 credit. Use `timeframe` to select the window; defaults to `1d`.
          */
         get: operations["get_tag_by_id"];
         put?: never;
@@ -1642,8 +1642,7 @@ export interface components {
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
         /**
          * @description Response body for `GET /polymarket/analytics/counts`.
-         *     Cumulative analytics metrics (from ClickHouse `analytics_global`) plus
-         *     entity-count enrichment (from Postgres `pg_class.reltuples` estimates).
+         *     Cumulative analytics metrics plus entity-count enrichment.
          */
         GlobalCountsResponse: {
             /**
@@ -1692,22 +1691,22 @@ export interface components {
             no_count: number;
             /**
              * Format: int64
-             * @description Estimated row count of `polymarket_tags` (Postgres pg_class.reltuples).
+             * @description Estimated total number of tags.
              */
             tags: number;
             /**
              * Format: int64
-             * @description Estimated row count of `polymarket_events`.
+             * @description Estimated total number of events.
              */
             events: number;
             /**
              * Format: int64
-             * @description Estimated row count of `prediction_markets`.
+             * @description Estimated total number of markets.
              */
             markets: number;
             /**
              * Format: int64
-             * @description Estimated row count of `polymarket_accounts` (traders / positions).
+             * @description Estimated total number of unique positions / traders.
              */
             positions: number;
         };
@@ -2995,11 +2994,16 @@ export interface components {
          */
         TagSortTimeframe: "lifetime" | "1h" | "24h" | "7d" | "30d" | "1mo" | "1y";
         /**
-         * @description Timeseries bucket row.
+         * @description Bucket row returned by both `/analytics/timeseries` (cumulative values
+         *     at end of bucket) and `/analytics/deltas` (per-bucket deltas). All metrics
+         *     the snapshot `/counts` returns are included.
+         *
          *     Short field names for compact JSON responses:
          *       t=bucket (unix seconds), v=volume_usd, bv=buy_volume_usd, sv=sell_volume_usd,
-         *       ut=unique_traders, tc=txn_count, f=fees_usd, sh=shares_volume,
-         *       yv=yes_volume_usd, nv=no_volume_usd
+         *       ut=unique_traders, tc=txn_count, bc=buy_count, sc=sell_count,
+         *       rc=redemption_count, rv=redemption_volume_usd, mc=merge_count,
+         *       sp=split_count, f=fees_usd, sh=shares_volume,
+         *       yv=yes_volume_usd, nv=no_volume_usd, yc=yes_count, nc=no_count
          */
         TimeBucketRow: {
             /** Format: int32 */
@@ -3014,6 +3018,18 @@ export interface components {
             ut: number;
             /** Format: int64 */
             tc: number;
+            /** Format: int64 */
+            bc: number;
+            /** Format: int64 */
+            sc: number;
+            /** Format: int64 */
+            rc: number;
+            /** Format: double */
+            rv: number;
+            /** Format: int64 */
+            mc: number;
+            /** Format: int64 */
+            sp: number;
             /** Format: double */
             f: number;
             /** Format: double */
@@ -3022,6 +3038,10 @@ export interface components {
             yv: number;
             /** Format: double */
             nv: number;
+            /** Format: int64 */
+            yc: number;
+            /** Format: int64 */
+            nc: number;
         };
         /** @description Token outcome (position) */
         TokenOutcome: {
@@ -5229,9 +5249,9 @@ export interface operations {
                 offset?: number;
                 /** @description Cursor-based pagination key (alphabetical mode only). */
                 pagination_key?: string;
-                /** @description Sort metric (offset-paginated). Omit for default alphabetical listing. */
+                /** @description Sort metric. Defaults to `volume` when only `timeframe` is set. Setting either `sort` or `timeframe` adds +2 credits. */
                 sort?: components["schemas"]["TagSortBy"];
-                /** @description Window for the sort metric. Required when `sort` is set. */
+                /** @description Window for the sort metric. Defaults to `24h` when only `sort` is set. Setting either `sort` or `timeframe` adds +2 credits. */
                 timeframe?: components["schemas"]["TagSortTimeframe"];
             };
             header?: never;
@@ -5253,7 +5273,12 @@ export interface operations {
     };
     get_tag_by_id: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Attach analytics metrics. +1 credit. */
+                include_metrics?: boolean;
+                /** @description Metrics window. Default `1d` (= `24h`). Ignored unless `include_metrics=true`. */
+                timeframe?: components["schemas"]["TagSortTimeframe"];
+            };
             header?: never;
             path: {
                 /** @description Tag ID or slug */
