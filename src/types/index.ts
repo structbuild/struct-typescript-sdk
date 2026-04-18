@@ -383,13 +383,13 @@ export interface GetTraderVolumeChartParams extends OperationQuery<"get_trader_v
 	address: string;
 }
 
-export interface GetGlobalAnalyticsCandlesParams extends OperationQuery<"get_global_analytics_candles"> {}
+export interface GetGlobalAnalyticsDeltasParams extends OperationQuery<"get_global_analytics_deltas"> {}
 
 export interface GetGlobalAnalyticsChangesParams extends OperationQuery<"get_global_analytics_changes"> {}
 
 export interface GetGlobalAnalyticsTimeseriesParams extends OperationQuery<"get_global_analytics_timeseries"> {}
 
-export interface GetEventAnalyticsCandlesParams extends OperationQuery<"get_event_analytics_candles"> {
+export interface GetEventAnalyticsDeltasParams extends OperationQuery<"get_event_analytics_deltas"> {
 	event_slug: string;
 }
 
@@ -401,7 +401,7 @@ export interface GetEventAnalyticsTimeseriesParams extends OperationQuery<"get_e
 	event_slug: string;
 }
 
-export interface GetMarketAnalyticsCandlesParams extends OperationQuery<"get_market_analytics_candles"> {
+export interface GetMarketAnalyticsDeltasParams extends OperationQuery<"get_market_analytics_deltas"> {
 	condition_id: string;
 }
 
@@ -413,7 +413,7 @@ export interface GetMarketAnalyticsTimeseriesParams extends OperationQuery<"get_
 	condition_id: string;
 }
 
-export interface GetTagAnalyticsCandlesParams extends OperationQuery<"get_tag_analytics_candles"> {
+export interface GetTagAnalyticsDeltasParams extends OperationQuery<"get_tag_analytics_deltas"> {
 	tag: string;
 }
 
@@ -425,7 +425,7 @@ export interface GetTagAnalyticsTimeseriesParams extends OperationQuery<"get_tag
 	tag: string;
 }
 
-export interface GetTraderAnalyticsCandlesParams extends OperationQuery<"get_trader_analytics_candles"> {
+export interface GetTraderAnalyticsDeltasParams extends OperationQuery<"get_trader_analytics_deltas"> {
 	address: string;
 }
 

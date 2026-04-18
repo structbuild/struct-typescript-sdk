@@ -4,26 +4,6 @@
  */
 
 export interface paths {
-    "/polymarket/analytics/candles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Global analytics candles (per-bucket deltas)
-         * @description Returns per-bucket deltas (volume, traders, fees etc. that happened *during* each bucket). Use for bar-chart visualisations of activity over time.
-         */
-        get: operations["get_global_analytics_candles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/polymarket/analytics/changes": {
         parameters: {
             query?: never;
@@ -56,6 +36,26 @@ export interface paths {
          * @description Returns the latest cumulative analytics metrics across all of Polymarket: volume, traders, txn counts, fees, yes/no splits, and buy distribution.
          */
         get: operations["get_analytics_counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/analytics/deltas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Global analytics candles (per-bucket deltas)
+         * @description Returns per-bucket deltas (volume, traders, fees etc. that happened *during* each bucket). Use for bar-chart visualisations of activity over time.
+         */
+        get: operations["get_global_analytics_deltas"];
         put?: never;
         post?: never;
         delete?: never;
@@ -204,26 +204,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/events/{event_slug}/analytics/candles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Event analytics candles (per-bucket deltas)
-         * @description Returns per-bucket deltas for a specific event (what happened during each bucket).
-         */
-        get: operations["get_event_analytics_candles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/polymarket/events/{event_slug}/analytics/changes": {
         parameters: {
             query?: never;
@@ -236,6 +216,26 @@ export interface paths {
          * @description Per-metric % change over the requested lookback window for a specific event.
          */
         get: operations["get_event_analytics_changes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/events/{event_slug}/analytics/deltas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Event analytics candles (per-bucket deltas)
+         * @description Returns per-bucket deltas for a specific event (what happened during each bucket).
+         */
+        get: operations["get_event_analytics_deltas"];
         put?: never;
         post?: never;
         delete?: never;
@@ -624,26 +624,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/market/{condition_id}/analytics/candles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Market analytics candles (per-bucket deltas)
-         * @description Returns per-bucket deltas for a specific market (what happened during each bucket).
-         */
-        get: operations["get_market_analytics_candles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/polymarket/market/{condition_id}/analytics/changes": {
         parameters: {
             query?: never;
@@ -656,6 +636,26 @@ export interface paths {
          * @description Per-metric % change over the requested lookback window for a specific market.
          */
         get: operations["get_market_analytics_changes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/market/{condition_id}/analytics/deltas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Market analytics candles (per-bucket deltas)
+         * @description Returns per-bucket deltas for a specific market (what happened during each bucket).
+         */
+        get: operations["get_market_analytics_deltas"];
         put?: never;
         post?: never;
         delete?: never;
@@ -884,26 +884,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/tags/{tag}/analytics/candles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Tag analytics candles (per-bucket deltas)
-         * @description Returns per-bucket deltas for a specific tag (what happened during each bucket).
-         */
-        get: operations["get_tag_analytics_candles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/polymarket/tags/{tag}/analytics/changes": {
         parameters: {
             query?: never;
@@ -916,6 +896,26 @@ export interface paths {
          * @description Per-metric % change over the requested lookback window for a specific tag.
          */
         get: operations["get_tag_analytics_changes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/tags/{tag}/analytics/deltas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tag analytics candles (per-bucket deltas)
+         * @description Returns per-bucket deltas for a specific tag (what happened during each bucket).
+         */
+        get: operations["get_tag_analytics_deltas"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1184,26 +1184,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/trader/{address}/analytics/candles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Trader analytics candles (per-bucket deltas)
-         * @description Returns per-bucket deltas for a specific trader address (what happened during each bucket).
-         */
-        get: operations["get_trader_analytics_candles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/polymarket/trader/{address}/analytics/changes": {
         parameters: {
             query?: never;
@@ -1216,6 +1196,26 @@ export interface paths {
          * @description Per-metric % change over the requested lookback window for a specific trader address.
          */
         get: operations["get_trader_analytics_changes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/trader/{address}/analytics/deltas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Trader analytics candles (per-bucket deltas)
+         * @description Returns per-bucket deltas for a specific trader address (what happened during each bucket).
+         */
+        get: operations["get_trader_analytics_deltas"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1447,7 +1447,7 @@ export interface components {
          * @description Lookback window for `/analytics/changes` endpoints.
          * @enum {string}
          */
-        ChangeTimeframe: "1h" | "24h" | "7d" | "30d" | "1y";
+        ChangeTimeframe: "1h" | "24h" | "7d" | "30d" | "1mo" | "1y";
         /** @enum {string} */
         ChartResolution: "1H" | "6H" | "1D" | "1W" | "1M" | "ALL";
         /** @description CLOB reward (public API format) */
@@ -3330,37 +3330,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    get_global_analytics_candles: {
-        parameters: {
-            query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
-                resolution?: components["schemas"]["CandlestickResolution"];
-                /** @description Start timestamp (Unix seconds). Omit for all-time. */
-                from?: number;
-                /** @description End timestamp (Unix seconds) */
-                to?: number;
-                /** @description Max data points (default: 500, max: 2500) */
-                count_back?: number;
-                /** @description Cursor from previous response for next page */
-                pagination_key?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Delta time-bucketed analytics */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TimeBucketRow"][];
-                };
-            };
-        };
-    };
     get_global_analytics_changes: {
         parameters: {
             query: {
@@ -3400,6 +3369,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GlobalCountsResponse"];
+                };
+            };
+        };
+    };
+    get_global_analytics_deltas: {
+        parameters: {
+            query?: {
+                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
+                resolution?: components["schemas"]["CandlestickResolution"];
+                /** @description Start timestamp (Unix seconds). Omit for all-time. */
+                from?: number;
+                /** @description End timestamp (Unix seconds) */
+                to?: number;
+                /** @description Max data points (default: 500, max: 2500) */
+                count_back?: number;
+                /** @description Cursor from previous response for next page */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Delta time-bucketed analytics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TimeBucketRow"][];
                 };
             };
         };
@@ -3701,7 +3701,33 @@ export interface operations {
             };
         };
     };
-    get_event_analytics_candles: {
+    get_event_analytics_changes: {
+        parameters: {
+            query: {
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y */
+                timeframe: components["schemas"]["ChangeTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Event slug */
+                event_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-metric pct change */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetricPctChange"];
+                };
+            };
+        };
+    };
+    get_event_analytics_deltas: {
         parameters: {
             query?: {
                 /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
@@ -3731,32 +3757,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TimeBucketRow"][];
-                };
-            };
-        };
-    };
-    get_event_analytics_changes: {
-        parameters: {
-            query: {
-                /** @description Lookback window: 1h, 24h, 7d, 30d, 1y */
-                timeframe: components["schemas"]["ChangeTimeframe"];
-            };
-            header?: never;
-            path: {
-                /** @description Event slug */
-                event_slug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Per-metric pct change */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MetricPctChange"];
                 };
             };
         };
@@ -4666,7 +4666,33 @@ export interface operations {
             };
         };
     };
-    get_market_analytics_candles: {
+    get_market_analytics_changes: {
+        parameters: {
+            query: {
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y */
+                timeframe: components["schemas"]["ChangeTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Market condition ID */
+                condition_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-metric pct change */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetricPctChange"];
+                };
+            };
+        };
+    };
+    get_market_analytics_deltas: {
         parameters: {
             query?: {
                 /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
@@ -4696,32 +4722,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TimeBucketRow"][];
-                };
-            };
-        };
-    };
-    get_market_analytics_changes: {
-        parameters: {
-            query: {
-                /** @description Lookback window: 1h, 24h, 7d, 30d, 1y */
-                timeframe: components["schemas"]["ChangeTimeframe"];
-            };
-            header?: never;
-            path: {
-                /** @description Market condition ID */
-                condition_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Per-metric pct change */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MetricPctChange"];
                 };
             };
         };
@@ -5235,7 +5235,33 @@ export interface operations {
             };
         };
     };
-    get_tag_analytics_candles: {
+    get_tag_analytics_changes: {
+        parameters: {
+            query: {
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y */
+                timeframe: components["schemas"]["ChangeTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Tag label (e.g. Politics, Sports) */
+                tag: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-metric pct change */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetricPctChange"];
+                };
+            };
+        };
+    };
+    get_tag_analytics_deltas: {
         parameters: {
             query?: {
                 /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
@@ -5265,32 +5291,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TimeBucketRow"][];
-                };
-            };
-        };
-    };
-    get_tag_analytics_changes: {
-        parameters: {
-            query: {
-                /** @description Lookback window: 1h, 24h, 7d, 30d, 1y */
-                timeframe: components["schemas"]["ChangeTimeframe"];
-            };
-            header?: never;
-            path: {
-                /** @description Tag label (e.g. Politics, Sports) */
-                tag: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Per-metric pct change */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MetricPctChange"];
                 };
             };
         };
@@ -5764,7 +5764,33 @@ export interface operations {
             };
         };
     };
-    get_trader_analytics_candles: {
+    get_trader_analytics_changes: {
+        parameters: {
+            query: {
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y */
+                timeframe: components["schemas"]["ChangeTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-metric pct change */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetricPctChange"];
+                };
+            };
+        };
+    };
+    get_trader_analytics_deltas: {
         parameters: {
             query?: {
                 /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D (default: 60) */
@@ -5794,32 +5820,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TimeBucketRow"][];
-                };
-            };
-        };
-    };
-    get_trader_analytics_changes: {
-        parameters: {
-            query: {
-                /** @description Lookback window: 1h, 24h, 7d, 30d, 1y */
-                timeframe: components["schemas"]["ChangeTimeframe"];
-            };
-            header?: never;
-            path: {
-                /** @description Trader wallet address */
-                address: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Per-metric pct change */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MetricPctChange"];
                 };
             };
         };

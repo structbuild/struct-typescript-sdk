@@ -220,8 +220,8 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "get_analytics_counts",
 		shape: "object",
 	},
-	"analytics.getCandles": {
-		operationId: "get_global_analytics_candles",
+	"analytics.getDeltas": {
+		operationId: "get_global_analytics_deltas",
 	},
 	"analytics.getChanges": {
 		params: { timeframe: "24h" },
@@ -231,9 +231,9 @@ export const methodMeta: Record<string, MethodConfig> = {
 	"analytics.getTimeseries": {
 		operationId: "get_global_analytics_timeseries",
 	},
-	"analytics.getEventCandles": {
+	"analytics.getEventDeltas": {
 		params: { event_slug: "$eventSlug" },
-		operationId: "get_event_analytics_candles",
+		operationId: "get_event_analytics_deltas",
 	},
 	"analytics.getEventChanges": {
 		params: { event_slug: "$eventSlug", timeframe: "24h" },
@@ -244,9 +244,9 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { event_slug: "$eventSlug" },
 		operationId: "get_event_analytics_timeseries",
 	},
-	"analytics.getMarketCandles": {
+	"analytics.getMarketDeltas": {
 		params: { condition_id: "$conditionId" },
-		operationId: "get_market_analytics_candles",
+		operationId: "get_market_analytics_deltas",
 	},
 	"analytics.getMarketChanges": {
 		params: { condition_id: "$conditionId", timeframe: "24h" },
@@ -257,9 +257,9 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { condition_id: "$conditionId" },
 		operationId: "get_market_analytics_timeseries",
 	},
-	"analytics.getTagCandles": {
+	"analytics.getTagDeltas": {
 		params: { tag: "$tagId" },
-		operationId: "get_tag_analytics_candles",
+		operationId: "get_tag_analytics_deltas",
 	},
 	"analytics.getTagChanges": {
 		params: { tag: "$tagId", timeframe: "24h" },
@@ -270,9 +270,9 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { tag: "$tagId" },
 		operationId: "get_tag_analytics_timeseries",
 	},
-	"analytics.getTraderCandles": {
+	"analytics.getTraderDeltas": {
 		params: { address: "$address" },
-		operationId: "get_trader_analytics_candles",
+		operationId: "get_trader_analytics_deltas",
 	},
 	"analytics.getTraderChanges": {
 		params: { address: "$address", timeframe: "24h" },

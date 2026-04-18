@@ -5,19 +5,19 @@ import type {
 	GlobalCountsResponse,
 	MetricPctChange,
 	TimeBucketRow,
-	GetGlobalAnalyticsCandlesParams,
+	GetGlobalAnalyticsDeltasParams,
 	GetGlobalAnalyticsChangesParams,
 	GetGlobalAnalyticsTimeseriesParams,
-	GetEventAnalyticsCandlesParams,
+	GetEventAnalyticsDeltasParams,
 	GetEventAnalyticsChangesParams,
 	GetEventAnalyticsTimeseriesParams,
-	GetMarketAnalyticsCandlesParams,
+	GetMarketAnalyticsDeltasParams,
 	GetMarketAnalyticsChangesParams,
 	GetMarketAnalyticsTimeseriesParams,
-	GetTagAnalyticsCandlesParams,
+	GetTagAnalyticsDeltasParams,
 	GetTagAnalyticsChangesParams,
 	GetTagAnalyticsTimeseriesParams,
-	GetTraderAnalyticsCandlesParams,
+	GetTraderAnalyticsDeltasParams,
 	GetTraderAnalyticsChangesParams,
 	GetTraderAnalyticsTimeseriesParams,
 } from "../types/index.js";
@@ -27,8 +27,8 @@ export class AnalyticsNamespace extends Namespace {
 		return this.get<GlobalCountsResponse>(venue, "/analytics/counts");
 	}
 
-	async getCandles(params?: GetGlobalAnalyticsCandlesParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
-		return this.get<TimeBucketRow[]>(venue, "/analytics/candles", { params: { ...params } });
+	async getDeltas(params?: GetGlobalAnalyticsDeltasParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
+		return this.get<TimeBucketRow[]>(venue, "/analytics/deltas", { params: { ...params } });
 	}
 
 	async getChanges(params: GetGlobalAnalyticsChangesParams, venue?: Venue): Promise<HttpResponse<MetricPctChange>> {
@@ -39,9 +39,9 @@ export class AnalyticsNamespace extends Namespace {
 		return this.get<TimeBucketRow[]>(venue, "/analytics/timeseries", { params: { ...params } });
 	}
 
-	async getEventCandles(params: GetEventAnalyticsCandlesParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
+	async getEventDeltas(params: GetEventAnalyticsDeltasParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
 		const { event_slug, ...query } = params;
-		return this.get<TimeBucketRow[]>(venue, `/events/${encodeURIComponent(event_slug)}/analytics/candles`, { params: query });
+		return this.get<TimeBucketRow[]>(venue, `/events/${encodeURIComponent(event_slug)}/analytics/deltas`, { params: query });
 	}
 
 	async getEventChanges(params: GetEventAnalyticsChangesParams, venue?: Venue): Promise<HttpResponse<MetricPctChange>> {
@@ -54,9 +54,9 @@ export class AnalyticsNamespace extends Namespace {
 		return this.get<TimeBucketRow[]>(venue, `/events/${encodeURIComponent(event_slug)}/analytics/timeseries`, { params: query });
 	}
 
-	async getMarketCandles(params: GetMarketAnalyticsCandlesParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
+	async getMarketDeltas(params: GetMarketAnalyticsDeltasParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
 		const { condition_id, ...query } = params;
-		return this.get<TimeBucketRow[]>(venue, `/market/${encodeURIComponent(condition_id)}/analytics/candles`, { params: query });
+		return this.get<TimeBucketRow[]>(venue, `/market/${encodeURIComponent(condition_id)}/analytics/deltas`, { params: query });
 	}
 
 	async getMarketChanges(params: GetMarketAnalyticsChangesParams, venue?: Venue): Promise<HttpResponse<MetricPctChange>> {
@@ -69,9 +69,9 @@ export class AnalyticsNamespace extends Namespace {
 		return this.get<TimeBucketRow[]>(venue, `/market/${encodeURIComponent(condition_id)}/analytics/timeseries`, { params: query });
 	}
 
-	async getTagCandles(params: GetTagAnalyticsCandlesParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
+	async getTagDeltas(params: GetTagAnalyticsDeltasParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
 		const { tag, ...query } = params;
-		return this.get<TimeBucketRow[]>(venue, `/tags/${encodeURIComponent(tag)}/analytics/candles`, { params: query });
+		return this.get<TimeBucketRow[]>(venue, `/tags/${encodeURIComponent(tag)}/analytics/deltas`, { params: query });
 	}
 
 	async getTagChanges(params: GetTagAnalyticsChangesParams, venue?: Venue): Promise<HttpResponse<MetricPctChange>> {
@@ -84,9 +84,9 @@ export class AnalyticsNamespace extends Namespace {
 		return this.get<TimeBucketRow[]>(venue, `/tags/${encodeURIComponent(tag)}/analytics/timeseries`, { params: query });
 	}
 
-	async getTraderCandles(params: GetTraderAnalyticsCandlesParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
+	async getTraderDeltas(params: GetTraderAnalyticsDeltasParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
 		const { address, ...query } = params;
-		return this.get<TimeBucketRow[]>(venue, `/trader/${encodeURIComponent(address)}/analytics/candles`, { params: query });
+		return this.get<TimeBucketRow[]>(venue, `/trader/${encodeURIComponent(address)}/analytics/deltas`, { params: query });
 	}
 
 	async getTraderChanges(params: GetTraderAnalyticsChangesParams, venue?: Venue): Promise<HttpResponse<MetricPctChange>> {
