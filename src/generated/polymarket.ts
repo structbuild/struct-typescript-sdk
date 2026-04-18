@@ -853,7 +853,7 @@ export interface paths {
         };
         /**
          * Get tags
-         * @description Retrieve all available event tags/categories. Supports both cursor-based and offset-based pagination.
+         * @description Retrieve all available event tags/categories. Supports both cursor-based and offset-based pagination. Pass `sort=<metric>` to order tags by a traded-volume-style metric — requires `timeframe` to pick the window.
          */
         get: operations["get_tags"];
         put?: never;
@@ -2449,6 +2449,26 @@ export interface components {
             label: string;
             /** @default null */
             slug: string | null;
+            /**
+             * Format: double
+             * @default null
+             */
+            volume_usd: number;
+            /**
+             * Format: int64
+             * @default null
+             */
+            txn_count: number;
+            /**
+             * Format: int64
+             * @default null
+             */
+            unique_traders: number;
+            /**
+             * Format: double
+             * @default null
+             */
+            fees_usd: number;
         };
         /** @description Polymarket user profile (public API format) */
         PolymarketUserProfile: {
@@ -2960,6 +2980,20 @@ export interface components {
             /** Format: int32 */
             ask_levels?: number | null;
         };
+        /**
+         * @description Metric to order by when `sort=<value>` is provided.
+         *     `traders` windowed sums per-block deltas — approximate for the "unique
+         *     traders in window" reading (double-counts traders active in multiple
+         *     blocks) but fine for ranking. `lifetime` uses the exact cumulative.
+         * @enum {string}
+         */
+        TagSortBy: "volume" | "txns" | "traders" | "fees";
+        /**
+         * @description Timeframe for `?sort=...` — defines the window the metric is summed over
+         *     (or `lifetime` for all-time cumulative).
+         * @enum {string}
+         */
+        TagSortTimeframe: "lifetime" | "1h" | "24h" | "7d" | "30d" | "1mo" | "1y";
         /**
          * @description Timeseries bucket row.
          *     Short field names for compact JSON responses:
@@ -5193,8 +5227,12 @@ export interface operations {
                 limit?: number;
                 /** @description Offset-based pagination (number of results to skip). Takes precedence over pagination_key. */
                 offset?: number;
-                /** @description Cursor-based pagination key */
+                /** @description Cursor-based pagination key (alphabetical mode only). */
                 pagination_key?: string;
+                /** @description Sort metric (offset-paginated). Omit for default alphabetical listing. */
+                sort?: components["schemas"]["TagSortBy"];
+                /** @description Window for the sort metric. Required when `sort` is set. */
+                timeframe?: components["schemas"]["TagSortTimeframe"];
             };
             header?: never;
             path?: never;

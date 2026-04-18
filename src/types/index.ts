@@ -70,6 +70,8 @@ export type Event = Omit<Schemas["PolymarketEvent"], "metrics"> & {
 };
 export type PolymarketSeries = Schemas["PolymarketSeries"];
 export type Tag = Schemas["PolymarketTag"];
+export type TagSortBy = Schemas["TagSortBy"];
+export type TagSortTimeframe = Schemas["TagSortTimeframe"];
 export type UserProfile = Schemas["PolymarketUserProfile"];
 export type PositionHoldersResponse = Schemas["PositionHoldersResponse"];
 export type PositionStatus = Schemas["PositionStatus"];
