@@ -1,6 +1,6 @@
 {
   "name": "@structbuild/sdk",
-  "version": "0.3.9",
+  "version": "0.3.10-staging.0",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
