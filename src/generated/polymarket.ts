@@ -1675,8 +1675,12 @@ export interface components {
             redemption_volume_usd: number;
             /** Format: int64 */
             merge_count: number;
+            /** Format: double */
+            merge_volume_usd: number;
             /** Format: int64 */
             split_count: number;
+            /** Format: double */
+            split_volume_usd: number;
             /** Format: double */
             fees_usd: number;
             /** Format: double */
@@ -1689,6 +1693,18 @@ export interface components {
             yes_count: number;
             /** Format: int64 */
             no_count: number;
+            /** Format: int64 */
+            buy_dist_under_10: number;
+            /** Format: int64 */
+            buy_dist_10_100: number;
+            /** Format: int64 */
+            buy_dist_100_1k: number;
+            /** Format: int64 */
+            buy_dist_1k_10k: number;
+            /** Format: int64 */
+            buy_dist_10k_50k: number;
+            /** Format: int64 */
+            buy_dist_50k_plus: number;
             /**
              * Format: int64
              * @description Estimated total number of tags.
@@ -3028,8 +3044,12 @@ export interface components {
             rv: number;
             /** Format: int64 */
             mc: number;
+            /** Format: double */
+            mv: number;
             /** Format: int64 */
             sp: number;
+            /** Format: double */
+            spv: number;
             /** Format: double */
             f: number;
             /** Format: double */
@@ -3042,6 +3062,21 @@ export interface components {
             yc: number;
             /** Format: int64 */
             nc: number;
+            /**
+             * Format: int64
+             * @description Buy distribution — count of buy trades falling in each USD bucket.
+             */
+            bd_u10: number;
+            /** Format: int64 */
+            bd_100: number;
+            /** Format: int64 */
+            bd_1k: number;
+            /** Format: int64 */
+            bd_10k: number;
+            /** Format: int64 */
+            bd_50k: number;
+            /** Format: int64 */
+            bd_50p: number;
         };
         /** @description Token outcome (position) */
         TokenOutcome: {
