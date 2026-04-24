@@ -1255,7 +1255,7 @@ export interface components {
          *     domains and re-bucketed from the `_1d` MV for market/event/trader.
          * @enum {string}
          */
-        AnalyticsResolution: "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D" | "W" | "1W" | "M" | "1M";
+        AnalyticsResolution: "60" | "240" | "D" | "1D" | "W" | "1W" | "M" | "1M";
         /** @description Output payload for ERC1155 setApprovalForAll events. */
         ApprovalTrade: {
             id: string;
@@ -1661,8 +1661,21 @@ export interface components {
             buy_volume_usd: number;
             /** Format: double */
             sell_volume_usd: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Distinct addresses that have ever traded on Polymarket (lifetime).
+             */
             unique_traders: number;
+            /**
+             * Format: int64
+             * @description Distinct makers ever active (lifetime distinct).
+             */
+            unique_makers: number;
+            /**
+             * Format: int64
+             * @description Distinct takers ever active (lifetime distinct).
+             */
+            unique_takers: number;
             /** Format: int64 */
             txn_count: number;
             /** Format: int64 */
@@ -2062,7 +2075,21 @@ export interface components {
             /** Format: double */
             sell_volume_usd?: number | null;
             /** Format: double */
+            merge_volume_usd?: number | null;
+            /** Format: double */
+            split_volume_usd?: number | null;
+            /** Format: double */
+            new_traders?: number | null;
+            /** Format: double */
+            new_makers?: number | null;
+            /** Format: double */
+            new_takers?: number | null;
+            /** Format: double */
             unique_traders?: number | null;
+            /** Format: double */
+            unique_makers?: number | null;
+            /** Format: double */
+            unique_takers?: number | null;
             /** Format: double */
             txn_count?: number | null;
             /** Format: double */
@@ -2476,9 +2503,40 @@ export interface components {
             txn_count: number;
             /**
              * Format: int64
+             * @description First-time-ever traders in the window (delta of the lifetime counter).
+             * @default null
+             */
+            new_traders: number;
+            /**
+             * Format: int64
+             * @description First-time-ever makers in the window.
+             * @default null
+             */
+            new_makers: number;
+            /**
+             * Format: int64
+             * @description First-time-ever takers in the window.
+             * @default null
+             */
+            new_takers: number;
+            /**
+             * Format: int64
+             * @description Distinct active traders in the window.
              * @default null
              */
             unique_traders: number;
+            /**
+             * Format: int64
+             * @description Distinct active makers in the window.
+             * @default null
+             */
+            unique_makers: number;
+            /**
+             * Format: int64
+             * @description Distinct active takers in the window.
+             * @default null
+             */
+            unique_takers: number;
             /**
              * Format: double
              * @default null
@@ -2997,12 +3055,16 @@ export interface components {
         };
         /**
          * @description Metric to order by when `sort=<value>` is provided.
-         *     `traders` windowed sums per-block deltas — approximate for the "unique
-         *     traders in window" reading (double-counts traders active in multiple
-         *     blocks) but fine for ranking. `lifetime` uses the exact cumulative.
+         *
+         *     `new_*` ranks by first-time-ever arrivals — counted once in the bucket
+         *     where the address first appears, regardless of subsequent activity. Read
+         *     from the cumulative / delta MVs.
+         *
+         *     `unique_*` ranks by window-distinct addresses — exact `uniqExact` count
+         *     of addresses active in the timeframe. Read from the active MVs.
          * @enum {string}
          */
-        TagSortBy: "volume" | "txns" | "traders" | "fees";
+        TagSortBy: "volume" | "txns" | "new_traders" | "new_makers" | "new_takers" | "unique_traders" | "unique_makers" | "unique_takers" | "fees";
         /**
          * @description Timeframe for `?sort=...` — defines the window the metric is summed over
          *     (or `lifetime` for all-time cumulative).
@@ -3016,7 +3078,7 @@ export interface components {
          *
          *     Short field names for compact JSON responses:
          *       t=bucket (unix seconds), v=volume_usd, bv=buy_volume_usd, sv=sell_volume_usd,
-         *       ut=unique_traders, tc=txn_count, bc=buy_count, sc=sell_count,
+         *       ut=new_traders, tc=txn_count, bc=buy_count, sc=sell_count,
          *       rc=redemption_count, rv=redemption_volume_usd, mc=merge_count,
          *       sp=split_count, f=fees_usd, sh=shares_volume,
          *       yv=yes_volume_usd, nv=no_volume_usd, yc=yes_count, nc=no_count
@@ -3030,8 +3092,21 @@ export interface components {
             bv: number;
             /** Format: double */
             sv: number;
-            /** Format: int64 */
-            ut: number;
+            /**
+             * Format: int64
+             * @description Traders appearing for the first-time-ever in this bucket.
+             */
+            nt: number;
+            /**
+             * Format: int64
+             * @description Unique makers (order-resting side). Only tracked for match events.
+             */
+            nm: number;
+            /**
+             * Format: int64
+             * @description Unique takers (order-initiator side). Only tracked for match events.
+             */
+            nk: number;
             /** Format: int64 */
             tc: number;
             /** Format: int64 */
@@ -3077,6 +3152,21 @@ export interface components {
             bd_50k: number;
             /** Format: int64 */
             bd_50p: number;
+            /**
+             * Format: int64
+             * @description Distinct traders ACTIVE in this bucket (window-unique, not first-time).
+             */
+            ut: number;
+            /**
+             * Format: int64
+             * @description Distinct makers active in this bucket.
+             */
+            um: number;
+            /**
+             * Format: int64
+             * @description Distinct takers active in this bucket.
+             */
+            uk: number;
         };
         /** @description Token outcome (position) */
         TokenOutcome: {
@@ -3265,6 +3355,33 @@ export interface components {
             /** Format: double */
             realized_pnl_pct?: number | null;
         };
+        /**
+         * @description Per-metric percentage change over a lookback window for one trader
+         *     address. A `null` field means the window predates the trader's first
+         *     activity or the prior value was zero (percentage undefined).
+         */
+        TraderMetricPctChange: {
+            /** Format: double */
+            volume_usd?: number | null;
+            /** Format: double */
+            buy_volume_usd?: number | null;
+            /** Format: double */
+            sell_volume_usd?: number | null;
+            /** Format: double */
+            merge_volume_usd?: number | null;
+            /** Format: double */
+            split_volume_usd?: number | null;
+            /** Format: double */
+            txn_count?: number | null;
+            /** Format: double */
+            fees_usd?: number | null;
+            /** Format: double */
+            shares_volume?: number | null;
+            /** Format: double */
+            yes_volume_usd?: number | null;
+            /** Format: double */
+            no_volume_usd?: number | null;
+        };
         /** @description Outcome-level PnL entry (per outcome token / position_id) */
         TraderOutcomePnlEntry: {
             position_id?: string | null;
@@ -3385,6 +3502,65 @@ export interface components {
             /** Format: int64 */
             last_trade_at?: number | null;
         };
+        /**
+         * @description Bucket row returned by the per-trader `/analytics/timeseries` and
+         *     `/analytics/deltas` endpoints. Mirrors `TimeBucketRow` minus the
+         *     distinct-address counters (`new_*` / `unique_*`) — those only carry
+         *     information for aggregations over many addresses (market, event, tag,
+         *     global), not for a single trader.
+         */
+        TraderTimeBucketRow: {
+            /** Format: int32 */
+            t: number;
+            /** Format: double */
+            v: number;
+            /** Format: double */
+            bv: number;
+            /** Format: double */
+            sv: number;
+            /** Format: int64 */
+            tc: number;
+            /** Format: int64 */
+            bc: number;
+            /** Format: int64 */
+            sc: number;
+            /** Format: int64 */
+            rc: number;
+            /** Format: double */
+            rv: number;
+            /** Format: int64 */
+            mc: number;
+            /** Format: double */
+            mv: number;
+            /** Format: int64 */
+            sp: number;
+            /** Format: double */
+            spv: number;
+            /** Format: double */
+            f: number;
+            /** Format: double */
+            sh: number;
+            /** Format: double */
+            yv: number;
+            /** Format: double */
+            nv: number;
+            /** Format: int64 */
+            yc: number;
+            /** Format: int64 */
+            nc: number;
+            /** Format: int64 */
+            bd_u10: number;
+            /** Format: int64 */
+            bd_100: number;
+            /** Format: int64 */
+            bd_1k: number;
+            /** Format: int64 */
+            bd_10k: number;
+            /** Format: int64 */
+            bd_50k: number;
+            /** Format: int64 */
+            bd_50p: number;
+        };
         TraderVolumeChartResponse: {
             volumes: components["schemas"]["TraderVolumeDataPoint"][];
             has_more: boolean;
@@ -3429,9 +3605,9 @@ export type $defs = Record<string, never>;
 export interface operations {
     get_global_analytics_changes: {
         parameters: {
-            query: {
-                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y */
-                timeframe: components["schemas"]["ChangeTimeframe"];
+            query?: {
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y (default: 24h) */
+                timeframe?: components["schemas"]["ChangeTimeframe"];
             };
             header?: never;
             path?: never;
@@ -3473,7 +3649,7 @@ export interface operations {
     get_global_analytics_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
                 resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds). Omit for all-time. */
                 from?: number;
@@ -3504,7 +3680,7 @@ export interface operations {
     get_global_analytics_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
                 resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds). Omit for all-time. */
                 from?: number;
@@ -3800,9 +3976,9 @@ export interface operations {
     };
     get_event_analytics_changes: {
         parameters: {
-            query: {
-                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y */
-                timeframe: components["schemas"]["ChangeTimeframe"];
+            query?: {
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y (default: 24h) */
+                timeframe?: components["schemas"]["ChangeTimeframe"];
             };
             header?: never;
             path: {
@@ -3827,7 +4003,7 @@ export interface operations {
     get_event_analytics_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
                 resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
@@ -3861,7 +4037,7 @@ export interface operations {
     get_event_analytics_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
                 resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
@@ -4765,9 +4941,9 @@ export interface operations {
     };
     get_market_analytics_changes: {
         parameters: {
-            query: {
-                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y */
-                timeframe: components["schemas"]["ChangeTimeframe"];
+            query?: {
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y (default: 24h) */
+                timeframe?: components["schemas"]["ChangeTimeframe"];
             };
             header?: never;
             path: {
@@ -4792,7 +4968,7 @@ export interface operations {
     get_market_analytics_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
                 resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
@@ -4826,7 +5002,7 @@ export interface operations {
     get_market_analytics_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
                 resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
@@ -5288,6 +5464,8 @@ export interface operations {
                 sort?: components["schemas"]["TagSortBy"];
                 /** @description Window for the sort metric. Defaults to `24h` when only `sort` is set. Setting either `sort` or `timeframe` adds +2 credits. */
                 timeframe?: components["schemas"]["TagSortTimeframe"];
+                /** @description Sort direction (default: true = highest first). Only applies to sort/timeframe mode. */
+                sort_desc?: boolean;
             };
             header?: never;
             path?: never;
@@ -5343,9 +5521,9 @@ export interface operations {
     };
     get_tag_analytics_changes: {
         parameters: {
-            query: {
-                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y */
-                timeframe: components["schemas"]["ChangeTimeframe"];
+            query?: {
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y (default: 24h) */
+                timeframe?: components["schemas"]["ChangeTimeframe"];
             };
             header?: never;
             path: {
@@ -5370,7 +5548,7 @@ export interface operations {
     get_tag_analytics_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
                 resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
@@ -5404,7 +5582,7 @@ export interface operations {
     get_tag_analytics_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
                 resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
@@ -5805,8 +5983,6 @@ export interface operations {
                 from?: number;
                 /** @description End timestamp (ms) */
                 to?: number;
-                /** @description Return all-time trades, not just last 30 days (default: false) */
-                all?: boolean;
                 /** @description Results per page (default: 10, max: 250) */
                 limit?: number;
                 /** @description Pagination offset (number of results to skip). Takes precedence over pagination_key. */
@@ -5872,9 +6048,9 @@ export interface operations {
     };
     get_trader_analytics_changes: {
         parameters: {
-            query: {
-                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y */
-                timeframe: components["schemas"]["ChangeTimeframe"];
+            query?: {
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y (default: 24h) */
+                timeframe?: components["schemas"]["ChangeTimeframe"];
             };
             header?: never;
             path: {
@@ -5891,7 +6067,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MetricPctChange"];
+                    "application/json": components["schemas"]["TraderMetricPctChange"];
                 };
             };
         };
@@ -5899,7 +6075,7 @@ export interface operations {
     get_trader_analytics_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
                 resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
@@ -5925,7 +6101,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TimeBucketRow"][];
+                    "application/json": components["schemas"]["TraderTimeBucketRow"][];
                 };
             };
         };
@@ -5933,7 +6109,7 @@ export interface operations {
     get_trader_analytics_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 1, 5, 15, 30, 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
                 resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start timestamp (Unix seconds) */
                 from?: number;
@@ -5959,7 +6135,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TimeBucketRow"][];
+                    "application/json": components["schemas"]["TraderTimeBucketRow"][];
                 };
             };
         };
