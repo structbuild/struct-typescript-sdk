@@ -2331,6 +2331,11 @@ export interface components {
              *     trades and may be `0x0000…` for V2 trades placed without a builder code.
              */
             builder_code?: string | null;
+            /**
+             * Format: double
+             * @description Builder fee in USDC. Absent when no builder code is attached.
+             */
+            builder_fee?: number | null;
         };
         OrderbookHistoryRow: {
             /** Format: int64 */
