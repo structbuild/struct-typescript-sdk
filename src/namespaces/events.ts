@@ -1,7 +1,7 @@
 import { Namespace, encodePathParam } from "./base.js";
 import type { HttpResponse } from "../types/http.js";
 import type { Venue } from "../types/common.js";
-import type { Event, EventMarketChartOutcome, EventMetricsResponse, GetEventsParams, GetEventParams, GetEventBySlugParams, GetEventChartParams, GetEventMetricsParams, GetEventOutcomesParams, GetEventTopTradersParams } from "../types/index.js";
+import type { Event, EventMarketChartOutcome, EventMetricsResponse, GetEventsParams, GetEventParams, GetEventBySlugParams, GetEventChartParams, GetEventMetricsParams, GetEventOutcomesParams, GetEventTopTradersParams, TopTraderEventEntry } from "../types/index.js";
 
 export class EventsNamespace extends Namespace {
 	async getEvents(params?: GetEventsParams, venue?: Venue): Promise<HttpResponse<Event[]>> {
@@ -30,7 +30,7 @@ export class EventsNamespace extends Namespace {
 		return this.get<Record<string, string>>(venue, "/events/outcomes", { params: { ...params } });
 	}
 
-	async getEventTopTraders(params: GetEventTopTradersParams, venue?: Venue): Promise<HttpResponse<unknown[]>> {
-		return this.get<unknown[]>(venue, "/events/top-traders", { params: { ...params } });
+	async getEventTopTraders(params: GetEventTopTradersParams, venue?: Venue): Promise<HttpResponse<TopTraderEventEntry[]>> {
+		return this.get<TopTraderEventEntry[]>(venue, "/events/top-traders", { params: { ...params } });
 	}
 }

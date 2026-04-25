@@ -12,7 +12,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Global analytics % change
+         * Global analytics pct change
          * @description Returns % change for each metric over the requested lookback window. `null` fields mean the window predates the available data.
          */
         get: operations["get_global_analytics_changes"];
@@ -232,7 +232,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Event analytics % change
+         * Event analytics pct change
          * @description Per-metric % change over the requested lookback window for a specific event.
          */
         get: operations["get_event_analytics_changes"];
@@ -712,7 +712,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Market analytics % change
+         * Market analytics pct change
          * @description Per-metric % change over the requested lookback window for a specific market.
          */
         get: operations["get_market_analytics_changes"];
@@ -972,7 +972,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Tag analytics % change
+         * Tag analytics pct change
          * @description Per-metric % change over the requested lookback window for a specific tag.
          */
         get: operations["get_tag_analytics_changes"];
@@ -1272,7 +1272,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Trader analytics % change
+         * Trader analytics pct change
          * @description Per-metric % change over the requested lookback window for a specific trader address.
          */
         get: operations["get_trader_analytics_changes"];
@@ -3400,6 +3400,108 @@ export interface components {
             token_id: string;
             outcome: string;
         };
+        TopTraderEventEntry: {
+            trader: components["schemas"]["TraderInfo"];
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: double */
+            realized_pnl_pct?: number | null;
+            /** Format: double */
+            total_volume_usd?: number | null;
+            /** Format: double */
+            buy_usd?: number | null;
+            /** Format: double */
+            sell_usd?: number | null;
+            /** Format: double */
+            redemption_usd?: number | null;
+            /** Format: double */
+            merge_usd?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: int64 */
+            total_redemptions?: number | null;
+            /** Format: int64 */
+            total_merges?: number | null;
+            /** Format: int64 */
+            markets_traded?: number | null;
+            /** Format: int64 */
+            outcomes_traded?: number | null;
+            /** Format: int64 */
+            winning_markets?: number | null;
+            /** Format: int64 */
+            losing_markets?: number | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+        };
+        TopTraderMarketEntry: {
+            trader: components["schemas"]["TraderInfo"];
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: double */
+            realized_pnl_pct?: number | null;
+            /** Format: double */
+            buy_usd?: number | null;
+            /** Format: double */
+            sell_usd?: number | null;
+            /** Format: double */
+            redemption_usd?: number | null;
+            /** Format: double */
+            merge_usd?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: int64 */
+            total_redemptions?: number | null;
+            /** Format: int64 */
+            total_merges?: number | null;
+            /** Format: int64 */
+            outcomes_traded?: number | null;
+            /** Format: int64 */
+            winning_outcomes?: number | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+        };
+        TopTraderPositionEntry: {
+            trader: components["schemas"]["TraderInfo"];
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: double */
+            realized_pnl_pct?: number | null;
+            /** Format: double */
+            shares?: number | null;
+            /** Format: double */
+            buy_usd?: number | null;
+            /** Format: double */
+            sell_usd?: number | null;
+            /** Format: double */
+            redemption_usd?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: double */
+            avg_entry_price?: number | null;
+            /** Format: double */
+            avg_exit_price?: number | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            won?: boolean | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+        };
         /**
          * @description Tagged enum for all trade types — serializes with `"trade_type": "..."` discriminator
          *     and only includes fields relevant to each type.
@@ -4224,7 +4326,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TopTraderEventEntry"][];
+                };
             };
         };
     };
@@ -4881,7 +4985,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TopTraderPositionEntry"][];
+                };
             };
         };
     };
@@ -5080,7 +5186,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TopTraderMarketEntry"][];
+                };
             };
         };
     };

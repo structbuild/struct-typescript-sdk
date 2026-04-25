@@ -442,6 +442,10 @@ export interface GetTraderAnalyticsTimeseriesParams extends OperationQuery<"get_
 	address: string;
 }
 
+export type TopTraderEventEntry = Schemas["TopTraderEventEntry"];
+export type TopTraderMarketEntry = Schemas["TopTraderMarketEntry"];
+export type TopTraderPositionEntry = Schemas["TopTraderPositionEntry"];
+
 export interface GetEventTopTradersParams extends OperationQuery<"get_event_top_traders"> {}
 
 export interface GetMarketTopTradersParams extends OperationQuery<"get_market_top_traders"> {}
