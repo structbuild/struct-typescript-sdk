@@ -5121,8 +5121,6 @@ export interface operations {
                 from?: number;
                 /** @description End timestamp (ms) */
                 to?: number;
-                /** @description Return all-time trades, not just last 30 days (default: false) */
-                all?: boolean;
                 /** @description Results per page (default: 10, max: 250) */
                 limit?: number;
                 /** @description Pagination offset (number of results to skip). Takes precedence over pagination_key. */

@@ -640,6 +640,7 @@ export type {
 	AccountsUpdateEvent,
 	UsdceUpdateEvent,
 	MaticUpdateEvent,
+	PusdUpdateEvent,
 	WsOrderBookLevel,
 	OrderBookUpdateEvent,
 	TradesStreamSubscribeResponse,

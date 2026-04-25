@@ -4063,8 +4063,9 @@ export interface components {
          *         "log_index": 0,
          *         "block_index": 0,
          *         "oracle_contract": "0x0000000000000000000000000000000000000000",
-         *         "condition_id": "",
-         *         "settled_price": 1000000000000000000
+         *         "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "settled_price": 1000000000000000000,
+         *         "proposed_outcome": "Yes"
          *       }
          *     }
          */
