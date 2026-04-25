@@ -442,6 +442,14 @@ export interface GetTraderAnalyticsTimeseriesParams extends OperationQuery<"get_
 	address: string;
 }
 
+export interface GetEventTopTradersParams extends OperationQuery<"get_event_top_traders"> {}
+
+export interface GetMarketTopTradersParams extends OperationQuery<"get_market_top_traders"> {}
+
+export interface GetPositionTopTradersParams extends OperationQuery<"get_position_top_traders"> {}
+
+export interface GetOracleEventsParams extends OperationQuery<"get_oracle_events"> {}
+
 export type WebhookResponse = WebhookSchemas["WebhookResponse"];
 export type WebhookListResponseBody = WebhookSchemas["WebhookListResponseBody"];
 export type WebhookTestResponseBody = WebhookSchemas["WebhookTestResponseBody"];
@@ -506,6 +514,8 @@ export type TraderTradeEventFilters = WebhookSchemas["TraderTradeEventFilters"];
 
 export type WebhookDeliveryEnvelope = WebhookSchemas["WebhookDeliveryEnvelope"];
 export type WebhookTraderTradeEventPayload = WebhookSchemas["WebhookTraderTradeEventPayload"];
+export type OracleEventsPayload = WebhookSchemas["OracleEventTyped"];
+export type OracleEventsFilters = WebhookSchemas["OracleEventsFilters"];
 export type WebhookSpikeDirection = WebhookSchemas["SpikeDirection"];
 export type WebhookWebhookAssetSymbol = WebhookSchemas["WebhookAssetSymbol"];
 export type WebhookWebhookTimeframe = WebhookSchemas["WebhookTimeframe"];
@@ -534,6 +544,7 @@ export interface WebhookEventPayloadMap {
 	market_created: MarketCreatedPayload;
 	asset_price_tick: AssetPriceTickPayload;
 	asset_price_window_update: AssetPriceWindowUpdatePayload;
+	oracle_events: OracleEventsPayload;
 }
 
 export type WebhookEvent = {
@@ -603,6 +614,9 @@ export type {
 	MarketsStreamSubscribeFilters,
 	MarketsStreamSubscribeResponse,
 	MarketsStreamUpdateEvent,
+	OracleEventStreamEvent,
+	OracleEventsStreamSubscribeFilters,
+	OracleEventsStreamSubscribeResponse,
 	WsAlertSubscribedResponse,
 	WsAlertUnsubscribedResponse,
 	WsAlertErrorResponse,

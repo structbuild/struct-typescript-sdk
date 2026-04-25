@@ -2,6 +2,77 @@ export type paths = Record<string, never>;
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * @description Server-pushed event. Discriminated by `event_type` — each variant only includes relevant fields.
+         *
+         *     Envelope: `{"type": "oracle_event_update", "room_id": "polymarket_oracle_events", "status": "confirmed"|"pending", "data": {...}}`
+         *
+         *     **Pending events:** `block`, `confirmed_at`, `log_index`, `block_index` are absent. `received_at` (milliseconds) is included instead. Some confirmation-time fields (`assertion_id`, `settled_price`, `bond_recipient`, `disputed`, `settlement_resolution`, `payout`) may be empty until the event is confirmed on-chain.
+         */
+        OracleEventStreamEvent: {
+            /** @enum {string} */
+            event_type: "AssertionMade" | "AssertionDisputed" | "AssertionSettled" | "RequestPrice" | "ProposePrice" | "DisputePrice" | "Settle" | "QuestionResolved" | "QuestionEmergencyResolved" | "QuestionReset" | "QuestionInitialized" | "QuestionPaused" | "QuestionUnpaused" | "QuestionFlagged" | "QuestionUnflagged" | "ConditionResolution" | "NegRiskOutcomeReported";
+            id: string;
+            hash: string;
+            /** @description Absent for pending events */
+            block?: number | null;
+            /** @description Unix seconds. Absent for pending events */
+            confirmed_at?: number | null;
+            /** @description Unix milliseconds. Present for pending events only */
+            received_at?: number | null;
+            /** @description Absent for pending events */
+            log_index?: number | null;
+            /** @description Absent for pending events */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+            assertion_id?: string | null;
+            proposer?: string | null;
+            disputer?: string | null;
+            asserter?: string | null;
+            requester?: string | null;
+            settled_price?: number | null;
+            proposed_price?: number | null;
+            proposed_outcome?: string | null;
+            disputed?: boolean | null;
+            settlement_resolution?: boolean | null;
+        };
+        /** @description Server acknowledgement for an oracle events stream subscription */
+        OracleEventsStreamSubscribeResponse: {
+            condition_ids?: string[];
+            market_slugs?: string[];
+            event_slugs?: string[];
+            oracle_event_types?: string[];
+            /** @enum {string} */
+            status?: "confirmed" | "pending" | "all";
+            subscribe_all?: boolean;
+            /** @description Filter values that were rejected (invalid format or unknown type) */
+            rejected?: string[];
+        };
+        /** @description Subscribe to the oracle events stream. No filters = subscribe to all events. */
+        OracleEventsStreamSubscribeMessage: {
+            /** @enum {string} */
+            action: "subscribe" | "unsubscribe_all";
+            /** @description 64-char hex condition IDs (with or without 0x prefix) */
+            condition_ids?: string[];
+            /** @description Market slugs */
+            market_slugs?: string[];
+            /** @description Event slugs — subscribes to all markets under each event */
+            event_slugs?: string[];
+            /** @description Only receive events of these types. Empty array = all types. */
+            oracle_event_types?: ("AssertionMade" | "AssertionDisputed" | "AssertionSettled" | "RequestPrice" | "ProposePrice" | "DisputePrice" | "Settle" | "QuestionResolved" | "QuestionEmergencyResolved" | "QuestionReset" | "QuestionInitialized" | "QuestionPaused" | "QuestionUnpaused" | "QuestionFlagged" | "QuestionUnflagged" | "ConditionResolution" | "NegRiskOutcomeReported")[];
+            /**
+             * @description Event status filter: "confirmed" (default) = on-chain only, "pending" = mempool only, "all" = both
+             * @enum {string}
+             */
+            status?: "confirmed" | "pending" | "all";
+            /** @description Explicitly subscribe to all oracle events. Also implicitly true when no filters are provided. */
+            subscribe_all?: boolean;
+        };
         /** @description Server-pushed event: one or more open markets matching this subscription had a field change since the last tick. Envelope type: "markets_stream_update". Only rows that changed AND matched are in `data`. Client merges by `condition_id`. Each outcome in `data[i].outcomes` carries `latest_block` + `latest_confirmed_at` price-update watermarks. */
         MarketsStreamUpdateEvent: {
             /** @enum {string} */
@@ -28,83 +99,6 @@ export interface components {
             rejected?: string[];
             /** @description Non-null when the subscribe was rejected. */
             error?: string | null;
-        };
-        /** @description List-API-shaped filter evaluated in-memory against changed rows. `status` is NOT accepted — the cache only holds open markets. */
-        MarketsStreamFilter: {
-            /** @description Case-insensitive substring match on `title`. 3–100 chars. */
-            search?: string;
-            categories?: string[];
-            exclude_categories?: string[];
-            tags?: string[];
-            exclude_tags?: string[];
-            min_volume?: number;
-            max_volume?: number;
-            min_txns?: number;
-            max_txns?: number;
-            min_unique_traders?: number;
-            max_unique_traders?: number;
-            min_liquidity?: number;
-            max_liquidity?: number;
-            /** Format: int64 */
-            min_holders?: number;
-            /** Format: int64 */
-            max_holders?: number;
-            /**
-             * Format: int64
-             * @description Filter markets with `end_time >= start_time` (Unix seconds).
-             */
-            start_time?: number;
-            /**
-             * Format: int64
-             * @description Filter markets with `end_time <= end_time` (Unix seconds).
-             */
-            end_time?: number;
-            /** @description When true, only markets with at least one CLOB reward. */
-            has_rewards?: boolean;
-            /**
-             * @description Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`.
-             * @enum {string}
-             */
-            timeframe?: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
-        };
-        /** @description Subscribe / unsubscribe message for polymarket_markets_stream. */
-        MarketsStreamSubscribeMessage: {
-            /**
-             * @description `subscribe` creates/replaces a slot. `unsubscribe` removes one slot (needs `mode` + `interval_ms`). `unsubscribe_all` removes every slot this client holds in the room.
-             * @enum {string}
-             */
-            action: "subscribe" | "unsubscribe" | "unsubscribe_all";
-            /**
-             * @description Flush cadence. Required for subscribe / unsubscribe. Default 1000 if omitted.
-             * @enum {integer}
-             */
-            interval_ms?: 500 | 1000 | 3000 | 10000;
-            /**
-             * @description Subscription mode. Default `filter`.
-             * @enum {string}
-             */
-            mode?: "filter" | "ids";
-            /** @description Filter body (only used when `mode=filter`). All fields optional. */
-            filter?: components["schemas"]["MarketsStreamFilter"];
-            /** @description Ids mode: 0x-prefixed lowercase 32-byte hex. Counts toward the 500-id cap. */
-            condition_ids?: string[];
-            /** @description Ids mode: market slug strings. */
-            market_slugs?: string[];
-            /** @description Ids mode: event slug strings — matches every child market of each event. */
-            event_slugs?: string[];
-        };
-        /** @description Server-pushed event: one or more open events matching this subscription had a field change since the last tick. Envelope type: "events_stream_update". Only rows that changed AND matched are in `data`. Client merges into its local state by `id`. */
-        EventsStreamUpdateEvent: {
-            /** @enum {string} */
-            type: "events_stream_update";
-            /** @enum {string} */
-            room_id: "polymarket_events_stream";
-            /** @enum {string} */
-            mode: "filter" | "ids";
-            /** @enum {integer} */
-            interval_ms: 500 | 1000 | 3000 | 10000;
-            /** @description Full `PolymarketEvent` rows (same shape as `GET /polymarket/events`). Not a delta — each array element is a complete row replacement. */
-            data: Record<string, never>[];
         };
         /** @description Subscribe to the trades stream. No filters = subscribe to all trades. */
         TradesStreamSubscribeMessage: {
@@ -1074,6 +1068,83 @@ export interface components {
             rejected?: string[];
             /** @description Non-null when the subscribe was rejected (invalid cadence, bad filter, too many subs, …). */
             error?: string | null;
+        };
+        /** @description Server-pushed event: one or more open events matching this subscription had a field change since the last tick. Envelope type: "events_stream_update". Only rows that changed AND matched are in `data`. Client merges into its local state by `id`. */
+        EventsStreamUpdateEvent: {
+            /** @enum {string} */
+            type: "events_stream_update";
+            /** @enum {string} */
+            room_id: "polymarket_events_stream";
+            /** @enum {string} */
+            mode: "filter" | "ids";
+            /** @enum {integer} */
+            interval_ms: 500 | 1000 | 3000 | 10000;
+            /** @description Full `PolymarketEvent` rows (same shape as `GET /polymarket/events`). Not a delta — each array element is a complete row replacement. */
+            data: Record<string, never>[];
+        };
+        /** @description Subscribe / unsubscribe message for polymarket_markets_stream. */
+        MarketsStreamSubscribeMessage: {
+            /**
+             * @description `subscribe` creates/replaces a slot. `unsubscribe` removes one slot (needs `mode` + `interval_ms`). `unsubscribe_all` removes every slot this client holds in the room.
+             * @enum {string}
+             */
+            action: "subscribe" | "unsubscribe" | "unsubscribe_all";
+            /**
+             * @description Flush cadence. Required for subscribe / unsubscribe. Default 1000 if omitted.
+             * @enum {integer}
+             */
+            interval_ms?: 500 | 1000 | 3000 | 10000;
+            /**
+             * @description Subscription mode. Default `filter`.
+             * @enum {string}
+             */
+            mode?: "filter" | "ids";
+            /** @description Filter body (only used when `mode=filter`). All fields optional. */
+            filter?: components["schemas"]["MarketsStreamFilter"];
+            /** @description Ids mode: 0x-prefixed lowercase 32-byte hex. Counts toward the 500-id cap. */
+            condition_ids?: string[];
+            /** @description Ids mode: market slug strings. */
+            market_slugs?: string[];
+            /** @description Ids mode: event slug strings — matches every child market of each event. */
+            event_slugs?: string[];
+        };
+        /** @description List-API-shaped filter evaluated in-memory against changed rows. `status` is NOT accepted — the cache only holds open markets. */
+        MarketsStreamFilter: {
+            /** @description Case-insensitive substring match on `title`. 3–100 chars. */
+            search?: string;
+            categories?: string[];
+            exclude_categories?: string[];
+            tags?: string[];
+            exclude_tags?: string[];
+            min_volume?: number;
+            max_volume?: number;
+            min_txns?: number;
+            max_txns?: number;
+            min_unique_traders?: number;
+            max_unique_traders?: number;
+            min_liquidity?: number;
+            max_liquidity?: number;
+            /** Format: int64 */
+            min_holders?: number;
+            /** Format: int64 */
+            max_holders?: number;
+            /**
+             * Format: int64
+             * @description Filter markets with `end_time >= start_time` (Unix seconds).
+             */
+            start_time?: number;
+            /**
+             * Format: int64
+             * @description Filter markets with `end_time <= end_time` (Unix seconds).
+             */
+            end_time?: number;
+            /** @description When true, only markets with at least one CLOB reward. */
+            has_rewards?: boolean;
+            /**
+             * @description Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`.
+             * @enum {string}
+             */
+            timeframe?: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
         };
         /**
          * OrderFilled / OrdersMatched

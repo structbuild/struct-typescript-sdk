@@ -204,6 +204,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/events/top-traders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get top traders for an event
+         * @description Top traders ranked by realized PnL for a given event.
+         */
+        get: operations["get_event_top_traders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/events/{event_slug}/analytics/changes": {
         parameters: {
             query?: never;
@@ -293,7 +313,7 @@ export interface paths {
         };
         /**
          * Get market holders
-         * @description Retrieve holders of a market grouped by outcome, sorted by shares held. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Set `include_pnl=true` to include a nested holder `pnl` object.
+         * @description Retrieve holders of a market grouped by outcome, sorted by shares held. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Set `include_pnl=true` to include a nested holder `pnl` object. Uses cursor-based pagination.
          */
         get: operations["get_market_holders"];
         put?: never;
@@ -464,6 +484,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/market/oracle-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List oracle events
+         * @description Retrieve on-chain oracle lifecycle events (resolutions, disputes, assertions, emergency resolutions). Filter by `condition_ids` or `event_types` and paginate with `limit`/`pagination_key`.
+         */
+        get: operations["get_oracle_events"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/market/position/candlestick": {
         parameters: {
             query?: never;
@@ -496,6 +536,26 @@ export interface paths {
          * @description Retrieve volume, transaction, and trader metrics for a specific position. Supports single timeframe (e.g., '1m'), multiple timeframes (e.g., '1m,5m,1h'), or 'all' to get all available timeframes.
          */
         get: operations["get_position_metrics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/market/position/top-traders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get top traders for a position id / outcome
+         * @description Top traders ranked by realized PnL on a specific position (ERC1155 outcome token).
+         */
+        get: operations["get_position_top_traders"];
         put?: never;
         post?: never;
         delete?: never;
@@ -556,6 +616,26 @@ export interface paths {
          * @description Retrieve one or more markets by slug. Supports batch lookups via query params. Returns an array of MarketResponse objects.
          */
         get: operations["get_market_by_slug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/market/top-traders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get top traders for a market
+         * @description Top traders ranked by realized PnL for a given market (condition_id or market_slug).
+         */
+        get: operations["get_market_top_traders"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1093,7 +1173,7 @@ export interface paths {
         };
         /**
          * Get trader position PnL
-         * @description Retrieve per-outcome-token lifetime PnL for a trader from polymarket_accounts. Includes open/closed state, win/loss outcome, redemption payouts, and share quantities. Filter by status and won/lost to segment portfolio views.
+         * @description Retrieve per-outcome-token lifetime PnL for a trader. Includes open/closed state, win/loss outcome, redemption payouts, and share quantities. Filter by status and won/lost to segment portfolio views.
          */
         get: operations["get_trader_position_pnl"];
         put?: never;
@@ -1543,6 +1623,36 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
+        /** @description V2 UMA OOv2: a proposed price was disputed. */
+        DisputePriceEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            requester: string;
+            proposer: string;
+            disputer: string;
+            identifier: string;
+            timestamp: string;
+            ancillary_data: string;
+            /** Format: int64 */
+            proposed_price: number;
+            condition_id?: string | null;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
         /** @description Enriched market data for event API responses */
         EventMarket: {
             /** @default  */
@@ -1842,11 +1952,10 @@ export interface components {
          */
         LeaderboardCategory: "overall" | "politics" | "sports" | "crypto" | "finance" | "culture" | "mentions" | "weather" | "economics" | "tech";
         /**
-         * @description Flat response row. `trader` is the canonical `TraderInfo` used across all
-         *     our other endpoints; all enrichment fields sit at the top level. Fields
-         *     other than `trader`, `rank`, `pnl`, and `timeframe` are sourced from our
-         *     `prediction_trader_pnl_*_v2` tables and are `null` when we don't yet have
-         *     a row for that address in the selected timeframe.
+         * @description Flat response row. `trader` is the canonical `TraderInfo` used across
+         *     endpoints; enrichment fields sit at the top level. Fields other than
+         *     `trader`, `rank`, `pnl`, and `timeframe` may be `null` when PnL data for
+         *     the trader in the selected timeframe isn't yet available.
          */
         LeaderboardEntry: {
             /** Format: int64 */
@@ -2079,12 +2188,6 @@ export interface components {
             /** Format: double */
             split_volume_usd?: number | null;
             /** Format: double */
-            new_traders?: number | null;
-            /** Format: double */
-            new_makers?: number | null;
-            /** Format: double */
-            new_takers?: number | null;
-            /** Format: double */
             unique_traders?: number | null;
             /** Format: double */
             unique_makers?: number | null;
@@ -2125,6 +2228,62 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
+        /**
+         * @description Tagged enum for all oracle event types — serializes with `"event_type": "..."` discriminator
+         *     and only includes fields relevant to each type.
+         */
+        OracleEventTyped: (components["schemas"]["AssertionMadeEvent"] & {
+            /** @enum {string} */
+            event_type: "AssertionMade";
+        }) | (components["schemas"]["AssertionDisputedEvent"] & {
+            /** @enum {string} */
+            event_type: "AssertionDisputed";
+        }) | (components["schemas"]["AssertionSettledEvent"] & {
+            /** @enum {string} */
+            event_type: "AssertionSettled";
+        }) | (components["schemas"]["RequestPriceEvent"] & {
+            /** @enum {string} */
+            event_type: "RequestPrice";
+        }) | (components["schemas"]["ProposePriceEvent"] & {
+            /** @enum {string} */
+            event_type: "ProposePrice";
+        }) | (components["schemas"]["DisputePriceEvent"] & {
+            /** @enum {string} */
+            event_type: "DisputePrice";
+        }) | (components["schemas"]["SettleEvent"] & {
+            /** @enum {string} */
+            event_type: "Settle";
+        }) | (components["schemas"]["QuestionResolvedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionResolved";
+        }) | (components["schemas"]["QuestionEmergencyResolvedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionEmergencyResolved";
+        }) | (components["schemas"]["QuestionResetEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionReset";
+        }) | (components["schemas"]["QuestionInitializedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionInitialized";
+        }) | (components["schemas"]["QuestionPausedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionPaused";
+        }) | (components["schemas"]["QuestionUnpausedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionUnpaused";
+        }) | (components["schemas"]["QuestionFlaggedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionFlagged";
+        }) | (components["schemas"]["QuestionUnflaggedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionUnflagged";
+        }) | (components["schemas"]["ConditionResolutionEvent"] & {
+            /** @enum {string} */
+            event_type: "ConditionResolution";
+        }) | (components["schemas"]["NegRiskOutcomeReportedEvent"] & {
+            /** @enum {string} */
+            event_type: "NegRiskOutcomeReported";
+        });
         /** @description Output payload for OrderFilled and OrdersMatched trades (actual buy/sell). */
         OrderFilledTrade: {
             id: string;
@@ -2503,24 +2662,6 @@ export interface components {
             txn_count: number;
             /**
              * Format: int64
-             * @description First-time-ever traders in the window (delta of the lifetime counter).
-             * @default null
-             */
-            new_traders: number;
-            /**
-             * Format: int64
-             * @description First-time-ever makers in the window.
-             * @default null
-             */
-            new_makers: number;
-            /**
-             * Format: int64
-             * @description First-time-ever takers in the window.
-             * @default null
-             */
-            new_takers: number;
-            /**
-             * Format: int64
              * @description Distinct active traders in the window.
              * @default null
              */
@@ -2580,7 +2721,7 @@ export interface components {
              * @description Outcome index (0 = Yes, 1 = No for binary)
              */
             outcome_index: number;
-            /** @description Outcome name (e.g. "Yes", "No") — enriched from market metadata */
+            /** @description Outcome name (e.g. "Yes", "No"). Optional — may be omitted when the market metadata isn't yet available. */
             outcome?: string | null;
             /** @description Amount of shares created/burned/redeemed for this position */
             amount: string;
@@ -2732,6 +2873,37 @@ export interface components {
         };
         /** @enum {string} */
         PriceJumpResolution: "1" | "5" | "15" | "30" | "60" | "240";
+        /** @description V2 UMA OOv2: a price was proposed (resolution proposal). */
+        ProposePriceEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            requester: string;
+            proposer: string;
+            identifier: string;
+            timestamp: string;
+            ancillary_data: string;
+            /** Format: int64 */
+            proposed_price: number;
+            expiration_timestamp: string;
+            currency: string;
+            condition_id?: string | null;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
         /** @description UMA CTF Adapter: admin emergency resolution. */
         QuestionEmergencyResolvedEvent: {
             id: string;
@@ -2962,6 +3134,41 @@ export interface components {
             event_slug?: string | null;
             exchange: components["schemas"]["PolymarketExchange"];
         };
+        /** @description V2 UMA OOv2: a price request was made (market initialization). */
+        RequestPriceEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            requester: string;
+            identifier: string;
+            /**
+             * @description UMA request timestamp (seconds, decimal string).
+             *     The point in time the requester is asking the oracle to resolve the
+             *     price for — part of the request identity tuple
+             *     `(requester, identifier, timestamp, ancillaryData)`. Not the block
+             *     timestamp of this event; see `confirmed_at` for that.
+             */
+            timestamp: string;
+            ancillary_data: string;
+            currency: string;
+            reward: string;
+            final_fee: string;
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
         SearchResponse: {
             events?: components["schemas"]["PolymarketEvent"][] | null;
             events_pagination?: null | components["schemas"]["PaginationMeta"];
@@ -2975,6 +3182,38 @@ export interface components {
          * @enum {string}
          */
         SearchSortBy: "volume" | "txns" | "unique_traders" | "relevance" | "title" | "creation_date" | "start_date" | "end_date" | "liquidity" | "holders" | "end_time" | "start_time" | "created_time";
+        /** @description V2 UMA OOv2: a price request was settled (final resolution). */
+        SettleEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            requester: string;
+            proposer: string;
+            disputer: string;
+            identifier: string;
+            timestamp: string;
+            ancillary_data: string;
+            /** Format: int64 */
+            proposed_price: number;
+            payout: string;
+            disputed: boolean;
+            condition_id?: string | null;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
         SimpleTimeframeMetrics: {
             /**
              * Format: double
@@ -3056,15 +3295,11 @@ export interface components {
         /**
          * @description Metric to order by when `sort=<value>` is provided.
          *
-         *     `new_*` ranks by first-time-ever arrivals — counted once in the bucket
-         *     where the address first appears, regardless of subsequent activity. Read
-         *     from the cumulative / delta MVs.
-         *
          *     `unique_*` ranks by window-distinct addresses — exact `uniqExact` count
-         *     of addresses active in the timeframe. Read from the active MVs.
+         *     of addresses active in the timeframe.
          * @enum {string}
          */
-        TagSortBy: "volume" | "txns" | "new_traders" | "new_makers" | "new_takers" | "unique_traders" | "unique_makers" | "unique_takers" | "fees";
+        TagSortBy: "volume" | "txns" | "unique_traders" | "unique_makers" | "unique_takers" | "fees";
         /**
          * @description Timeframe for `?sort=...` — defines the window the metric is summed over
          *     (or `lifetime` for all-time cumulative).
@@ -3078,10 +3313,12 @@ export interface components {
          *
          *     Short field names for compact JSON responses:
          *       t=bucket (unix seconds), v=volume_usd, bv=buy_volume_usd, sv=sell_volume_usd,
-         *       ut=new_traders, tc=txn_count, bc=buy_count, sc=sell_count,
-         *       rc=redemption_count, rv=redemption_volume_usd, mc=merge_count,
-         *       sp=split_count, f=fees_usd, sh=shares_volume,
-         *       yv=yes_volume_usd, nv=no_volume_usd, yc=yes_count, nc=no_count
+         *       ut=unique_traders, um=unique_makers, uk=unique_takers,
+         *       tc=txn_count, bc=buy_count, sc=sell_count,
+         *       rc=redemption_count, rv=redemption_volume_usd, mc=merge_count, mv=merge_volume_usd,
+         *       sp=split_count, spv=split_volume_usd, f=fees_usd, sh=shares_volume,
+         *       yv=yes_volume_usd, nv=no_volume_usd, yc=yes_count, nc=no_count,
+         *       bd_*=buy distribution by USD bucket
          */
         TimeBucketRow: {
             /** Format: int32 */
@@ -3092,21 +3329,6 @@ export interface components {
             bv: number;
             /** Format: double */
             sv: number;
-            /**
-             * Format: int64
-             * @description Traders appearing for the first-time-ever in this bucket.
-             */
-            nt: number;
-            /**
-             * Format: int64
-             * @description Unique makers (order-resting side). Only tracked for match events.
-             */
-            nm: number;
-            /**
-             * Format: int64
-             * @description Unique takers (order-initiator side). Only tracked for match events.
-             */
-            nk: number;
             /** Format: int64 */
             tc: number;
             /** Format: int64 */
@@ -3974,6 +4196,33 @@ export interface operations {
             };
         };
     };
+    get_event_top_traders: {
+        parameters: {
+            query: {
+                /** @description Event slug */
+                event_slug: string;
+                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
+                timeframe?: components["schemas"]["PnlTimeframe"];
+                /** @description Results limit (default: 10, max: 200) */
+                limit?: number;
+                /** @description Pagination key from the previous response */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Top traders sorted by realized PnL desc. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_event_analytics_changes: {
         parameters: {
             query?: {
@@ -4114,8 +4363,10 @@ export interface operations {
                 condition_id?: string;
                 /** @description Market slug (e.g. `will-trump-win`) */
                 market_slug?: string;
-                /** @description Results limit (default: 10, max: 100) */
+                /** @description Results limit per outcome (default: 10, max: 100) */
                 limit?: number;
+                /** @description Cursor-based pagination key */
+                pagination_key?: string;
                 /** @description Minimum shares held (decimal string) */
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
@@ -4131,7 +4382,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Market holders grouped by outcome (sorted by shares DESC). Holder `pnl` is included only when `include_pnl=true`. */
+            /** @description Market holders grouped by outcome (sorted by shares DESC). Holder `pnl` is included only when `include_pnl=true`. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -4500,6 +4751,43 @@ export interface operations {
             };
         };
     };
+    get_oracle_events: {
+        parameters: {
+            query?: {
+                /** @description Comma-separated condition IDs (max 20) */
+                condition_ids?: string;
+                /** @description Comma-separated event names: Initialization, Proposal, Dispute, Settled, Resolution, ConditionResolution, Reset, Flag, Unflag, Pause, Unpause, ManualResolution, NegRiskOutcomeReported. Empty = all oracle event types. */
+                event_types?: string;
+                /** @description Start timestamp (Unix seconds) */
+                from?: number;
+                /** @description End timestamp (Unix seconds) */
+                to?: number;
+                /** @description Results per page (default 10, max 250) */
+                limit?: number;
+                /** @description Pagination offset. Takes precedence over pagination_key. */
+                offset?: number;
+                /** @description Cursor-based pagination key */
+                pagination_key?: string;
+                /** @description Sort direction (default true = newest first) */
+                sort_desc?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Oracle events matching the filter */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradeEvent"][];
+                };
+            };
+        };
+    };
     get_position_candlestick: {
         parameters: {
             query: {
@@ -4558,6 +4846,33 @@ export interface operations {
             };
             /** @description Invalid timeframe */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_position_top_traders: {
+        parameters: {
+            query: {
+                /** @description Position ID (ERC1155 token ID) */
+                position_id: string;
+                /** @description Filter by position status (omit for all) */
+                status?: "open" | "closed";
+                /** @description Results limit (default: 10, max: 200) */
+                limit?: number;
+                /** @description Pagination key from the previous response */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Top traders sorted by realized PnL desc. */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4735,6 +5050,35 @@ export interface operations {
             };
         };
     };
+    get_market_top_traders: {
+        parameters: {
+            query?: {
+                /** @description Market condition ID */
+                condition_id?: string;
+                /** @description Market slug (alternative to condition_id) */
+                market_slug?: string;
+                /** @description Timeframe: 1d, 7d, 30d, lifetime (default: lifetime) */
+                timeframe?: components["schemas"]["PnlTimeframe"];
+                /** @description Results limit (default: 10, max: 200) */
+                limit?: number;
+                /** @description Pagination key from the previous response */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Top traders sorted by realized PnL desc. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_market_trades: {
         parameters: {
             query?: {
@@ -4746,6 +5090,8 @@ export interface operations {
                 position_ids?: string;
                 /** @description Comma-separated trader addresses (max 25) */
                 traders?: string;
+                /** @description Comma-separated builder codes (max 25) */
+                builder_codes?: string;
                 /** @description Trade side: 0 (Buy), 1 (Sell) */
                 side?: components["schemas"]["TradeSide"];
                 /** @description Outcome name filter (e.g. Yes, No) */
@@ -5959,6 +6305,8 @@ export interface operations {
                 slugs?: string;
                 /** @description Comma-separated position IDs */
                 position_ids?: string;
+                /** @description Comma-separated builder codes (max 25) */
+                builder_codes?: string;
                 /** @description Trade side: 0 (Buy), 1 (Sell) */
                 side?: components["schemas"]["TradeSide"];
                 /** @description Outcome name filter (e.g. Yes, No) */

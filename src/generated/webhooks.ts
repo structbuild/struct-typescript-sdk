@@ -209,7 +209,7 @@ export interface webhooks {
         put?: never;
         /**
          * Typed trade-event callback
-         * @description Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTraderTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.
+         * @description Fired on every confirmed prediction trade. Payload is a tagged union of trade-type variants.
          */
         post: operations["trader-trade-event"];
         delete?: never;
@@ -409,7 +409,7 @@ export interface webhooks {
         put?: never;
         /**
          * Probability spike callback
-         * @description Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`"up"` | `"down"` | `"both"`) — defaults to `"up"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.
+         * @description Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`"up"` | `"down"` | `"both"`) — defaults to `"up"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.
          */
         post: operations["probability-spike"];
         delete?: never;
@@ -429,7 +429,7 @@ export interface webhooks {
         put?: never;
         /**
          * Price spike callback
-         * @description Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`"up"` | `"down"` | `"both"`) — defaults to `"up"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.
+         * @description Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`"up"` | `"down"` | `"both"`) — defaults to `"up"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.
          */
         post: operations["price-spike"];
         delete?: never;
@@ -538,6 +538,26 @@ export interface webhooks {
         patch?: never;
         trace?: never;
     };
+    "oracle-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Oracle events callback
+         * @description Fired on every on-chain oracle event. Use `oracle_event_types` to restrict to specific kinds — valid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`, `RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`, `QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`, `QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`, `QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`, `NegRiskOutcomeReported`. Optional `condition_ids` narrows by market.
+         */
+        post: operations["oracle-events"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "asset-price-tick": {
         parameters: {
             query?: never;
@@ -581,6 +601,90 @@ export interface webhooks {
 }
 export interface components {
     schemas: {
+        /** @description V3 UMA OOv3: an assertion was disputed. */
+        AssertionDisputedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            assertion_id: string;
+            caller: string;
+            disputer: string;
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description V3 UMA OOv3: a new assertion (resolution proposal) was made. */
+        AssertionMadeEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            assertion_id: string;
+            domain_id: string;
+            claim: string;
+            asserter: string;
+            callback_recipient: string;
+            escalation_manager: string;
+            caller: string;
+            /** Format: int64 */
+            expiration_time: number;
+            currency: string;
+            bond: string;
+            identifier: string;
+            condition_id?: string | null;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description V3 UMA OOv3: an assertion liveness period expired and was settled. */
+        AssertionSettledEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            assertion_id: string;
+            bond_recipient: string;
+            disputed: boolean;
+            settlement_resolution: boolean;
+            settle_caller: string;
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
         /** @description Payload delivered on every raw Chainlink price tick for a tracked crypto asset */
         AssetPriceTickPayload: {
             /**
@@ -698,6 +802,29 @@ export interface components {
              */
             unique_traders?: number | null;
         };
+        /** @description CTF ConditionResolution: positions become redeemable on the Conditional Tokens contract. */
+        ConditionResolutionEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            oracle: string;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
         /** @description Request body for creating a webhook */
         CreateWebhookRequestBody: {
             /** @description Destination URL for webhook deliveries (must be HTTPS) */
@@ -713,6 +840,36 @@ export interface components {
         /** @description Delete webhook response */
         DeleteWebhookResponse: {
             deleted: boolean;
+        };
+        /** @description V2 UMA OOv2: a proposed price was disputed. */
+        DisputePriceEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            requester: string;
+            proposer: string;
+            disputer: string;
+            identifier: string;
+            timestamp: string;
+            ancillary_data: string;
+            /** Format: int64 */
+            proposed_price: number;
+            condition_id?: string | null;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
         };
         /** @description Payload delivered when an event's aggregated volume or transaction metrics cross a configured threshold */
         EventMetricsPayload: {
@@ -1097,6 +1254,28 @@ export interface components {
             /** @description Total fees in USD for this timeframe */
             fees: number;
         };
+        /** @description NegRisk Adapter: outcome reported for a neg-risk market question. */
+        NegRiskOutcomeReportedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
         /** @description Payload delivered when a trader places their first trade in a specific market (fires once per trader+market pair) */
         NewMarketPayload: {
             /** @description Limit-order maker wallet address (lowercase) */
@@ -1218,6 +1397,62 @@ export interface components {
             trade_type: "OrderFilled" | "OrdersMatched";
         };
         /**
+         * @description Tagged enum for all oracle event types — serializes with `"event_type": "..."` discriminator
+         *     and only includes fields relevant to each type.
+         */
+        OracleEventTyped: (components["schemas"]["AssertionMadeEvent"] & {
+            /** @enum {string} */
+            event_type: "AssertionMade";
+        }) | (components["schemas"]["AssertionDisputedEvent"] & {
+            /** @enum {string} */
+            event_type: "AssertionDisputed";
+        }) | (components["schemas"]["AssertionSettledEvent"] & {
+            /** @enum {string} */
+            event_type: "AssertionSettled";
+        }) | (components["schemas"]["RequestPriceEvent"] & {
+            /** @enum {string} */
+            event_type: "RequestPrice";
+        }) | (components["schemas"]["ProposePriceEvent"] & {
+            /** @enum {string} */
+            event_type: "ProposePrice";
+        }) | (components["schemas"]["DisputePriceEvent"] & {
+            /** @enum {string} */
+            event_type: "DisputePrice";
+        }) | (components["schemas"]["SettleEvent"] & {
+            /** @enum {string} */
+            event_type: "Settle";
+        }) | (components["schemas"]["QuestionResolvedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionResolved";
+        }) | (components["schemas"]["QuestionEmergencyResolvedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionEmergencyResolved";
+        }) | (components["schemas"]["QuestionResetEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionReset";
+        }) | (components["schemas"]["QuestionInitializedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionInitialized";
+        }) | (components["schemas"]["QuestionPausedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionPaused";
+        }) | (components["schemas"]["QuestionUnpausedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionUnpaused";
+        }) | (components["schemas"]["QuestionFlaggedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionFlagged";
+        }) | (components["schemas"]["QuestionUnflaggedEvent"] & {
+            /** @enum {string} */
+            event_type: "QuestionUnflagged";
+        }) | (components["schemas"]["ConditionResolutionEvent"] & {
+            /** @enum {string} */
+            event_type: "ConditionResolution";
+        }) | (components["schemas"]["NegRiskOutcomeReportedEvent"] & {
+            /** @enum {string} */
+            event_type: "NegRiskOutcomeReported";
+        });
+        /**
          * @description PnL timeframe enum for webhook filtering
          * @enum {string}
          */
@@ -1226,7 +1461,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -1403,6 +1638,16 @@ export interface components {
              *     Example: `60` to detect spikes that happen within 60 seconds.
              */
             window_secs?: number | null;
+            /**
+             * @description Filter for `oracle_events` by event name (case-insensitive).
+             *     Valid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`,
+             *     `RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`,
+             *     `QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`,
+             *     `QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`,
+             *     `QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`,
+             *     `NegRiskOutcomeReported`. Empty = all types.
+             */
+            oracle_event_types?: string[];
         };
         /** @description Payload delivered when a position's volume or transaction metrics cross a configured threshold */
         PositionMetricsPayload: {
@@ -1559,6 +1804,248 @@ export interface components {
             /** @description Percentage move that triggered this notification. Positive = up, negative = down. */
             spike_pct: number;
         };
+        /** @description V2 UMA OOv2: a price was proposed (resolution proposal). */
+        ProposePriceEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            requester: string;
+            proposer: string;
+            identifier: string;
+            timestamp: string;
+            ancillary_data: string;
+            /** Format: int64 */
+            proposed_price: number;
+            expiration_timestamp: string;
+            currency: string;
+            condition_id?: string | null;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: admin emergency resolution. */
+        QuestionEmergencyResolvedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: market flagged for emergency resolution. */
+        QuestionFlaggedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: questionID first initialized on-chain. */
+        QuestionInitializedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            creator: string;
+            reward_token: string;
+            reward: string;
+            proposal_bond: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: market paused by admin. */
+        QuestionPausedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: dispute succeeded, market returns to active. */
+        QuestionResetEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: market resolved with definitive outcome. */
+        QuestionResolvedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            /** Format: int64 */
+            settled_price: number;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: flag removed. */
+        QuestionUnflaggedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description UMA CTF Adapter: market unpaused. */
+        QuestionUnpausedEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            condition_id: string;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
+        /** @description V2 UMA OOv2: a price request was made (market initialization). */
+        RequestPriceEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            requester: string;
+            identifier: string;
+            /**
+             * @description UMA request timestamp (seconds, decimal string).
+             *     The point in time the requester is asking the oracle to resolve the
+             *     price for — part of the request identity tuple
+             *     `(requester, identifier, timestamp, ancillaryData)`. Not the block
+             *     timestamp of this event; see `confirmed_at` for that.
+             */
+            timestamp: string;
+            ancillary_data: string;
+            currency: string;
+            reward: string;
+            final_fee: string;
+            condition_id?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
+        };
         /** @description Response for POST /v1/webhook/{id}/rotate-secret */
         RotateSecretResponse: {
             /** @description The new HMAC secret (only returned once — store it securely) */
@@ -1568,6 +2055,38 @@ export interface components {
              * @description Timestamp of rotation (ms since epoch)
              */
             rotated_at: number;
+        };
+        /** @description V2 UMA OOv2: a price request was settled (final resolution). */
+        SettleEvent: {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block?: number | null;
+            /** Format: int64 */
+            confirmed_at?: number | null;
+            /** Format: int64 */
+            received_at?: number | null;
+            /** Format: int64 */
+            log_index?: number | null;
+            /** Format: int64 */
+            block_index?: number | null;
+            oracle_contract: string;
+            requester: string;
+            proposer: string;
+            disputer: string;
+            identifier: string;
+            timestamp: string;
+            ancillary_data: string;
+            /** Format: int64 */
+            proposed_price: number;
+            payout: string;
+            disputed: boolean;
+            condition_id?: string | null;
+            proposed_outcome?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            slug?: string | null;
+            event_slug?: string | null;
         };
         /**
          * @description Direction filter for spike webhooks.
@@ -1921,7 +2440,7 @@ export interface components {
             /** @description Delivery attempt number. 1 = first attempt; increments on each retry. */
             attempt: number;
         };
-        /** @description Exact payload union for `trader_trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent. */
+        /** @description Tagged union of trade-type variants delivered to `trader_trade_event` callbacks. Pending-only fields such as `received_at` are absent — callbacks fire only for confirmed trades. */
         WebhookTraderTradeEventPayload: {
             id: string;
             hash: string;
@@ -2490,7 +3009,7 @@ export interface components {
             min_probability?: number;
             /** @description Only fire when event probability is ≤ this value. Events without probability data do not match. */
             max_probability?: number;
-            /** @description Only fire for these trade types currently emitted through the webhook pipeline. Empty = all supported trade-event variants. */
+            /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
             trade_types?: ("OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[];
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
             exclude_shortterm_markets?: boolean;
@@ -2780,6 +3299,13 @@ export interface components {
             event_slugs?: string[];
             /** @description When `true`, suppress webhooks for short-term "updown" markets (event slugs containing `updown`). Default: `false`. */
             exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `oracle_events` event. All fields are optional. */
+        OracleEventsFilters: {
+            /** @description Restrict to these event types (case-insensitive). Empty = all. */
+            oracle_event_types?: ("AssertionMade" | "AssertionDisputed" | "AssertionSettled" | "RequestPrice" | "ProposePrice" | "DisputePrice" | "Settle" | "QuestionResolved" | "QuestionEmergencyResolved" | "QuestionReset" | "QuestionInitialized" | "QuestionPaused" | "QuestionUnpaused" | "QuestionFlagged" | "QuestionUnflagged" | "ConditionResolution" | "NegRiskOutcomeReported")[];
+            /** @description Restrict to events for these condition IDs. */
+            condition_ids?: string[];
         };
         /** @description Subscription filters for the `asset_price_tick` event. All fields are optional. */
         AssetPriceTickFilters: {
@@ -3996,6 +4522,49 @@ export interface operations {
             content: {
                 "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
                     data?: components["schemas"]["MarketCreatedPayload"];
+                };
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "oracle-events": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["OracleEventTyped"];
                 };
             };
         };

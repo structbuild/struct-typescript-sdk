@@ -31,14 +31,16 @@ export type WsRoomId =
 	| "polymarket_order_book"
 	| "polymarket_clob_rewards"
 	| "polymarket_events_stream"
-	| "polymarket_markets_stream";
+	| "polymarket_markets_stream"
+	| "polymarket_oracle_events";
 
 export type WsFiltersOptionalRoom =
 	| "polymarket_trades"
 	| "polymarket_asset_prices"
 	| "polymarket_clob_rewards"
 	| "polymarket_events_stream"
-	| "polymarket_markets_stream";
+	| "polymarket_markets_stream"
+	| "polymarket_oracle_events";
 export type WsFiltersRequiredRoom = Exclude<WsRoomId, WsFiltersOptionalRoom>;
 
 export type TradesSubscribeFilters = Omit<WsSchemas["TradesStreamSubscribeMessage"], "action">;
@@ -54,6 +56,7 @@ export type TraderPositionsSubscribeFilters = Omit<WsSchemas["TraderPositionsSub
 export type ClobRewardsSubscribeFilters = Omit<WsSchemas["ClobRewardsSubscribeMessage"], "action">;
 export type EventsStreamSubscribeFilters = Omit<WsSchemas["EventsStreamSubscribeMessage"], "action">;
 export type MarketsStreamSubscribeFilters = Omit<WsSchemas["MarketsStreamSubscribeMessage"], "action">;
+export type OracleEventsStreamSubscribeFilters = Omit<WsSchemas["OracleEventsStreamSubscribeMessage"], "action">;
 
 export type WsTradeType = NonNullable<TradesSubscribeFilters["trade_types"]>[number];
 export type WsTradeStatus = NonNullable<TradesSubscribeFilters["status"]>;
@@ -82,6 +85,8 @@ export type EventsStreamUpdateEvent = WsSchemas["EventsStreamUpdateEvent"];
 export type EventsStreamSubscribeResponse = WsSchemas["EventsStreamSubscribeResponse"];
 export type MarketsStreamUpdateEvent = WsSchemas["MarketsStreamUpdateEvent"];
 export type MarketsStreamSubscribeResponse = WsSchemas["MarketsStreamSubscribeResponse"];
+export type OracleEventStreamEvent = WsSchemas["OracleEventStreamEvent"];
+export type OracleEventsStreamSubscribeResponse = WsSchemas["OracleEventsStreamSubscribeResponse"];
 export type TradeOrderFilledEvent = WsSchemas["TradeOrderFilledEvent"];
 export type TradeRedemptionEvent = WsSchemas["TradeRedemptionEvent"];
 export type TradeMergeEvent = WsSchemas["TradeMergeEvent"];
@@ -129,6 +134,7 @@ export interface WebSocketEventMap {
 	clob_rewards_update: ClobRewardsUpdateEvent;
 	events_stream_update: EventsStreamUpdateEvent;
 	markets_stream_update: MarketsStreamUpdateEvent;
+	oracle_event_update: OracleEventStreamEvent;
 	connected: void;
 	disconnected: { code: number; reason: string };
 	reconnecting: { attempt: number };
@@ -152,6 +158,7 @@ export interface WsSubscriptionMap {
 	polymarket_clob_rewards: ClobRewardsSubscribeFilters;
 	polymarket_events_stream: EventsStreamSubscribeFilters;
 	polymarket_markets_stream: MarketsStreamSubscribeFilters;
+	polymarket_oracle_events: OracleEventsStreamSubscribeFilters;
 }
 
 export interface WsSubscribeResponseMap {
@@ -168,6 +175,7 @@ export interface WsSubscribeResponseMap {
 	polymarket_clob_rewards: ClobRewardsSubscribeResponse;
 	polymarket_events_stream: EventsStreamSubscribeResponse;
 	polymarket_markets_stream: MarketsStreamSubscribeResponse;
+	polymarket_oracle_events: OracleEventsStreamSubscribeResponse;
 }
 
 export type AlertsWebSocketEventMap = {

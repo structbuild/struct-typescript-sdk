@@ -3,7 +3,7 @@
   "info": {
     "title": "Polymarket WebSocket Streams API",
     "version": "1.0.0",
-    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
+    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n| `polymarket_oracle_events` (Oracle Events) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
   },
   "servers": {
     "production": {
@@ -434,6 +434,23 @@
         },
         "marketsStreamUpdateEvent": {
           "$ref": "#/components/messages/MarketsStreamUpdateEvent"
+        }
+      }
+    },
+    "polymarket_oracle_events": {
+      "address": "polymarket_oracle_events",
+      "title": "Oracle Events",
+      "summary": "Oracle lifecycle events stream",
+      "description": "Real-time stream of on-chain oracle lifecycle events — UMA assertions, CTF resolutions, NegRisk outcomes, market initialization, dispute, reset, pause, flag, and emergency-resolution events. Each message is discriminated by `event_type` so each variant only includes its relevant fields. Supports both confirmed (on-chain) and pending (mempool) events.\n\n**Filters (optional):**\n- `condition_ids` — 64-char hex condition IDs (with or without `0x` prefix)\n- `market_slugs` — market slugs\n- `event_slugs` — event slugs (delivers all markets under each event)\n- `oracle_event_types` — name allowlist (e.g. `[\"QuestionResolved\", \"AssertionDisputed\"]`)\n- `status` — `\"confirmed\"` (default), `\"pending\"`, or `\"all\"`\n\nIf no filters are provided, subscribes to ALL oracle events (open-ended).\n\n**Pending events:** All event types are available as pending. Pending events omit `block`, `confirmed_at`, `log_index`, `block_index` and include `received_at` (milliseconds) instead. Some confirmation-time fields (`assertion_id`, `settled_price`, `bond_recipient`, `disputed`, `settlement_resolution`, `payout`) may be empty until the event is confirmed on-chain.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"` to clear all subscriptions.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/OracleEventsStreamSubscribe"
+        },
+        "subscribeResponse": {
+          "$ref": "#/components/messages/OracleEventsStreamSubscribeResponse"
+        },
+        "oracleEventStreamEvent": {
+          "$ref": "#/components/messages/OracleEventStreamEvent"
         }
       }
     }
@@ -1087,6 +1104,33 @@
         },
         {
           "$ref": "#/channels/polymarket_markets_stream/messages/marketsStreamUpdateEvent"
+        }
+      ]
+    },
+    "subscribePolymarketOracleEvents": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_oracle_events"
+      },
+      "summary": "Subscribe to oracle lifecycle events stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_oracle_events/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketOracleEvents": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_oracle_events"
+      },
+      "summary": "Receive oracle lifecycle events stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_oracle_events/messages/subscribeResponse"
+        },
+        {
+          "$ref": "#/channels/polymarket_oracle_events/messages/oracleEventStreamEvent"
         }
       ]
     }
@@ -2158,9 +2202,329 @@
         "payload": {
           "$ref": "#/components/schemas/MarketsStreamUpdateEvent"
         }
+      },
+      "OracleEventsStreamSubscribe": {
+        "summary": "Subscribe to oracle lifecycle events stream",
+        "payload": {
+          "$ref": "#/components/schemas/OracleEventsStreamSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "action": "subscribe"
+            }
+          }
+        ]
+      },
+      "OracleEventStreamEvent": {
+        "summary": "Server-pushed event. Discriminated by `event_type` — each variant only includes relevant fields.\n\nEnvelope: `{\"type\": \"oracle_event_update\", \"room_id\": \"polymarket_oracle_events\", \"status\": \"confirmed\"|\"pending\", \"data\": {...}}`\n\n**Pending events:** `block`, `confirmed_at`, `log_index`, `block_index` are absent. `received_at` (milliseconds) is included instead. Some confirmation-time fields (`assertion_id`, `settled_price`, `bond_recipient`, `disputed`, `settlement_resolution`, `payout`) may be empty until the event is confirmed on-chain",
+        "payload": {
+          "$ref": "#/components/schemas/OracleEventStreamEvent"
+        }
+      },
+      "OracleEventsStreamSubscribeResponse": {
+        "summary": "Subscription acknowledgement for oracle lifecycle events stream",
+        "payload": {
+          "$ref": "#/components/schemas/OracleEventsStreamSubscribeResponse"
+        }
       }
     },
     "schemas": {
+      "OracleEventStreamEvent": {
+        "description": "Server-pushed event. Discriminated by `event_type` — each variant only includes relevant fields.\n\nEnvelope: `{\"type\": \"oracle_event_update\", \"room_id\": \"polymarket_oracle_events\", \"status\": \"confirmed\"|\"pending\", \"data\": {...}}`\n\n**Pending events:** `block`, `confirmed_at`, `log_index`, `block_index` are absent. `received_at` (milliseconds) is included instead. Some confirmation-time fields (`assertion_id`, `settled_price`, `bond_recipient`, `disputed`, `settlement_resolution`, `payout`) may be empty until the event is confirmed on-chain.",
+        "type": "object",
+        "required": [
+          "event_type",
+          "id",
+          "hash",
+          "oracle_contract"
+        ],
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "AssertionMade",
+              "AssertionDisputed",
+              "AssertionSettled",
+              "RequestPrice",
+              "ProposePrice",
+              "DisputePrice",
+              "Settle",
+              "QuestionResolved",
+              "QuestionEmergencyResolved",
+              "QuestionReset",
+              "QuestionInitialized",
+              "QuestionPaused",
+              "QuestionUnpaused",
+              "QuestionFlagged",
+              "QuestionUnflagged",
+              "ConditionResolution",
+              "NegRiskOutcomeReported"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Absent for pending events"
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Unix seconds. Absent for pending events"
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Unix milliseconds. Present for pending events only"
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Absent for pending events"
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Absent for pending events"
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "assertion_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "proposer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "disputer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "asserter": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "requester": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "settled_price": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "proposed_price": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "disputed": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "settlement_resolution": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "discriminator": "event_type"
+      },
+      "OracleEventsStreamSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for an oracle events stream subscription",
+        "properties": {
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "market_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "oracle_event_types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "pending",
+              "all"
+            ]
+          },
+          "subscribe_all": {
+            "type": "boolean"
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter values that were rejected (invalid format or unknown type)"
+          }
+        }
+      },
+      "OracleEventsStreamSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the oracle events stream. No filters = subscribe to all events.",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "64-char hex condition IDs (with or without 0x prefix)"
+          },
+          "market_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Market slugs"
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Event slugs — subscribes to all markets under each event"
+          },
+          "oracle_event_types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "AssertionMade",
+                "AssertionDisputed",
+                "AssertionSettled",
+                "RequestPrice",
+                "ProposePrice",
+                "DisputePrice",
+                "Settle",
+                "QuestionResolved",
+                "QuestionEmergencyResolved",
+                "QuestionReset",
+                "QuestionInitialized",
+                "QuestionPaused",
+                "QuestionUnpaused",
+                "QuestionFlagged",
+                "QuestionUnflagged",
+                "ConditionResolution",
+                "NegRiskOutcomeReported"
+              ]
+            },
+            "description": "Only receive events of these types. Empty array = all types."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "pending",
+              "all"
+            ],
+            "default": "confirmed",
+            "description": "Event status filter: \"confirmed\" (default) = on-chain only, \"pending\" = mempool only, \"all\" = both"
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Explicitly subscribe to all oracle events. Also implicitly true when no filters are provided."
+          }
+        }
+      },
       "MarketsStreamUpdateEvent": {
         "type": "object",
         "description": "Server-pushed event: one or more open markets matching this subscription had a field change since the last tick. Envelope type: \"markets_stream_update\". Only rows that changed AND matched are in `data`. Client merges by `condition_id`. Each outcome in `data[i].outcomes` carries `latest_block` + `latest_confirmed_at` price-update watermarks.",
@@ -2256,213 +2620,6 @@
               "null"
             ],
             "description": "Non-null when the subscribe was rejected."
-          }
-        }
-      },
-      "MarketsStreamFilter": {
-        "type": "object",
-        "description": "List-API-shaped filter evaluated in-memory against changed rows. `status` is NOT accepted — the cache only holds open markets.",
-        "properties": {
-          "search": {
-            "type": "string",
-            "description": "Case-insensitive substring match on `title`. 3–100 chars."
-          },
-          "categories": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "maxItems": 50
-          },
-          "exclude_categories": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "maxItems": 50
-          },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "maxItems": 50
-          },
-          "exclude_tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "maxItems": 50
-          },
-          "min_volume": {
-            "type": "number"
-          },
-          "max_volume": {
-            "type": "number"
-          },
-          "min_txns": {
-            "type": "integer"
-          },
-          "max_txns": {
-            "type": "integer"
-          },
-          "min_unique_traders": {
-            "type": "integer"
-          },
-          "max_unique_traders": {
-            "type": "integer"
-          },
-          "min_liquidity": {
-            "type": "number"
-          },
-          "max_liquidity": {
-            "type": "number"
-          },
-          "min_holders": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "max_holders": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "start_time": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Filter markets with `end_time >= start_time` (Unix seconds)."
-          },
-          "end_time": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Filter markets with `end_time <= end_time` (Unix seconds)."
-          },
-          "has_rewards": {
-            "type": "boolean",
-            "description": "When true, only markets with at least one CLOB reward."
-          },
-          "timeframe": {
-            "type": "string",
-            "enum": [
-              "1m",
-              "5m",
-              "30m",
-              "1h",
-              "6h",
-              "24h",
-              "7d",
-              "30d"
-            ],
-            "description": "Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`."
-          }
-        }
-      },
-      "MarketsStreamSubscribeMessage": {
-        "type": "object",
-        "description": "Subscribe / unsubscribe message for polymarket_markets_stream.",
-        "required": [
-          "action"
-        ],
-        "properties": {
-          "action": {
-            "type": "string",
-            "enum": [
-              "subscribe",
-              "unsubscribe",
-              "unsubscribe_all"
-            ],
-            "description": "`subscribe` creates/replaces a slot. `unsubscribe` removes one slot (needs `mode` + `interval_ms`). `unsubscribe_all` removes every slot this client holds in the room."
-          },
-          "interval_ms": {
-            "type": "integer",
-            "enum": [
-              500,
-              1000,
-              3000,
-              10000
-            ],
-            "description": "Flush cadence. Required for subscribe / unsubscribe. Default 1000 if omitted."
-          },
-          "mode": {
-            "type": "string",
-            "enum": [
-              "filter",
-              "ids"
-            ],
-            "description": "Subscription mode. Default `filter`."
-          },
-          "filter": {
-            "$ref": "#/components/schemas/MarketsStreamFilter",
-            "description": "Filter body (only used when `mode=filter`). All fields optional."
-          },
-          "condition_ids": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Ids mode: 0x-prefixed lowercase 32-byte hex. Counts toward the 500-id cap."
-          },
-          "market_slugs": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Ids mode: market slug strings."
-          },
-          "event_slugs": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Ids mode: event slug strings — matches every child market of each event."
-          }
-        }
-      },
-      "EventsStreamUpdateEvent": {
-        "type": "object",
-        "description": "Server-pushed event: one or more open events matching this subscription had a field change since the last tick. Envelope type: \"events_stream_update\". Only rows that changed AND matched are in `data`. Client merges into its local state by `id`.",
-        "required": [
-          "type",
-          "room_id",
-          "mode",
-          "interval_ms",
-          "data"
-        ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "events_stream_update"
-            ]
-          },
-          "room_id": {
-            "type": "string",
-            "enum": [
-              "polymarket_events_stream"
-            ]
-          },
-          "mode": {
-            "type": "string",
-            "enum": [
-              "filter",
-              "ids"
-            ]
-          },
-          "interval_ms": {
-            "type": "integer",
-            "enum": [
-              500,
-              1000,
-              3000,
-              10000
-            ]
-          },
-          "data": {
-            "type": "array",
-            "description": "Full `PolymarketEvent` rows (same shape as `GET /polymarket/events`). Not a delta — each array element is a complete row replacement.",
-            "items": {
-              "type": "object"
-            }
           }
         }
       },
@@ -5703,6 +5860,213 @@
               "null"
             ],
             "description": "Non-null when the subscribe was rejected (invalid cadence, bad filter, too many subs, …)."
+          }
+        }
+      },
+      "EventsStreamUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed event: one or more open events matching this subscription had a field change since the last tick. Envelope type: \"events_stream_update\". Only rows that changed AND matched are in `data`. Client merges into its local state by `id`.",
+        "required": [
+          "type",
+          "room_id",
+          "mode",
+          "interval_ms",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "events_stream_update"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_events_stream"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "filter",
+              "ids"
+            ]
+          },
+          "interval_ms": {
+            "type": "integer",
+            "enum": [
+              500,
+              1000,
+              3000,
+              10000
+            ]
+          },
+          "data": {
+            "type": "array",
+            "description": "Full `PolymarketEvent` rows (same shape as `GET /polymarket/events`). Not a delta — each array element is a complete row replacement.",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "MarketsStreamSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe / unsubscribe message for polymarket_markets_stream.",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe",
+              "unsubscribe_all"
+            ],
+            "description": "`subscribe` creates/replaces a slot. `unsubscribe` removes one slot (needs `mode` + `interval_ms`). `unsubscribe_all` removes every slot this client holds in the room."
+          },
+          "interval_ms": {
+            "type": "integer",
+            "enum": [
+              500,
+              1000,
+              3000,
+              10000
+            ],
+            "description": "Flush cadence. Required for subscribe / unsubscribe. Default 1000 if omitted."
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "filter",
+              "ids"
+            ],
+            "description": "Subscription mode. Default `filter`."
+          },
+          "filter": {
+            "$ref": "#/components/schemas/MarketsStreamFilter",
+            "description": "Filter body (only used when `mode=filter`). All fields optional."
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids mode: 0x-prefixed lowercase 32-byte hex. Counts toward the 500-id cap."
+          },
+          "market_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids mode: market slug strings."
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids mode: event slug strings — matches every child market of each event."
+          }
+        }
+      },
+      "MarketsStreamFilter": {
+        "type": "object",
+        "description": "List-API-shaped filter evaluated in-memory against changed rows. `status` is NOT accepted — the cache only holds open markets.",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Case-insensitive substring match on `title`. 3–100 chars."
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "exclude_categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "exclude_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50
+          },
+          "min_volume": {
+            "type": "number"
+          },
+          "max_volume": {
+            "type": "number"
+          },
+          "min_txns": {
+            "type": "integer"
+          },
+          "max_txns": {
+            "type": "integer"
+          },
+          "min_unique_traders": {
+            "type": "integer"
+          },
+          "max_unique_traders": {
+            "type": "integer"
+          },
+          "min_liquidity": {
+            "type": "number"
+          },
+          "max_liquidity": {
+            "type": "number"
+          },
+          "min_holders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "max_holders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "start_time": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Filter markets with `end_time >= start_time` (Unix seconds)."
+          },
+          "end_time": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Filter markets with `end_time <= end_time` (Unix seconds)."
+          },
+          "has_rewards": {
+            "type": "boolean",
+            "description": "When true, only markets with at least one CLOB reward."
+          },
+          "timeframe": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ],
+            "description": "Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`."
           }
         }
       },

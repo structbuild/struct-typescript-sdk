@@ -394,6 +394,360 @@
   },
   "components": {
     "schemas": {
+      "AssertionDisputedEvent": {
+        "type": "object",
+        "description": "V3 UMA OOv3: an assertion was disputed.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "assertion_id",
+          "caller",
+          "disputer"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "assertion_id": {
+            "type": "string"
+          },
+          "caller": {
+            "type": "string"
+          },
+          "disputer": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "AssertionMadeEvent": {
+        "type": "object",
+        "description": "V3 UMA OOv3: a new assertion (resolution proposal) was made.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "assertion_id",
+          "domain_id",
+          "claim",
+          "asserter",
+          "callback_recipient",
+          "escalation_manager",
+          "caller",
+          "expiration_time",
+          "currency",
+          "bond",
+          "identifier"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "assertion_id": {
+            "type": "string"
+          },
+          "domain_id": {
+            "type": "string"
+          },
+          "claim": {
+            "type": "string"
+          },
+          "asserter": {
+            "type": "string"
+          },
+          "callback_recipient": {
+            "type": "string"
+          },
+          "escalation_manager": {
+            "type": "string"
+          },
+          "caller": {
+            "type": "string"
+          },
+          "expiration_time": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string"
+          },
+          "bond": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "AssertionSettledEvent": {
+        "type": "object",
+        "description": "V3 UMA OOv3: an assertion liveness period expired and was settled.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "assertion_id",
+          "bond_recipient",
+          "disputed",
+          "settlement_resolution",
+          "settle_caller"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "assertion_id": {
+            "type": "string"
+          },
+          "bond_recipient": {
+            "type": "string"
+          },
+          "disputed": {
+            "type": "boolean"
+          },
+          "settlement_resolution": {
+            "type": "boolean"
+          },
+          "settle_caller": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
       "AssetPriceTickPayload": {
         "type": "object",
         "description": "Payload delivered on every raw Chainlink price tick for a tracked crypto asset",
@@ -688,6 +1042,104 @@
           }
         }
       },
+      "ConditionResolutionEvent": {
+        "type": "object",
+        "description": "CTF ConditionResolution: positions become redeemable on the Conditional Tokens contract.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "condition_id",
+          "oracle"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "oracle": {
+            "type": "string"
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
       "CreateWebhookRequestBody": {
         "type": "object",
         "description": "Request body for creating a webhook",
@@ -740,6 +1192,131 @@
         "properties": {
           "deleted": {
             "type": "boolean"
+          }
+        }
+      },
+      "DisputePriceEvent": {
+        "type": "object",
+        "description": "V2 UMA OOv2: a proposed price was disputed.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "requester",
+          "proposer",
+          "disputer",
+          "identifier",
+          "timestamp",
+          "ancillary_data",
+          "proposed_price"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "requester": {
+            "type": "string"
+          },
+          "proposer": {
+            "type": "string"
+          },
+          "disputer": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "ancillary_data": {
+            "type": "string"
+          },
+          "proposed_price": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       },
@@ -1735,6 +2312,100 @@
           }
         }
       },
+      "NegRiskOutcomeReportedEvent": {
+        "type": "object",
+        "description": "NegRisk Adapter: outcome reported for a neg-risk market question.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "condition_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
       "NewMarketPayload": {
         "type": "object",
         "description": "Payload delivered when a trader places their first trade in a specific market (fires once per trader+market pair)",
@@ -2031,6 +2702,368 @@
           }
         }
       },
+      "OracleEventTyped": {
+        "oneOf": [
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AssertionMadeEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "AssertionMade"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AssertionDisputedEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "AssertionDisputed"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AssertionSettledEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "AssertionSettled"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RequestPriceEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "RequestPrice"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProposePriceEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "ProposePrice"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DisputePriceEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "DisputePrice"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SettleEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "Settle"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuestionResolvedEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "QuestionResolved"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuestionEmergencyResolvedEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "QuestionEmergencyResolved"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuestionResetEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "QuestionReset"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuestionInitializedEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "QuestionInitialized"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuestionPausedEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "QuestionPaused"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuestionUnpausedEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "QuestionUnpaused"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuestionFlaggedEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "QuestionFlagged"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QuestionUnflaggedEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "QuestionUnflagged"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ConditionResolutionEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "ConditionResolution"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NegRiskOutcomeReportedEvent"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "event_type"
+                ],
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "NegRiskOutcomeReported"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "description": "Tagged enum for all oracle event types — serializes with `\"event_type\": \"...\"` discriminator\nand only includes fields relevant to each type."
+      },
       "PnlTimeframeFilter": {
         "type": "string",
         "description": "PnL timeframe enum for webhook filtering",
@@ -2067,7 +3100,8 @@
           "market_created",
           "asset_price_tick",
           "asset_price_window_update",
-          "price_spike"
+          "price_spike",
+          "oracle_events"
         ]
       },
       "PolymarketWebhookFilter": {
@@ -2336,6 +3370,13 @@
             "format": "int64",
             "description": "Observation window in seconds for `probability_spike` and `price_spike`.\n\nWhen set, the first trade seen for a position opens a window of this duration.\nThe opening price becomes the baseline, and every subsequent trade within the\nwindow is compared to it. When the window expires the next trade starts a new\nwindow. If omitted, the baseline accumulates indefinitely until a spike fires.\n\nExample: `60` to detect spikes that happen within 60 seconds.",
             "minimum": 0
+          },
+          "oracle_event_types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter for `oracle_events` by event name (case-insensitive).\nValid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`,\n`RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`,\n`QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`,\n`QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`,\n`QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`,\n`NegRiskOutcomeReported`. Empty = all types."
           }
         }
       },
@@ -2802,6 +3843,991 @@
           }
         }
       },
+      "ProposePriceEvent": {
+        "type": "object",
+        "description": "V2 UMA OOv2: a price was proposed (resolution proposal).",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "requester",
+          "proposer",
+          "identifier",
+          "timestamp",
+          "ancillary_data",
+          "proposed_price",
+          "expiration_timestamp",
+          "currency"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "requester": {
+            "type": "string"
+          },
+          "proposer": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "ancillary_data": {
+            "type": "string"
+          },
+          "proposed_price": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "expiration_timestamp": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "QuestionEmergencyResolvedEvent": {
+        "type": "object",
+        "description": "UMA CTF Adapter: admin emergency resolution.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "condition_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "QuestionFlaggedEvent": {
+        "type": "object",
+        "description": "UMA CTF Adapter: market flagged for emergency resolution.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "condition_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "QuestionInitializedEvent": {
+        "type": "object",
+        "description": "UMA CTF Adapter: questionID first initialized on-chain.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "condition_id",
+          "creator",
+          "reward_token",
+          "reward",
+          "proposal_bond"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "creator": {
+            "type": "string"
+          },
+          "reward_token": {
+            "type": "string"
+          },
+          "reward": {
+            "type": "string"
+          },
+          "proposal_bond": {
+            "type": "string"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "QuestionPausedEvent": {
+        "type": "object",
+        "description": "UMA CTF Adapter: market paused by admin.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "condition_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "QuestionResetEvent": {
+        "type": "object",
+        "description": "UMA CTF Adapter: dispute succeeded, market returns to active.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "condition_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "QuestionResolvedEvent": {
+        "type": "object",
+        "description": "UMA CTF Adapter: market resolved with definitive outcome.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "condition_id",
+          "settled_price"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "settled_price": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "QuestionUnflaggedEvent": {
+        "type": "object",
+        "description": "UMA CTF Adapter: flag removed.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "condition_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "QuestionUnpausedEvent": {
+        "type": "object",
+        "description": "UMA CTF Adapter: market unpaused.",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "condition_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "RequestPriceEvent": {
+        "type": "object",
+        "description": "V2 UMA OOv2: a price request was made (market initialization).",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "requester",
+          "identifier",
+          "timestamp",
+          "ancillary_data",
+          "currency",
+          "reward",
+          "final_fee"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "requester": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "UMA request timestamp (seconds, decimal string).\nThe point in time the requester is asking the oracle to resolve the\nprice for — part of the request identity tuple\n`(requester, identifier, timestamp, ancillaryData)`. Not the block\ntimestamp of this event; see `confirmed_at` for that."
+          },
+          "ancillary_data": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "reward": {
+            "type": "string"
+          },
+          "final_fee": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
       "RotateSecretResponse": {
         "type": "object",
         "description": "Response for POST /v1/webhook/{id}/rotate-secret",
@@ -2818,6 +4844,139 @@
             "type": "integer",
             "format": "int64",
             "description": "Timestamp of rotation (ms since epoch)"
+          }
+        }
+      },
+      "SettleEvent": {
+        "type": "object",
+        "description": "V2 UMA OOv2: a price request was settled (final resolution).",
+        "required": [
+          "id",
+          "hash",
+          "oracle_contract",
+          "requester",
+          "proposer",
+          "disputer",
+          "identifier",
+          "timestamp",
+          "ancillary_data",
+          "proposed_price",
+          "payout",
+          "disputed"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "received_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "log_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "block_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "oracle_contract": {
+            "type": "string"
+          },
+          "requester": {
+            "type": "string"
+          },
+          "proposer": {
+            "type": "string"
+          },
+          "disputer": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "ancillary_data": {
+            "type": "string"
+          },
+          "proposed_price": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "payout": {
+            "type": "string"
+          },
+          "disputed": {
+            "type": "boolean"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       },
@@ -3608,7 +5767,7 @@
         }
       },
       "WebhookTraderTradeEventPayload": {
-        "description": "Exact payload union for `trader_trade_event` webhook deliveries. These callbacks are emitted from the live confirmed trade pipeline, so pending-only fields such as `received_at` are absent.",
+        "description": "Tagged union of trade-type variants delivered to `trader_trade_event` callbacks. Pending-only fields such as `received_at` are absent — callbacks fire only for confirmed trades.",
         "oneOf": [
           {
             "title": "OrderFilled / OrdersMatched",
@@ -5645,7 +7804,7 @@
               ]
             },
             "maxItems": 500,
-            "description": "Only fire for these trade types currently emitted through the webhook pipeline. Empty = all supported trade-event variants."
+            "description": "Only fire for these trade types. Empty = all supported trade-event variants."
           },
           "exclude_shortterm_markets": {
             "type": "boolean",
@@ -6574,6 +8733,46 @@
           }
         }
       },
+      "OracleEventsFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `oracle_events` event. All fields are optional.",
+        "properties": {
+          "oracle_event_types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "AssertionMade",
+                "AssertionDisputed",
+                "AssertionSettled",
+                "RequestPrice",
+                "ProposePrice",
+                "DisputePrice",
+                "Settle",
+                "QuestionResolved",
+                "QuestionEmergencyResolved",
+                "QuestionReset",
+                "QuestionInitialized",
+                "QuestionPaused",
+                "QuestionUnpaused",
+                "QuestionFlagged",
+                "QuestionUnflagged",
+                "ConditionResolution",
+                "NegRiskOutcomeReported"
+              ]
+            },
+            "description": "Restrict to these event types (case-insensitive). Empty = all."
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "description": "Restrict to events for these condition IDs."
+          }
+        }
+      },
       "AssetPriceTickFilters": {
         "type": "object",
         "description": "Subscription filters for the `asset_price_tick` event. All fields are optional.",
@@ -7031,7 +9230,7 @@
     "trader-trade-event": {
       "post": {
         "summary": "Typed trade-event callback",
-        "description": "Fired on every live confirmed prediction-trade event. Payload uses the exact tagged `WebhookTraderTradeEventPayload` union for the trade types currently emitted by the webhook pipeline.",
+        "description": "Fired on every confirmed prediction trade. Payload is a tagged union of trade-type variants.",
         "operationId": "trader-trade-event",
         "tags": [
           "Webhook Callbacks"
@@ -7981,7 +10180,7 @@
     "probability-spike": {
       "post": {
         "summary": "Probability spike callback",
-        "description": "Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.",
+        "description": "Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
         "operationId": "probability-spike",
         "tags": [
           "Webhook Callbacks"
@@ -8076,7 +10275,7 @@
     "price-spike": {
       "post": {
         "summary": "Price spike callback",
-        "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope.",
+        "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
         "operationId": "price-spike",
         "tags": [
           "Webhook Callbacks"
@@ -8625,6 +10824,101 @@
                     "properties": {
                       "data": {
                         "$ref": "#/components/schemas/MarketCreatedPayload"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "oracle-events": {
+      "post": {
+        "summary": "Oracle events callback",
+        "description": "Fired on every on-chain oracle event. Use `oracle_event_types` to restrict to specific kinds — valid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`, `RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`, `QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`, `QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`, `QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`, `NegRiskOutcomeReported`. Optional `condition_ids` narrows by market.",
+        "operationId": "oracle-events",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "x-credits-cost": 100,
+        "x-filters-schema": {
+          "$ref": "#/components/schemas/OracleEventsFilters"
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/OracleEventTyped"
                       }
                     }
                   }

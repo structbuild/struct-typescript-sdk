@@ -23,6 +23,10 @@ import type {
 	GetMarketBySlugParams,
 	GetPriceJumpsParams,
 	PriceJump,
+	GetOracleEventsParams,
+	GetMarketTopTradersParams,
+	GetPositionTopTradersParams,
+	TradeEvent,
 } from "../types/index.js";
 
 export class MarketsNamespace extends Namespace {
@@ -76,5 +80,17 @@ export class MarketsNamespace extends Namespace {
 
 	async getPriceJumps(params?: GetPriceJumpsParams, venue?: Venue): Promise<HttpResponse<PriceJump[]>> {
 		return this.get<PriceJump[]>(venue, "/market/price-jumps", { params: { ...params } });
+	}
+
+	async getOracleEvents(params?: GetOracleEventsParams, venue?: Venue): Promise<HttpResponse<TradeEvent[]>> {
+		return this.get<TradeEvent[]>(venue, "/market/oracle-events", { params: { ...params } });
+	}
+
+	async getMarketTopTraders(params?: GetMarketTopTradersParams, venue?: Venue): Promise<HttpResponse<unknown[]>> {
+		return this.get<unknown[]>(venue, "/market/top-traders", { params: { ...params } });
+	}
+
+	async getPositionTopTraders(params: GetPositionTopTradersParams, venue?: Venue): Promise<HttpResponse<unknown[]>> {
+		return this.get<unknown[]>(venue, "/market/position/top-traders", { params: { ...params } });
 	}
 }
