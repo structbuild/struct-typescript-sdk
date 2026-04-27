@@ -10,6 +10,7 @@ import {
 	SeriesNamespace,
 	TraderNamespace,
 	BondsNamespace,
+	BuildersNamespace,
 	SearchNamespace,
 	AnalyticsNamespace,
 	OrderBookNamespace,
@@ -39,6 +40,7 @@ export class StructClient {
 	readonly series: SeriesNamespace;
 	readonly trader: TraderNamespace;
 	readonly bonds: BondsNamespace;
+	readonly builders: BuildersNamespace;
 	readonly search: SearchNamespace;
 	readonly analytics: AnalyticsNamespace;
 	readonly orderBook: OrderBookNamespace;
@@ -73,6 +75,7 @@ export class StructClient {
 		this.series = new SeriesNamespace(http, venue);
 		this.trader = new TraderNamespace(http, venue);
 		this.bonds = new BondsNamespace(http, venue);
+		this.builders = new BuildersNamespace(http, venue);
 		this.search = new SearchNamespace(http, venue);
 		this.analytics = new AnalyticsNamespace(http, venue);
 		this.orderBook = new OrderBookNamespace(http, venue);

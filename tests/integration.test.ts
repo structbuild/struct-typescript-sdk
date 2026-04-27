@@ -379,6 +379,10 @@ describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 				client.trader.getGlobalPnl({ limit: 1 }),
 			]);
 
+		const buildersRes = await client.builders
+			.getBuilders({ limit: 1 })
+			.catch(() => null);
+
 		const market = marketsRes.data[0]!;
 		setupData.conditionId = market.condition_id;
 		setupData.marketSlug = market.market_slug!;
@@ -395,6 +399,9 @@ describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 
 		const trader = globalPnlRes.data[0]!;
 		setupData.address = trader.trader!.address;
+
+		const builder = buildersRes?.data[0];
+		if (builder) setupData.builderCode = builder.builder_code;
 	});
 
 	afterAll(() => {

@@ -7,6 +7,7 @@ export { MarketsNamespace } from "./markets.js";
 export { SeriesNamespace } from "./series.js";
 export { TraderNamespace } from "./trader.js";
 export { BondsNamespace } from "./bonds.js";
+export { BuildersNamespace } from "./builders.js";
 export { SearchNamespace } from "./search.js";
 export { OrderBookNamespace } from "./orderBook.js";
 export { AnalyticsNamespace } from "./analytics.js";

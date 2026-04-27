@@ -30,6 +30,23 @@ export type AnalyticsResolution = Schemas["AnalyticsResolution"];
 export type BondMarket = Schemas["BondMarket"];
 export type BondOutcome = Schemas["BondOutcome"];
 export type BondsSortBy = Schemas["BondsSortBy"];
+export type BuilderFeeRate = Schemas["BuilderFeeRate"];
+export type BuilderFeeRateHistoryEntry = Schemas["BuilderFeeRateHistoryEntry"];
+export type BuilderGlobalLatestRow = Schemas["BuilderGlobalLatestRow"];
+export type BuilderLatestRow = Schemas["BuilderLatestRow"];
+export type BuilderPctChange = Schemas["BuilderPctChange"];
+export type BuilderSortBy = Schemas["BuilderSortBy"];
+export type BuilderTagRow = Schemas["BuilderTagRow"];
+export type BuilderTimeBucketRow = Schemas["BuilderTimeBucketRow"];
+export type BuilderTimeframe = Schemas["BuilderTimeframe"];
+export type CohortRetentionRow = Schemas["CohortRetentionRow"];
+export type ConcentrationResponse = Schemas["ConcentrationResponse"];
+export type GlobalChangeTimeframe = Schemas["GlobalChangeTimeframe"];
+export type GlobalPctChange = Schemas["GlobalPctChange"];
+export type TagBuilderRow = Schemas["TagBuilderRow"];
+export type TopTraderRow = Schemas["TopTraderRow"];
+export type TopTradersSortBy = Schemas["TopTradersSortBy"];
+export type TraderBuilderSortBy = Schemas["TraderBuilderSortBy"];
 export type CandlestickResolution = Schemas["CandlestickResolution"];
 export type ChangeTimeframe = Schemas["ChangeTimeframe"];
 export type ChartResolution = Schemas["ChartResolution"];
@@ -440,6 +457,60 @@ export interface GetTraderAnalyticsChangesParams extends OperationQuery<"get_tra
 
 export interface GetTraderAnalyticsTimeseriesParams extends OperationQuery<"get_trader_analytics_timeseries"> {
 	address: string;
+}
+
+export interface GetBuildersParams extends OperationQuery<"list_builders"> {}
+
+export interface GetBuilderParams extends OperationQuery<"get_builder"> {
+	builder_code: string;
+}
+
+export interface GetBuilderAnalyticsChangesParams extends OperationQuery<"get_builder_analytics_changes"> {
+	builder_code: string;
+}
+
+export interface GetBuilderAnalyticsDeltasParams extends OperationQuery<"get_builder_analytics_deltas"> {
+	builder_code: string;
+}
+
+export interface GetBuilderAnalyticsTimeseriesParams extends OperationQuery<"get_builder_analytics_timeseries"> {
+	builder_code: string;
+}
+
+export interface GetBuilderConcentrationParams extends OperationQuery<"get_builder_concentration"> {
+	builder_code: string;
+}
+
+export interface GetBuilderFeesParams {
+	builder_code: string;
+}
+
+export interface GetBuilderFeesHistoryParams extends OperationQuery<"get_builder_fees_history"> {
+	builder_code: string;
+}
+
+export interface GetBuilderRetentionParams extends OperationQuery<"get_builder_retention"> {
+	builder_code: string;
+}
+
+export interface GetBuilderTagsParams extends OperationQuery<"list_builder_tags"> {
+	builder_code: string;
+}
+
+export interface GetBuilderTopTradersParams extends OperationQuery<"get_builder_top_traders"> {
+	builder_code: string;
+}
+
+export interface GetBuilderGlobalParams extends OperationQuery<"get_builder_global"> {}
+
+export interface GetBuilderGlobalChangesParams extends OperationQuery<"get_builder_global_changes"> {}
+
+export interface GetBuilderGlobalDeltasParams extends OperationQuery<"get_builder_global_deltas"> {}
+
+export interface GetBuilderGlobalTimeseriesParams extends OperationQuery<"get_builder_global_timeseries"> {}
+
+export interface GetTagBuildersParams extends OperationQuery<"list_tag_builders"> {
+	tag: string;
 }
 
 export type TopTraderEventEntry = Schemas["TopTraderEventEntry"];

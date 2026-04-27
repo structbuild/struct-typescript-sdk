@@ -284,6 +284,78 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "get_trader_analytics_timeseries",
 	},
 
+	"builders.getBuilders": {
+		params: { limit: 2 },
+		operationId: "list_builders",
+		paginate: true,
+	},
+	"builders.getBuilder": {
+		params: { builder_code: "$builderCode" },
+		operationId: "get_builder",
+		shape: "object",
+	},
+	"builders.getBuilderChanges": {
+		params: { builder_code: "$builderCode", timeframe: "24h" },
+		operationId: "get_builder_analytics_changes",
+		shape: "object",
+	},
+	"builders.getBuilderDeltas": {
+		params: { builder_code: "$builderCode" },
+		operationId: "get_builder_analytics_deltas",
+	},
+	"builders.getBuilderTimeseries": {
+		params: { builder_code: "$builderCode" },
+		operationId: "get_builder_analytics_timeseries",
+	},
+	"builders.getBuilderConcentration": {
+		params: { builder_code: "$builderCode", timeframe: "lifetime" },
+		operationId: "get_builder_concentration",
+		shape: "object",
+	},
+	"builders.getBuilderFees": {
+		params: { builder_code: "$builderCode" },
+		operationId: "get_builder_fees",
+		shape: "object",
+	},
+	"builders.getBuilderFeesHistory": {
+		params: { builder_code: "$builderCode", limit: 2 },
+		operationId: "get_builder_fees_history",
+	},
+	"builders.getBuilderRetention": {
+		params: { builder_code: "$builderCode" },
+		operationId: "get_builder_retention",
+	},
+	"builders.getBuilderTags": {
+		params: { builder_code: "$builderCode", limit: 2 },
+		operationId: "list_builder_tags",
+	},
+	"builders.getBuilderTopTraders": {
+		params: { builder_code: "$builderCode", limit: 2 },
+		operationId: "get_builder_top_traders",
+	},
+	"builders.getGlobal": {
+		params: { timeframe: "lifetime" },
+		operationId: "get_builder_global",
+		shape: "object",
+	},
+	"builders.getGlobalChanges": {
+		params: { timeframe: "24h" },
+		operationId: "get_builder_global_changes",
+		shape: "object",
+	},
+	"builders.getGlobalDeltas": {
+		operationId: "get_builder_global_deltas",
+	},
+	"builders.getGlobalTimeseries": {
+		operationId: "get_builder_global_timeseries",
+	},
+	"builders.getTagBuilders": {
+		params: { tag: "$tagId", limit: 2 },
+		operationId: "list_tag_builders",
+		paginate: true,
+		paginateParams: { tag: "$tagId" },
+	},
+
 	"webhooks.list": {
 		operationId: "list_webhooks",
 	},

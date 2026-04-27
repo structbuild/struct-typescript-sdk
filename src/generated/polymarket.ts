@@ -104,6 +104,317 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/builders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List builders ranked by activity
+         * @description Returns the top builders by the chosen metric over the chosen window. Use `sort` to choose the ranking metric and `timeframe` to choose the window.
+         */
+        get: operations["list_builders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/global": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Cumulative stats across all builders
+         * @description Returns one snapshot summing every builder-attributed trade over the chosen window.
+         */
+        get: operations["get_builder_global"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/global/analytics/changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Percentage change across all builders over a lookback window */
+        get: operations["get_builder_global_changes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/global/analytics/deltas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Per-bucket deltas across all builders */
+        get: operations["get_builder_global_deltas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/global/analytics/timeseries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cumulative bucket timeseries across all builders */
+        get: operations["get_builder_global_timeseries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/tags/{tag}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Per-builder breakdown for a tag
+         * @description Returns the top builders that have routed activity into this tag, ranked by the chosen metric over the chosen window.
+         */
+        get: operations["list_tag_builders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a single builder's cumulative stats
+         * @description Returns cumulative stats for one builder over the chosen window.
+         */
+        get: operations["get_builder"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}/analytics/changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Builder percentage change over a lookback window
+         * @description Per-metric percentage change over the requested window for one builder.
+         */
+        get: operations["get_builder_analytics_changes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}/analytics/deltas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Builder analytics deltas (per-bucket change)
+         * @description Returns the change within each bucket for one builder. Use for bar/candle charts.
+         */
+        get: operations["get_builder_analytics_deltas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}/analytics/timeseries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Builder analytics timeseries (cumulative)
+         * @description Returns cumulative values at the end of each bucket for one builder. Use for running-total charts over time.
+         */
+        get: operations["get_builder_analytics_timeseries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}/concentration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Trader-volume concentration for a builder
+         * @description How much of the builder's window volume is concentrated in its top traders. Returns total volume + total trader count + top-1/10/100/1k/10k volume and share.
+         */
+        get: operations["get_builder_concentration"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}/fees": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get builder fee rates
+         * @description Returns the maker and taker fee rates (in basis points) for the given builder code.
+         */
+        get: operations["get_builder_fees"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}/fees/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get builder fee rate history
+         * @description Returns the history of rate changes for the given builder code, newest first.
+         */
+        get: operations["get_builder_fees_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}/retention": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Cohort retention for a builder
+         * @description For each cohort day in the requested window, returns the cohort size and the share of traders that came back on day +1, +7, and +30.
+         */
+        get: operations["get_builder_retention"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Per-tag breakdown for a builder
+         * @description Returns the top tags this builder has routed activity into, ranked by the chosen metric over the chosen window.
+         */
+        get: operations["list_builder_tags"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}/top-traders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Top traders for a builder
+         * @description Returns the highest-volume (or highest-fee / highest-txn) traders that have routed through this builder over the requested window.
+         */
+        get: operations["get_builder_top_traders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/events": {
         parameters: {
             query?: never;
@@ -1508,6 +1819,310 @@ export interface components {
         };
         /** @enum {string} */
         BondsSortBy: "end_date" | "apy" | "liquidity" | "volume";
+        BuilderFeeRate: {
+            code: string;
+            /** Format: int32 */
+            builder_maker_fee_rate_bps: number;
+            /** Format: int32 */
+            builder_taker_fee_rate_bps: number;
+            enabled: boolean;
+        };
+        /** @description One observed transition for a builder code. */
+        BuilderFeeRateHistoryEntry: {
+            code: string;
+            /** Format: int32 */
+            builder_maker_fee_rate_bps: number;
+            /** Format: int32 */
+            builder_taker_fee_rate_bps: number;
+            enabled: boolean;
+            /**
+             * Format: int64
+             * @description Unix-second timestamp of when this rate was observed.
+             */
+            observed_at: number;
+        };
+        /** @description Cumulative stats across all builders. */
+        BuilderGlobalLatestRow: {
+            /** Format: int64 */
+            block: number;
+            /** Format: int32 */
+            ts: number;
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /** Format: int64 */
+            unique_traders: number;
+            /** Format: int64 */
+            unique_makers: number;
+            /** Format: int64 */
+            unique_takers: number;
+            /** Format: int64 */
+            txn_count: number;
+            /** Format: int64 */
+            buy_count: number;
+            /** Format: int64 */
+            sell_count: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            builder_fees: number;
+            /** Format: double */
+            shares_volume: number;
+            /** Format: double */
+            yes_volume_usd: number;
+            /** Format: double */
+            no_volume_usd: number;
+            /** Format: int64 */
+            yes_count: number;
+            /** Format: int64 */
+            no_count: number;
+            /** Format: int64 */
+            buy_dist_under_10: number;
+            /** Format: int64 */
+            buy_dist_10_100: number;
+            /** Format: int64 */
+            buy_dist_100_1k: number;
+            /** Format: int64 */
+            buy_dist_1k_10k: number;
+            /** Format: int64 */
+            buy_dist_10k_50k: number;
+            /** Format: int64 */
+            buy_dist_50k_plus: number;
+            /**
+             * Format: int64
+             * @description Distinct builder codes ever observed.
+             */
+            distinct_builders: number;
+        };
+        /** @description Cumulative stats for a single builder. */
+        BuilderLatestRow: {
+            builder_code: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int32 */
+            ts: number;
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /** Format: int64 */
+            unique_traders: number;
+            /** Format: int64 */
+            unique_makers: number;
+            /** Format: int64 */
+            unique_takers: number;
+            /** Format: int64 */
+            txn_count: number;
+            /** Format: int64 */
+            buy_count: number;
+            /** Format: int64 */
+            sell_count: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            builder_fees: number;
+            /** Format: double */
+            shares_volume: number;
+            /** Format: double */
+            yes_volume_usd: number;
+            /** Format: double */
+            no_volume_usd: number;
+            /** Format: int64 */
+            yes_count: number;
+            /** Format: int64 */
+            no_count: number;
+            /** Format: int64 */
+            buy_dist_under_10: number;
+            /** Format: int64 */
+            buy_dist_10_100: number;
+            /** Format: int64 */
+            buy_dist_100_1k: number;
+            /** Format: int64 */
+            buy_dist_1k_10k: number;
+            /** Format: int64 */
+            buy_dist_10k_50k: number;
+            /** Format: int64 */
+            buy_dist_50k_plus: number;
+        };
+        /** @description Per-metric percentage change for a builder over the requested lookback window. */
+        BuilderPctChange: {
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /** Format: double */
+            unique_traders: number;
+            /** Format: double */
+            unique_makers: number;
+            /** Format: double */
+            unique_takers: number;
+            /** Format: double */
+            txn_count: number;
+            /** Format: double */
+            buy_count: number;
+            /** Format: double */
+            sell_count: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            builder_fees: number;
+            /** Format: double */
+            shares_volume: number;
+            /** Format: double */
+            yes_volume_usd: number;
+            /** Format: double */
+            no_volume_usd: number;
+            /** Format: double */
+            yes_count: number;
+            /** Format: double */
+            no_count: number;
+            /** Format: double */
+            buy_dist_under_10: number;
+            /** Format: double */
+            buy_dist_10_100: number;
+            /** Format: double */
+            buy_dist_100_1k: number;
+            /** Format: double */
+            buy_dist_1k_10k: number;
+            /** Format: double */
+            buy_dist_10k_50k: number;
+            /** Format: double */
+            buy_dist_50k_plus: number;
+        };
+        /**
+         * @description Sort metric for the builders list endpoint.
+         * @enum {string}
+         */
+        BuilderSortBy: "volume" | "txns" | "traders" | "fees" | "builder_fees";
+        /** @description One tag's stats under a single builder. */
+        BuilderTagRow: {
+            tag: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int32 */
+            ts: number;
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /** Format: int64 */
+            unique_traders: number;
+            /** Format: int64 */
+            unique_makers: number;
+            /** Format: int64 */
+            unique_takers: number;
+            /** Format: int64 */
+            txn_count: number;
+            /** Format: int64 */
+            buy_count: number;
+            /** Format: int64 */
+            sell_count: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            builder_fees: number;
+            /** Format: double */
+            shares_volume: number;
+            /** Format: double */
+            yes_volume_usd: number;
+            /** Format: double */
+            no_volume_usd: number;
+            /** Format: int64 */
+            yes_count: number;
+            /** Format: int64 */
+            no_count: number;
+            /** Format: int64 */
+            buy_dist_under_10: number;
+            /** Format: int64 */
+            buy_dist_10_100: number;
+            /** Format: int64 */
+            buy_dist_100_1k: number;
+            /** Format: int64 */
+            buy_dist_1k_10k: number;
+            /** Format: int64 */
+            buy_dist_10k_50k: number;
+            /** Format: int64 */
+            buy_dist_50k_plus: number;
+        };
+        /**
+         * @description One time bucket of builder activity. In `timeseries` responses fields are
+         *     cumulative values at the end of the bucket; in `deltas` responses they are
+         *     the change within the bucket.
+         */
+        BuilderTimeBucketRow: {
+            /** Format: int32 */
+            t: number;
+            /** Format: double */
+            v: number;
+            /** Format: double */
+            bv: number;
+            /** Format: double */
+            sv: number;
+            /**
+             * Format: int64
+             * @description Distinct trader addresses.
+             */
+            ut: number;
+            /**
+             * Format: int64
+             * @description Distinct maker addresses (order-resting side).
+             */
+            um: number;
+            /**
+             * Format: int64
+             * @description Distinct taker addresses (order-initiator side).
+             */
+            uk: number;
+            /** Format: int64 */
+            tc: number;
+            /** Format: int64 */
+            bc: number;
+            /** Format: int64 */
+            sc: number;
+            /** Format: double */
+            f: number;
+            /**
+             * Format: double
+             * @description Builder's share of `fees_usd` (which is Polymarket's total fee).
+             */
+            bf: number;
+            /** Format: double */
+            sh: number;
+            /** Format: double */
+            yv: number;
+            /** Format: double */
+            nv: number;
+            /** Format: int64 */
+            yc: number;
+            /** Format: int64 */
+            nc: number;
+            /** Format: int64 */
+            bd_u10: number;
+            /** Format: int64 */
+            bd_100: number;
+            /** Format: int64 */
+            bd_1k: number;
+            /** Format: int64 */
+            bd_10k: number;
+            /** Format: int64 */
+            bd_50k: number;
+            /** Format: int64 */
+            bd_50p: number;
+        };
+        /**
+         * @description Time window for cumulative builder stats.
+         * @enum {string}
+         */
+        BuilderTimeframe: "lifetime" | "1d" | "7d" | "30d";
         /** @description Output payload for Cancelled orders. */
         CancelledTrade: {
             id: string;
@@ -1561,6 +2176,93 @@ export interface components {
             total_daily_rate?: number | null;
             /** Format: int32 */
             sponsors_count?: number | null;
+        };
+        /** @description One row of cohort retention output. */
+        CohortRetentionRow: {
+            /**
+             * Format: int64
+             * @description Cohort day as Unix-second timestamp at 00:00 UTC.
+             */
+            cohort_day: number;
+            /**
+             * Format: int64
+             * @description Number of distinct traders whose first-ever trade with this builder
+             *     landed on `cohort_day`.
+             */
+            cohort_size: number;
+            /**
+             * @description Fraction of the cohort active on `cohort_day + offset`, keyed by
+             *     the offset (in days). E.g. `{ "1": 0.42, "7": 0.21, "30": 0.08 }`.
+             */
+            retention: {
+                [key: string]: number;
+            };
+            /** @description Raw retained-trader counts per offset, same keys as `retention`. */
+            retained: {
+                [key: string]: number;
+            };
+        };
+        ConcentrationResponse: {
+            /**
+             * Format: double
+             * @description Total volume in the window across every trader of this builder.
+             */
+            total_volume_usd: number;
+            /**
+             * Format: int64
+             * @description Total traders that routed through this builder in the window.
+             */
+            total_traders: number;
+            /**
+             * Format: double
+             * @description Volume routed by the single biggest trader.
+             */
+            top1_volume_usd: number;
+            /**
+             * Format: double
+             * @description Volume routed by the top-10 traders.
+             */
+            top10_volume_usd: number;
+            /**
+             * Format: double
+             * @description Volume routed by the top-100 traders.
+             */
+            top100_volume_usd: number;
+            /**
+             * Format: double
+             * @description Volume routed by the top-1k traders.
+             */
+            top1k_volume_usd: number;
+            /**
+             * Format: double
+             * @description Volume routed by the top-10k traders.
+             */
+            top10k_volume_usd: number;
+            /**
+             * Format: double
+             * @description Top-1 share — fraction of total volume held by the single biggest trader.
+             */
+            top1_share: number;
+            /**
+             * Format: double
+             * @description Top-10 share.
+             */
+            top10_share: number;
+            /**
+             * Format: double
+             * @description Top-100 share.
+             */
+            top100_share: number;
+            /**
+             * Format: double
+             * @description Top-1k share.
+             */
+            top1k_share: number;
+            /**
+             * Format: double
+             * @description Top-10k share.
+             */
+            top10k_share: number;
         };
         /** @description Response type for condition metrics query */
         ConditionMetricsResponse: {
@@ -1750,6 +2452,8 @@ export interface components {
         EventPnlSortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "total_fees" | "realized_pnl_pct";
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
+        /** @enum {string} */
+        GlobalChangeTimeframe: "1h" | "24h" | "7d" | "30d" | "1mo" | "1y";
         /**
          * @description Response body for `GET /polymarket/analytics/counts`.
          *     Cumulative analytics metrics plus entity-count enrichment.
@@ -1848,6 +2552,54 @@ export interface components {
              * @description Estimated total number of unique positions / traders.
              */
             positions: number;
+        };
+        GlobalPctChange: {
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /** Format: double */
+            unique_traders: number;
+            /** Format: double */
+            unique_makers: number;
+            /** Format: double */
+            unique_takers: number;
+            /** Format: double */
+            txn_count: number;
+            /** Format: double */
+            buy_count: number;
+            /** Format: double */
+            sell_count: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            builder_fees: number;
+            /** Format: double */
+            shares_volume: number;
+            /** Format: double */
+            yes_volume_usd: number;
+            /** Format: double */
+            no_volume_usd: number;
+            /** Format: double */
+            yes_count: number;
+            /** Format: double */
+            no_count: number;
+            /** Format: double */
+            buy_dist_under_10: number;
+            /** Format: double */
+            buy_dist_10_100: number;
+            /** Format: double */
+            buy_dist_100_1k: number;
+            /** Format: double */
+            buy_dist_1k_10k: number;
+            /** Format: double */
+            buy_dist_10k_50k: number;
+            /** Format: double */
+            buy_dist_50k_plus: number;
+            /** Format: double */
+            distinct_builders: number;
         };
         /** @enum {string} */
         GlobalPnlSortBy: "realized_pnl_usd" | "buys" | "sells" | "redemptions" | "merges" | "avg_hold_time" | "markets_traded" | "events_traded" | "markets_won" | "volume_usd" | "fees" | "best_trade";
@@ -3297,6 +4049,58 @@ export interface components {
             /** Format: int32 */
             ask_levels?: number | null;
         };
+        /** @description One builder's stats under a single tag. */
+        TagBuilderRow: {
+            builder_code: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int32 */
+            ts: number;
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /** Format: int64 */
+            unique_traders: number;
+            /** Format: int64 */
+            unique_makers: number;
+            /** Format: int64 */
+            unique_takers: number;
+            /** Format: int64 */
+            txn_count: number;
+            /** Format: int64 */
+            buy_count: number;
+            /** Format: int64 */
+            sell_count: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            builder_fees: number;
+            /** Format: double */
+            shares_volume: number;
+            /** Format: double */
+            yes_volume_usd: number;
+            /** Format: double */
+            no_volume_usd: number;
+            /** Format: int64 */
+            yes_count: number;
+            /** Format: int64 */
+            no_count: number;
+            /** Format: int64 */
+            buy_dist_under_10: number;
+            /** Format: int64 */
+            buy_dist_10_100: number;
+            /** Format: int64 */
+            buy_dist_100_1k: number;
+            /** Format: int64 */
+            buy_dist_1k_10k: number;
+            /** Format: int64 */
+            buy_dist_10k_50k: number;
+            /** Format: int64 */
+            buy_dist_50k_plus: number;
+        };
         /**
          * @description Metric to order by when `sort=<value>` is provided.
          *
@@ -3502,6 +4306,22 @@ export interface components {
             /** Format: int64 */
             last_trade_at?: number | null;
         };
+        TopTraderRow: {
+            trader: string;
+            /** Format: double */
+            volume_usd: number;
+            /** Format: int64 */
+            txn_count: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            builder_fees: number;
+        };
+        /**
+         * @description Sort key for the top-traders ranking.
+         * @enum {string}
+         */
+        TopTradersSortBy: "volume" | "txns" | "fees" | "builder_fees";
         /**
          * @description Tagged enum for all trade types — serializes with `"trade_type": "..."` discriminator
          *     and only includes fields relevant to each type.
@@ -3595,6 +4415,11 @@ export interface components {
             x_username?: string | null;
             verified_badge?: boolean;
         };
+        /**
+         * @description Sort metric for the trader → builders list.
+         * @enum {string}
+         */
+        TraderBuilderSortBy: "volume" | "txns" | "fees";
         /** @description Event-level PnL entry */
         TraderEventPnlEntry: {
             event_slug?: string | null;
@@ -4090,6 +4915,480 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    list_builders: {
+        parameters: {
+            query?: {
+                /** @description Metric to sort by. Default: volume. */
+                sort?: components["schemas"]["BuilderSortBy"];
+                /** @description Window to rank over. Default: lifetime. */
+                timeframe?: components["schemas"]["BuilderTimeframe"];
+                /** @description Max rows to return (default 50, max 500). */
+                limit?: number;
+                /** @description Number of rows to skip. Default 0. Takes precedence over `pagination_key`. */
+                offset?: number;
+                /** @description Opaque cursor from a previous response. Ignored when `offset` is set. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ranked list of builders */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderLatestRow"][];
+                };
+            };
+        };
+    };
+    get_builder_global: {
+        parameters: {
+            query?: {
+                /** @description Window: lifetime, 1d, 7d, 30d. Default: lifetime. */
+                timeframe?: components["schemas"]["BuilderTimeframe"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Global builder snapshot */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderGlobalLatestRow"];
+                };
+            };
+        };
+    };
+    get_builder_global_changes: {
+        parameters: {
+            query?: {
+                /** @description Lookback: 1h, 24h, 7d, 30d, 1mo, 1y. Default: 24h. */
+                timeframe?: components["schemas"]["GlobalChangeTimeframe"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-metric percentage change */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GlobalPctChange"];
+                };
+            };
+        };
+    };
+    get_builder_global_deltas: {
+        parameters: {
+            query?: {
+                /** @description Bucket size: 60, 240, D, W, M. Default: 60. */
+                resolution?: string;
+                /** @description Start ts. */
+                from?: number;
+                /** @description End ts. */
+                to?: number;
+                /** @description Max buckets (default 500, max 2500). */
+                count_back?: number;
+                /** @description Opaque cursor. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Global per-bucket deltas */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderTimeBucketRow"][];
+                };
+            };
+        };
+    };
+    get_builder_global_timeseries: {
+        parameters: {
+            query?: {
+                /** @description Bucket size: 60, 240, D, W, M. Default: 60. */
+                resolution?: string;
+                /** @description Start ts (Unix seconds). */
+                from?: number;
+                /** @description End ts (Unix seconds). */
+                to?: number;
+                /** @description Max buckets (default 500, max 2500). */
+                count_back?: number;
+                /** @description Opaque cursor. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Global cumulative bucket series */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderTimeBucketRow"][];
+                };
+            };
+        };
+    };
+    list_tag_builders: {
+        parameters: {
+            query?: {
+                /** @description Metric to sort by. Default: volume. */
+                sort?: components["schemas"]["BuilderSortBy"];
+                /** @description Window: lifetime, 1d, 7d, 30d. Default: lifetime. */
+                timeframe?: components["schemas"]["BuilderTimeframe"];
+                /** @description Max rows to return (default 50, max 500). */
+                limit?: number;
+                /** @description Skip count. */
+                offset?: number;
+                /** @description Opaque cursor. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Tag label (URL-encoded). */
+                tag: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-builder breakdown */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TagBuilderRow"][];
+                };
+            };
+        };
+    };
+    get_builder: {
+        parameters: {
+            query?: {
+                /** @description Window to report stats over. Default: lifetime. */
+                timeframe?: components["schemas"]["BuilderTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Builder code. */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Builder snapshot */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderLatestRow"];
+                };
+            };
+            /** @description Builder not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_builder_analytics_changes: {
+        parameters: {
+            query?: {
+                /** @description Lookback window (default: 24h). */
+                timeframe?: components["schemas"]["ChangeTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Builder identifier (0x-prefixed hex). */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-metric percentage change */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderPctChange"];
+                };
+            };
+        };
+    };
+    get_builder_analytics_deltas: {
+        parameters: {
+            query?: {
+                /** @description Bucket size. Default: 60 (hourly). */
+                resolution?: components["schemas"]["AnalyticsResolution"];
+                /** @description Start timestamp (unix seconds). */
+                from?: number;
+                /** @description End timestamp (unix seconds). */
+                to?: number;
+                /** @description Max data points to return (default 500, max 2500). */
+                count_back?: number;
+                /** @description Opaque cursor from a previous response. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Builder code. */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-bucket delta builder stats */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderTimeBucketRow"][];
+                };
+            };
+        };
+    };
+    get_builder_analytics_timeseries: {
+        parameters: {
+            query?: {
+                /** @description Bucket size. Default: 60 (hourly). */
+                resolution?: components["schemas"]["AnalyticsResolution"];
+                /** @description Start timestamp (unix seconds). Omit for all-time. */
+                from?: number;
+                /** @description End timestamp (unix seconds). */
+                to?: number;
+                /** @description Max data points to return (default 500, max 2500). */
+                count_back?: number;
+                /** @description Opaque cursor from a previous response. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Builder code. */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Cumulative time-bucketed builder stats */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderTimeBucketRow"][];
+                };
+            };
+        };
+    };
+    get_builder_concentration: {
+        parameters: {
+            query?: {
+                /** @description Window: lifetime, 1d (24h), 7d, 30d (1mo). Default: 1d */
+                timeframe?: components["schemas"]["BuilderTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Builder code. */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Concentration metrics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConcentrationResponse"];
+                };
+            };
+        };
+    };
+    get_builder_fees: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Builder code. */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Builder fee rates */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderFeeRate"];
+                };
+            };
+            /** @description Builder code not registered */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_builder_fees_history: {
+        parameters: {
+            query?: {
+                /** @description Max entries (default 100, max 1000) */
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Builder code. */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Builder fee rate history */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderFeeRateHistoryEntry"][];
+                };
+            };
+        };
+    };
+    get_builder_retention: {
+        parameters: {
+            query?: {
+                /** @description Inclusive start of cohort window (Unix seconds). Default: now - 30 days. */
+                from?: number;
+                /** @description Inclusive end of cohort window (Unix seconds). Default: now - 1 day. Cohorts within this range have at least one full day for D1 retention; older cohorts are required for D7/D30. */
+                to?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Builder code. */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-cohort-day retention metrics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CohortRetentionRow"][];
+                };
+            };
+        };
+    };
+    list_builder_tags: {
+        parameters: {
+            query?: {
+                /** @description Metric to sort by. Default: volume. */
+                sort?: components["schemas"]["BuilderSortBy"];
+                /** @description Window: lifetime, 1d, 7d, 30d. Default: lifetime. */
+                timeframe?: components["schemas"]["BuilderTimeframe"];
+                /** @description Max rows to return (default 50, max 500). */
+                limit?: number;
+                /** @description Skip count. */
+                offset?: number;
+                /** @description Opaque cursor. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Builder code. */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-tag breakdown */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderTagRow"][];
+                };
+            };
+        };
+    };
+    get_builder_top_traders: {
+        parameters: {
+            query?: {
+                /** @description Window: lifetime, 1d (24h), 7d, 30d (1mo). Default: 1d */
+                timeframe?: components["schemas"]["BuilderTimeframe"];
+                /** @description Ranking key: volume (default), txns, fees, builder_fees */
+                sort_by?: components["schemas"]["TopTradersSortBy"];
+                /** @description Number of traders to return (default 10, max 250) */
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Builder code. */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Top traders for this builder */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopTraderRow"][];
+                };
             };
         };
     };
