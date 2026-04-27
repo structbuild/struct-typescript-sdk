@@ -366,6 +366,8 @@ export interface components {
         /** @description Event volume spike webhook payload */
         EventVolumeSpikePayload: {
             event_slug: string;
+            event_title?: string | null;
+            image_url?: string | null;
             timeframe: string;
             /**
              * Format: double
@@ -588,6 +590,10 @@ export interface components {
         /** @description Market volume spike webhook payload */
         MarketVolumeSpikePayload: {
             condition_id: string;
+            question?: string | null;
+            market_slug?: string | null;
+            event_slug?: string | null;
+            image_url?: string | null;
             timeframe: string;
             /**
              * Format: double
@@ -1127,6 +1133,10 @@ export interface components {
         PositionVolumeSpikePayload: {
             position_id: string;
             condition_id: string;
+            question?: string | null;
+            market_slug?: string | null;
+            event_slug?: string | null;
+            image_url?: string | null;
             outcome?: string | null;
             /** Format: int32 */
             outcome_index?: number | null;
@@ -1166,7 +1176,10 @@ export interface components {
         PriceSpikePayload: {
             position_id: string;
             condition_id?: string | null;
+            question?: string | null;
+            market_slug?: string | null;
             event_slug?: string | null;
+            image_url?: string | null;
             outcome?: string | null;
             /** Format: int32 */
             outcome_index?: number | null;
@@ -1192,7 +1205,10 @@ export interface components {
         ProbabilitySpikePayload: {
             position_id: string;
             condition_id?: string | null;
+            question?: string | null;
+            market_slug?: string | null;
             event_slug?: string | null;
+            image_url?: string | null;
             outcome?: string | null;
             /** Format: int32 */
             outcome_index?: number | null;

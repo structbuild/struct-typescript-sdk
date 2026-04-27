@@ -3641,7 +3641,10 @@ export interface components {
          *       "data": {
          *         "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
          *         "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "question": "Will this test webhook fire correctly?",
+         *         "market_slug": "test-market-0000000000",
          *         "event_slug": "test-event-0000000000",
+         *         "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/test.png",
          *         "outcome": "Yes",
          *         "outcome_index": 0,
          *         "previous_probability": 0.4,
@@ -3696,7 +3699,10 @@ export interface components {
          *       "data": {
          *         "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
          *         "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "question": "Will this test webhook fire correctly?",
+         *         "market_slug": "test-market-0000000000",
          *         "event_slug": "test-event-0000000000",
+         *         "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/test.png",
          *         "outcome": "Yes",
          *         "outcome_index": 0,
          *         "previous_price": 0.4,
@@ -3750,6 +3756,10 @@ export interface components {
          *       "timestamp": 1743500000000,
          *       "data": {
          *         "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "question": "Will this test webhook fire correctly?",
+         *         "market_slug": "test-market-0000000000",
+         *         "event_slug": "test-event-0000000000",
+         *         "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/test.png",
          *         "timeframe": "1h",
          *         "current_volume_usd": 32000,
          *         "snapshot_volume_usd": 10000,
@@ -3804,6 +3814,8 @@ export interface components {
          *       "timestamp": 1743500000000,
          *       "data": {
          *         "event_slug": "test-event-0000000000",
+         *         "event_title": "Test Event",
+         *         "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/test.png",
          *         "timeframe": "1h",
          *         "current_volume_usd": 140000,
          *         "snapshot_volume_usd": 50000,
@@ -3859,6 +3871,10 @@ export interface components {
          *       "data": {
          *         "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
          *         "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "question": "Will this test webhook fire correctly?",
+         *         "market_slug": "test-market-0000000000",
+         *         "event_slug": "test-event-0000000000",
+         *         "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/test.png",
          *         "outcome": "Yes",
          *         "outcome_index": 0,
          *         "timeframe": "1h",

@@ -12,7 +12,7 @@ import type {
 	BuilderFeeRate,
 	BuilderFeeRateHistoryEntry,
 	CohortRetentionRow,
-	CompositionEntry,
+	CompositionBucketRow,
 	ConcentrationResponse,
 	GlobalBuilderTagRow,
 	TopTraderRow,
@@ -41,8 +41,8 @@ export class BuildersNamespace extends Namespace {
 		return this.get<BuilderLatestRow[]>(venue, "/builders", { params: { ...params } });
 	}
 
-	async getComposition(params?: GetBuilderCompositionParams, venue?: Venue): Promise<HttpResponse<CompositionEntry[]>> {
-		return this.get<CompositionEntry[]>(venue, "/builders/composition", { params: { ...params } });
+	async getComposition(params?: GetBuilderCompositionParams, venue?: Venue): Promise<HttpResponse<CompositionBucketRow[]>> {
+		return this.get<CompositionBucketRow[]>(venue, "/builders/composition", { params: { ...params } });
 	}
 
 	async getBuilder(params: GetBuilderParams, venue?: Venue): Promise<HttpResponse<BuilderLatestRow>> {

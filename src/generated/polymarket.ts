@@ -132,8 +132,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Top-N builders + 'other' aggregate composition
-         * @description Returns the top N builders by the chosen metric plus a synthetic `other` row aggregating every remaining builder. Designed for stacked / pie charts where rendering all builders individually is overkill. `series=cumulative` returns end-of-window totals; `series=delta` returns the in-window change.
+         * Bucketed top-N + 'other' builder composition
+         * @description Bucketed timeseries for stacked-bar / area charts. For each bucket in the range, returns up to `top_n + 1` rows: one per top-N builder plus an `other` aggregate. Top-N is fixed across the whole window so chart legends stay stable.
          */
         get: operations["get_builder_composition"];
         put?: never;
@@ -2317,76 +2317,78 @@ export interface components {
             };
         };
         /**
-         * @description One row of the composition response. `builder_code` is either a real hex
-         *     address (for top-N entries) or the literal string `"other"` for the
-         *     aggregated remainder.
+         * @description One bucket × builder slot. `code` is a real hex address for top-N rows
+         *     or the literal `"other"` for the per-bucket aggregate of every remaining
+         *     builder. Field names are short for compact JSON (chart-data convention).
          */
-        CompositionEntry: {
-            builder_code: string;
+        CompositionBucketRow: {
             /**
              * Format: int32
-             * @description 1-indexed rank within the response. The `other` row is always last
-             *     with rank `top_n + 1`.
+             * @description Bucket start (unix seconds).
              */
-            rank: number;
-            /** Format: double */
-            volume_usd: number;
-            /** Format: double */
-            buy_volume_usd: number;
-            /** Format: double */
-            sell_volume_usd: number;
+            t: number;
+            /** @description Builder hex code or `"other"`. */
+            code: string;
             /**
-             * Format: int64
-             * @description Window-distinct trader count. For the `other` row this is summed
-             *     across the remainder builders, so a trader active under multiple
-             *     builders is counted in each — upper bound, not exact.
+             * Format: int32
+             * @description Global rank assigned over the full window. `1..=top_n` for real
+             *     builders, `top_n + 1` for the `other` row. Stable across buckets so
+             *     chart legends don't reorder.
              */
-            unique_traders: number;
-            /** Format: int64 */
-            unique_makers: number;
-            /** Format: int64 */
-            unique_takers: number;
-            /** Format: int64 */
-            txn_count: number;
-            /** Format: int64 */
-            buy_count: number;
-            /** Format: int64 */
-            sell_count: number;
+            r: number;
             /** Format: double */
-            fees_usd: number;
+            v: number;
             /** Format: double */
-            builder_fees: number;
+            bv: number;
             /** Format: double */
-            shares_volume: number;
+            sv: number;
+            /** Format: int64 */
+            ut: number;
+            /** Format: int64 */
+            um: number;
+            /** Format: int64 */
+            uk: number;
+            /** Format: int64 */
+            tc: number;
+            /** Format: int64 */
+            bc: number;
+            /** Format: int64 */
+            sc: number;
             /** Format: double */
-            yes_volume_usd: number;
+            f: number;
             /** Format: double */
-            no_volume_usd: number;
-            /** Format: int64 */
-            yes_count: number;
-            /** Format: int64 */
-            no_count: number;
-            /** Format: int64 */
-            buy_dist_under_10: number;
-            /** Format: int64 */
-            buy_dist_10_100: number;
-            /** Format: int64 */
-            buy_dist_100_1k: number;
-            /** Format: int64 */
-            buy_dist_1k_10k: number;
-            /** Format: int64 */
-            buy_dist_10k_50k: number;
-            /** Format: int64 */
-            buy_dist_50k_plus: number;
-            /** Format: int64 */
-            new_users: number;
+            bf: number;
             /** Format: double */
-            avg_rev_per_user: number;
+            sh: number;
             /** Format: double */
-            avg_vol_per_user: number;
+            yv: number;
+            /** Format: double */
+            nv: number;
+            /** Format: int64 */
+            yc: number;
+            /** Format: int64 */
+            nc: number;
+            /** Format: int64 */
+            bd_u10: number;
+            /** Format: int64 */
+            bd_100: number;
+            /** Format: int64 */
+            bd_1k: number;
+            /** Format: int64 */
+            bd_10k: number;
+            /** Format: int64 */
+            bd_50k: number;
+            /** Format: int64 */
+            bd_50p: number;
+            /** Format: int64 */
+            nu: number;
+            /** Format: double */
+            ar: number;
+            /** Format: double */
+            av: number;
         };
         /**
-         * @description Series mode — cumulative end-of-window snapshot or in-window delta.
+         * @description Series mode — cumulative end-of-bucket snapshot or in-bucket delta.
          * @enum {string}
          */
         CompositionSeries: "cumulative" | "delta";
@@ -5219,13 +5221,19 @@ export interface operations {
     get_builder_composition: {
         parameters: {
             query?: {
-                /** @description Ranking metric. Default: volume. */
+                /** @description Ranking metric used to pick the top-N. Default: volume. */
                 metric?: components["schemas"]["BuilderSortBy"];
-                /** @description Window: lifetime, 1d, 24h, 7d, 30d, 1mo. Default: lifetime. */
-                timeframe?: components["schemas"]["BuilderTimeframe"];
-                /** @description Number of top builders to return individually (clamped 1..50). Default: 10. */
+                /** @description Bucket size: 60 (hourly), 240 (4-hour), D, W, M. Default: 60. */
+                resolution?: string;
+                /** @description Inclusive start ts (unix seconds). */
+                from?: number;
+                /** @description Inclusive end ts (unix seconds). */
+                to?: number;
+                /** @description Max buckets returned (default 500, max 2500). Limits the COUNT of bucket rows; the response always carries top_n+1 entries per bucket. */
+                count_back?: number;
+                /** @description Number of top builders broken out individually (clamped 1..50). Default: 10. */
                 top_n?: number;
-                /** @description cumulative (end-of-window snapshot) or delta (in-window change). Default: cumulative. At timeframe=lifetime, delta == cumulative. */
+                /** @description cumulative (end-of-bucket snapshot) or delta (in-bucket change). Default: cumulative. */
                 series?: components["schemas"]["CompositionSeries"];
             };
             header?: never;
@@ -5234,13 +5242,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Top-N builders + 'other' aggregate */
+            /** @description Bucketed composition rows */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CompositionEntry"][];
+                    "application/json": components["schemas"]["CompositionBucketRow"][];
                 };
             };
         };

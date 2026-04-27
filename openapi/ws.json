@@ -4682,6 +4682,18 @@
           "event_slug": {
             "type": "string"
           },
+          "event_title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "timeframe": {
             "type": "string"
           },
@@ -5304,6 +5316,30 @@
         "properties": {
           "condition_id": {
             "type": "string"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "timeframe": {
             "type": "string"
@@ -6631,6 +6667,30 @@
           "condition_id": {
             "type": "string"
           },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "outcome": {
             "type": [
               "string",
@@ -6699,7 +6759,25 @@
               "null"
             ]
           },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
             "type": [
               "string",
               "null"
@@ -6759,7 +6837,25 @@
               "null"
             ]
           },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "image_url": {
             "type": [
               "string",
               "null"
