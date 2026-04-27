@@ -115,11 +115,14 @@ export class HttpClient {
 			}
 
 			if (!response.ok) {
-				let body: unknown;
-				try {
-					body = await response.json();
-				} catch {
-					body = await response.text();
+				const text = await response.text();
+				let body: unknown = text;
+				if (text.length > 0) {
+					try {
+						body = JSON.parse(text);
+					} catch {}
+				} else {
+					body = null;
 				}
 				throw new HttpError(response.status, response.statusText, body, response.headers);
 			}

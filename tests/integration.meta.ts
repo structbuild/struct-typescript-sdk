@@ -1,6 +1,7 @@
 export interface MethodConfig {
 	skip?: boolean;
 	params?: Record<string, unknown>;
+	noArgs?: boolean;
 	operationId?: string;
 	paginate?: boolean;
 	paginateParams?: Record<string, unknown>;
@@ -67,6 +68,14 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { condition_id: "$conditionId" },
 		operationId: "get_price_jumps",
 	},
+	"markets.getMarketTopTraders": {
+		params: { condition_id: "$conditionId", limit: 2 },
+		operationId: "get_market_top_traders",
+	},
+	"markets.getPositionTopTraders": {
+		params: { position_id: "$positionId", limit: 2 },
+		operationId: "get_position_top_traders",
+	},
 
 	"events.getEvents": {
 		params: { limit: 2 },
@@ -85,6 +94,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 	"events.getEventOutcomes": {
 		params: { event_slug: "$eventSlug", limit: 2 },
 		operationId: "get_event_outcomes",
+	},
+	"events.getEventTopTraders": {
+		params: { event_slug: "$eventSlug", limit: 2 },
+		operationId: "get_event_top_traders",
 	},
 
 	"holders.getMarketHolders": {
@@ -219,6 +232,7 @@ export const methodMeta: Record<string, MethodConfig> = {
 	"analytics.getCounts": {
 		operationId: "get_analytics_counts",
 		shape: "object",
+		noArgs: true,
 	},
 	"analytics.getDeltas": {
 		operationId: "get_global_analytics_deltas",
@@ -350,10 +364,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "get_builder_global_timeseries",
 	},
 	"builders.getTagBuilders": {
-		params: { tag: "$tagId", limit: 2 },
+		params: { tag: "$builderTagId", limit: 2 },
 		operationId: "list_tag_builders",
 		paginate: true,
-		paginateParams: { tag: "$tagId" },
+		paginateParams: { tag: "$builderTagId" },
 	},
 
 	"webhooks.list": {

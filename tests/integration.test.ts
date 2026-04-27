@@ -11,6 +11,22 @@ const RUN_INTEGRATION_TESTS = Bun.env.STRUCT_RUN_INTEGRATION_TESTS === "1";
 const REPORT_PATH = "logs/integration-report.md";
 const TEST_TIMEOUT_MS = 30_000;
 
+function resolveBaseUrl(): { env: "production" | "staging"; baseUrl: string } {
+	const explicit = (Bun.env.STRUCT_ENV ?? "").toLowerCase();
+	if (explicit === "staging") return { env: "staging", baseUrl: "https://staging-api.struct.to/v1" };
+	if (explicit === "production") return { env: "production", baseUrl: "https://api.struct.to/v1" };
+
+	try {
+		const sourcePath = join(import.meta.dir, "..", "openapi", ".spec-source.json");
+		const source = JSON.parse(readFileSync(sourcePath, "utf-8")) as { env?: string };
+		if (source.env === "staging") return { env: "staging", baseUrl: "https://staging-api.struct.to/v1" };
+	} catch {}
+
+	return { env: "production", baseUrl: "https://api.struct.to/v1" };
+}
+
+const { env: TEST_ENV, baseUrl: BASE_URL } = resolveBaseUrl();
+
 type OpenAPISpec = {
 	paths: Record<string, Record<string, { operationId?: string; responses?: Record<string, { content?: Record<string, { schema?: Record<string, unknown> }> }> }>>;
 	components: { schemas: Record<string, Record<string, unknown>> };
@@ -217,7 +233,8 @@ function writeReport() {
 
 	let md = `# Integration Test Report\n\n`;
 	md += `**Date:** ${new Date().toISOString()}\n`;
-	md += `**Base URL:** https://api.struct.to/v1\n`;
+	md += `**Environment:** ${TEST_ENV}\n`;
+	md += `**Base URL:** ${BASE_URL}\n`;
 	md += `**Total:** ${results.length} | **Pass:** ${passes.length} | **Fail:** ${failures.length}\n\n`;
 
 	if (failures.length > 0) {
@@ -250,7 +267,7 @@ function writeReport() {
 
 	for (const r of results) {
 		const icon = r.status === "pass" ? "PASS" : "FAIL";
-		const path = r.url.replace("https://api.struct.to/v1", "");
+		const path = r.url.replace(BASE_URL, "");
 		const shortPath = path.length > 60 ? path.slice(0, 57) + "..." : path;
 		md += `| ${icon} | ${r.namespace} | ${r.method} | \`${r.httpMethod} ${shortPath}\` | ${r.httpStatus ?? "-"} | ${Math.round(r.durationMs)}ms | ${r.openApiSchema} |\n`;
 	}
@@ -359,6 +376,7 @@ const EXCLUDED_METHODS = new Set(["constructor", "get", "post", "put", "delete"]
 describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 	const client = new StructClient({
 		apiKey: API_KEY,
+		baseUrl: BASE_URL,
 		onRequest: (info) => {
 			lastRequest = { method: info.method, url: info.url };
 		},
@@ -401,7 +419,14 @@ describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 		setupData.address = trader.trader!.address;
 
 		const builder = buildersRes?.data[0];
-		if (builder) setupData.builderCode = builder.builder_code;
+		if (builder) {
+			setupData.builderCode = builder.builder_code;
+			const builderTagsRes = await client.builders
+				.getBuilderTags({ builder_code: builder.builder_code, limit: 1 })
+				.catch(() => null);
+			const builderTag = builderTagsRes?.data[0];
+			if (builderTag) setupData.builderTagId = builderTag.tag;
+		}
 	});
 
 	afterAll(() => {
@@ -437,8 +462,9 @@ describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 					const shapeLabel = `${shape}${requiredKeys ? ` with keys [${requiredKeys.join(", ")}]` : ""}`;
 
 					try {
-						const params = resolveParams(meta?.params ?? { limit: 1 }, setupData);
-						const res = await instance[method](params);
+						const res = meta?.noArgs
+							? await instance[method]()
+							: await instance[method](resolveParams(meta?.params ?? { limit: 1 }, setupData));
 						assertShape(ns, method, res, shape, openApiSchema, requiredKeys);
 					} catch (err) {
 						handleHttpError(ns, method, shapeLabel, openApiSchema, err);
@@ -446,7 +472,7 @@ describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 				}, TEST_TIMEOUT_MS);
 
 				if (meta?.paginate) {
-					test(`${method} (paginate)`, { timeout: TEST_TIMEOUT_MS }, async () => {
+					test(`${method} (paginate)`, async () => {
 						const paginateMethod = `${method} (paginate)`;
 						const { formatted: openApiSchema } = getExpectedSchema(meta);
 
@@ -482,7 +508,7 @@ describe.skipIf(!API_KEY || !RUN_INTEGRATION_TESTS)("integration", () => {
 						} catch (err) {
 							handleHttpError(ns, paginateMethod, "paginate", openApiSchema, err);
 						}
-					});
+					}, TEST_TIMEOUT_MS);
 				}
 			}
 		});

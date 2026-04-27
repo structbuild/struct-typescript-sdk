@@ -1896,6 +1896,23 @@ export interface components {
              * @description Distinct builder codes ever observed.
              */
             distinct_builders: number;
+            /**
+             * Format: int64
+             * @description Onboarding metric — traders whose *first ever* builder-attributed
+             *     trade occurred within the chosen window. Each trader contributes at
+             *     most once globally.
+             */
+            new_users: number;
+            /**
+             * Format: double
+             * @description Average revenue per user — `builder_fees / unique_traders`.
+             */
+            avg_rev_per_user: number;
+            /**
+             * Format: double
+             * @description Average volume per user — `volume_usd / unique_traders`.
+             */
+            avg_vol_per_user: number;
         };
         /** @description Cumulative stats for a single builder. */
         BuilderLatestRow: {
@@ -1948,6 +1965,31 @@ export interface components {
             buy_dist_10k_50k: number;
             /** Format: int64 */
             buy_dist_50k_plus: number;
+            /** Format: int64 */
+            new_users: number;
+            /**
+             * Format: double
+             * @description Average revenue per user — `builder_fees / unique_traders`.
+             */
+            avg_rev_per_user: number;
+            /**
+             * Format: double
+             * @description Average volume per user — `volume_usd / unique_traders`.
+             */
+            avg_vol_per_user: number;
+            /**
+             * Format: int32
+             * @description Builder's maker fee rate in basis points. Latest known value at the
+             *     end of the window — same value across all timeframes since it's a
+             *     static property of the builder, not an aggregate.
+             */
+            builder_maker_fee_rate_bps: number;
+            /**
+             * Format: int32
+             * @description Builder's taker fee rate in basis points. Same scoping as
+             *     `builder_maker_fee_rate_bps`.
+             */
+            builder_taker_fee_rate_bps: number;
         };
         /** @description Per-metric percentage change for a builder over the requested lookback window. */
         BuilderPctChange: {
@@ -1995,12 +2037,18 @@ export interface components {
             buy_dist_10k_50k: number;
             /** Format: double */
             buy_dist_50k_plus: number;
+            /** Format: double */
+            new_users: number;
+            /** Format: double */
+            avg_rev_per_user: number;
+            /** Format: double */
+            avg_vol_per_user: number;
         };
         /**
          * @description Sort metric for the builders list endpoint.
          * @enum {string}
          */
-        BuilderSortBy: "volume" | "txns" | "traders" | "fees" | "builder_fees";
+        BuilderSortBy: "volume" | "txns" | "traders" | "fees" | "builder_fees" | "new_users" | "avg_rev_per_user" | "avg_vol_per_user" | "builder_maker_fee_rate_bps" | "builder_taker_fee_rate_bps";
         /** @description One tag's stats under a single builder. */
         BuilderTagRow: {
             tag: string;
@@ -2052,6 +2100,12 @@ export interface components {
             buy_dist_10k_50k: number;
             /** Format: int64 */
             buy_dist_50k_plus: number;
+            /** Format: int64 */
+            new_users: number;
+            /** Format: double */
+            avg_rev_per_user: number;
+            /** Format: double */
+            avg_vol_per_user: number;
         };
         /**
          * @description One time bucket of builder activity. In `timeseries` responses fields are
@@ -2117,6 +2171,26 @@ export interface components {
             bd_50k: number;
             /** Format: int64 */
             bd_50p: number;
+            /**
+             * Format: int64
+             * @description Onboarding metric — traders whose *first ever* builder-attributed trade
+             *     touched this builder/grain. Cumulative on `timeseries`, delta on
+             *     `deltas`. Each trader contributes at most once globally (any builder).
+             */
+            nu: number;
+            /**
+             * Format: double
+             * @description Average revenue per user — `builder_fees / unique_traders`. Zero when
+             *     the bucket has no traders. Cumulative on `timeseries`, in-window on
+             *     `deltas`.
+             */
+            ar: number;
+            /**
+             * Format: double
+             * @description Average volume per user — `volume_usd / unique_traders`. Same scoping
+             *     as `avg_rev_per_user` (cumulative on `timeseries`, in-window on `deltas`).
+             */
+            av: number;
         };
         /**
          * @description Time window for cumulative builder stats.
@@ -2600,6 +2674,12 @@ export interface components {
             buy_dist_50k_plus: number;
             /** Format: double */
             distinct_builders: number;
+            /** Format: double */
+            new_users: number;
+            /** Format: double */
+            avg_rev_per_user: number;
+            /** Format: double */
+            avg_vol_per_user: number;
         };
         /** @enum {string} */
         GlobalPnlSortBy: "realized_pnl_usd" | "buys" | "sells" | "redemptions" | "merges" | "avg_hold_time" | "markets_traded" | "events_traded" | "markets_won" | "volume_usd" | "fees" | "best_trade";
@@ -4100,6 +4180,12 @@ export interface components {
             buy_dist_10k_50k: number;
             /** Format: int64 */
             buy_dist_50k_plus: number;
+            /** Format: int64 */
+            new_users: number;
+            /** Format: double */
+            avg_rev_per_user: number;
+            /** Format: double */
+            avg_vol_per_user: number;
         };
         /**
          * @description Metric to order by when `sort=<value>` is provided.
@@ -4952,7 +5038,7 @@ export interface operations {
     get_builder_global: {
         parameters: {
             query?: {
-                /** @description Window: lifetime, 1d, 7d, 30d. Default: lifetime. */
+                /** @description Window: lifetime, 1d, 24h, 7d, 30d, 1mo. Default: lifetime. */
                 timeframe?: components["schemas"]["BuilderTimeframe"];
             };
             header?: never;
@@ -5062,7 +5148,7 @@ export interface operations {
             query?: {
                 /** @description Metric to sort by. Default: volume. */
                 sort?: components["schemas"]["BuilderSortBy"];
-                /** @description Window: lifetime, 1d, 7d, 30d. Default: lifetime. */
+                /** @description Window: lifetime, 1d, 24h, 7d, 30d, 1mo. Default: lifetime. */
                 timeframe?: components["schemas"]["BuilderTimeframe"];
                 /** @description Max rows to return (default 50, max 500). */
                 limit?: number;
@@ -5333,7 +5419,7 @@ export interface operations {
             query?: {
                 /** @description Metric to sort by. Default: volume. */
                 sort?: components["schemas"]["BuilderSortBy"];
-                /** @description Window: lifetime, 1d, 7d, 30d. Default: lifetime. */
+                /** @description Window: lifetime, 1d, 24h, 7d, 30d, 1mo. Default: lifetime. */
                 timeframe?: components["schemas"]["BuilderTimeframe"];
                 /** @description Max rows to return (default 50, max 500). */
                 limit?: number;
