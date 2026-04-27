@@ -12,9 +12,13 @@ import type {
 	BuilderFeeRate,
 	BuilderFeeRateHistoryEntry,
 	CohortRetentionRow,
+	CompositionEntry,
 	ConcentrationResponse,
+	GlobalBuilderTagRow,
 	TopTraderRow,
 	GetBuildersParams,
+	GetBuilderCompositionParams,
+	GetGlobalBuilderTagsParams,
 	GetBuilderParams,
 	GetBuilderAnalyticsChangesParams,
 	GetBuilderAnalyticsDeltasParams,
@@ -35,6 +39,10 @@ import type {
 export class BuildersNamespace extends Namespace {
 	async getBuilders(params?: GetBuildersParams, venue?: Venue): Promise<HttpResponse<BuilderLatestRow[]>> {
 		return this.get<BuilderLatestRow[]>(venue, "/builders", { params: { ...params } });
+	}
+
+	async getComposition(params?: GetBuilderCompositionParams, venue?: Venue): Promise<HttpResponse<CompositionEntry[]>> {
+		return this.get<CompositionEntry[]>(venue, "/builders/composition", { params: { ...params } });
 	}
 
 	async getBuilder(params: GetBuilderParams, venue?: Venue): Promise<HttpResponse<BuilderLatestRow>> {
@@ -100,6 +108,10 @@ export class BuildersNamespace extends Namespace {
 
 	async getGlobalTimeseries(params?: GetBuilderGlobalTimeseriesParams, venue?: Venue): Promise<HttpResponse<BuilderTimeBucketRow[]>> {
 		return this.get<BuilderTimeBucketRow[]>(venue, "/builders/global/analytics/timeseries", { params: { ...params } });
+	}
+
+	async getGlobalTags(params?: GetGlobalBuilderTagsParams, venue?: Venue): Promise<HttpResponse<GlobalBuilderTagRow[]>> {
+		return this.get<GlobalBuilderTagRow[]>(venue, "/builders/global/tags", { params: { ...params } });
 	}
 
 	async getTagBuilders(params: GetTagBuildersParams, venue?: Venue): Promise<HttpResponse<TagBuilderRow[]>> {

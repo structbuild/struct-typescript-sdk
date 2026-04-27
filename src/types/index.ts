@@ -40,7 +40,10 @@ export type BuilderTagRow = Schemas["BuilderTagRow"];
 export type BuilderTimeBucketRow = Schemas["BuilderTimeBucketRow"];
 export type BuilderTimeframe = Schemas["BuilderTimeframe"];
 export type CohortRetentionRow = Schemas["CohortRetentionRow"];
+export type CompositionEntry = Schemas["CompositionEntry"];
+export type CompositionSeries = Schemas["CompositionSeries"];
 export type ConcentrationResponse = Schemas["ConcentrationResponse"];
+export type GlobalBuilderTagRow = Schemas["GlobalBuilderTagRow"];
 export type GlobalChangeTimeframe = Schemas["GlobalChangeTimeframe"];
 export type GlobalPctChange = Schemas["GlobalPctChange"];
 export type TagBuilderRow = Schemas["TagBuilderRow"];
@@ -460,6 +463,10 @@ export interface GetTraderAnalyticsTimeseriesParams extends OperationQuery<"get_
 }
 
 export interface GetBuildersParams extends OperationQuery<"list_builders"> {}
+
+export interface GetBuilderCompositionParams extends OperationQuery<"get_builder_composition"> {}
+
+export interface GetGlobalBuilderTagsParams extends OperationQuery<"list_global_builder_tags"> {}
 
 export interface GetBuilderParams extends OperationQuery<"get_builder"> {
 	builder_code: string;

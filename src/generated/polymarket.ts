@@ -124,6 +124,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/builders/composition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Top-N builders + 'other' aggregate composition
+         * @description Returns the top N builders by the chosen metric plus a synthetic `other` row aggregating every remaining builder. Designed for stacked / pie charts where rendering all builders individually is overkill. `series=cumulative` returns end-of-window totals; `series=delta` returns the in-window change.
+         */
+        get: operations["get_builder_composition"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/builders/global": {
         parameters: {
             query?: never;
@@ -187,6 +207,26 @@ export interface paths {
         };
         /** Cumulative bucket timeseries across all builders */
         get: operations["get_builder_global_timeseries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/global/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All tags with builder-attributed activity
+         * @description Returns every tag that has builder-routed activity, with metrics aggregated across all builders. `distinct_builders` is exact; other `unique_*` columns sum per-builder uniques and may slightly over-count traders active under multiple builders.
+         */
+        get: operations["list_global_builder_tags"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2276,6 +2316,80 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /**
+         * @description One row of the composition response. `builder_code` is either a real hex
+         *     address (for top-N entries) or the literal string `"other"` for the
+         *     aggregated remainder.
+         */
+        CompositionEntry: {
+            builder_code: string;
+            /**
+             * Format: int32
+             * @description 1-indexed rank within the response. The `other` row is always last
+             *     with rank `top_n + 1`.
+             */
+            rank: number;
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /**
+             * Format: int64
+             * @description Window-distinct trader count. For the `other` row this is summed
+             *     across the remainder builders, so a trader active under multiple
+             *     builders is counted in each — upper bound, not exact.
+             */
+            unique_traders: number;
+            /** Format: int64 */
+            unique_makers: number;
+            /** Format: int64 */
+            unique_takers: number;
+            /** Format: int64 */
+            txn_count: number;
+            /** Format: int64 */
+            buy_count: number;
+            /** Format: int64 */
+            sell_count: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            builder_fees: number;
+            /** Format: double */
+            shares_volume: number;
+            /** Format: double */
+            yes_volume_usd: number;
+            /** Format: double */
+            no_volume_usd: number;
+            /** Format: int64 */
+            yes_count: number;
+            /** Format: int64 */
+            no_count: number;
+            /** Format: int64 */
+            buy_dist_under_10: number;
+            /** Format: int64 */
+            buy_dist_10_100: number;
+            /** Format: int64 */
+            buy_dist_100_1k: number;
+            /** Format: int64 */
+            buy_dist_1k_10k: number;
+            /** Format: int64 */
+            buy_dist_10k_50k: number;
+            /** Format: int64 */
+            buy_dist_50k_plus: number;
+            /** Format: int64 */
+            new_users: number;
+            /** Format: double */
+            avg_rev_per_user: number;
+            /** Format: double */
+            avg_vol_per_user: number;
+        };
+        /**
+         * @description Series mode — cumulative end-of-window snapshot or in-window delta.
+         * @enum {string}
+         */
+        CompositionSeries: "cumulative" | "delta";
         ConcentrationResponse: {
             /**
              * Format: double
@@ -2526,6 +2640,73 @@ export interface components {
         EventPnlSortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "total_fees" | "realized_pnl_pct";
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
+        /**
+         * @description One tag's stats aggregated across every builder routing activity into it.
+         *
+         *     `distinct_builders` is the exact count of builders active in the tag.
+         *     `unique_traders` / `unique_makers` / `unique_takers` are summed per builder,
+         *     so a trader active under multiple builders is counted in each — these are
+         *     upper bounds rather than true window-distinct counts.
+         */
+        GlobalBuilderTagRow: {
+            tag: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int32 */
+            ts: number;
+            /** Format: int64 */
+            distinct_builders: number;
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /** Format: int64 */
+            unique_traders: number;
+            /** Format: int64 */
+            unique_makers: number;
+            /** Format: int64 */
+            unique_takers: number;
+            /** Format: int64 */
+            txn_count: number;
+            /** Format: int64 */
+            buy_count: number;
+            /** Format: int64 */
+            sell_count: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            builder_fees: number;
+            /** Format: double */
+            shares_volume: number;
+            /** Format: double */
+            yes_volume_usd: number;
+            /** Format: double */
+            no_volume_usd: number;
+            /** Format: int64 */
+            yes_count: number;
+            /** Format: int64 */
+            no_count: number;
+            /** Format: int64 */
+            buy_dist_under_10: number;
+            /** Format: int64 */
+            buy_dist_10_100: number;
+            /** Format: int64 */
+            buy_dist_100_1k: number;
+            /** Format: int64 */
+            buy_dist_1k_10k: number;
+            /** Format: int64 */
+            buy_dist_10k_50k: number;
+            /** Format: int64 */
+            buy_dist_50k_plus: number;
+            /** Format: int64 */
+            new_users: number;
+            /** Format: double */
+            avg_rev_per_user: number;
+            /** Format: double */
+            avg_vol_per_user: number;
+        };
         /** @enum {string} */
         GlobalChangeTimeframe: "1h" | "24h" | "7d" | "30d" | "1mo" | "1y";
         /**
@@ -5035,6 +5216,35 @@ export interface operations {
             };
         };
     };
+    get_builder_composition: {
+        parameters: {
+            query?: {
+                /** @description Ranking metric. Default: volume. */
+                metric?: components["schemas"]["BuilderSortBy"];
+                /** @description Window: lifetime, 1d, 24h, 7d, 30d, 1mo. Default: lifetime. */
+                timeframe?: components["schemas"]["BuilderTimeframe"];
+                /** @description Number of top builders to return individually (clamped 1..50). Default: 10. */
+                top_n?: number;
+                /** @description cumulative (end-of-window snapshot) or delta (in-window change). Default: cumulative. At timeframe=lifetime, delta == cumulative. */
+                series?: components["schemas"]["CompositionSeries"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Top-N builders + 'other' aggregate */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompositionEntry"][];
+                };
+            };
+        };
+    };
     get_builder_global: {
         parameters: {
             query?: {
@@ -5139,6 +5349,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BuilderTimeBucketRow"][];
+                };
+            };
+        };
+    };
+    list_global_builder_tags: {
+        parameters: {
+            query?: {
+                /** @description Metric to sort by. Default: volume. */
+                sort?: components["schemas"]["BuilderSortBy"];
+                /** @description Window: lifetime, 1d, 24h, 7d, 30d, 1mo. Default: lifetime. */
+                timeframe?: components["schemas"]["BuilderTimeframe"];
+                /** @description Max rows to return (default 50, max 500). */
+                limit?: number;
+                /** @description Skip count. */
+                offset?: number;
+                /** @description Opaque cursor. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-tag aggregated stats */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GlobalBuilderTagRow"][];
                 };
             };
         };
