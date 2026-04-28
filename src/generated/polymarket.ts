@@ -2352,17 +2352,8 @@ export interface components {
              *     landed on `cohort_day`.
              */
             cohort_size: number;
-            /**
-             * @description Fraction of the cohort active on `cohort_day + offset`, keyed by
-             *     the offset (in days). E.g. `{ "1": 0.42, "7": 0.21, "30": 0.08 }`.
-             */
-            retention: {
-                [key: string]: number;
-            };
-            /** @description Raw retained-trader counts per offset, same keys as `retention`. */
-            retained: {
-                [key: string]: number;
-            };
+            retained: components["schemas"]["RetainedCounts"];
+            retention: components["schemas"]["RetentionFractions"];
         };
         /**
          * @description One bucket × builder slot. `code` is a real builder hex code for top-N
@@ -4255,6 +4246,24 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
+        /** @description Counts of cohort traders active on day +1 / +7 / +30. */
+        RetainedCounts: {
+            /** Format: int64 */
+            d1: number;
+            /** Format: int64 */
+            d7: number;
+            /** Format: int64 */
+            d30: number;
+        };
+        /** @description Retained counts as fractions of `cohort_size` (0 when cohort is empty). */
+        RetentionFractions: {
+            /** Format: double */
+            d1: number;
+            /** Format: double */
+            d7: number;
+            /** Format: double */
+            d30: number;
+        };
         SearchResponse: {
             events?: components["schemas"]["PolymarketEvent"][] | null;
             events_pagination?: null | components["schemas"]["PaginationMeta"];
@@ -5291,8 +5300,8 @@ export interface operations {
             query?: {
                 /** @description Ranking metric used to pick the top-N. Default: volume. */
                 metric?: components["schemas"]["BuilderSortBy"];
-                /** @description Bucket size: 60 (hourly), 240 (4-hour), D, W, M. Default: 60. */
-                resolution?: string;
+                /** @description Bucket size. Default: 60 (hourly). */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Inclusive start ts (unix seconds). */
                 from?: number;
                 /** @description Inclusive end ts (unix seconds). */
@@ -5370,8 +5379,8 @@ export interface operations {
     get_builder_global_deltas: {
         parameters: {
             query?: {
-                /** @description Bucket size: 60, 240, D, W, M. Default: 60. */
-                resolution?: string;
+                /** @description Bucket size. Default: 60 (hourly). */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start ts. */
                 from?: number;
                 /** @description End ts. */
@@ -5401,8 +5410,8 @@ export interface operations {
     get_builder_global_timeseries: {
         parameters: {
             query?: {
-                /** @description Bucket size: 60, 240, D, W, M. Default: 60. */
-                resolution?: string;
+                /** @description Bucket size. Default: 60 (hourly). */
+                resolution?: components["schemas"]["AnalyticsResolution"];
                 /** @description Start ts (Unix seconds). */
                 from?: number;
                 /** @description End ts (Unix seconds). */
