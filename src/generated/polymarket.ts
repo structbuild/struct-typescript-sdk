@@ -5192,6 +5192,8 @@ export interface operations {
             query?: {
                 /** @description Metric to sort by. Default: volume. */
                 sort?: components["schemas"]["BuilderSortBy"];
+                /** @description Sort direction (default: true = highest first). */
+                sort_desc?: boolean;
                 /** @description Window to rank over. Default: lifetime. */
                 timeframe?: components["schemas"]["BuilderTimeframe"];
                 /** @description Max rows to return (default 50, max 500). */
@@ -5366,6 +5368,8 @@ export interface operations {
             query?: {
                 /** @description Metric to sort by. Default: volume. */
                 sort?: components["schemas"]["BuilderSortBy"];
+                /** @description Sort direction (default: true = highest first). */
+                sort_desc?: boolean;
                 /** @description Window: lifetime, 1d, 24h, 7d, 30d, 1mo. Default: lifetime. */
                 timeframe?: components["schemas"]["BuilderTimeframe"];
                 /** @description Max rows to return (default 50, max 500). */
@@ -5397,6 +5401,8 @@ export interface operations {
             query?: {
                 /** @description Metric to sort by. Default: volume. */
                 sort?: components["schemas"]["BuilderSortBy"];
+                /** @description Sort direction (default: true = highest first). */
+                sort_desc?: boolean;
                 /** @description Window: lifetime, 1d, 24h, 7d, 30d, 1mo. Default: lifetime. */
                 timeframe?: components["schemas"]["BuilderTimeframe"];
                 /** @description Max rows to return (default 50, max 500). */
@@ -5668,6 +5674,8 @@ export interface operations {
             query?: {
                 /** @description Metric to sort by. Default: volume. */
                 sort?: components["schemas"]["BuilderSortBy"];
+                /** @description Sort direction (default: true = highest first). */
+                sort_desc?: boolean;
                 /** @description Window: lifetime, 1d, 24h, 7d, 30d, 1mo. Default: lifetime. */
                 timeframe?: components["schemas"]["BuilderTimeframe"];
                 /** @description Max rows to return (default 50, max 500). */
@@ -5704,6 +5712,8 @@ export interface operations {
                 timeframe?: components["schemas"]["BuilderTimeframe"];
                 /** @description Ranking key: volume (default), txns, fees, builder_fees */
                 sort_by?: components["schemas"]["TopTradersSortBy"];
+                /** @description Sort direction (default: true = highest first). */
+                sort_desc?: boolean;
                 /** @description Number of traders to return (default 10, max 250) */
                 limit?: number;
             };
