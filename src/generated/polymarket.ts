@@ -5755,13 +5755,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Builder metadata (null when none registered) */
+            /** @description Builder metadata. Body is `null` when no metadata has been registered for this builder. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": null | components["schemas"]["BuilderMetadata"];
+                    "application/json": components["schemas"]["BuilderMetadata"];
                 };
             };
         };
