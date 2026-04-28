@@ -2454,22 +2454,20 @@ export interface components {
             av: number;
         };
         /**
-         * @description Wrapped response: an array of bucket rows plus a top-level
-         *     `builder_metadata` lookup. Metadata is keyed by `builder_code` and
-         *     returned once per builder rather than duplicated on every row, since
-         *     composition responses can carry hundreds of rows per builder.
+         * @description Composition response: bucket rows plus a top-level `builder_metadata`
+         *     lookup keyed by `builder_code`. Metadata is returned once per builder
+         *     here rather than embedded on each bucket row.
          */
         CompositionResponse: {
             /** @description Bucket rows, ordered ascending by `t` and then by `r` within each bucket. */
             data: components["schemas"]["CompositionBucketRow"][];
             /**
-             * @description Display metadata for each unique builder code present in `data`.
-             *     Builders with no registered metadata are absent from the map. The
-             *     synthetic `"other"` aggregate row is never present here.
+             * @description Display metadata for each unique builder code present in `data`,
+             *     keyed by `builder_code`. Builders with no registered metadata are
+             *     absent from the map. The synthetic `"other"` aggregate row is never
+             *     a key here.
              */
-            builder_metadata: {
-                [key: string]: components["schemas"]["BuilderMetadataInline"];
-            };
+            builder_metadata: Record<string, never>;
         };
         /**
          * @description Series mode — cumulative end-of-bucket snapshot or in-bucket delta.
