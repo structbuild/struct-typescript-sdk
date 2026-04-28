@@ -34,6 +34,7 @@ export type BuilderFeeRate = Schemas["BuilderFeeRate"];
 export type BuilderFeeRateHistoryEntry = Schemas["BuilderFeeRateHistoryEntry"];
 export type BuilderGlobalLatestRow = Schemas["BuilderGlobalLatestRow"];
 export type BuilderLatestRow = Schemas["BuilderLatestRow"];
+export type BuilderMetadata = Schemas["BuilderMetadata"];
 export type BuilderPctChange = Schemas["BuilderPctChange"];
 export type BuilderSortBy = Schemas["BuilderSortBy"];
 export type BuilderTagRow = Schemas["BuilderTagRow"];
@@ -41,6 +42,7 @@ export type BuilderTimeBucketRow = Schemas["BuilderTimeBucketRow"];
 export type BuilderTimeframe = Schemas["BuilderTimeframe"];
 export type CohortRetentionRow = Schemas["CohortRetentionRow"];
 export type CompositionBucketRow = Schemas["CompositionBucketRow"];
+export type CompositionResponse = Schemas["CompositionResponse"];
 export type CompositionSeries = Schemas["CompositionSeries"];
 export type ConcentrationResponse = Schemas["ConcentrationResponse"];
 export type GlobalBuilderTagRow = Schemas["GlobalBuilderTagRow"];
@@ -467,6 +469,12 @@ export interface GetBuildersParams extends OperationQuery<"list_builders"> {}
 export interface GetBuilderCompositionParams extends OperationQuery<"get_builder_composition"> {}
 
 export interface GetGlobalBuilderTagsParams extends OperationQuery<"list_global_builder_tags"> {}
+
+export interface ListBuilderMetadataParams extends OperationQuery<"list_builder_metadata"> {}
+
+export interface GetBuilderMetadataParams {
+	builder_code: string;
+}
 
 export interface GetBuilderParams extends OperationQuery<"get_builder"> {
 	builder_code: string;

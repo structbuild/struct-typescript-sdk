@@ -132,8 +132,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Bucketed top-N + 'other' builder composition
-         * @description Bucketed timeseries for stacked-bar / area charts. For each bucket in the range, returns up to `top_n + 1` rows: one per top-N builder plus an `other` aggregate. Top-N is fixed across the whole window so chart legends stay stable.
+         * Bucketed top-N with 'other' builder composition
+         * @description Bucketed timeseries for stacked-bar / area charts. For each bucket in the range, returns up to `top_n` plus one rows: one per top-N builder plus an `other` aggregate. Top-N is fixed across the whole window so chart legends stay stable.
          */
         get: operations["get_builder_composition"];
         put?: never;
@@ -227,6 +227,26 @@ export interface paths {
          * @description Returns every tag that has builder-routed activity, with metrics aggregated across all builders. `distinct_builders` is exact; other `unique_*` columns sum per-builder uniques and may slightly over-count traders active under multiple builders.
          */
         get: operations["list_global_builder_tags"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/metadata": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List builder metadata
+         * @description Paginated list of all builders with registered display metadata, ordered alphabetically by name.
+         */
+        get: operations["list_builder_metadata"];
         put?: never;
         post?: never;
         delete?: never;
@@ -387,6 +407,26 @@ export interface paths {
          * @description Returns the history of rate changes for the given builder code, newest first.
          */
         get: operations["get_builder_fees_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/builders/{builder_code}/metadata": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a builder's display metadata
+         * @description Returns name, website, twitter, icon URL, and description for the given builder code. Returns 200 with `null` body when no metadata has been registered for the code.
+         */
+        get: operations["get_builder_metadata"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1680,10 +1720,10 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
-         * @description Resolution for `/analytics/timeseries` and `/analytics/deltas`.
-         *     Superset of `CandlestickResolution` — adds 7-day (`W`/`1W`) and calendar
-         *     month (`M`/`1M`) buckets, which are pre-aggregated for global and tag
-         *     domains and re-bucketed from the `_1d` MV for market/event/trader.
+         * @description Bucket size for `/analytics/timeseries` and `/analytics/deltas` responses.
+         *     Each value picks the time interval that one row in the output covers:
+         *     `60` = 1 hour, `240` = 4 hours, `D`/`1D` = 1 day, `W`/`1W` = 7 days,
+         *     `M`/`1M` = calendar month.
          * @enum {string}
          */
         AnalyticsResolution: "60" | "240" | "D" | "1D" | "W" | "1W" | "M" | "1M";
@@ -2019,9 +2059,8 @@ export interface components {
             avg_vol_per_user: number;
             /**
              * Format: int32
-             * @description Builder's maker fee rate in basis points. Latest known value at the
-             *     end of the window — same value across all timeframes since it's a
-             *     static property of the builder, not an aggregate.
+             * @description Builder's maker fee rate in basis points. Same value across all
+             *     timeframes — this is a property of the builder, not a windowed metric.
              */
             builder_maker_fee_rate_bps: number;
             /**
@@ -2030,6 +2069,15 @@ export interface components {
              *     `builder_maker_fee_rate_bps`.
              */
             builder_taker_fee_rate_bps: number;
+        };
+        /** @description One row of `polymarket_builder_metadata`. */
+        BuilderMetadata: {
+            builder_code: string;
+            name: string;
+            website?: string | null;
+            twitter?: string | null;
+            icon_url?: string | null;
+            description?: string | null;
         };
         /** @description Per-metric percentage change for a builder over the requested lookback window. */
         BuilderPctChange: {
@@ -2317,9 +2365,9 @@ export interface components {
             };
         };
         /**
-         * @description One bucket × builder slot. `code` is a real hex address for top-N rows
-         *     or the literal `"other"` for the per-bucket aggregate of every remaining
-         *     builder. Field names are short for compact JSON (chart-data convention).
+         * @description One bucket × builder slot. `code` is a real builder hex code for top-N
+         *     rows or the literal `"other"` for the row that aggregates every
+         *     remaining builder in that bucket.
          */
         CompositionBucketRow: {
             /**
@@ -2332,7 +2380,7 @@ export interface components {
             /**
              * Format: int32
              * @description Global rank assigned over the full window. `1..=top_n` for real
-             *     builders, `top_n + 1` for the `other` row. Stable across buckets so
+             *     builders, `top_n plus 1` for the `other` row. Stable across buckets so
              *     chart legends don't reorder.
              */
             r: number;
@@ -2386,6 +2434,24 @@ export interface components {
             ar: number;
             /** Format: double */
             av: number;
+        };
+        /**
+         * @description Wrapped response: an array of bucket rows plus a top-level
+         *     `builder_metadata` lookup. Metadata is keyed by `builder_code` and
+         *     returned once per builder rather than duplicated on every row, since
+         *     composition responses can carry hundreds of rows per builder.
+         */
+        CompositionResponse: {
+            /** @description Bucket rows, ordered ascending by `t` and then by `r` within each bucket. */
+            data: components["schemas"]["CompositionBucketRow"][];
+            /**
+             * @description Display metadata for each unique builder code present in `data`.
+             *     Builders with no registered metadata are absent from the map. The
+             *     synthetic `"other"` aggregate row is never present here.
+             */
+            builder_metadata: {
+                [key: string]: components["schemas"]["BuilderMetadata"];
+            };
         };
         /**
          * @description Series mode — cumulative end-of-bucket snapshot or in-bucket delta.
@@ -5231,7 +5297,7 @@ export interface operations {
                 from?: number;
                 /** @description Inclusive end ts (unix seconds). */
                 to?: number;
-                /** @description Max buckets returned (default 500, max 2500). Limits the COUNT of bucket rows; the response always carries top_n+1 entries per bucket. */
+                /** @description Max buckets returned (default 500, max 2500). Limits the COUNT of bucket rows; the response carries top_n entries per bucket plus one `other` row. */
                 count_back?: number;
                 /** @description Number of top builders broken out individually (clamped 1..50). Default: 10. */
                 top_n?: number;
@@ -5244,13 +5310,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Bucketed composition rows */
+            /** @description Bucketed composition rows plus a `builder_metadata` map keyed by builder_code */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CompositionBucketRow"][];
+                    "application/json": components["schemas"]["CompositionResponse"];
                 };
             };
         };
@@ -5392,6 +5458,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GlobalBuilderTagRow"][];
+                };
+            };
+        };
+    };
+    list_builder_metadata: {
+        parameters: {
+            query?: {
+                /** @description Max entries (default 100, max 500) */
+                limit?: number;
+                /** @description Offset for pagination (default 0) */
+                offset?: number;
+                /** @description Opaque cursor (alternative to offset) */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Builder metadata list */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderMetadata"][];
                 };
             };
         };
@@ -5637,6 +5730,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BuilderFeeRateHistoryEntry"][];
+                };
+            };
+        };
+    };
+    get_builder_metadata: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Builder code. */
+                builder_code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Builder metadata (null when none registered) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": null | components["schemas"]["BuilderMetadata"];
                 };
             };
         };

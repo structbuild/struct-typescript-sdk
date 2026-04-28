@@ -11,14 +11,17 @@ import type {
 	TagBuilderRow,
 	BuilderFeeRate,
 	BuilderFeeRateHistoryEntry,
+	BuilderMetadata,
 	CohortRetentionRow,
-	CompositionBucketRow,
+	CompositionResponse,
 	ConcentrationResponse,
 	GlobalBuilderTagRow,
 	TopTraderRow,
 	GetBuildersParams,
 	GetBuilderCompositionParams,
+	GetBuilderMetadataParams,
 	GetGlobalBuilderTagsParams,
+	ListBuilderMetadataParams,
 	GetBuilderParams,
 	GetBuilderAnalyticsChangesParams,
 	GetBuilderAnalyticsDeltasParams,
@@ -41,8 +44,16 @@ export class BuildersNamespace extends Namespace {
 		return this.get<BuilderLatestRow[]>(venue, "/builders", { params: { ...params } });
 	}
 
-	async getComposition(params?: GetBuilderCompositionParams, venue?: Venue): Promise<HttpResponse<CompositionBucketRow[]>> {
-		return this.get<CompositionBucketRow[]>(venue, "/builders/composition", { params: { ...params } });
+	async getComposition(params?: GetBuilderCompositionParams, venue?: Venue): Promise<HttpResponse<CompositionResponse>> {
+		return this.get<CompositionResponse>(venue, "/builders/composition", { params: { ...params } });
+	}
+
+	async listBuilderMetadata(params?: ListBuilderMetadataParams, venue?: Venue): Promise<HttpResponse<BuilderMetadata[]>> {
+		return this.get<BuilderMetadata[]>(venue, "/builders/metadata", { params: { ...params } });
+	}
+
+	async getBuilderMetadata(params: GetBuilderMetadataParams, venue?: Venue): Promise<HttpResponse<BuilderMetadata | null>> {
+		return this.get<BuilderMetadata | null>(venue, `/builders/${encodePathParam(params.builder_code)}/metadata`);
 	}
 
 	async getBuilder(params: GetBuilderParams, venue?: Venue): Promise<HttpResponse<BuilderLatestRow>> {
