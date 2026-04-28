@@ -2070,9 +2070,36 @@ export interface components {
              */
             builder_taker_fee_rate_bps: number;
         };
-        /** @description One row of `polymarket_builder_metadata`. */
+        /**
+         * @description Documentation-only response shape for endpoints that embed display
+         *     metadata onto each row (`/`, `/{builder_code}`, `/tags/{tag}`). Mirrors
+         *     `BuilderLatestRow` and adds a nullable `metadata` field. Not used as a
+         *     data structure at runtime — the actual response is built by
+         *     `BuilderLatestRow` plus a JSON-level merge from the metadata cache, which
+         *     produces this exact shape.
+         */
+        BuilderLatestRowWithMetadata: components["schemas"]["BuilderLatestRow"] & {
+            metadata?: null | components["schemas"]["BuilderMetadataInline"];
+        };
+        /**
+         * @description One row of `polymarket_builder_metadata`. Includes `builder_code` since
+         *     it's used as the keying field on the standalone metadata endpoints.
+         */
         BuilderMetadata: {
             builder_code: string;
+            name: string;
+            website?: string | null;
+            twitter?: string | null;
+            icon_url?: string | null;
+            description?: string | null;
+        };
+        /**
+         * @description Same fields as `BuilderMetadata` minus `builder_code`. Used when embedding
+         *     metadata under a `metadata` field on a row that already carries
+         *     `builder_code` at the top level (leaderboard / get / tag responses) so we
+         *     don't duplicate the key.
+         */
+        BuilderMetadataInline: {
             name: string;
             website?: string | null;
             twitter?: string | null;
@@ -2441,7 +2468,7 @@ export interface components {
              *     synthetic `"other"` aggregate row is never present here.
              */
             builder_metadata: {
-                [key: string]: components["schemas"]["BuilderMetadata"];
+                [key: string]: components["schemas"]["BuilderMetadataInline"];
             };
         };
         /**
@@ -5284,13 +5311,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Ranked list of builders */
+            /** @description Ranked list of builders, each with embedded display metadata. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BuilderLatestRow"][];
+                    "application/json": components["schemas"]["BuilderLatestRowWithMetadata"][];
                 };
             };
         };
@@ -5549,21 +5576,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Builder snapshot */
+            /** @description Builder snapshot with embedded display metadata. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BuilderLatestRow"];
+                    "application/json": components["schemas"]["BuilderLatestRowWithMetadata"];
                 };
-            };
-            /** @description Builder not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
