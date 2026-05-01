@@ -216,7 +216,7 @@
       "address": "polymarket_asset_prices",
       "title": "Asset Prices",
       "summary": "Asset prices stream",
-      "description": "Real-time crypto-asset price feed (BTC, ETH, SOL, XRP, …). Delivers both raw `asset_price_tick` events on every price update and `asset_price_window_update` events at candle open/close boundaries.\n\n**Filter (optional):** `asset_symbols` — uppercase symbols to filter by. Empty array subscribes to all symbols.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time crypto-asset price feed (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Delivers both raw `asset_price_tick` events on every price update and `asset_price_window_update` events at candle open/close boundaries.\n\n**Filter (optional):** `asset_symbols` — uppercase symbols to filter by. Empty array subscribes to all symbols.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/AssetPricesSubscribe"
@@ -236,7 +236,7 @@
       "address": "polymarket_asset_window_updates",
       "title": "Asset Window Updates",
       "summary": "Asset window updates stream",
-      "description": "Filtered stream of asset-price candle open/close events. Unlike `polymarket_asset_prices`, this room **requires** at least one filter so clients receive only the symbols and/or timeframes they care about.\n\n**Filters (at least one required):**\n- `asset_symbols` — uppercase symbols (e.g. `\"BTC\"`, `\"ETH\"`)\n- `timeframes` — candle sizes: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"` / `\"24h\"`\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Filtered stream of asset-price candle open/close events. Unlike `polymarket_asset_prices`, this room **requires** at least one filter so clients receive only the symbols and/or timeframes they care about.\n\n**Filters (at least one required):**\n- `asset_symbols` — uppercase symbols: `\"BTC\"`, `\"ETH\"`, `\"SOL\"`, `\"XRP\"`, `\"DOGE\"`, `\"BNB\"`, `\"HYPE\"`\n- `timeframes` — candle sizes: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"` / `\"24h\"`\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/AssetWindowUpdatesSubscribe"
@@ -7534,6 +7534,17 @@
             "description": "Restrict to positions within these markets.",
             "maxItems": 500
           },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
           "milestone_amounts": {
             "type": [
               "array",
@@ -7849,6 +7860,42 @@
             "format": "double",
             "description": "Minimum price percentage move to trigger (e.g. `10` for a 10% move)."
           },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum YES probability (0-1).",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum YES probability (0-1).",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum trades accumulated in the observation window before firing."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum USD volume accumulated in the observation window before firing."
+          },
           "spike_direction": {
             "oneOf": [
               {
@@ -8005,6 +8052,26 @@
             "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
             "maxItems": 500
           },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum YES probability (0-1). At least one of `min_probability`/`max_probability` is enforced at runtime if you want a probability gate.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum YES probability (0-1).",
+            "maximum": 1,
+            "minimum": 0
+          },
           "min_probability_change_pct": {
             "type": [
               "number",
@@ -8012,6 +8079,22 @@
             ],
             "format": "double",
             "description": "Minimum probability percentage move to trigger (e.g. `10` for a 10% move)."
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum trades accumulated in the observation window before firing."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum USD volume accumulated in the observation window before firing."
           },
           "spike_direction": {
             "oneOf": [
@@ -12357,7 +12440,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Uppercase asset symbols (e.g. \"BTC\", \"ETH\"). Empty = subscribe to all."
+            "description": "Uppercase asset symbols (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Empty = subscribe to all."
           }
         }
       },
@@ -12391,7 +12474,7 @@
           },
           "symbol": {
             "type": "string",
-            "description": "Uppercase asset symbol (e.g. \"BTC\")"
+            "description": "Uppercase asset symbol (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE)"
           },
           "price": {
             "type": "number",
@@ -12430,7 +12513,7 @@
           },
           "symbol": {
             "type": "string",
-            "description": "Uppercase asset symbol (e.g. \"BTC\")"
+            "description": "Uppercase asset symbol (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE)"
           },
           "variant": {
             "type": "string",
@@ -12484,7 +12567,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Uppercase asset symbols (e.g. \"BTC\", \"ETH\")"
+            "description": "Uppercase asset symbols (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE)"
           },
           "timeframes": {
             "type": "array",

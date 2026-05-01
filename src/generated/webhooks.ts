@@ -1983,6 +1983,8 @@ export interface components {
             position_ids?: string[] | null;
             /** @description Restrict to positions within these markets. */
             condition_ids?: string[] | null;
+            /** @description Restrict to these outcome names (e.g. \["Yes", "No"\]). */
+            outcomes?: string[] | null;
             /** @description Specific USD milestones to trigger on. */
             milestone_amounts?: number[] | null;
         };
@@ -2114,6 +2116,26 @@ export interface components {
              * @description Minimum price percentage move to trigger (e.g. `10` for a 10% move).
              */
             min_price_change_pct?: number | null;
+            /**
+             * Format: double
+             * @description Minimum YES probability (0-1).
+             */
+            min_probability?: number | null;
+            /**
+             * Format: double
+             * @description Maximum YES probability (0-1).
+             */
+            max_probability?: number | null;
+            /**
+             * Format: int64
+             * @description Minimum trades accumulated in the observation window before firing.
+             */
+            min_txns?: number | null;
+            /**
+             * Format: double
+             * @description Minimum USD volume accumulated in the observation window before firing.
+             */
+            min_volume_usd?: number | null;
             spike_direction?: null | components["schemas"]["SpikeDirection"];
             /**
              * Format: int64
@@ -2164,9 +2186,29 @@ export interface components {
             outcomes?: string[] | null;
             /**
              * Format: double
+             * @description Minimum YES probability (0-1). At least one of `min_probability`/`max_probability` is enforced at runtime if you want a probability gate.
+             */
+            min_probability?: number | null;
+            /**
+             * Format: double
+             * @description Maximum YES probability (0-1).
+             */
+            max_probability?: number | null;
+            /**
+             * Format: double
              * @description Minimum probability percentage move to trigger (e.g. `10` for a 10% move).
              */
             min_probability_change_pct?: number | null;
+            /**
+             * Format: int64
+             * @description Minimum trades accumulated in the observation window before firing.
+             */
+            min_txns?: number | null;
+            /**
+             * Format: double
+             * @description Minimum USD volume accumulated in the observation window before firing.
+             */
+            min_volume_usd?: number | null;
             spike_direction?: null | components["schemas"]["SpikeDirection"];
             /**
              * Format: int64

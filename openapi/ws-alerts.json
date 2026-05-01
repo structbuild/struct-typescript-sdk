@@ -8875,6 +8875,17 @@
             "description": "Restrict to positions within these markets.",
             "maxItems": 500
           },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
           "milestone_amounts": {
             "type": [
               "array",
@@ -9190,6 +9201,42 @@
             "format": "double",
             "description": "Minimum price percentage move to trigger (e.g. `10` for a 10% move)."
           },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum YES probability (0-1).",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum YES probability (0-1).",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum trades accumulated in the observation window before firing."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum USD volume accumulated in the observation window before firing."
+          },
           "spike_direction": {
             "oneOf": [
               {
@@ -9346,6 +9393,26 @@
             "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
             "maxItems": 500
           },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum YES probability (0-1). At least one of `min_probability`/`max_probability` is enforced at runtime if you want a probability gate.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum YES probability (0-1).",
+            "maximum": 1,
+            "minimum": 0
+          },
           "min_probability_change_pct": {
             "type": [
               "number",
@@ -9353,6 +9420,22 @@
             ],
             "format": "double",
             "description": "Minimum probability percentage move to trigger (e.g. `10` for a 10% move)."
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum trades accumulated in the observation window before firing."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum USD volume accumulated in the observation window before firing."
           },
           "spike_direction": {
             "oneOf": [
