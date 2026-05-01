@@ -363,6 +363,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 	"builders.getGlobalTimeseries": {
 		operationId: "get_builder_global_timeseries",
 	},
+	"builders.searchBuilders": {
+		params: { q: "po", limit: 2 },
+		operationId: "search_builders",
+	},
 	"builders.getTagBuilders": {
 		params: { tag: "$builderTagId", limit: 2 },
 		operationId: "list_tag_builders",

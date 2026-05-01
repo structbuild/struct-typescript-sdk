@@ -22,6 +22,7 @@ import type {
 	GetBuilderMetadataParams,
 	GetGlobalBuilderTagsParams,
 	ListBuilderMetadataParams,
+	SearchBuildersParams,
 	GetBuilderParams,
 	GetBuilderAnalyticsChangesParams,
 	GetBuilderAnalyticsDeltasParams,
@@ -50,6 +51,10 @@ export class BuildersNamespace extends Namespace {
 
 	async listBuilderMetadata(params?: ListBuilderMetadataParams, venue?: Venue): Promise<HttpResponse<BuilderMetadata[]>> {
 		return this.get<BuilderMetadata[]>(venue, "/builders/metadata", { params: { ...params } });
+	}
+
+	async searchBuilders(params: SearchBuildersParams, venue?: Venue): Promise<HttpResponse<BuilderMetadata[]>> {
+		return this.get<BuilderMetadata[]>(venue, "/builders/search", { params: { ...params } });
 	}
 
 	async getBuilderMetadata(params: GetBuilderMetadataParams, venue?: Venue): Promise<HttpResponse<BuilderMetadata | null>> {

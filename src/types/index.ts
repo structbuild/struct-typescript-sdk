@@ -476,6 +476,8 @@ export interface GetGlobalBuilderTagsParams extends OperationQuery<"list_global_
 
 export interface ListBuilderMetadataParams extends OperationQuery<"list_builder_metadata"> {}
 
+export interface SearchBuildersParams extends OperationQuery<"search_builders"> {}
+
 export interface GetBuilderMetadataParams {
 	builder_code: string;
 }
@@ -605,6 +607,8 @@ export type TraderNewTradeFilters = WebhookSchemas["TraderNewTradeFilters"];
 export type PriceSpikePayload = WebhookSchemas["PriceSpikePayload"];
 export type PriceSpikeFilters = WebhookSchemas["PriceSpikeFilters"];
 export type TraderTradeEventFilters = WebhookSchemas["TraderTradeEventFilters"];
+export type NewTradeFilterType = WebhookSchemas["NewTradeFilterType"];
+export type TradeEventFilterType = WebhookSchemas["TradeEventFilterType"];
 
 export type WebhookDeliveryEnvelope = WebhookSchemas["WebhookDeliveryEnvelope"];
 export type WebhookTraderTradeEventPayload = WebhookSchemas["WebhookTraderTradeEventPayload"];

@@ -255,6 +255,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/builders/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search builders by name or code
+         * @description Returns builder metadata rows matching the query. Matches against `name` and `builder_code` (the `0x` prefix is optional). Results are sorted alphabetically by name and paginated.
+         */
+        get: operations["search_builders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/builders/tags/{tag}": {
         parameters: {
             query?: never;
@@ -1243,8 +1263,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Search events, markets, and traders
-         * @description Search across markets, events, and traders. Use `type` to limit which categories are searched. Trader search supports wallet address lookup or name search. Results for each category are independently paginated. Only requested categories are included in the response.
+         * Search events, markets, traders, and builders
+         * @description Search across markets, events, traders, and builders. Use `type` to limit which categories are searched. Trader search supports wallet address lookup or name search; builder search matches against builder name and builder_code. Results for each category are independently paginated. Only requested categories are included in the response.
          */
         get: operations["search"];
         put?: never;
@@ -2108,6 +2128,11 @@ export interface components {
         };
         /** @description Per-metric percentage change for a builder over the requested lookback window. */
         BuilderPctChange: {
+            /**
+             * @description The builder this response is about. Always populated, even when no
+             *     activity exists in either the current or previous window.
+             */
+            builder_code: string;
             /** Format: double */
             volume_usd: number;
             /** Format: double */
@@ -2475,6 +2500,11 @@ export interface components {
          */
         CompositionSeries: "cumulative" | "delta";
         ConcentrationResponse: {
+            /**
+             * @description The builder this response is about. Always populated, even when the
+             *     builder has no activity in the window (the rest of the fields are 0).
+             */
+            builder_code: string;
             /**
              * Format: double
              * @description Total volume in the window across every trader of this builder.
@@ -2873,22 +2903,22 @@ export interface components {
             buy_dist_50k_plus: number;
             /**
              * Format: int64
-             * @description Estimated total number of tags.
+             * @description Total number of tags.
              */
             tags: number;
             /**
              * Format: int64
-             * @description Estimated total number of events.
+             * @description Total number of events.
              */
             events: number;
             /**
              * Format: int64
-             * @description Estimated total number of markets.
+             * @description Total number of markets.
              */
             markets: number;
             /**
              * Format: int64
-             * @description Estimated total number of unique positions / traders.
+             * @description Total number of unique positions / traders.
              */
             positions: number;
         };
@@ -3935,6 +3965,10 @@ export interface components {
             index_set: string;
             /** Format: double */
             shares_amount: number;
+            /** Format: double */
+            fee?: number | null;
+            /** Format: double */
+            fee_pct?: number | null;
             exchange: components["schemas"]["PolymarketExchange"];
         };
         PredictionCandlestickBar: {
@@ -4296,6 +4330,8 @@ export interface components {
             markets_pagination?: null | components["schemas"]["PaginationMeta"];
             traders?: components["schemas"]["TraderWithPnl"][] | null;
             traders_pagination?: null | components["schemas"]["PaginationMeta"];
+            builders?: components["schemas"]["BuilderMetadata"][] | null;
+            builders_pagination?: null | components["schemas"]["PaginationMeta"];
         };
         /**
          * @description Combined sort options valid for both events and markets in search
@@ -5520,6 +5556,42 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["BuilderMetadata"][];
                 };
+            };
+        };
+    };
+    search_builders: {
+        parameters: {
+            query: {
+                /** @description Search query (min 2 characters). */
+                q: string;
+                /** @description Max results per page (default 10, max 50). */
+                limit?: number;
+                /** @description Offset for pagination (default 0). Takes precedence over `pagination_key`. */
+                offset?: number;
+                /** @description Opaque cursor from a previous response. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Matching builder metadata rows. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderMetadata"][];
+                };
+            };
+            /** @description Bad request — `q` is missing or shorter than 2 characters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -7533,7 +7605,7 @@ export interface operations {
             query: {
                 /** @description Search query (min 2 characters). Prefix with 0x for exact wallet address lookup. */
                 q: string;
-                /** @description Comma-separated categories to search: events, markets, traders (default: all three, 1 credit per type). Example: type=markets,traders */
+                /** @description Comma-separated categories to search: events, markets, traders, builders (default: all four, 1 credit per type). Example: type=markets,builders */
                 type?: string;
                 /** @description Include lifetime PnL summary for each trader (default: false, +1 credit) */
                 include_pnl?: boolean;
@@ -7551,6 +7623,8 @@ export interface operations {
                 markets_pagination_key?: string;
                 /** @description Cursor for the next page of traders, obtained from previous response's traders_pagination.pagination_key */
                 traders_pagination_key?: string;
+                /** @description Cursor for the next page of builders, obtained from previous response's builders_pagination.pagination_key */
+                builders_pagination_key?: string;
             };
             header?: never;
             path?: never;
