@@ -2016,6 +2016,12 @@ export interface components {
         };
         /** @description Cumulative stats for a single builder. */
         BuilderLatestRow: {
+            /**
+             * Format: int64
+             * @description Global rank for leaderboard responses. `null` on single-builder
+             *     responses where no leaderboard ordering is requested.
+             */
+            rank?: number | null;
             builder_code: string;
             /** Format: int64 */
             block: number;
@@ -5332,6 +5338,8 @@ export interface operations {
                 sort_desc?: boolean;
                 /** @description Window to rank over. Default: lifetime. */
                 timeframe?: components["schemas"]["BuilderTimeframe"];
+                /** @description When true, only return builders with registered display metadata. Ranks remain global across all builders. */
+                named_only?: boolean;
                 /** @description Max rows to return (default 50, max 500). */
                 limit?: number;
                 /** @description Number of rows to skip. Default 0. Takes precedence over `pagination_key`. */
