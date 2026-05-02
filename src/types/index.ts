@@ -561,7 +561,16 @@ export type ClobCredsResponse = Schemas["ClobCredsResponse"];
 export type ExchangeKindDto = Schemas["ExchangeKindDto"];
 export type OnboardStatus = Schemas["OnboardStatus"];
 export type OrderType = Schemas["OrderType"];
+export type PnlV3AnalyticsTimeframe = Schemas["PnlV3AnalyticsTimeframe"];
 export type PnlV3CandleEntry = Schemas["PnlV3CandleEntry"];
+export type PnlV3ChangeWindow = Schemas["PnlV3ChangeWindow"];
+export type PnlV3ChangesResponse = Schemas["PnlV3ChangesResponse"];
+export type PnlV3LatestSnapshot = Schemas["PnlV3LatestSnapshot"];
+export type PnlV3PeriodExtremes = Schemas["PnlV3PeriodExtremes"];
+export type PnlV3PeriodMetric = Schemas["PnlV3PeriodMetric"];
+export type PnlV3PeriodsResponse = Schemas["PnlV3PeriodsResponse"];
+export type PnlV3RiskMetric = Schemas["PnlV3RiskMetric"];
+export type PnlV3RiskResponse = Schemas["PnlV3RiskResponse"];
 export type PostOrderRequest = Schemas["PostOrderRequest"];
 export type PostOrderResponse = Schemas["PostOrderResponse"];
 export type RefreshBalanceAllowanceRequest = Schemas["RefreshBalanceAllowanceRequest"];
@@ -613,6 +622,18 @@ export interface GetSmartMoneyTraderReentriesParams extends OperationQuery<"smar
 }
 
 export interface GetTraderPnlV3CandlesParams extends OperationQuery<"get_trader_pnl_v3_candles"> {
+	address: string;
+}
+
+export interface GetTraderPnlV3ChangesParams {
+	address: string;
+}
+
+export interface GetTraderPnlV3PeriodsParams extends OperationQuery<"get_trader_pnl_v3_periods"> {
+	address: string;
+}
+
+export interface GetTraderPnlV3RiskParams extends OperationQuery<"get_trader_pnl_v3_risk"> {
 	address: string;
 }
 

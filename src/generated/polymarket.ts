@@ -1755,6 +1755,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/pnl_v3/{address}/changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader PnL v3 changes
+         * @description Retrieve absolute and percentage PnL, portfolio, balance, and open-position changes over 1h, 24h, 7d, 30d, and lifetime.
+         */
+        get: operations["get_trader_pnl_v3_changes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/trader/pnl_v3/{address}/periods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader PnL v3 best/worst periods
+         * @description Retrieve best and worst daily, weekly, and monthly total-PnL and portfolio periods using daily PnL candles.
+         */
+        get: operations["get_trader_pnl_v3_periods"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/trader/pnl_v3/{address}/risk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader PnL v3 risk
+         * @description Retrieve max drawdown, current drawdown, max runup, high, low, and latest values over a timeframe.
+         */
+        get: operations["get_trader_pnl_v3_risk"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/profile/{address}": {
         parameters: {
             query?: never;
@@ -4341,6 +4401,8 @@ export interface components {
         PnlCandleTimeframe: "1d" | "7d" | "30d" | "lifetime";
         /** @enum {string} */
         PnlTimeframe: "1d" | "7d" | "30d" | "lifetime";
+        /** @enum {string} */
+        PnlV3AnalyticsTimeframe: "1d" | "24h" | "7d" | "30d" | "lifetime";
         PnlV3CandleEntry: {
             /**
              * Format: int64
@@ -4416,6 +4478,121 @@ export interface components {
              * @description Latest open position count at candle close.
              */
             num_open_positions: number;
+        };
+        PnlV3ChangeWindow: {
+            timeframe: string;
+            /** Format: int64 */
+            from: number;
+            /** Format: int64 */
+            to: number;
+            /** Format: double */
+            total_pnl_start: number;
+            /** Format: double */
+            total_pnl_end: number;
+            /** Format: double */
+            total_pnl_change: number;
+            /** Format: double */
+            total_pnl_change_pct?: number | null;
+            /** Format: double */
+            portfolio_start: number;
+            /** Format: double */
+            portfolio_end: number;
+            /** Format: double */
+            portfolio_change: number;
+            /** Format: double */
+            portfolio_change_pct?: number | null;
+            /** Format: double */
+            realized_pnl_change: number;
+            /** Format: double */
+            unrealized_pnl_change: number;
+            /** Format: double */
+            usdc_balance_change: number;
+            /** Format: double */
+            pusd_balance_change: number;
+            /** Format: int32 */
+            open_positions_change: number;
+        };
+        PnlV3ChangesResponse: {
+            latest?: null | components["schemas"]["PnlV3LatestSnapshot"];
+            changes: components["schemas"]["PnlV3ChangeWindow"][];
+        };
+        PnlV3LatestSnapshot: {
+            /** Format: int64 */
+            t: number;
+            /** Format: double */
+            total_pnl: number;
+            /** Format: double */
+            realized_pnl: number;
+            /** Format: double */
+            unrealized_pnl: number;
+            /** Format: double */
+            portfolio_value: number;
+            /** Format: double */
+            usdc_balance: number;
+            /** Format: double */
+            pusd_balance: number;
+            /** Format: int32 */
+            num_open_positions: number;
+        };
+        PnlV3PeriodExtremes: {
+            best?: null | components["schemas"]["PnlV3PeriodMetric"];
+            worst?: null | components["schemas"]["PnlV3PeriodMetric"];
+        };
+        PnlV3PeriodMetric: {
+            /** Format: int64 */
+            from: number;
+            /** Format: int64 */
+            to: number;
+            /** Format: double */
+            change: number;
+            /** Format: double */
+            change_pct?: number | null;
+        };
+        PnlV3PeriodsResponse: {
+            timeframe: string;
+            resolution: string;
+            /** Format: int64 */
+            from?: number | null;
+            /** Format: int64 */
+            to?: number | null;
+            points: number;
+            total_pnl_day: components["schemas"]["PnlV3PeriodExtremes"];
+            total_pnl_week: components["schemas"]["PnlV3PeriodExtremes"];
+            total_pnl_month: components["schemas"]["PnlV3PeriodExtremes"];
+            portfolio_day: components["schemas"]["PnlV3PeriodExtremes"];
+            portfolio_week: components["schemas"]["PnlV3PeriodExtremes"];
+            portfolio_month: components["schemas"]["PnlV3PeriodExtremes"];
+        };
+        PnlV3RiskMetric: {
+            /** Format: double */
+            max_drawdown: number;
+            /** Format: double */
+            max_drawdown_pct?: number | null;
+            /** Format: double */
+            current_drawdown: number;
+            /** Format: double */
+            current_drawdown_pct?: number | null;
+            /** Format: double */
+            max_runup: number;
+            /** Format: double */
+            max_runup_pct?: number | null;
+            /** Format: double */
+            high: number;
+            /** Format: double */
+            low: number;
+            /** Format: double */
+            latest: number;
+        };
+        PnlV3RiskResponse: {
+            timeframe: string;
+            resolution: string;
+            /** Format: int64 */
+            from?: number | null;
+            /** Format: int64 */
+            to?: number | null;
+            points: number;
+            total_pnl?: null | components["schemas"]["PnlV3RiskMetric"];
+            portfolio?: null | components["schemas"]["PnlV3RiskMetric"];
         };
         /** @description A Polymarket event from the Gamma API */
         PolymarketEvent: {
@@ -9692,10 +9869,20 @@ export interface operations {
     get_trader_pnl_v3_candles: {
         parameters: {
             query?: {
-                /** @description Candle resolution (default: 1h) */
+                /** @description Candle resolution. If omitted: 1d timeframe uses 1m, 7d/30d/lifetime use 1d. */
                 resolution?: components["schemas"]["PnlCandleResolution"];
-                /** @description Time range (default: lifetime) */
+                /** @description Default time range when from/to are omitted (default: lifetime) */
                 timeframe?: components["schemas"]["PnlCandleTimeframe"];
+                /** @description Start timestamp in unix seconds. Overrides timeframe lower bound when provided. */
+                from?: number;
+                /** @description End timestamp in unix seconds. */
+                to?: number;
+                /** @description Max candles to return (default 500, max 2500). */
+                count_back?: number;
+                /** @description Opaque cursor from a previous response to fetch older candles. */
+                pagination_key?: string;
+                /** @description Fill missing buckets with flat synthetic candles at the last close value. Default: true. */
+                fill_gaps?: boolean;
             };
             header?: never;
             path: {
@@ -9713,6 +9900,81 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PnlV3CandleEntry"][];
+                };
+            };
+        };
+    };
+    get_trader_pnl_v3_changes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description PnL v3 changes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PnlV3ChangesResponse"];
+                };
+            };
+        };
+    };
+    get_trader_pnl_v3_periods: {
+        parameters: {
+            query?: {
+                /** @description Window: 30d or lifetime. Shorter values are accepted but still use daily candles. Default: lifetime. */
+                timeframe?: components["schemas"]["PnlV3AnalyticsTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description PnL v3 best/worst periods */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PnlV3PeriodsResponse"];
+                };
+            };
+        };
+    };
+    get_trader_pnl_v3_risk: {
+        parameters: {
+            query?: {
+                /** @description Window: 1d/24h, 7d, 30d, lifetime. Default: lifetime. */
+                timeframe?: components["schemas"]["PnlV3AnalyticsTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description PnL v3 risk */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PnlV3RiskResponse"];
                 };
             };
         };
