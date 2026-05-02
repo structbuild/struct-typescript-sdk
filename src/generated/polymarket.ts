@@ -1335,6 +1335,146 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/smart-money": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Smart money leaderboard
+         * @description Ranks traders by derived smart-money metrics such as missed upside, avoided loss, fumbled count, and re-entry count.
+         */
+        get: operations["smart_money_leaderboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/smart-money/markets/{condition}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get market smart-money summary
+         * @description Returns lifetime smart-money aggregates for one condition/market, including fumbled, dodged, and re-entry metrics.
+         */
+        get: operations["smart_money_market_summary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/smart-money/reason-codes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List smart-money alert reason codes
+         * @description Returns every typed smart-money alert reason code that can appear in alert streams and alert history rows.
+         */
+        get: operations["smart_money_reason_codes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/smart-money/traders/{trader}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader smart-money summary
+         * @description Returns lifetime smart-money metrics for one trader, including re-entry counts and fumbled/dodged opportunity metrics.
+         */
+        get: operations["smart_money_trader_summary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/smart-money/traders/{trader}/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader smart-money daily chart
+         * @description Returns daily smart-money aggregates for charting re-entry, fumbled, dodged, and net opportunity metrics.
+         */
+        get: operations["smart_money_trader_daily"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/smart-money/traders/{trader}/fumbled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List trader fumbled/dodged events
+         * @description Lists resolved positions where a fully exited trader either missed upside or avoided loss versus holding to resolution.
+         */
+        get: operations["smart_money_trader_fumbled"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/smart-money/traders/{trader}/reentries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List trader re-entry events
+         * @description Lists cases where a trader fully exited a position and later reopened it before resolution.
+         */
+        get: operations["smart_money_trader_reentries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/tags": {
         parameters: {
             query?: never;
@@ -1595,6 +1735,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/pnl_v3/{address}/candles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader PnL v3 candles
+         * @description Retrieve ClickHouse-backed PnL v3 candles with total PnL OHLC, realized/unrealized PnL, balances, portfolio value, and open-position count.
+         */
+        get: operations["get_trader_pnl_v3_candles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/profile/{address}": {
         parameters: {
             query?: never;
@@ -1735,6 +1895,394 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/trading/approvals/{safe}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check the V2 token approvals required for trading
+         * @description Returns every token approval the trading flow needs, with on-chain satisfaction status. Iterate `approvals` for per-row rendering; check `summary.all_set` to gate trading. The list grows as new protocol versions ship — clients should not hard-code field names.
+         */
+        get: operations["get_approvals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/balance/{address}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the trading balance (pUSD) for an address
+         * @description Returns the pUSD balance — the V2 collateral relevant to placing orders. For most callers this is the Safe address from `get_safe_info`.
+         */
+        get: operations["get_balances"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/builder-sign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign builder HMAC headers for an outbound relayer-v2 / CLOB request
+         * @description Returns the `POLY_API_KEY`, `POLY_SIGNATURE`, `POLY_TIMESTAMP`, `POLY_PASSPHRASE` headers the SDK must attach to a request it's about to make to `relayer-v2.polymarket.com` or `clob.polymarket.com`. Lets the SDK call Polymarket directly while builder credentials stay server-side. Match the request body verbatim — HMAC signs `timestamp + method + path + body`, so any divergence between what's signed and what's sent breaks signature recovery upstream.
+         */
+        post: operations["builder_sign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/cancel-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel every open order (optionally scoped to one market)
+         * @description L2-authed CLOB cancel-all. With `market` set, scopes to the given condition_id; otherwise cancels every resting order for the wallet.
+         */
+        post: operations["cancel_all"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/onboard/clob-credentials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mint or re-derive CLOB API credentials for an EOA
+         * @description The SDK signs a `ClobAuth` EIP-712 payload with the EOA's private key, then posts the L1 headers here. We forward to `clob.polymarket.com/auth/api-key` (POST) and fall back to `/auth/derive-api-key` (GET) on HTTP failure — this proxy bypasses Polymarket's Cloudflare layer which rejects direct SDK calls from arbitrary outbound IPs.
+         */
+        post: operations["onboard_clob_credentials"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/onboard/{eoa}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a wallet's onboarding readiness
+         * @description One-call summary of the Struct/RPC-backed setup state for an EOA: derive the Safe, check deployment, and check approvals. CLOB credentials are minted directly by the SDK through Polymarket's official CLOB client and are not tracked here.
+         */
+        get: operations["get_onboard_status"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Place a signed Polymarket V2 order
+         * @description The SDK signs the V2 Order EIP-712 locally and posts the full envelope here. We attach L1 (caller's CLOB credentials) + builder HMAC headers and forward to `clob.polymarket.com/order`.
+         */
+        post: operations["post_order"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/order/{order_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Look up a single order by id
+         * @description L2-authed CLOB read. Same header scheme as `get_open_orders`.
+         */
+        get: operations["get_order_status"];
+        put?: never;
+        post?: never;
+        /**
+         * Cancel a single resting order
+         * @description L2-authed CLOB cancel. The SDK supplies the wallet's CLOB credentials in the request body; the backend builds the HMAC and forwards.
+         */
+        delete: operations["cancel_order"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/orders/{address}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the trader's open orders
+         * @description L2-authed CLOB read. Pass CLOB credentials via the `X-Clob-Api-*` headers and the EOA via `X-Clob-Signer-Address` so the GET stays cacheable in shape.
+         */
+        get: operations["get_open_orders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/refresh-balance-allowance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Force the V2 CLOB to re-read on-chain balance + allowances
+         * @description Idempotent. Call this after `set_approvals` so the V2 matching engine picks up the new allowances immediately — otherwise it can reject orders with `INSUFFICIENT_BALANCE` for ~1 minute while its cache rebuilds on its own.
+         */
+        post: operations["refresh_balance_allowance"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/relayer-key": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register per-user Polymarket builder credentials for an EOA
+         * @description Stores `builder_credentials` keyed by `eoa`. Caller proves ownership of the EOA by signing the message `Register Polymarket builder credentials for {eoa} at {timestamp}` with the EOA's private key (eth_sign-prefixed). Subsequent relayer calls can opt in to using these creds for HMAC signing (see `/builder-sign`) so on-chain activity attributes to the caller's builder profile rather than the platform's shared one.
+         */
+        post: operations["register_relayer_key"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/relayer-key/{eoa}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Look up the Polymarket builder credentials registered for an EOA
+         * @description Returns the stored builder credentials so the SDK can cache them locally. Auth: API key (the platform trusts that callers are authorised to retrieve creds they registered on behalf of users they manage). Returns 404 when no creds are registered for the EOA.
+         */
+        get: operations["get_relayer_key"];
+        put?: never;
+        post?: never;
+        /**
+         * Revoke registered Polymarket builder credentials
+         * @description Removes the per-user builder credentials registered for `eoa`. Same SIWE-style proof as register: caller signs `Revoke Polymarket builder credentials for {eoa} at {timestamp}` to prove EOA ownership.
+         */
+        delete: operations["revoke_relayer_key"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/safe/{eoa}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the Safe wallet derived from an EOA
+         * @description Returns the Polymarket Safe (funder) address that an EOA controls, plus whether the Safe contract has been deployed on-chain. The Safe holds USDC.e, pUSD, and outcome tokens; the EOA signs orders on its behalf.
+         */
+        get: operations["get_safe_info"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/tx/convert": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Convert NO positions on a multi-outcome market (gasless)
+         * @description On NegRisk (multi-outcome) markets, swap NO positions on a chosen subset of outcomes for USDC.e plus YES on the complementary outcomes. Only available on NegRisk markets.
+         */
+        post: operations["tx_convert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/tx/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Merge a complete outcome set back into USDC.e (gasless)
+         * @description Submit a signed Safe execTransaction that merges a complete outcome set back into USDC.e. This is the inverse of `tx_split` and is the standard way to free collateral when you hold balanced positions across all outcomes.
+         */
+        post: operations["tx_merge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/tx/split": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Split USDC.e into a complete set of outcome tokens (gasless)
+         * @description Submit a signed Safe execTransaction that splits USDC.e into the full set of outcome tokens for a market — minting one of every outcome lets you sell whichever side you don't want to keep.
+         */
+        post: operations["tx_split"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/tx/unwrap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Unwrap pUSD back into USDC.e (gasless)
+         * @description Submit a signed Safe execTransaction that unwraps pUSD into USDC.e — useful when withdrawing or after closing all positions.
+         */
+        post: operations["tx_unwrap"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/tx/wrap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Wrap USDC.e into pUSD (gasless)
+         * @description Submit a signed Safe execTransaction that wraps USDC.e into pUSD — pUSD is the V2 collateral token, required to place buy orders.
+         */
+        post: operations["tx_wrap"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/trading/wallet/{eoa}/detect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Detect which Polymarket wallet type an EOA actually uses
+         * @description An EOA can have either a Safe (current default, gasless onboarding via SafeProxyFactory) or a legacy Polymarket Proxy (Magic-Link / email wallets). This probes both CREATE2-derived addresses on-chain and returns whichever is deployed. Falls back to Safe when neither is — that's what the next deployment call will create.
+         */
+        get: operations["detect_wallet_type"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1747,6 +2295,19 @@ export interface components {
          * @enum {string}
          */
         AnalyticsResolution: "60" | "240" | "D" | "1D" | "W" | "1W" | "M" | "1M";
+        /** @description Runtime row produced by [`query_all`]. */
+        Approval: {
+            id: string;
+            label: string;
+            kind: components["schemas"]["ApprovalKind"];
+            token: string;
+            spender: string;
+            version: string;
+            required: boolean;
+            satisfied: boolean;
+        };
+        /** @enum {string} */
+        ApprovalKind: "erc20_allowance" | "erc1155_operator";
         /** @description Output payload for ERC1155 setApprovalForAll events. */
         ApprovalTrade: {
             id: string;
@@ -1769,6 +2330,27 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
             exchange: components["schemas"]["PolymarketExchange"];
+        };
+        /**
+         * @description Token approvals required before trading. The list grows as new protocol
+         *     versions ship — clients should iterate `approvals` rather than checking
+         *     fixed names. `summary.all_set` is the gate for "ready to trade".
+         */
+        ApprovalsInfo: {
+            safe: string;
+            summary: components["schemas"]["ApprovalsSummary"];
+            approvals: components["schemas"]["Approval"][];
+        };
+        ApprovalsSummary: {
+            /** @description `true` when every required approval is satisfied. */
+            all_set: boolean;
+            /** @description Number of required approvals still missing. */
+            missing: number;
+            /**
+             * @description Distinct protocol versions present in the registry (`["v2"]`,
+             *     `["v2", "v3"]`, …). Stable for filtering / grouping.
+             */
+            active_versions: string[];
         };
         /** @description V3 UMA OOv3: an assertion was disputed. */
         AssertionDisputedEvent: {
@@ -1888,6 +2470,15 @@ export interface components {
         AssetSymbol: "BTC" | "ETH" | "XRP" | "SOL" | "DOGE" | "BNB" | "HYPE";
         /** @enum {string} */
         AssetVariant: "5m" | "15m" | "1h" | "4h" | "1d";
+        /**
+         * @description Trading balance for an address. pUSD is the V2 collateral — the only
+         *     asset relevant to placing orders.
+         */
+        BalanceInfo: {
+            address: string;
+            /** @description pUSD balance, 6 decimals. Raw integer string to preserve precision. */
+            poly_usd: string;
+        };
         BondMarket: {
             condition_id: string;
             title?: string | null;
@@ -1919,6 +2510,12 @@ export interface components {
         };
         /** @enum {string} */
         BondsSortBy: "end_date" | "apy" | "liquidity" | "volume";
+        /** @description Polymarket builder credentials. Treat as secrets in transit. */
+        BuilderCredentials: {
+            key: string;
+            secret: string;
+            passphrase: string;
+        };
         BuilderFeeRate: {
             code: string;
             /** Format: int32 */
@@ -2016,12 +2613,6 @@ export interface components {
         };
         /** @description Cumulative stats for a single builder. */
         BuilderLatestRow: {
-            /**
-             * Format: int64
-             * @description Global rank for leaderboard responses. `null` on single-builder
-             *     responses where no leaderboard ordering is requested.
-             */
-            rank?: number | null;
             builder_code: string;
             /** Format: int64 */
             block: number;
@@ -2191,6 +2782,32 @@ export interface components {
             avg_vol_per_user: number;
         };
         /**
+         * @description Request to the builder signing API. The SDK constructs the
+         *     `(method, path, body)` triple it intends to POST to relayer-v2 /
+         *     CLOB and asks Struct to sign HMAC headers. The signed headers
+         *     are returned, and the SDK then makes the upstream call itself.
+         *
+         *     Builder credentials remain server-side, while the SDK still posts
+         *     directly to Polymarket.
+         */
+        BuilderSignRequest: {
+            method: string;
+            path: string;
+            /**
+             * @description Request body as a string (verbatim — must match what's posted to
+             *     the upstream). Empty for GETs.
+             */
+            body?: string;
+            builder_credentials?: null | components["schemas"]["BuilderCredentials"];
+        };
+        /** @description Headers the SDK must attach to its upstream request. */
+        BuilderSignResponse: {
+            poly_api_key: string;
+            poly_signature: string;
+            poly_timestamp: string;
+            poly_passphrase: string;
+        };
+        /**
          * @description Sort metric for the builders list endpoint.
          * @enum {string}
          */
@@ -2343,6 +2960,19 @@ export interface components {
          * @enum {string}
          */
         BuilderTimeframe: "lifetime" | "1d" | "7d" | "30d";
+        /** @description Cancel orders in bulk. Optionally scope to a single market. */
+        CancelAllRequest: {
+            signer_address: string;
+            clob_credentials: components["schemas"]["ClobCredentials"];
+            /** @description Condition ID. When set, only orders on this market are cancelled. */
+            market?: string | null;
+        };
+        /** @description Cancel a single open order by ID. */
+        CancelOrderRequest: {
+            /** @description EOA address that signed the order being cancelled. */
+            signer_address: string;
+            clob_credentials: components["schemas"]["ClobCredentials"];
+        };
         /** @description Output payload for Cancelled orders. */
         CancelledTrade: {
             id: string;
@@ -2373,6 +3003,33 @@ export interface components {
         ChangeTimeframe: "1h" | "24h" | "7d" | "30d" | "1mo" | "1y";
         /** @enum {string} */
         ChartResolution: "1H" | "6H" | "1D" | "1W" | "1M" | "ALL";
+        ClobCredentials: {
+            api_key: string;
+            api_secret: string;
+            api_passphrase: string;
+        };
+        /**
+         * @description Mint or re-derive CLOB API credentials. Sign the `ClobAuth` EIP-712
+         *     payload with the EOA, then submit the signature here. The backend
+         *     proxies the request to `clob.polymarket.com` from a trusted IP — works
+         *     around Cloudflare bot detection that blocks direct SDK calls (which
+         *     can't fake browser TLS fingerprints).
+         */
+        ClobCredsRequest: {
+            /** @description EOA address — must match the address that produced `signature`. */
+            eoa: string;
+            /** @description Same timestamp string that appears in the signed `ClobAuth.timestamp`. */
+            timestamp: string;
+            /** @description Same nonce that appears in the signed `ClobAuth.nonce` — usually `"0"`. */
+            nonce: string;
+            /** @description 65-byte 0x-prefixed signature over the ClobAuth EIP-712 digest. */
+            signature: string;
+            /** @description Force-mint a fresh credential pair vs. derive an existing one. */
+            create_new?: boolean;
+        };
+        ClobCredsResponse: {
+            credentials: components["schemas"]["ClobCredentials"];
+        };
         /** @description CLOB reward (public API format) */
         ClobReward: {
             id: string;
@@ -2760,6 +3417,11 @@ export interface components {
         EventPnlSortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "total_fees" | "realized_pnl_pct";
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
+        /**
+         * @description Which V2 exchange settles a market (mirrors the SDK `ExchangeKind`).
+         * @enum {string}
+         */
+        ExchangeKindDto: "binary" | "neg_risk";
         /**
          * @description One tag's stats aggregated across every builder routing activity into it.
          *
@@ -3362,6 +4024,24 @@ export interface components {
             event_slug?: string | null;
         };
         /**
+         * @description Struct/RPC-backed onboarding readiness for an EOA. CLOB credentials are
+         *     minted client-side through Polymarket's official SDK and are not tracked
+         *     here.
+         */
+        OnboardStatus: {
+            eoa: string;
+            safe: string;
+            safe_deployed: boolean;
+            approvals_set: boolean;
+            /**
+             * @description Whether CLOB API credentials have been minted. Always `false` from
+             *     this endpoint — credential state is held client-side.
+             */
+            clob_credentials_minted: boolean;
+            /** @description Outstanding setup steps. Possible values: `deploy_safe`, `set_approvals`. */
+            pending_actions: string[];
+        };
+        /**
          * @description Tagged enum for all oracle event types — serializes with `"event_type": "..."` discriminator
          *     and only includes fields relevant to each type.
          */
@@ -3470,6 +4150,11 @@ export interface components {
              */
             builder_fee?: number | null;
         };
+        /**
+         * @description Time-in-force for a Polymarket V2 order.
+         * @enum {string}
+         */
+        OrderType: "GTC" | "GTD" | "FOK" | "FAK";
         OrderbookHistoryRow: {
             /** Format: int64 */
             ts: number;
@@ -3656,6 +4341,82 @@ export interface components {
         PnlCandleTimeframe: "1d" | "7d" | "30d" | "lifetime";
         /** @enum {string} */
         PnlTimeframe: "1d" | "7d" | "30d" | "lifetime";
+        PnlV3CandleEntry: {
+            /**
+             * Format: int64
+             * @description Timestamp in epoch seconds at the start of the candle bucket.
+             */
+            t: number;
+            /**
+             * Format: double
+             * @description Total PnL open value for the candle.
+             */
+            open: number;
+            /**
+             * Format: double
+             * @description Total PnL high value for the candle.
+             */
+            high: number;
+            /**
+             * Format: double
+             * @description Total PnL low value for the candle.
+             */
+            low: number;
+            /**
+             * Format: double
+             * @description Total PnL close/latest value for the candle.
+             */
+            close: number;
+            /** Format: int64 */
+            open_block: number;
+            /** Format: int64 */
+            close_block: number;
+            /**
+             * Format: double
+             * @description Latest realized PnL at candle close.
+             */
+            realized_pnl: number;
+            /**
+             * Format: double
+             * @description Latest unrealized/open-position value at candle close.
+             */
+            unrealized_pnl: number;
+            /**
+             * Format: double
+             * @description Latest USDC balance at candle close.
+             */
+            usdc_balance: number;
+            /**
+             * Format: double
+             * @description Latest pUSD balance at candle close.
+             */
+            pusd_balance: number;
+            /**
+             * Format: double
+             * @description Portfolio value open value for the candle.
+             */
+            portfolio_open: number;
+            /**
+             * Format: double
+             * @description Portfolio value high value for the candle.
+             */
+            portfolio_high: number;
+            /**
+             * Format: double
+             * @description Portfolio value low value for the candle.
+             */
+            portfolio_low: number;
+            /**
+             * Format: double
+             * @description Portfolio value close/latest value for the candle.
+             */
+            portfolio_close: number;
+            /**
+             * Format: int32
+             * @description Latest open position count at candle close.
+             */
+            num_open_positions: number;
+        };
         /** @description A Polymarket event from the Gamma API */
         PolymarketEvent: {
             /** @default  */
@@ -3971,11 +4732,34 @@ export interface components {
             index_set: string;
             /** Format: double */
             shares_amount: number;
-            /** Format: double */
-            fee?: number | null;
-            /** Format: double */
-            fee_pct?: number | null;
             exchange: components["schemas"]["PolymarketExchange"];
+        };
+        /**
+         * @description Place a Polymarket V2 order. The SDK signs the V2 Order EIP-712 locally
+         *     and posts the full envelope here; we forward to clob.polymarket.com
+         *     from the backend (proxy required because Polymarket's Cloudflare layer
+         *     blocks direct SDK calls based on TLS fingerprint).
+         */
+        PostOrderRequest: {
+            /**
+             * @description Full V2 Order struct as JSON (decimal-string numerics, lower-camelCase
+             *     fields) plus a `signature` field. Sign with `PolyTrader::order` on
+             *     the SDK side.
+             */
+            signed_order: unknown;
+            /** @description CLOB API credentials for the wallet placing the order. */
+            clob_credentials: components["schemas"]["ClobCredentials"];
+            order_type: components["schemas"]["OrderType"];
+            exchange?: components["schemas"]["ExchangeKindDto"];
+            post_only?: boolean;
+            defer_exec?: boolean;
+        };
+        PostOrderResponse: {
+            success: boolean;
+            /** @description Server-assigned order identifier (set when `success = true`). */
+            order_id?: string | null;
+            /** @description Human-readable error string when `success = false`. */
+            error?: string | null;
         };
         PredictionCandlestickBar: {
             /** Format: double */
@@ -4253,6 +5037,38 @@ export interface components {
             position_details?: components["schemas"]["PositionDetail"][];
             exchange: components["schemas"]["PolymarketExchange"];
         };
+        /**
+         * @description Refresh the V2 CLOB's cached view of a wallet's balance and allowances —
+         *     call after on-chain approval changes done outside the trading API.
+         */
+        RefreshBalanceAllowanceRequest: {
+            signer_address: string;
+            clob_credentials: components["schemas"]["ClobCredentials"];
+            /**
+             * Format: int32
+             * @description Polymarket signature type the wallet uses. `0` = EOA, `2` = Safe.
+             */
+            signature_type: number;
+        };
+        /**
+         * @description Register or overwrite the caller's per-EOA Polymarket builder
+         *     credentials. Auth: caller signs the message
+         *       `Register Polymarket builder credentials for {eoa} at {timestamp}`
+         *     with the EOA's private key (eth_sign-prefixed). Struct recovers
+         *     the signer, verifies it matches `eoa`, and rejects timestamps older
+         *     than 5 minutes.
+         */
+        RegisterRelayerKeyRequest: {
+            eoa: string;
+            /**
+             * Format: int64
+             * @description Unix-second timestamp the SDK signed. Must be within ±300s of now.
+             */
+            timestamp: number;
+            /** @description 0x-prefixed 65-byte ECDSA signature over `eth_sign(message)`. */
+            signature: string;
+            builder_credentials: components["schemas"]["BuilderCredentials"];
+        };
         /** @description Output payload for RegisterToken events (YES/NO token pair registered for a condition). */
         RegisterTokenTrade: {
             id: string;
@@ -4275,6 +5091,14 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
             exchange: components["schemas"]["PolymarketExchange"];
+        };
+        RelayerKeyResponse: {
+            eoa: string;
+            api_key: string;
+            api_secret: string;
+            api_passphrase: string;
+            /** Format: date-time */
+            registered_at: string;
         };
         /** @description V2 UMA OOv2: a price request was made (market initialization). */
         RequestPriceEvent: {
@@ -4329,6 +5153,30 @@ export interface components {
             /** Format: double */
             d30: number;
         };
+        /**
+         * @description Auth payload for `DELETE /relayer-key/{eoa}`. Same SIWE-style proof as
+         *     register, with the message
+         *       `Revoke Polymarket builder credentials for {eoa} at {timestamp}`.
+         */
+        RevokeRelayerKeyRequest: {
+            /** Format: int64 */
+            timestamp: number;
+            signature: string;
+        };
+        /** @description Polymarket Safe (funder) wallet derived from an EOA. */
+        SafeInfo: {
+            /** @description EOA address (the wallet that signs orders). */
+            eoa: string;
+            /** @description Safe contract address — the wallet that holds USDC.e, pUSD, and outcome tokens. */
+            safe: string;
+            /** @description Whether the Safe contract has been deployed on Polygon. */
+            deployed: boolean;
+            /**
+             * Format: int32
+             * @description Polymarket signature type. `2` = Polymarket Safe (default).
+             */
+            signature_type: number;
+        };
         SearchResponse: {
             events?: components["schemas"]["PolymarketEvent"][] | null;
             events_pagination?: null | components["schemas"]["PaginationMeta"];
@@ -4376,6 +5224,19 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
+        /** @description Signed Safe execTransaction envelope for gasless on-chain operations. */
+        SignedSafeTx: {
+            eoa: string;
+            safe: string;
+            /** @description Full signed Safe execTransaction payload (Polymarket V2 relayer shape). */
+            payload: unknown;
+            /**
+             * @description Reserved for operations that support confirmation waits. Default
+             *     `false`.
+             */
+            send_and_confirm?: boolean;
+            builder_credentials?: null | components["schemas"]["BuilderCredentials"];
+        };
         SimpleTimeframeMetrics: {
             /**
              * Format: double
@@ -4398,6 +5259,382 @@ export interface components {
              */
             unique_traders: number;
         };
+        SmartMoneyDailyRow: {
+            day: string;
+            /** Format: int32 */
+            trader_id: number;
+            trader: string;
+            /** Format: double */
+            weighted_avg_entry_probability: number;
+            /** Format: double */
+            entry_probability_buy_volume_usd: number;
+            /** Format: int64 */
+            entry_probability_buy_count: number;
+            /** Format: int64 */
+            reentry_count: number;
+            /** Format: int64 */
+            profitable_exit_reentries: number;
+            /** Format: int64 */
+            losing_exit_reentries: number;
+            /** Format: double */
+            avg_seconds_to_reenter: number;
+            /** Format: int64 */
+            fumbled_count: number;
+            /** Format: double */
+            missed_upside: number;
+            /** Format: double */
+            avoided_loss: number;
+            /** Format: double */
+            net_opportunity: number;
+        };
+        SmartMoneyEntryAlert: {
+            alert_id: string;
+            /** Format: int64 */
+            block_number: number;
+            /** Format: int64 */
+            block_timestamp: number;
+            trader: string;
+            condition_id: string;
+            position_id: string;
+            event_slug?: string | null;
+            outcome?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            side: string;
+            /** Format: double */
+            trade_usd: number;
+            /** Format: double */
+            trade_shares: number;
+            /** Format: double */
+            entry_probability?: number | null;
+            /** Format: int32 */
+            smart_money_score: number;
+            /** Format: double */
+            weighted_avg_entry_probability: number;
+            /** Format: double */
+            entry_probability_buy_volume_usd: number;
+            reason_codes: components["schemas"]["SmartMoneyReasonCode"][];
+            summary: string;
+        };
+        SmartMoneyEntryBatch: {
+            /** Format: int64 */
+            block_number: number;
+            /** Format: int64 */
+            block_timestamp: number;
+            alerts: components["schemas"]["SmartMoneyEntryAlert"][];
+        };
+        SmartMoneyFumbledEventRow: {
+            /** Format: int64 */
+            resolved_ts: number;
+            /** Format: int64 */
+            resolved_block: number;
+            /** Format: int32 */
+            trader_id: number;
+            trader: string;
+            /** Format: int32 */
+            condition_id: number;
+            condition: string;
+            /** Format: int32 */
+            position_id: number;
+            position: string;
+            event_slug: string;
+            outcome: string;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            /** Format: int32 */
+            winning_outcome_index: number;
+            /** Format: int64 */
+            exit_block: number;
+            /** Format: int64 */
+            exit_ts: number;
+            /** Format: double */
+            actual_realized_pnl: number;
+            /** Format: double */
+            hold_to_resolution_pnl: number;
+            /** Format: double */
+            missed_upside: number;
+            /** Format: double */
+            avoided_loss: number;
+            /** Format: double */
+            net_opportunity: number;
+        };
+        SmartMoneyHighConvictionEntryAlert: {
+            alert_id: string;
+            /** Format: int64 */
+            block_number: number;
+            /** Format: int64 */
+            block_timestamp: number;
+            trader: string;
+            condition_id: string;
+            position_id: string;
+            event_slug?: string | null;
+            outcome?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            side: string;
+            /** Format: double */
+            trade_usd: number;
+            /** Format: double */
+            trade_shares: number;
+            /** Format: double */
+            entry_probability?: number | null;
+            /** Format: int64 */
+            active_holder_count_excl_trader: number;
+            /** Format: double */
+            active_shares_excl_trader: number;
+            /** Format: double */
+            active_notional_excl_trader: number;
+            /** Format: double */
+            position_weighted_conviction?: number | null;
+            /** Format: double */
+            position_weighted_conviction_usd?: number | null;
+            /** Format: int64 */
+            trader_open_positions_excl_trade: number;
+            /** Format: double */
+            trader_open_notional_excl_trade: number;
+            /** Format: double */
+            trader_portfolio_conviction?: number | null;
+            /** Format: double */
+            trader_position_shares: number;
+            /** Format: double */
+            trader_position_notional: number;
+            /** Format: double */
+            trader_usdc_balance: number;
+            /** Format: double */
+            trader_pusd_balance: number;
+            /** Format: double */
+            trader_cash_balance: number;
+            /** Format: double */
+            cash_deployment_ratio?: number | null;
+            /** Format: double */
+            usdc_deployment_ratio?: number | null;
+            /** Format: double */
+            pusd_deployment_ratio?: number | null;
+            /** Format: int32 */
+            smart_money_score: number;
+            /** Format: double */
+            weighted_avg_entry_probability: number;
+            /** Format: double */
+            entry_probability_buy_volume_usd: number;
+            reason_codes: components["schemas"]["SmartMoneyReasonCode"][];
+            summary: string;
+        };
+        SmartMoneyHighConvictionEntryBatch: {
+            /** Format: int64 */
+            block_number: number;
+            /** Format: int64 */
+            block_timestamp: number;
+            alerts: components["schemas"]["SmartMoneyHighConvictionEntryAlert"][];
+        };
+        SmartMoneyInsiderPatternEntryAlert: {
+            alert_id: string;
+            /** Format: int64 */
+            block_number: number;
+            /** Format: int64 */
+            block_timestamp: number;
+            trader: string;
+            condition_id: string;
+            position_id: string;
+            event_slug?: string | null;
+            outcome?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            side: string;
+            /** Format: double */
+            trade_usd: number;
+            /** Format: double */
+            trade_shares: number;
+            /** Format: double */
+            entry_probability?: number | null;
+            /** Format: double */
+            trader_usdc_balance: number;
+            /** Format: double */
+            trader_pusd_balance: number;
+            /** Format: double */
+            trader_cash_balance: number;
+            /** Format: double */
+            cash_deployment_ratio: number;
+            /** Format: int32 */
+            historical_trade_count: number;
+            /** Format: int32 */
+            historical_buy_count: number;
+            /** Format: int32 */
+            smart_money_score: number;
+            reason_codes: components["schemas"]["SmartMoneyReasonCode"][];
+            summary: string;
+        };
+        SmartMoneyInsiderPatternEntryBatch: {
+            /** Format: int64 */
+            block_number: number;
+            /** Format: int64 */
+            block_timestamp: number;
+            alerts: components["schemas"]["SmartMoneyInsiderPatternEntryAlert"][];
+        };
+        SmartMoneyMarketLifetimeRow: {
+            /** Format: int32 */
+            condition_id: number;
+            condition: string;
+            /** Format: int32 */
+            event_slug_id: number;
+            event_slug: string;
+            /** Format: int64 */
+            reentry_count: number;
+            /** Format: int64 */
+            unique_reentry_traders: number;
+            /** Format: int64 */
+            fumbled_count: number;
+            /** Format: int64 */
+            unique_fumbled_traders: number;
+            /** Format: double */
+            missed_upside: number;
+            /** Format: double */
+            avoided_loss: number;
+            /** Format: double */
+            net_opportunity: number;
+            /** Format: int64 */
+            updated_at: number;
+        };
+        /** @enum {string} */
+        SmartMoneyReasonCode: "trade_usd_gte_500" | "early_entry_probability_lte_35pct" | "high_position_weighted_conviction" | "high_trader_portfolio_conviction" | "high_cash_deployment" | "new_wallet_no_trade_history" | "low_trade_history_lte_5" | "low_probability_entry" | "cash_deployment_gt_70pct" | "reopened_after_full_exit" | "previous_exit_profitable" | "previous_exit_losing";
+        SmartMoneyReasonCodesResponse: {
+            reason_codes: components["schemas"]["SmartMoneyReasonCode"][];
+            trader_profile_reason_codes: components["schemas"]["SmartMoneyTraderProfileReasonCode"][];
+        };
+        SmartMoneyReentryAlert: {
+            alert_id: string;
+            /** Format: int64 */
+            block_number: number;
+            /** Format: int64 */
+            block_timestamp: number;
+            trader: string;
+            condition_id: string;
+            position_id: string;
+            event_slug: string;
+            outcome: string;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            /** Format: int64 */
+            previous_exit_block: number;
+            /** Format: int64 */
+            previous_exit_timestamp: number;
+            /** Format: int64 */
+            seconds_to_reenter: number;
+            /** Format: double */
+            previous_exit_realized_pnl: number;
+            /** Format: double */
+            previous_exit_buy_usd: number;
+            /** Format: double */
+            previous_exit_sell_usd: number;
+            /** Format: int64 */
+            reentry_count: number;
+            reason_codes: components["schemas"]["SmartMoneyReasonCode"][];
+            summary: string;
+        };
+        SmartMoneyReentryBatch: {
+            /** Format: int64 */
+            block_number: number;
+            /** Format: int64 */
+            block_timestamp: number;
+            alerts: components["schemas"]["SmartMoneyReentryAlert"][];
+        };
+        SmartMoneyReentryEventRow: {
+            /** Format: int64 */
+            ts: number;
+            /** Format: int64 */
+            block: number;
+            /** Format: int32 */
+            trader_id: number;
+            trader: string;
+            /** Format: int32 */
+            condition_id: number;
+            condition: string;
+            /** Format: int32 */
+            position_id: number;
+            position: string;
+            event_slug: string;
+            /** Format: int64 */
+            previous_exit_block: number;
+            /** Format: int64 */
+            previous_exit_ts: number;
+            /** Format: int64 */
+            seconds_to_reenter: number;
+            /** Format: double */
+            previous_exit_realized_pnl: number;
+            /** Format: double */
+            previous_exit_buy_usd: number;
+            /** Format: double */
+            previous_exit_sell_usd: number;
+        };
+        /** @enum {string} */
+        SmartMoneySortBy: "missed_upside" | "avoided_loss" | "net_opportunity" | "reentry_count" | "weighted_avg_entry_probability" | "avg_cash_deployment_ratio" | "max_cash_deployment_ratio" | "high_cash_deployment_count" | "contrarian_validation_rate" | "contrarian_validated_count" | "contrarian_failed_count" | "best_contrarian_probability_multiple" | "fumbled_count" | "biggest_fumble" | "biggest_dodge";
+        SmartMoneyTraderLifetimeRow: {
+            /** Format: int32 */
+            trader_id: number;
+            trader: string;
+            profile_reason_codes: components["schemas"]["SmartMoneyTraderProfileReasonCode"][];
+            /** Format: double */
+            weighted_avg_entry_probability: number;
+            /** Format: double */
+            entry_probability_buy_volume_usd: number;
+            /** Format: int64 */
+            entry_probability_buy_count: number;
+            /** Format: double */
+            avg_cash_deployment_ratio: number;
+            /** Format: double */
+            cash_deployment_buy_volume_usd: number;
+            /** Format: int64 */
+            cash_deployment_buy_count: number;
+            /** Format: double */
+            max_cash_deployment_ratio: number;
+            /** Format: int64 */
+            high_cash_deployment_count: number;
+            /** Format: int64 */
+            contrarian_entry_count: number;
+            /** Format: int64 */
+            contrarian_validated_count: number;
+            /** Format: int64 */
+            contrarian_failed_count: number;
+            /** Format: double */
+            contrarian_validation_rate: number;
+            /** Format: double */
+            contrarian_failure_rate: number;
+            /** Format: double */
+            avg_contrarian_entry_probability: number;
+            /** Format: double */
+            contrarian_entry_buy_volume_usd: number;
+            /** Format: double */
+            best_contrarian_probability_multiple: number;
+            /** Format: int64 */
+            reentry_count: number;
+            /** Format: int64 */
+            profitable_exit_reentries: number;
+            /** Format: int64 */
+            losing_exit_reentries: number;
+            /** Format: int64 */
+            total_seconds_to_reenter: number;
+            /** Format: int64 */
+            fastest_reentry_seconds?: number | null;
+            /** Format: int64 */
+            slowest_reentry_seconds?: number | null;
+            /** Format: double */
+            avg_seconds_to_reenter: number;
+            /** Format: int64 */
+            fumbled_count: number;
+            /** Format: double */
+            missed_upside: number;
+            /** Format: double */
+            avoided_loss: number;
+            /** Format: double */
+            net_opportunity: number;
+            /** Format: double */
+            biggest_fumble: number;
+            /** Format: double */
+            biggest_dodge: number;
+            /** Format: int64 */
+            updated_at: number;
+        };
+        /** @enum {string} */
+        SmartMoneyTraderProfileReasonCode: "early_entry_style" | "frequent_low_probability_entries" | "proven_low_probability_entries" | "high_cash_deployment_style" | "reentry_style" | "profitable_reentry_style" | "fumbled_upside_history" | "good_exit_timing_history";
         /** @enum {string} */
         SortDirection: "asc" | "desc";
         /**
@@ -5150,6 +6387,54 @@ export interface components {
             pnl?: null | components["schemas"]["TraderPnlSummary"];
         };
         /**
+         * @description Standard error envelope returned by every trading endpoint on failure.
+         *     Clients should branch on `error_code` (stable) rather than `message`.
+         */
+        TradingErrorEnvelope: {
+            success: boolean;
+            /** @description Human-readable explanation. May change between releases. */
+            message: string;
+            /**
+             * @description Stable identifier (e.g. `INSUFFICIENT_BALANCE`, `INVALID_SIGNATURE`,
+             *     `RATE_LIMITED`). Use this for client-side branching.
+             */
+            error_code: string;
+            /**
+             * @description One of: `auth`, `validation`, `balance`, `order_state`, `system`,
+             *     `not_found`, `rate_limit`, `rpc`, `relayer`, `internal`.
+             */
+            category: string;
+            /** @description Whether the same request can be safely retried. */
+            retryable: boolean;
+            /**
+             * @description Additional context (e.g. raw upstream body when classification falls
+             *     through). May be empty.
+             */
+            extra: unknown;
+        };
+        /**
+         * @description Result of probing both Polymarket wallet types for an EOA. The funder
+         *     address is whichever wallet is actually deployed; if neither is,
+         *     defaults to Safe.
+         */
+        WalletDetection: {
+            eoa: string;
+            safe: string;
+            proxy: string;
+            safe_deployed: boolean;
+            proxy_deployed: boolean;
+            /**
+             * @description Whichever of `safe` / `proxy` is actually deployed. Falls back to
+             *     `safe` when neither is.
+             */
+            funder: string;
+            /**
+             * Format: int32
+             * @description Polymarket signature type: `2` = POLY_GNOSIS_SAFE, `1` = POLY_PROXY.
+             */
+            signature_type: number;
+        };
+        /**
          * @description Crypto asset symbols accepted by `asset_price_tick` and `asset_price_window_update` filters.
          * @enum {string}
          */
@@ -5338,8 +6623,6 @@ export interface operations {
                 sort_desc?: boolean;
                 /** @description Window to rank over. Default: lifetime. */
                 timeframe?: components["schemas"]["BuilderTimeframe"];
-                /** @description When true, only return builders with registered display metadata. Ranks remain global across all builders. */
-                named_only?: boolean;
                 /** @description Max rows to return (default 50, max 500). */
                 limit?: number;
                 /** @description Number of rows to skip. Default 0. Takes precedence over `pagination_key`. */
@@ -7777,6 +9060,189 @@ export interface operations {
             };
         };
     };
+    smart_money_leaderboard: {
+        parameters: {
+            query?: {
+                /** @description Metric to sort by. Default: missed_upside. */
+                sort?: components["schemas"]["SmartMoneySortBy"];
+                /** @description Sort direction. Default: true. */
+                sort_desc?: boolean;
+                /** @description Max rows to return. Default 50, max 500. */
+                limit?: number;
+                /** @description Number of rows to skip. Takes precedence over pagination_key. */
+                offset?: number;
+                /** @description Opaque cursor from a previous response. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ranked smart-money traders */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmartMoneyTraderLifetimeRow"][];
+                };
+            };
+        };
+    };
+    smart_money_market_summary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Condition id. */
+                condition: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Market smart-money summary */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": null | components["schemas"]["SmartMoneyMarketLifetimeRow"];
+                };
+            };
+        };
+    };
+    smart_money_reason_codes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Smart-money alert reason codes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmartMoneyReasonCodesResponse"];
+                };
+            };
+        };
+    };
+    smart_money_trader_summary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Trader wallet address. */
+                trader: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Trader smart-money summary */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": null | components["schemas"]["SmartMoneyTraderLifetimeRow"];
+                };
+            };
+        };
+    };
+    smart_money_trader_daily: {
+        parameters: {
+            query?: {
+                /** @description Number of daily rows to return. Default 365, max 2000. */
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address. */
+                trader: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Daily smart-money rows */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmartMoneyDailyRow"][];
+                };
+            };
+        };
+    };
+    smart_money_trader_fumbled: {
+        parameters: {
+            query?: {
+                /** @description Max rows to return. Default 50, max 500. */
+                limit?: number;
+                /** @description Number of rows to skip. Takes precedence over pagination_key. */
+                offset?: number;
+                /** @description Opaque cursor from a previous response. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address. */
+                trader: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Trader fumbled/dodged events */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmartMoneyFumbledEventRow"][];
+                };
+            };
+        };
+    };
+    smart_money_trader_reentries: {
+        parameters: {
+            query?: {
+                /** @description Max rows to return. Default 50, max 500. */
+                limit?: number;
+                /** @description Number of rows to skip. Takes precedence over pagination_key. */
+                offset?: number;
+                /** @description Opaque cursor from a previous response. */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address. */
+                trader: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Trader re-entry events */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmartMoneyReentryEventRow"][];
+                };
+            };
+        };
+    };
     get_tags: {
         parameters: {
             query?: {
@@ -8223,6 +9689,34 @@ export interface operations {
             };
         };
     };
+    get_trader_pnl_v3_candles: {
+        parameters: {
+            query?: {
+                /** @description Candle resolution (default: 1h) */
+                resolution?: components["schemas"]["PnlCandleResolution"];
+                /** @description Time range (default: lifetime) */
+                timeframe?: components["schemas"]["PnlCandleTimeframe"];
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description PnL v3 candles */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PnlV3CandleEntry"][];
+                };
+            };
+        };
+    };
     get_trader_profile: {
         parameters: {
             query?: never;
@@ -8464,6 +9958,846 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TraderTimeBucketRow"][];
+                };
+            };
+        };
+    };
+    get_approvals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Safe wallet address (from `get_safe_info`) */
+                safe: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-approval status and aggregate `all_set` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovalsInfo"];
+                };
+            };
+            /** @description Invalid Safe address */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Polygon RPC temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_balances: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Wallet address to query (Safe or EOA) */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Balances in raw integer strings */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BalanceInfo"];
+                };
+            };
+            /** @description Invalid address */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Polygon RPC temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    builder_sign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BuilderSignRequest"];
+            };
+        };
+        responses: {
+            /** @description Signed POLY_* headers */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BuilderSignResponse"];
+                };
+            };
+            /** @description Malformed request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Platform builder credentials not configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    cancel_all: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelAllRequest"];
+            };
+        };
+        responses: {
+            /** @description Cancellation summary */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    onboard_clob_credentials: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClobCredsRequest"];
+            };
+        };
+        responses: {
+            /** @description Minted credentials */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClobCredsResponse"];
+                };
+            };
+            /** @description Bad payload or both create+derive failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_onboard_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description EOA address */
+                eoa: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Readiness summary with `pending_actions` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OnboardStatus"];
+                };
+            };
+            /** @description Invalid EOA address */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Polygon RPC temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    post_order: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PostOrderRequest"];
+            };
+        };
+        responses: {
+            /** @description Order accepted by the matching engine */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostOrderResponse"];
+                };
+            };
+            /** @description Order rejected (price out of range, post-only crosses, etc.) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Bad CLOB credentials */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_order_status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Server-assigned order identifier */
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order details (CLOB JSON shape) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    cancel_order: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Server-assigned order identifier */
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelOrderRequest"];
+            };
+        };
+        responses: {
+            /** @description Cancellation result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_open_orders: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Wallet address whose orders to fetch (Safe or EOA) */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Open orders array (CLOB JSON shape) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Missing or invalid CLOB credentials in headers */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    refresh_balance_allowance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshBalanceAllowanceRequest"];
+            };
+        };
+        responses: {
+            /** @description Cache refresh accepted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    register_relayer_key: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterRelayerKeyRequest"];
+            };
+        };
+        responses: {
+            /** @description Stored. Returns the registered creds for client-side caching */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelayerKeyResponse"];
+                };
+            };
+            /** @description Malformed payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Signature did not recover to the claimed EOA, or timestamp is stale */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_relayer_key: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description EOA address (the wallet owner) */
+                eoa: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Stored builder credentials */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelayerKeyResponse"];
+                };
+            };
+            /** @description Invalid EOA address */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description No builder credentials registered for this EOA */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    revoke_relayer_key: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description EOA address whose credentials are being revoked */
+                eoa: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RevokeRelayerKeyRequest"];
+            };
+        };
+        responses: {
+            /** @description Revoked */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Signature did not recover to the claimed EOA, or timestamp is stale */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description No builder credentials registered for this EOA */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_safe_info: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description EOA address (the order-signing wallet) */
+                eoa: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Derived Safe address and deployment status */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SafeInfo"];
+                };
+            };
+            /** @description Invalid EOA address */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Polygon RPC temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    tx_convert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignedSafeTx"];
+            };
+        };
+        responses: {
+            /** @description Conversion accepted by the relayer */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Market is not NegRisk, or malformed payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Relayer rejected the transaction */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    tx_merge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignedSafeTx"];
+            };
+        };
+        responses: {
+            /** @description Merge accepted by the relayer */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed payload or insufficient outcome tokens */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Relayer rejected the transaction */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    tx_split: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignedSafeTx"];
+            };
+        };
+        responses: {
+            /** @description Split accepted by the relayer */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed payload or invalid market */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Relayer rejected the transaction */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    tx_unwrap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignedSafeTx"];
+            };
+        };
+        responses: {
+            /** @description Transaction accepted by the relayer */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Relayer rejected the transaction */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Relayer temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    tx_wrap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignedSafeTx"];
+            };
+        };
+        responses: {
+            /** @description Transaction accepted by the relayer; includes transaction ID and state */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed payload */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Relayer rejected the transaction */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Relayer temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+        };
+    };
+    detect_wallet_type: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description EOA address (the order-signing wallet) */
+                eoa: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Detected funder address and signature type */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WalletDetection"];
+                };
+            };
+            /** @description Invalid EOA address */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
+                };
+            };
+            /** @description Polygon RPC temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TradingErrorEnvelope"];
                 };
             };
         };

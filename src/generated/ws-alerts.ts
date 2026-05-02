@@ -86,192 +86,111 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
-        /** @description Subscription filters for the `asset_price_tick` event. All fields are optional. */
-        AssetPriceTickFilters: {
-            /** @description Restrict to these crypto assets. Empty = all assets. */
-            asset_symbols?: components["schemas"]["WebhookAssetSymbol"][] | null;
-        };
-        /** @description Webhook payload for an asset price tick. */
+        /** @description Payload delivered on every raw Chainlink price tick for a tracked crypto asset */
         AssetPriceTickPayload: {
-            /** @description Asset symbol */
-            symbol: components["schemas"]["WebhookAssetSymbol"];
             /**
-             * Format: double
-             * @description Current price from the Chainlink feed
+             * @description Asset symbol
+             * @enum {string}
              */
+            symbol: "BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE";
+            /** @description Current asset price in USD from the Chainlink feed */
             price: number;
             /**
              * Format: int64
-             * @description Tick timestamp as reported by the WebSocket feed (milliseconds since epoch)
+             * @description Tick timestamp (milliseconds since Unix epoch)
              */
             timestamp_ms: number;
         };
-        /** @description Subscription filters for the `asset_price_window_update` event. All fields are optional. */
-        AssetPriceWindowUpdateFilters: {
-            /** @description Restrict to these crypto assets. Empty = all assets. */
-            asset_symbols?: components["schemas"]["WebhookAssetSymbol"][] | null;
-            /** @description Restrict to these candle sizes. Empty = all sizes. */
-            timeframes?: components["schemas"]["AssetWindowFilterTimeframe"][] | null;
-        };
-        /** @description Webhook payload for an asset price window open or close. */
+        /** @description Payload delivered twice per candle — once on open and once on close. `close_price` is 0.0 on the "open" update. */
         AssetPriceWindowUpdatePayload: {
-            /** @description Asset symbol */
-            symbol: components["schemas"]["WebhookAssetSymbol"];
-            /** @description Time-window variant */
-            variant: components["schemas"]["AssetPriceWindowVariant"];
+            /**
+             * @description Asset symbol
+             * @enum {string}
+             */
+            symbol: "BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE";
+            /**
+             * @description Candle / window size
+             * @enum {string}
+             */
+            variant: "5m" | "15m" | "1h" | "4h" | "1d" | "24h";
             /**
              * Format: int64
-             * @description Window start timestamp (milliseconds since epoch)
+             * @description Window start timestamp (milliseconds since Unix epoch)
              */
             start_time: number;
             /**
              * Format: int64
-             * @description Window end timestamp (milliseconds since epoch)
+             * @description Window end timestamp (milliseconds since Unix epoch)
              */
             end_time: number;
-            /**
-             * Format: double
-             * @description Opening price at start_time
-             */
+            /** @description Opening price at start_time (USD) */
             open_price: number;
-            /**
-             * Format: double
-             * @description Closing price at end_time (0.0 on an "open" update — not yet available)
-             */
+            /** @description Closing price at end_time (USD). 0.0 when update_type is "open" (not yet available). */
             close_price: number;
-            /** @description "open" when the window starts, "close" when the window is complete */
-            update_type: components["schemas"]["AssetPriceWindowUpdateType"];
-        };
-        /**
-         * @description Whether this update is the open or the close of a candle.
-         * @enum {string}
-         */
-        AssetPriceWindowUpdateType: "open" | "close";
-        /**
-         * @description Time-window variant emitted by the asset price window stream.
-         * @enum {string}
-         */
-        AssetPriceWindowVariant: "5m" | "15m" | "1h" | "4h" | "1d" | "24h";
-        /**
-         * @description Candle sizes accepted by `asset_price_window_update.timeframes`.
-         * @enum {string}
-         */
-        AssetWindowFilterTimeframe: "5m" | "15m" | "1h" | "4h" | "1d" | "24h";
-        /**
-         * @description Subscription filters for the `close_to_bond` event. At least one of
-         *     `min_probability` or `max_probability` is required (enforced at runtime).
-         */
-        CloseToBondFilters: {
             /**
-             * Format: double
-             * @description Trigger when the YES outcome price is ≥ this value (e.g. 0.95 for 95% certainty). At least one of `min_probability` or `max_probability` must be set.
+             * @description "open" when the candle opens, "close" when it closes with a confirmed price
+             * @enum {string}
              */
-            min_probability?: number | null;
-            /**
-             * Format: double
-             * @description Trigger when the YES outcome price is ≤ this value (e.g. 0.05 for near-certain NO).
-             */
-            max_probability?: number | null;
-            /** @description Restrict to these markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to these outcome token IDs. */
-            position_ids?: string[] | null;
-            /** @description Restrict to markets in these events. */
-            event_slugs?: string[] | null;
-            /** @description Restrict to these outcome names (e.g. \["Yes", "No"\]). */
-            outcomes?: string[] | null;
-            /** @description Restrict by outcome index. 0 = Yes/Up, 1 = No. Position 0 usually represents the Up/Yes side in binary markets. */
-            position_outcome_indices?: number[] | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
+            update_type: "open" | "close";
         };
-        /** @description Close-to-bond webhook payload */
+        /** @description Payload delivered when a trade occurs at a near-certain-outcome price */
         CloseToBondPayload: {
-            /** @description Trader address (the limit-order maker) */
+            /** @description Limit-order maker wallet address (lowercase) */
             trader: string;
-            /** @description Taker address (the order filler — often the exchange contract) */
+            /** @description Order filler wallet address (lowercase) */
             taker: string;
-            /** @description Position ID (ERC1155 token ID) */
+            /** @description ERC-1155 outcome token ID */
             position_id: string;
-            /** @description Condition ID (parent market) */
+            /** @description Parent market condition ID */
             condition_id?: string | null;
             /** @description Outcome name (e.g. "Yes", "No") */
             outcome?: string | null;
-            /**
-             * Format: int32
-             * @description Outcome index (0 = Yes/Up, 1 = No). Position 0 usually represents Yes/Up.
-             */
+            /** @description 0 = Yes/Up, 1 = No */
             outcome_index?: number | null;
-            /** @description Market question */
             question?: string | null;
-            /** @description Market slug */
             market_slug?: string | null;
-            /** @description Event slug */
             event_slug?: string | null;
-            /** @description Trade ID */
             trade_id: string;
             /** @description Transaction hash */
             hash: string;
-            /**
-             * Format: int64
-             * @description Block number
-             */
+            /** Format: int64 */
             block: number;
             /**
              * Format: int64
-             * @description Confirmed timestamp (Unix seconds)
+             * @description Unix seconds
              */
             confirmed_at: number;
-            /**
-             * Format: double
-             * @description USD size of the trade
-             */
+            /** @description USD size of the trade */
             amount_usd: number;
-            /**
-             * Format: double
-             * @description Outcome shares traded
-             */
             shares_amount: number;
-            /**
-             * Format: double
-             * @description Fee paid (USD)
-             */
+            /** @description Fee paid in USD */
             fee: number;
-            /** @description Trade side ("Buy" or "Sell") */
-            side: string;
-            /**
-             * Format: double
-             * @description Price per share (0.0–1.0) — the value that triggered the notification
-             */
+            /** @enum {string} */
+            side: "Buy" | "Sell";
+            /** @description Price that triggered the notification (0.0–1.0) */
             price: number;
-            /**
-             * Format: double
-             * @description Implied probability of the outcome (0.0–1.0)
-             */
+            /** @description Implied probability (0.0–1.0) */
             probability?: number | null;
-            /** @description Which bond zone was entered: `"high"` (YES near-certain) or `"low"` (NO near-certain) */
-            bond_side: string;
             /**
-             * Format: double
-             * @description The probability threshold from the subscriber's filter that was breached
+             * @description "high" when near YES (price ≥ threshold), "low" when near NO (price ≤ threshold)
+             * @enum {string}
              */
+            bond_side: "high" | "low";
+            /** @description The probability threshold from the subscription filter that was breached */
             threshold: number;
         };
         /** @description Payload delivered when a market's volume or transaction metrics cross a configured threshold */
         ConditionMetricsPayload: {
             /** @description Market condition ID */
             condition_id?: string | null;
-            /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
             /**
-             * Format: double
-             * @description Total trading volume in USD for this timeframe
+             * @description Aggregation window
+             * @enum {string|null}
              */
+            timeframe?: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | null;
+            /** @description Total trading volume in USD for this timeframe */
             volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Total fees collected in USD
-             */
+            /** @description Total fees collected in USD */
             fees?: number | null;
             /**
              * Format: int64
@@ -353,43 +272,18 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
-        /** @description Subscription filters for the `event_metrics` event. All fields are optional. */
-        EventMetricsFilters: {
-            /** @description Restrict to these events. Empty = all events. */
-            event_slugs?: string[] | null;
-            /** @description Restrict to these aggregation windows. */
-            timeframes?: components["schemas"]["MetricFilterTimeframe"][] | null;
-            /**
-             * Format: double
-             * @description Only fire when aggregated event volume ≥ this value (USD).
-             */
-            min_volume_usd?: number | null;
-            /** Format: double */
-            max_volume_usd?: number | null;
-            /** Format: int64 */
-            min_txns?: number | null;
-            /** Format: int64 */
-            min_unique_traders?: number | null;
-            /** Format: double */
-            min_fees?: number | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
         /** @description Payload delivered when an event's aggregated volume or transaction metrics cross a configured threshold */
         EventMetricsPayload: {
             /** @description Event slug */
             event_slug?: string | null;
-            /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
             /**
-             * Format: double
-             * @description Total aggregated volume across all markets in the event (USD)
+             * @description Aggregation window
+             * @enum {string|null}
              */
+            timeframe?: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | null;
+            /** @description Total aggregated volume across all markets in the event (USD) */
             volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Total fees collected in USD
-             */
+            /** @description Total fees collected in USD */
             fees?: number | null;
             /**
              * Format: int64
@@ -402,13 +296,21 @@ export interface components {
              */
             unique_traders?: number | null;
         };
-        /** @description Event PnL webhook payload (Arc-optimized) */
+        /** @description Payload delivered when a trader's per-event PnL crosses a configured threshold */
         EventPnlPayload: {
+            /** @description Trader wallet address (lowercase) */
             trader?: string | null;
+            /** @description Event slug */
             event_slug?: string | null;
-            /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
-            timeframe: string;
-            /** Format: int64 */
+            /**
+             * @description PnL aggregation window
+             * @enum {string}
+             */
+            timeframe: "1d" | "7d" | "30d" | "lifetime";
+            /**
+             * Format: int64
+             * @description Number of distinct markets traded in this event
+             */
             markets_traded?: number | null;
             /** Format: int64 */
             outcomes_traded?: number | null;
@@ -420,58 +322,44 @@ export interface components {
             total_redemptions?: number | null;
             /** Format: int64 */
             total_merges?: number | null;
-            /** Format: double */
+            /** @description Total volume in USD */
             total_volume_usd?: number | null;
-            /** Format: double */
             buy_usd?: number | null;
-            /** Format: double */
             sell_usd?: number | null;
-            /** Format: double */
             redemption_usd?: number | null;
-            /** Format: double */
             merge_usd?: number | null;
-            /** Format: double */
+            /** @description Realized PnL in USD for this event */
             realized_pnl_usd?: number | null;
             /** Format: int64 */
             winning_markets?: number | null;
             /** Format: int64 */
             losing_markets?: number | null;
-            /** Format: double */
             total_fees?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
             first_trade_at?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
             last_trade_at?: number | null;
         };
-        /** @description Subscription filters for the `event_volume_milestone` event. */
-        EventVolumeMilestoneFilters: {
-            /** @description **Required.** Aggregation windows to monitor. */
-            timeframes: components["schemas"]["MetricFilterTimeframe"][];
-            /** @description Restrict to these events. */
-            event_slugs?: string[] | null;
-            /** @description Specific USD milestones to trigger on. */
-            milestone_amounts?: number[] | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Event volume milestone webhook payload */
+        /** @description Payload delivered when an event's aggregated trading volume crosses a USD milestone */
         EventVolumeMilestonePayload: {
+            /** @description Event slug */
             event_slug: string;
-            timeframe: string;
             /**
-             * Format: double
-             * @description Milestone amount reached (USD)
+             * @description Aggregation window
+             * @enum {string}
              */
+            timeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
+            /** @description The USD milestone amount that was crossed */
             milestone_usd: number;
-            /**
-             * Format: double
-             * @description Current volume (USD) that triggered the milestone
-             */
+            /** @description Current aggregated event volume at time of trigger (USD) */
             current_volume_usd: number;
-            /**
-             * Format: double
-             * @description Total fees collected in this timeframe
-             */
+            /** @description Total fees in USD for this timeframe */
             fees: number;
             /**
              * Format: int64
@@ -479,60 +367,25 @@ export interface components {
              */
             txns: number;
         };
-        /** @description Subscription filters for the `event_volume_spike` event. `spike_ratio` is required. */
-        EventVolumeSpikeFilters: {
-            /**
-             * Format: double
-             * @description **Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio.
-             */
-            spike_ratio: number;
-            /**
-             * Format: int64
-             * @description Force snapshot reset after this many seconds (max 600 / 10 minutes).
-             */
-            window_secs?: number | null;
-            /** @description Restrict to these events. */
-            event_slugs?: string[] | null;
-            /** @description Restrict to these aggregation windows. */
-            timeframes?: components["schemas"]["VolumeSpikeFilterTimeframe"][] | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Event volume spike webhook payload */
+        /** @description Payload delivered when an event's aggregated volume has spiked since the last snapshot */
         EventVolumeSpikePayload: {
+            /** @description Event slug */
             event_slug: string;
-            event_title?: string | null;
-            image_url?: string | null;
-            timeframe: string;
             /**
-             * Format: double
-             * @description Current aggregated event volume at the time of the spike (USD)
+             * @description Aggregation window
+             * @enum {string}
              */
+            timeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "1d" | "24h" | "7d" | "30d";
+            /** @description Current aggregated event volume at time of the spike (USD) */
             current_volume_usd: number;
-            /**
-             * Format: double
-             * @description Volume at the snapshot baseline (USD)
-             */
+            /** @description Volume at the snapshot baseline (USD) */
             snapshot_volume_usd: number;
-            /**
-             * Format: double
-             * @description New volume since the snapshot that triggered this notification (USD)
-             */
+            /** @description New volume since the snapshot that triggered this notification (USD) */
             delta_volume_usd: number;
-            /**
-             * Format: double
-             * @description Volume growth as a percentage of the snapshot (e.g. 200.0 means volume tripled)
-             */
+            /** @description Volume growth as a percentage of the snapshot (e.g. 200.0 means volume tripled) */
             spike_pct: number;
-            /**
-             * Format: int64
-             * @description Total transactions in this timeframe
-             */
+            /** Format: int64 */
             txns: number;
-            /**
-             * Format: double
-             * @description Total fees in this timeframe
-             */
             fees: number;
         };
         /** @description Payload delivered when a tracked trader executes their first-ever trade on Polymarket */
@@ -547,10 +400,7 @@ export interface components {
             condition_id?: string | null;
             /** @description Outcome name (e.g. "Yes", "No") */
             outcome?: string | null;
-            /**
-             * Format: int32
-             * @description Outcome index: 0 = Yes/Up, 1 = No
-             */
+            /** @description Outcome index: 0 = Yes/Up, 1 = No */
             outcome_index?: number | null;
             /** @description Market question text */
             question?: string | null;
@@ -572,128 +422,148 @@ export interface components {
              * @description Block confirmation timestamp (Unix seconds)
              */
             confirmed_at: number;
-            /**
-             * Format: double
-             * @description USD size of the trade (6 decimal places)
-             */
+            /** @description USD size of the trade (6 decimal places) */
             amount_usd: number;
-            /**
-             * Format: double
-             * @description Outcome shares traded (6 decimal places)
-             */
+            /** @description Outcome shares traded (6 decimal places) */
             shares_amount: number;
-            /**
-             * Format: double
-             * @description Fee paid in USD (6 decimal places)
-             */
+            /** @description Fee paid in USD (6 decimal places) */
             fee: number;
-            /** @description Trade direction */
-            side: "Buy" | "Sell";
             /**
-             * Format: double
-             * @description Outcome token price (0.0–1.0)
+             * @description Trade direction
+             * @enum {string}
              */
+            side: "Buy" | "Sell";
+            /** @description Outcome token price (0.0–1.0) */
             price: number;
-            /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
-            /** @description Trade type (webhook events only fire on order fills) */
+            /**
+             * @description Exchange contract that processed the trade
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /**
+             * @description Trade type (webhook events only fire on order fills)
+             * @enum {string}
+             */
             trade_type: "OrderFilled" | "OrdersMatched";
         };
-        /** @description Global PnL webhook payload (Arc-optimized) */
+        /** @description Payload delivered when a trader's global PnL (across all markets) crosses a configured threshold */
         GlobalPnlPayload: {
+            /** @description Trader wallet address (lowercase) */
             trader?: string | null;
-            /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
-            timeframe: string;
-            /** Format: double */
+            /**
+             * @description PnL aggregation window
+             * @enum {string}
+             */
+            timeframe: "1d" | "7d" | "30d" | "lifetime";
+            /** @description Realized PnL in USD (positive = profit, negative = loss) */
             realized_pnl_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Number of distinct events traded
+             */
             events_traded?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Number of distinct markets traded
+             */
             markets_traded?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total buy transactions
+             */
             total_buys?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total sell transactions
+             */
             total_sells?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total redemption transactions
+             */
             total_redemptions?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total merge transactions
+             */
             total_merges?: number | null;
-            /** Format: double */
+            /** @description Total USD volume (buys + sells + redemptions + merges) */
             total_volume_usd?: number | null;
-            /** Format: double */
+            /** @description Total buy volume in USD */
             buy_volume_usd?: number | null;
-            /** Format: double */
+            /** @description Total sell volume in USD */
             sell_volume_usd?: number | null;
-            /** Format: double */
+            /** @description Total redemption volume in USD */
             redemption_volume_usd?: number | null;
-            /** Format: double */
+            /** @description Total merge volume in USD */
             merge_volume_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Number of markets where trader realised a profit
+             */
             markets_won?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Number of markets where trader realised a loss
+             */
             markets_lost?: number | null;
-            /** Format: double */
+            /** @description Market win rate as a percentage (0.0–100.0) */
             market_win_rate_pct?: number | null;
-            /** Format: double */
+            /** @description Average PnL per market in USD */
             avg_pnl_per_market?: number | null;
-            /** Format: double */
+            /** @description Average PnL per trade in USD */
             avg_pnl_per_trade?: number | null;
-            /** Format: double */
+            /** @description Average hold time across all positions (seconds) */
             avg_hold_time_seconds?: number | null;
-            /** Format: double */
+            /** @description Total fees paid in USD */
             total_fees?: number | null;
-            /** Format: double */
+            /** @description Best single-trade PnL in USD */
             best_trade_pnl_usd?: number | null;
+            /** @description Condition ID of the best trade */
             best_trade_condition_id?: string | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Timestamp of the first trade (Unix seconds)
+             */
             first_trade_at?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Timestamp of the most recent trade (Unix seconds)
+             */
             last_trade_at?: number | null;
         };
         /** @description Response for GET /v1/webhook/events */
         ListEventsResponse: {
             events: components["schemas"]["WebhookEventInfo"][];
         };
-        /** @description Subscription filters for the `market_created` event. All fields are optional. */
-        MarketCreatedFilters: {
-            /** @description Restrict to markets with these tags or category names (case-insensitive match). */
-            tags?: string[] | null;
-            /** @description Restrict to markets belonging to these events. */
-            event_slugs?: string[] | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets (event slugs containing `updown`). Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Outcome entry in the market created payload — mirrors `NewMarketOutcome` */
+        /** @description An outcome entry within a newly created market */
         MarketCreatedOutcome: {
-            /**
-             * Format: int32
-             * @description Outcome index (0 = Yes, 1 = No)
-             */
+            /** @description Outcome index (0 = Yes, 1 = No) */
             index: number;
             /** @description Outcome name (e.g. "Yes", "No") */
             name: string;
-            /** @description ERC1155 position token ID */
+            /** @description ERC-1155 position token ID for this outcome */
             position_id: string;
         };
-        /** @description Market created webhook payload — mirrors `NewMarketPayload` field-for-field */
+        /** @description Payload delivered when a new prediction market is detected on-chain and enriched with Gamma API metadata */
         MarketCreatedPayload: {
             /** @description Condition ID (0x-prefixed hex, lowercase) */
             condition_id: string;
             /** @description Market slug */
             market_slug: string;
-            /** @description Event slug (parent event) */
+            /** @description Parent event slug */
             event_slug?: string | null;
-            /** @description Event ID */
+            /** @description Parent event ID */
             event_id?: string | null;
-            /** @description Event title */
+            /** @description Parent event title */
             event_title?: string | null;
-            /** @description Series slug */
+            /** @description Series slug (for recurring markets) */
             series_slug?: string | null;
-            /** @description Outcomes with their position IDs, index, and name */
+            /** @description List of market outcomes with their position IDs */
             outcomes: components["schemas"]["MarketCreatedOutcome"][];
-            /** @description Market question */
+            /** @description Full market question text */
             question: string;
-            /** @description Market title (short display name) */
+            /** @description Short display title */
             title?: string | null;
             /** @description Market description */
             description: string;
@@ -706,46 +576,23 @@ export interface components {
             /** @description Whether this is a neg-risk market */
             neg_risk: boolean;
         };
-        /** @description Subscription filters for the `condition_metrics` event. All fields are optional. */
-        MarketMetricsFilters: {
-            /** @description Restrict to these markets. Empty = all markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to these aggregation windows. Empty = all windows. */
-            timeframes?: components["schemas"]["MetricFilterTimeframe"][] | null;
-            /**
-             * Format: double
-             * @description Only fire when volume ≥ this value (USD).
-             */
-            min_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when volume ≤ this value (USD).
-             */
-            max_volume_usd?: number | null;
-            /**
-             * Format: int64
-             * @description Only fire when transaction count ≥ this value.
-             */
-            min_txns?: number | null;
-            /**
-             * Format: int64
-             * @description Only fire when unique trader count ≥ this value.
-             */
-            min_unique_traders?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when total fees ≥ this value (USD).
-             */
-            min_fees?: number | null;
-        };
-        /** @description Market PnL webhook payload (Arc-optimized) */
+        /** @description Payload delivered when a trader's per-market PnL crosses a configured threshold */
         MarketPnlPayload: {
+            /** @description Trader wallet address (lowercase) */
             trader?: string | null;
+            /** @description Market condition ID */
             condition_id?: string | null;
+            /** @description Parent event slug */
             event_slug?: string | null;
-            /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
-            timeframe: string;
-            /** Format: int64 */
+            /**
+             * @description PnL aggregation window
+             * @enum {string}
+             */
+            timeframe: "1d" | "7d" | "30d" | "lifetime";
+            /**
+             * Format: int64
+             * @description Number of distinct outcomes traded in this market
+             */
             outcomes_traded?: number | null;
             /** Format: int64 */
             total_buys?: number | null;
@@ -755,95 +602,59 @@ export interface components {
             total_redemptions?: number | null;
             /** Format: int64 */
             total_merges?: number | null;
-            /** Format: double */
+            /** @description Total buy volume in USD */
             buy_usd?: number | null;
-            /** Format: double */
+            /** @description Total sell volume in USD */
             sell_usd?: number | null;
-            /** Format: double */
+            /** @description Total redemption volume in USD */
             redemption_usd?: number | null;
-            /** Format: double */
+            /** @description Total merge volume in USD */
             merge_usd?: number | null;
-            /** Format: double */
+            /** @description Realized PnL in USD for this market */
             realized_pnl_usd?: number | null;
-            /** Format: int64 */
-            winning_outcomes?: number | null;
-            /** Format: double */
-            total_fees?: number | null;
-            /** Format: int64 */
-            first_trade_at?: number | null;
-            /** Format: int64 */
-            last_trade_at?: number | null;
-        };
-        /** @description Subscription filters for the `market_volume_milestone` event. */
-        MarketVolumeMilestoneFilters: {
-            /** @description **Required.** Aggregation windows to monitor (e.g. \["1h", "24h"\]). */
-            timeframes: components["schemas"]["MetricFilterTimeframe"][];
-            /** @description Restrict to these markets. Empty = all markets. */
-            condition_ids?: string[] | null;
-            /** @description Specific USD milestones to trigger on (e.g. \[10000, 100000, 1000000\]). Empty = all milestones. */
-            milestone_amounts?: number[] | null;
-        };
-        /** @description Subscription filters for the `market_volume_spike` event. `spike_ratio` is required. */
-        MarketVolumeSpikeFilters: {
-            /**
-             * Format: double
-             * @description **Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio. The snapshot is set automatically on first data and resets after each fire.
-             */
-            spike_ratio: number;
             /**
              * Format: int64
-             * @description Force snapshot reset after this many seconds (max 600 / 10 minutes).
+             * @description Number of outcomes with positive PnL
              */
-            window_secs?: number | null;
-            /** @description Restrict to these markets. Empty = all markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to these aggregation windows. Empty = all windows. */
-            timeframes?: components["schemas"]["VolumeSpikeFilterTimeframe"][] | null;
+            winning_outcomes?: number | null;
+            /** @description Total fees paid in USD for this market */
+            total_fees?: number | null;
+            /**
+             * Format: int64
+             * @description Timestamp of first trade in market (Unix seconds)
+             */
+            first_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Timestamp of most recent trade in market (Unix seconds)
+             */
+            last_trade_at?: number | null;
         };
-        /** @description Market volume spike webhook payload */
+        /** @description Payload delivered when a market's volume has spiked since the last snapshot */
         MarketVolumeSpikePayload: {
+            /** @description Market condition ID */
             condition_id: string;
-            question?: string | null;
-            market_slug?: string | null;
-            event_slug?: string | null;
-            image_url?: string | null;
-            timeframe: string;
             /**
-             * Format: double
-             * @description Current window volume at the time of the spike (USD)
+             * @description Aggregation window
+             * @enum {string}
              */
+            timeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "1d" | "24h" | "7d" | "30d";
+            /** @description Current volume at the time of the spike (USD) */
             current_volume_usd: number;
-            /**
-             * Format: double
-             * @description Volume at the snapshot baseline (USD)
-             */
+            /** @description Volume at the snapshot baseline (USD) */
             snapshot_volume_usd: number;
-            /**
-             * Format: double
-             * @description New volume since the snapshot that triggered this notification (USD)
-             */
+            /** @description New volume since the snapshot that triggered this notification (USD) */
             delta_volume_usd: number;
-            /**
-             * Format: double
-             * @description Volume growth as a percentage of the snapshot (e.g. 200.0 means volume tripled)
-             */
+            /** @description Volume growth as a percentage of the snapshot (e.g. 200.0 means volume tripled) */
             spike_pct: number;
             /**
              * Format: int64
              * @description Total transactions in this timeframe
              */
             txns: number;
-            /**
-             * Format: double
-             * @description Total fees in this timeframe
-             */
+            /** @description Total fees in USD for this timeframe */
             fees: number;
         };
-        /**
-         * @description Aggregation windows emitted by the metrics / milestone streams.
-         * @enum {string}
-         */
-        MetricFilterTimeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
         /** @description NegRisk Adapter: outcome reported for a neg-risk market question. */
         NegRiskOutcomeReportedEvent: {
             id: string;
@@ -878,10 +689,7 @@ export interface components {
             condition_id?: string | null;
             /** @description Outcome name (e.g. "Yes", "No") */
             outcome?: string | null;
-            /**
-             * Format: int32
-             * @description Outcome index: 0 = Yes/Up, 1 = No
-             */
+            /** @description Outcome index: 0 = Yes/Up, 1 = No */
             outcome_index?: number | null;
             /** @description Market question text */
             question?: string | null;
@@ -903,44 +711,32 @@ export interface components {
              * @description Block confirmation timestamp (Unix seconds)
              */
             confirmed_at: number;
-            /**
-             * Format: double
-             * @description USD size of the trade (6 decimal places)
-             */
+            /** @description USD size of the trade (6 decimal places) */
             amount_usd: number;
-            /**
-             * Format: double
-             * @description Outcome shares traded (6 decimal places)
-             */
+            /** @description Outcome shares traded (6 decimal places) */
             shares_amount: number;
-            /**
-             * Format: double
-             * @description Fee paid in USD (6 decimal places)
-             */
+            /** @description Fee paid in USD (6 decimal places) */
             fee: number;
-            /** @description Trade direction */
+            /**
+             * @description Trade direction
+             * @enum {string}
+             */
             side: "Buy" | "Sell";
-            /**
-             * Format: double
-             * @description Outcome token price (0.0–1.0)
-             */
+            /** @description Outcome token price (0.0–1.0) */
             price: number;
-            /**
-             * Format: double
-             * @description Implied probability (0.0–1.0); null when outcome is unknown
-             */
+            /** @description Implied probability (0.0–1.0); null when outcome is unknown */
             probability?: number | null;
-            /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
-            /** @description Trade type (webhook events only fire on order fills) */
+            /**
+             * @description Exchange contract that processed the trade
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /**
+             * @description Trade type (webhook events only fire on order fills)
+             * @enum {string}
+             */
             trade_type: "OrderFilled" | "OrdersMatched";
         };
-        /**
-         * @description Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on
-         *     fill-style trades only.
-         * @enum {string}
-         */
-        NewTradeFilterType: "OrderFilled" | "OrdersMatched";
         /** @description Payload delivered on every order-filled trade */
         NewTradePayload: {
             /** @description Limit-order maker wallet address (lowercase) */
@@ -953,10 +749,7 @@ export interface components {
             condition_id?: string | null;
             /** @description Outcome name (e.g. "Yes", "No") */
             outcome?: string | null;
-            /**
-             * Format: int32
-             * @description Outcome index: 0 = Yes/Up, 1 = No
-             */
+            /** @description Outcome index: 0 = Yes/Up, 1 = No */
             outcome_index?: number | null;
             /** @description Market question text */
             question?: string | null;
@@ -978,43 +771,32 @@ export interface components {
              * @description Block confirmation timestamp (Unix seconds)
              */
             confirmed_at: number;
-            /**
-             * Format: double
-             * @description USD size of the trade (6 decimal places)
-             */
+            /** @description USD size of the trade (6 decimal places) */
             amount_usd: number;
-            /**
-             * Format: double
-             * @description Outcome shares traded (6 decimal places)
-             */
+            /** @description Outcome shares traded (6 decimal places) */
             shares_amount: number;
-            /**
-             * Format: double
-             * @description Fee paid in USD (6 decimal places)
-             */
+            /** @description Fee paid in USD (6 decimal places) */
             fee: number;
-            /** @description Trade direction */
+            /**
+             * @description Trade direction
+             * @enum {string}
+             */
             side: "Buy" | "Sell";
-            /**
-             * Format: double
-             * @description Outcome token price (0.0–1.0)
-             */
+            /** @description Outcome token price (0.0–1.0) */
             price: number;
-            /**
-             * Format: double
-             * @description Implied probability (0.0–1.0); null when outcome is unknown
-             */
+            /** @description Implied probability (0.0–1.0); null when outcome is unknown */
             probability?: number | null;
-            /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
-            /** @description Trade type (webhook events only fire on order fills) */
+            /**
+             * @description Exchange contract that processed the trade
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /**
+             * @description Trade type (webhook events only fire on order fills)
+             * @enum {string}
+             */
             trade_type: "OrderFilled" | "OrdersMatched";
         };
-        /**
-         * @description Oracle event variants accepted by `oracle_events.oracle_event_types`.
-         * @enum {string}
-         */
-        OracleEventFilterType: "AssertionMade" | "AssertionDisputed" | "AssertionSettled" | "RequestPrice" | "ProposePrice" | "DisputePrice" | "Settle" | "QuestionResolved" | "QuestionEmergencyResolved" | "QuestionReset" | "QuestionInitialized" | "QuestionPaused" | "QuestionUnpaused" | "QuestionFlagged" | "QuestionUnflagged" | "ConditionResolution" | "NegRiskOutcomeReported";
         /**
          * @description Tagged enum for all oracle event types — serializes with `"event_type": "..."` discriminator
          *     and only includes fields relevant to each type.
@@ -1071,18 +853,6 @@ export interface components {
             /** @enum {string} */
             event_type: "NegRiskOutcomeReported";
         });
-        /** @description Subscription filters for the `oracle_events` event. All fields are optional. */
-        OracleEventsFilters: {
-            /** @description Restrict to these event types (case-insensitive). Empty = all. */
-            oracle_event_types?: components["schemas"]["OracleEventFilterType"][] | null;
-            /** @description Restrict to events for these condition IDs. */
-            condition_ids?: string[] | null;
-        };
-        /**
-         * @description PnL aggregation windows accepted by `*_pnl.timeframes`.
-         * @enum {string}
-         */
-        PnlFilterTimeframe: "1d" | "7d" | "30d" | "lifetime";
         /**
          * @description PnL timeframe enum for webhook filtering
          * @enum {string}
@@ -1109,7 +879,7 @@ export interface components {
          *     - volume_milestone: condition_ids, timeframes, milestone_amounts
          *     - close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets
          *     - market_created: event_slugs, tags, exclude_shortterm_markets
-         *     - probability_spike: condition_ids, event_slugs, outcomes, min_probability, max_probability, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets
+         *     - probability_spike: condition_ids, event_slugs, outcomes, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets
          *     - price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets
          *     - trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
          *     - trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
@@ -1280,44 +1050,6 @@ export interface components {
              */
             oracle_event_types?: string[];
         };
-        /** @description Subscription filters for the `position_metrics` event. All fields are optional. */
-        PositionMetricsFilters: {
-            /** @description Restrict to these outcome token IDs. */
-            position_ids?: string[] | null;
-            /** @description Restrict to positions within these markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to positions with these outcome names (e.g. \["Yes", "No"\]). */
-            outcomes?: string[] | null;
-            /** @description Restrict to these aggregation windows. */
-            timeframes?: components["schemas"]["MetricFilterTimeframe"][] | null;
-            /**
-             * Format: double
-             * @description Only fire when position volume ≥ this value (USD).
-             */
-            min_volume_usd?: number | null;
-            /** Format: double */
-            max_volume_usd?: number | null;
-            /** Format: double */
-            min_buy_usd?: number | null;
-            /** Format: double */
-            min_sell_volume_usd?: number | null;
-            /** Format: int64 */
-            min_txns?: number | null;
-            /** Format: int64 */
-            min_unique_traders?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when price change % ≥ this value.
-             */
-            min_price_change_pct?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when probability change % ≥ this value.
-             */
-            min_probability_change_pct?: number | null;
-            /** Format: double */
-            min_fees?: number | null;
-        };
         /** @description Payload delivered when a position's volume or transaction metrics cross a configured threshold */
         PositionMetricsPayload: {
             /** @description ERC-1155 outcome token ID */
@@ -1325,31 +1057,22 @@ export interface components {
             /** @description Outcome name (e.g. "Yes", "No") */
             outcome?: string | null;
             /**
-             * Format: int32
+             * Format: int16
              * @description Outcome index
              */
             outcome_index?: number | null;
-            /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
             /**
-             * Format: double
-             * @description Total trading volume in USD
+             * @description Aggregation window
+             * @enum {string|null}
              */
+            timeframe?: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | null;
+            /** @description Total trading volume in USD */
             volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Buy volume in USD
-             */
+            /** @description Buy volume in USD */
             buy_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Sell volume in USD
-             */
+            /** @description Sell volume in USD */
             sell_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Total fees in USD
-             */
+            /** @description Total fees in USD */
             fees?: number | null;
             /** Format: int64 */
             txns?: number | null;
@@ -1359,293 +1082,127 @@ export interface components {
             sells?: number | null;
             /** Format: int64 */
             unique_traders?: number | null;
-            /** Format: double */
             price_open?: number | null;
-            /** Format: double */
             price_close?: number | null;
-            /** Format: double */
             price_high?: number | null;
-            /** Format: double */
             price_low?: number | null;
-            /** Format: double */
             probability_open?: number | null;
-            /** Format: double */
             probability_close?: number | null;
-            /** Format: double */
             probability_high?: number | null;
-            /** Format: double */
             probability_low?: number | null;
         };
-        /** @description Subscription filters for the `position_volume_milestone` event. */
-        PositionVolumeMilestoneFilters: {
-            /** @description **Required.** Aggregation windows to monitor. */
-            timeframes: components["schemas"]["MetricFilterTimeframe"][];
-            /** @description Restrict to these outcome token IDs. */
-            position_ids?: string[] | null;
-            /** @description Restrict to positions within these markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to these outcome names (e.g. \["Yes", "No"\]). */
-            outcomes?: string[] | null;
-            /** @description Specific USD milestones to trigger on. */
-            milestone_amounts?: number[] | null;
-        };
-        /** @description Position volume milestone webhook payload */
+        /** @description Payload delivered when a position's trading volume crosses a USD milestone */
         PositionVolumeMilestonePayload: {
+            /** @description Parent market condition ID */
             condition_id?: string | null;
+            /** @description ERC-1155 outcome token ID */
             position_id: string;
+            /** @description Outcome name (e.g. "Yes", "No") */
             outcome?: string | null;
-            /** Format: int32 */
+            /**
+             * Format: int16
+             * @description Outcome index
+             */
             outcome_index?: number | null;
-            timeframe: string;
             /**
-             * Format: double
-             * @description Milestone amount reached (USD)
+             * @description Aggregation window
+             * @enum {string}
              */
+            timeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
+            /** @description The USD milestone amount that was crossed */
             milestone_usd: number;
-            /**
-             * Format: double
-             * @description Current volume (USD) that triggered the milestone
-             */
+            /** @description Current position volume at time of trigger (USD) */
             current_volume_usd: number;
-            /**
-             * Format: double
-             * @description Buy volume (USD)
-             */
+            /** @description Buy volume in USD for this timeframe */
             buy_volume_usd: number;
-            /**
-             * Format: double
-             * @description Sell volume (USD)
-             */
+            /** @description Sell volume in USD for this timeframe */
             sell_volume_usd: number;
-            /**
-             * Format: double
-             * @description Total fees collected in this timeframe
-             */
+            /** @description Total fees in USD */
             fees: number;
-            /**
-             * Format: int64
-             * @description Total transactions in this timeframe
-             */
+            /** Format: int64 */
             txns: number;
-            /**
-             * Format: int64
-             * @description Buy transactions
-             */
+            /** Format: int64 */
             buys: number;
-            /**
-             * Format: int64
-             * @description Sell transactions
-             */
+            /** Format: int64 */
             sells: number;
         };
-        /** @description Subscription filters for the `position_volume_spike` event. `spike_ratio` is required. */
-        PositionVolumeSpikeFilters: {
-            /**
-             * Format: double
-             * @description **Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio.
-             */
-            spike_ratio: number;
-            /**
-             * Format: int64
-             * @description Force snapshot reset after this many seconds (max 600 / 10 minutes).
-             */
-            window_secs?: number | null;
-            /** @description Restrict to these outcome token IDs. */
-            position_ids?: string[] | null;
-            /** @description Restrict to positions within these markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to these outcome names. */
-            outcomes?: string[] | null;
-            /** @description Restrict to these aggregation windows. */
-            timeframes?: components["schemas"]["VolumeSpikeFilterTimeframe"][] | null;
-        };
-        /** @description Position volume spike webhook payload */
+        /** @description Payload delivered when a position's volume has spiked since the last snapshot */
         PositionVolumeSpikePayload: {
+            /** @description ERC-1155 outcome token ID */
             position_id: string;
+            /** @description Parent market condition ID */
             condition_id: string;
-            question?: string | null;
-            market_slug?: string | null;
-            event_slug?: string | null;
-            image_url?: string | null;
+            /** @description Outcome name (e.g. "Yes", "No") */
             outcome?: string | null;
-            /** Format: int32 */
+            /** Format: int16 */
             outcome_index?: number | null;
-            timeframe: string;
             /**
-             * Format: double
-             * @description Current position volume at the time of the spike (USD)
+             * @description Aggregation window
+             * @enum {string}
              */
+            timeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "1d" | "24h" | "7d" | "30d";
+            /** @description Current position volume at the time of the spike (USD) */
             current_volume_usd: number;
-            /**
-             * Format: double
-             * @description Volume at the snapshot baseline (USD)
-             */
+            /** @description Volume at the snapshot baseline (USD) */
             snapshot_volume_usd: number;
-            /**
-             * Format: double
-             * @description New volume since the snapshot that triggered this notification (USD)
-             */
+            /** @description New volume since the snapshot that triggered this notification (USD) */
             delta_volume_usd: number;
-            /**
-             * Format: double
-             * @description Volume growth as a percentage of the snapshot (e.g. 200.0 means volume tripled)
-             */
+            /** @description Volume growth as a percentage of the snapshot (e.g. 200.0 means volume tripled) */
             spike_pct: number;
-            /**
-             * Format: int64
-             * @description Total transactions in this timeframe
-             */
+            /** Format: int64 */
             txns: number;
-            /**
-             * Format: double
-             * @description Total fees in this timeframe
-             */
             fees: number;
         };
-        /** @description Subscription filters for the `price_spike` event. */
-        PriceSpikeFilters: {
-            /** @description Restrict to specific outcome token IDs. Empty = all positions. */
-            position_ids?: string[] | null;
-            /** @description Restrict to specific market condition IDs. Empty = all markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to specific events. Empty = all events. */
-            event_slugs?: string[] | null;
-            /** @description Restrict to these outcome names (e.g. \["Yes", "No"\]). */
-            outcomes?: string[] | null;
-            /**
-             * Format: double
-             * @description Minimum price percentage move to trigger (e.g. `10` for a 10% move).
-             */
-            min_price_change_pct?: number | null;
-            /**
-             * Format: double
-             * @description Minimum YES probability (0-1).
-             */
-            min_probability?: number | null;
-            /**
-             * Format: double
-             * @description Maximum YES probability (0-1).
-             */
-            max_probability?: number | null;
-            /**
-             * Format: int64
-             * @description Minimum trades accumulated in the observation window before firing.
-             */
-            min_txns?: number | null;
-            /**
-             * Format: double
-             * @description Minimum USD volume accumulated in the observation window before firing.
-             */
-            min_volume_usd?: number | null;
-            spike_direction?: null | components["schemas"]["SpikeDirection"];
-            /**
-             * Format: int64
-             * @description Observation window in seconds. The first trade in each window sets the reference price; subsequent trades are compared to it. E.g. `60` detects moves that occur within 60 seconds.
-             */
-            window_secs?: number | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Position price spike webhook payload */
         PriceSpikePayload: {
+            /** @description Outcome token ID */
             position_id: string;
+            /** @description Market condition ID */
             condition_id?: string | null;
-            question?: string | null;
-            market_slug?: string | null;
+            /** @description Event slug */
             event_slug?: string | null;
-            image_url?: string | null;
+            /** @description Outcome name (e.g. "Yes", "No") */
             outcome?: string | null;
-            /** Format: int32 */
+            /**
+             * Format: int16
+             * @description Outcome index
+             */
             outcome_index?: number | null;
-            /**
-             * Format: double
-             * @description Price at the start of the observation window (the baseline snapshot)
-             */
+            /** @description Price at the start of the observation window (baseline snapshot, 0.0–1.0) */
             previous_price: number;
-            /**
-             * Format: double
-             * @description Current price that triggered the spike
-             */
+            /** @description Current price that triggered the spike (0.0–1.0) */
             current_price: number;
-            /** @description Direction of the spike: `"up"` (price rising) or `"down"` (price falling) */
-            spike_direction: string;
             /**
-             * Format: double
-             * @description Detected spike percentage from the snapshot baseline. Positive = rising, negative = falling.
+             * @description `"up"` = price rising, `"down"` = price falling
+             * @enum {string}
              */
+            spike_direction: "up" | "down";
+            /** @description Percentage move that triggered this notification. Positive = up, negative = down. */
             spike_pct: number;
         };
-        /** @description Subscription filters for the `probability_spike` event. */
-        ProbabilitySpikeFilters: {
-            /** @description Restrict to specific outcome token IDs. Empty = all positions. */
-            position_ids?: string[] | null;
-            /** @description Restrict to specific market condition IDs. Empty = all markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to specific events. Empty = all events. */
-            event_slugs?: string[] | null;
-            /** @description Restrict to these outcome names (e.g. \["Yes", "No"\]). */
-            outcomes?: string[] | null;
-            /**
-             * Format: double
-             * @description Minimum YES probability (0-1). At least one of `min_probability`/`max_probability` is enforced at runtime if you want a probability gate.
-             */
-            min_probability?: number | null;
-            /**
-             * Format: double
-             * @description Maximum YES probability (0-1).
-             */
-            max_probability?: number | null;
-            /**
-             * Format: double
-             * @description Minimum probability percentage move to trigger (e.g. `10` for a 10% move).
-             */
-            min_probability_change_pct?: number | null;
-            /**
-             * Format: int64
-             * @description Minimum trades accumulated in the observation window before firing.
-             */
-            min_txns?: number | null;
-            /**
-             * Format: double
-             * @description Minimum USD volume accumulated in the observation window before firing.
-             */
-            min_volume_usd?: number | null;
-            spike_direction?: null | components["schemas"]["SpikeDirection"];
-            /**
-             * Format: int64
-             * @description Observation window in seconds. The first trade in each window sets the reference price; subsequent trades are compared to it. E.g. `60` detects moves that occur within 60 seconds.
-             */
-            window_secs?: number | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Position probability spike webhook payload */
         ProbabilitySpikePayload: {
+            /** @description Outcome token ID */
             position_id: string;
+            /** @description Market condition ID */
             condition_id?: string | null;
-            question?: string | null;
-            market_slug?: string | null;
+            /** @description Event slug */
             event_slug?: string | null;
-            image_url?: string | null;
+            /** @description Outcome name (e.g. "Yes", "No") */
             outcome?: string | null;
-            /** Format: int32 */
+            /**
+             * Format: int16
+             * @description Outcome index
+             */
             outcome_index?: number | null;
-            /**
-             * Format: double
-             * @description Probability at the start of the observation window (the baseline snapshot)
-             */
+            /** @description Probability at the start of the observation window (baseline snapshot, 0.0–1.0) */
             previous_probability: number;
-            /**
-             * Format: double
-             * @description Current probability that triggered the spike
-             */
+            /** @description Current probability that triggered the spike (0.0–1.0) */
             current_probability: number;
-            /** @description Direction of the spike: `"up"` (probability rising) or `"down"` (probability falling) */
-            spike_direction: string;
             /**
-             * Format: double
-             * @description Detected spike percentage from the snapshot baseline. Positive = rising, negative = falling.
+             * @description `"up"` = probability rising, `"down"` = probability falling
+             * @enum {string}
              */
+            spike_direction: "up" | "down";
+            /** @description Percentage move that triggered this notification. Positive = up, negative = down. */
             spike_pct: number;
         };
         /** @description V2 UMA OOv2: a price was proposed (resolution proposal). */
@@ -1937,287 +1494,6 @@ export interface components {
          * @enum {string}
          */
         SpikeDirection: "up" | "down" | "both";
-        /**
-         * @description Trade-event types accepted by `trader_trade_event.trade_types`. Covers the
-         *     full set of typed prediction-trade variants.
-         * @enum {string}
-         */
-        TradeEventFilterType: "OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval";
-        /** @description Subscription filters for the `trader_event_pnl` event. All fields are optional. */
-        TraderEventPnlFilters: {
-            /** @description Track only these trader wallet addresses. */
-            traders?: string[] | null;
-            /** @description Restrict to these events. */
-            event_slugs?: string[] | null;
-            /**
-             * Format: double
-             * @description Only fire when per-event realized PnL ≥ this value (USD).
-             */
-            min_realized_pnl_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when per-event realized PnL ≤ this value (USD).
-             */
-            max_realized_pnl_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when total event volume ≥ this value (USD).
-             */
-            min_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when total event volume ≤ this value (USD).
-             */
-            max_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when buy volume within the event ≥ this value (USD).
-             */
-            min_buy_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when sell volume within the event ≥ this value (USD).
-             */
-            min_sell_volume_usd?: number | null;
-            /**
-             * Format: int64
-             * @description Only fire when the trader has traded in ≥ this many markets within the event.
-             */
-            min_markets_traded?: number | null;
-            /** @description Restrict to these PnL windows. */
-            timeframes?: components["schemas"]["PnlFilterTimeframe"][] | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Subscription filters for the `trader_first_trade` event. All fields are optional. */
-        TraderFirstTradeFilters: {
-            /** @description Only fire for trades by these wallet addresses (lowercase). Empty = all traders. */
-            wallet_addresses?: string[] | null;
-            /** @description Restrict to trades in these markets. Empty = all markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to trades in markets belonging to these events. */
-            event_slugs?: string[] | null;
-            /**
-             * Format: double
-             * @description Minimum trade size in USD. Omit to match all sizes.
-             */
-            min_usd_value?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when the outcome probability is ≥ this value.
-             */
-            min_probability?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when the outcome probability is ≤ this value.
-             */
-            max_probability?: number | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets (event slugs containing `updown`). Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Subscription filters for the `trader_global_pnl` event. All fields are optional. */
-        TraderGlobalPnlFilters: {
-            /** @description Track only these trader wallet addresses. Empty = all traders. */
-            traders?: string[] | null;
-            /**
-             * Format: double
-             * @description Only fire when realized PnL ≥ this value (USD). Use negative values for loss thresholds.
-             */
-            min_realized_pnl_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when realized PnL ≤ this value (USD).
-             */
-            max_realized_pnl_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when total trading volume ≥ this value (USD).
-             */
-            min_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when total trading volume ≤ this value (USD).
-             */
-            max_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when buy volume ≥ this value (USD).
-             */
-            min_buy_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when sell volume ≥ this value (USD).
-             */
-            min_sell_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when market win rate ≥ this percentage (0.0–100.0).
-             */
-            min_win_rate?: number | null;
-            /**
-             * Format: int64
-             * @description Only fire when the trader has traded in ≥ this many markets.
-             */
-            min_markets_traded?: number | null;
-            /** @description Restrict to these PnL windows. Empty = all windows. */
-            timeframes?: components["schemas"]["PnlFilterTimeframe"][] | null;
-        };
-        /** @description Subscription filters for the `trader_market_pnl` event. All fields are optional. */
-        TraderMarketPnlFilters: {
-            /** @description Track only these trader wallet addresses. */
-            traders?: string[] | null;
-            /** @description Restrict to these markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to markets in these events. */
-            event_slugs?: string[] | null;
-            /**
-             * Format: double
-             * @description Only fire when per-market realized PnL ≥ this value (USD).
-             */
-            min_realized_pnl_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when per-market realized PnL ≤ this value (USD).
-             */
-            max_realized_pnl_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when total volume (buy + sell + redemption + merge) ≥ this value (USD).
-             */
-            min_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when total volume ≤ this value (USD).
-             */
-            max_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when buy volume in the market ≥ this value (USD).
-             */
-            min_buy_usd?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when sell volume in the market ≥ this value (USD).
-             */
-            min_sell_volume_usd?: number | null;
-            /** @description Restrict to these PnL windows. */
-            timeframes?: components["schemas"]["PnlFilterTimeframe"][] | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Subscription filters for the `trader_new_market` event. All fields are optional. */
-        TraderNewMarketFilters: {
-            /** @description Only fire for these wallet addresses (lowercase). Empty = all traders. */
-            wallet_addresses?: string[] | null;
-            /** @description Restrict to these markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to markets belonging to these events. */
-            event_slugs?: string[] | null;
-            /**
-             * Format: double
-             * @description Minimum trade size in USD. Omit to match all sizes.
-             */
-            min_usd_value?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when the outcome probability is ≥ this value.
-             */
-            min_probability?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when the outcome probability is ≤ this value.
-             */
-            max_probability?: number | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Subscription filters for the `trader_new_trade` event. All fields are optional. */
-        TraderNewTradeFilters: {
-            /** @description Only fire for trades by these wallet addresses. Empty = all traders. */
-            wallet_addresses?: string[] | null;
-            /** @description Restrict to these markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to markets belonging to these events. */
-            event_slugs?: string[] | null;
-            /**
-             * Format: double
-             * @description Minimum trade size in USD. Defaults to 0 (matches all trades).
-             */
-            min_usd_value?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when outcome probability is ≥ this value.
-             */
-            min_probability?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when outcome probability is ≤ this value.
-             */
-            max_probability?: number | null;
-            /** @description Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default). */
-            trade_types?: ("OrderFilled" | "OrdersMatched")[] | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /**
-         * @description Subscription filters for the `trader_trade_event` event. All fields are optional.
-         *     `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that
-         *     exclude `PositionsConverted`, because conversion events do not currently carry
-         *     `event_slug` in the typed webhook payload.
-         */
-        TraderTradeEventFilters: {
-            /** @description Only fire for events associated with these wallet addresses. Empty = all traders. */
-            wallet_addresses?: string[] | null;
-            /** @description Restrict to these markets. For `PositionsConverted`, this also matches the NegRisk `market_id`. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to markets belonging to these events. Requires explicit `trade_types` that exclude `PositionsConverted`. */
-            event_slugs?: string[] | null;
-            /**
-             * Format: double
-             * @description Minimum USD amount for the underlying event. Defaults to 0 (matches all events).
-             */
-            min_usd_value?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when event probability is ≥ this value. Events without probability data do not match.
-             */
-            min_probability?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when event probability is ≤ this value. Events without probability data do not match.
-             */
-            max_probability?: number | null;
-            /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
-            trade_types?: ("OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[] | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Subscription filters for the `trader_whale_trade` event. All fields are optional. */
-        TraderWhaleTradeFilters: {
-            /** @description Only fire for trades by these wallet addresses. Empty = all traders. */
-            wallet_addresses?: string[] | null;
-            /** @description Restrict to these markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to markets belonging to these events. */
-            event_slugs?: string[] | null;
-            /**
-             * Format: double
-             * @description Minimum trade size in USD. Defaults to 0 (matches all trades).
-             */
-            min_usd_value?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when outcome probability is ≥ this value.
-             */
-            min_probability?: number | null;
-            /**
-             * Format: double
-             * @description Only fire when outcome probability is ≤ this value.
-             */
-            max_probability?: number | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
         /** @description Request body for updating a webhook */
         UpdateWebhookRequestBody: {
             /** @description Destination URL for webhook deliveries (must be HTTPS) */
@@ -2230,24 +1506,20 @@ export interface components {
             /** @description Description/name */
             description?: string | null;
         };
-        /** @description Volume milestone webhook payload */
+        /** @description Payload delivered when a market's trading volume crosses a USD milestone in the specified timeframe */
         VolumeMilestonePayload: {
+            /** @description Market condition ID */
             condition_id: string;
-            timeframe: string;
             /**
-             * Format: double
-             * @description Milestone amount reached (USD)
+             * @description Aggregation window that crossed the milestone
+             * @enum {string}
              */
+            timeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d";
+            /** @description The USD milestone amount that was crossed */
             milestone_usd: number;
-            /**
-             * Format: double
-             * @description Current volume (USD) that triggered the milestone
-             */
+            /** @description Current volume at time of trigger (USD) */
             current_volume_usd: number;
-            /**
-             * Format: double
-             * @description Total fees collected in this timeframe
-             */
+            /** @description Total fees in USD for this timeframe */
             fees: number;
             /**
              * Format: int64
@@ -2255,12 +1527,6 @@ export interface components {
              */
             txns: number;
         };
-        /**
-         * @description Aggregation windows accepted by `*_volume_spike.timeframes`. Includes `1d`
-         *     in addition to the metric set.
-         * @enum {string}
-         */
-        VolumeSpikeFilterTimeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "1d" | "24h" | "7d" | "30d";
         /**
          * @description Crypto asset symbols accepted by `asset_price_tick` and `asset_price_window_update` filters.
          * @enum {string}
@@ -2503,10 +1769,7 @@ export interface components {
             condition_id?: string | null;
             /** @description Outcome name (e.g. "Yes", "No") */
             outcome?: string | null;
-            /**
-             * Format: int32
-             * @description Outcome index: 0 = Yes/Up, 1 = No
-             */
+            /** @description Outcome index: 0 = Yes/Up, 1 = No */
             outcome_index?: number | null;
             /** @description Market question text */
             question?: string | null;
@@ -2528,36 +1791,30 @@ export interface components {
              * @description Block confirmation timestamp (Unix seconds)
              */
             confirmed_at: number;
-            /**
-             * Format: double
-             * @description USD size of the trade (6 decimal places)
-             */
+            /** @description USD size of the trade (6 decimal places) */
             amount_usd: number;
-            /**
-             * Format: double
-             * @description Outcome shares traded (6 decimal places)
-             */
+            /** @description Outcome shares traded (6 decimal places) */
             shares_amount: number;
-            /**
-             * Format: double
-             * @description Fee paid in USD (6 decimal places)
-             */
+            /** @description Fee paid in USD (6 decimal places) */
             fee: number;
-            /** @description Trade direction */
+            /**
+             * @description Trade direction
+             * @enum {string}
+             */
             side: "Buy" | "Sell";
-            /**
-             * Format: double
-             * @description Outcome token price (0.0–1.0)
-             */
+            /** @description Outcome token price (0.0–1.0) */
             price: number;
-            /**
-             * Format: double
-             * @description Implied probability (0.0–1.0); null when outcome is unknown
-             */
+            /** @description Implied probability (0.0–1.0); null when outcome is unknown */
             probability?: number | null;
-            /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
-            /** @description Trade type (webhook events only fire on order fills) */
+            /**
+             * @description Exchange contract that processed the trade
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /**
+             * @description Trade type (webhook events only fire on order fills)
+             * @enum {string}
+             */
             trade_type: "OrderFilled" | "OrdersMatched";
         };
         /** @description Outer envelope for every webhook HTTP POST delivery. The `data` field contains the event-specific payload. Delivery headers sent with every POST: `X-Webhook-ID` (subscription UUID), `X-Delivery-ID` (this attempt's UUID), `X-Event-Type` (event name string, e.g. `trader_first_trade`), `X-Attempt` (attempt number, 1-indexed). When the webhook has a secret configured, `X-Webhook-Signature: sha256=<hmac-hex>` is also included — compute HMAC-SHA256 over the raw request body using your secret to verify. */
@@ -3060,6 +2317,400 @@ export interface components {
             /** @enum {string} */
             trade_type: "Approval";
         };
+        /** @description Subscription filters for the `trader_first_trade` event. All fields are optional. */
+        TraderFirstTradeFilters: {
+            /** @description Only fire for trades by these wallet addresses (lowercase). Empty = all traders. */
+            wallet_addresses?: string[];
+            /** @description Restrict to trades in these markets. Empty = all markets. */
+            condition_ids?: string[];
+            /** @description Restrict to trades in markets belonging to these events. */
+            event_slugs?: string[];
+            /** @description Minimum trade size in USD. Omit to match all sizes. */
+            min_usd_value?: number;
+            /** @description Only fire when the outcome probability is ≥ this value. */
+            min_probability?: number;
+            /** @description Only fire when the outcome probability is ≤ this value. */
+            max_probability?: number;
+            /** @description When `true`, suppress webhooks for short-term "updown" markets (event slugs containing `updown`). Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `trader_new_market` event. All fields are optional. */
+        TraderNewMarketFilters: {
+            /** @description Only fire for these wallet addresses (lowercase). Empty = all traders. */
+            wallet_addresses?: string[];
+            /** @description Restrict to these markets. */
+            condition_ids?: string[];
+            /** @description Restrict to markets belonging to these events. */
+            event_slugs?: string[];
+            /** @description Minimum trade size in USD. Omit to match all sizes. */
+            min_usd_value?: number;
+            /** @description Only fire when the outcome probability is ≥ this value. */
+            min_probability?: number;
+            /** @description Only fire when the outcome probability is ≤ this value. */
+            max_probability?: number;
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `trader_whale_trade` event. All fields are optional. */
+        TraderWhaleTradeFilters: {
+            /** @description Only fire for trades by these wallet addresses. Empty = all traders. */
+            wallet_addresses?: string[];
+            /** @description Restrict to these markets. */
+            condition_ids?: string[];
+            /** @description Restrict to markets belonging to these events. */
+            event_slugs?: string[];
+            /** @description Minimum trade size in USD. Defaults to 0 (matches all trades). */
+            min_usd_value?: number;
+            /** @description Only fire when outcome probability is ≥ this value. */
+            min_probability?: number;
+            /** @description Only fire when outcome probability is ≤ this value. */
+            max_probability?: number;
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `trader_new_trade` event. All fields are optional. */
+        TraderNewTradeFilters: {
+            /** @description Only fire for trades by these wallet addresses. Empty = all traders. */
+            wallet_addresses?: string[];
+            /** @description Restrict to these markets. */
+            condition_ids?: string[];
+            /** @description Restrict to markets belonging to these events. */
+            event_slugs?: string[];
+            /** @description Minimum trade size in USD. Defaults to 0 (matches all trades). */
+            min_usd_value?: number;
+            /** @description Only fire when outcome probability is ≥ this value. */
+            min_probability?: number;
+            /** @description Only fire when outcome probability is ≤ this value. */
+            max_probability?: number;
+            /** @description Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default). */
+            trade_types?: ("OrderFilled" | "OrdersMatched")[];
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `trader_trade_event` event. All fields are optional. `event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that exclude `PositionsConverted`, because conversion events do not currently carry `event_slug` in the typed webhook payload. */
+        TraderTradeEventFilters: {
+            /** @description Only fire for events associated with these wallet addresses. Empty = all traders. */
+            wallet_addresses?: string[];
+            /** @description Restrict to these markets. For `PositionsConverted`, this also matches the NegRisk `market_id`. */
+            condition_ids?: string[];
+            /** @description Restrict to markets belonging to these events. Requires explicit `trade_types` that exclude `PositionsConverted`. */
+            event_slugs?: string[];
+            /** @description Minimum USD amount for the underlying event. Defaults to 0 (matches all events). */
+            min_usd_value?: number;
+            /** @description Only fire when event probability is ≥ this value. Events without probability data do not match. */
+            min_probability?: number;
+            /** @description Only fire when event probability is ≤ this value. Events without probability data do not match. */
+            max_probability?: number;
+            /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
+            trade_types?: ("OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[];
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `trader_global_pnl` event. All fields are optional. */
+        TraderGlobalPnlFilters: {
+            /** @description Track only these trader wallet addresses. Empty = all traders. */
+            traders?: string[];
+            /** @description Only fire when realized PnL ≥ this value (USD). Use negative values for loss thresholds. */
+            min_realized_pnl_usd?: number;
+            /** @description Only fire when realized PnL ≤ this value (USD). */
+            max_realized_pnl_usd?: number;
+            /** @description Only fire when total trading volume ≥ this value (USD). */
+            min_volume_usd?: number;
+            /** @description Only fire when total trading volume ≤ this value (USD). */
+            max_volume_usd?: number;
+            /** @description Only fire when buy volume ≥ this value (USD). */
+            min_buy_usd?: number;
+            /** @description Only fire when sell volume ≥ this value (USD). */
+            min_sell_volume_usd?: number;
+            /** @description Only fire when market win rate ≥ this percentage (0.0–100.0). */
+            min_win_rate?: number;
+            /**
+             * Format: int64
+             * @description Only fire when the trader has traded in ≥ this many markets.
+             */
+            min_markets_traded?: number;
+            /** @description Restrict to these PnL windows. Empty = all windows. */
+            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
+        };
+        /** @description Subscription filters for the `trader_market_pnl` event. All fields are optional. */
+        TraderMarketPnlFilters: {
+            /** @description Track only these trader wallet addresses. */
+            traders?: string[];
+            /** @description Restrict to these markets. */
+            condition_ids?: string[];
+            /** @description Restrict to markets in these events. */
+            event_slugs?: string[];
+            /** @description Only fire when per-market realized PnL ≥ this value (USD). */
+            min_realized_pnl_usd?: number;
+            /** @description Only fire when per-market realized PnL ≤ this value (USD). */
+            max_realized_pnl_usd?: number;
+            /** @description Only fire when total volume (buy + sell + redemption + merge) ≥ this value (USD). */
+            min_volume_usd?: number;
+            /** @description Only fire when total volume ≤ this value (USD). */
+            max_volume_usd?: number;
+            /** @description Only fire when buy volume in the market ≥ this value (USD). */
+            min_buy_usd?: number;
+            /** @description Only fire when sell volume in the market ≥ this value (USD). */
+            min_sell_volume_usd?: number;
+            /** @description Restrict to these PnL windows. */
+            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `trader_event_pnl` event. All fields are optional. */
+        TraderEventPnlFilters: {
+            /** @description Track only these trader wallet addresses. */
+            traders?: string[];
+            /** @description Restrict to these events. */
+            event_slugs?: string[];
+            /** @description Only fire when per-event realized PnL ≥ this value (USD). */
+            min_realized_pnl_usd?: number;
+            /** @description Only fire when per-event realized PnL ≤ this value (USD). */
+            max_realized_pnl_usd?: number;
+            /** @description Only fire when total event volume ≥ this value (USD). */
+            min_volume_usd?: number;
+            /** @description Only fire when total event volume ≤ this value (USD). */
+            max_volume_usd?: number;
+            /** @description Only fire when buy volume within the event ≥ this value (USD). */
+            min_buy_usd?: number;
+            /** @description Only fire when sell volume within the event ≥ this value (USD). */
+            min_sell_volume_usd?: number;
+            /**
+             * Format: int64
+             * @description Only fire when the trader has traded in ≥ this many markets within the event.
+             */
+            min_markets_traded?: number;
+            /** @description Restrict to these PnL windows. */
+            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `condition_metrics` event. All fields are optional. */
+        MarketMetricsFilters: {
+            /** @description Restrict to these markets. Empty = all markets. */
+            condition_ids?: string[];
+            /** @description Restrict to these aggregation windows. Empty = all windows. */
+            timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d")[];
+            /** @description Only fire when volume ≥ this value (USD). */
+            min_volume_usd?: number;
+            /** @description Only fire when volume ≤ this value (USD). */
+            max_volume_usd?: number;
+            /**
+             * Format: int64
+             * @description Only fire when transaction count ≥ this value.
+             */
+            min_txns?: number;
+            /**
+             * Format: int64
+             * @description Only fire when unique trader count ≥ this value.
+             */
+            min_unique_traders?: number;
+            /** @description Only fire when total fees ≥ this value (USD). */
+            min_fees?: number;
+        };
+        /** @description Subscription filters for the `event_metrics` event. All fields are optional. */
+        EventMetricsFilters: {
+            /** @description Restrict to these events. Empty = all events. */
+            event_slugs?: string[];
+            /** @description Restrict to these aggregation windows. */
+            timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d")[];
+            /** @description Only fire when aggregated event volume ≥ this value (USD). */
+            min_volume_usd?: number;
+            max_volume_usd?: number;
+            /** Format: int64 */
+            min_txns?: number;
+            /** Format: int64 */
+            min_unique_traders?: number;
+            min_fees?: number;
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `position_metrics` event. All fields are optional. */
+        PositionMetricsFilters: {
+            /** @description Restrict to these outcome token IDs. */
+            position_ids?: string[];
+            /** @description Restrict to positions within these markets. */
+            condition_ids?: string[];
+            /** @description Restrict to positions with these outcome names (e.g. ["Yes", "No"]). */
+            outcomes?: string[];
+            /** @description Restrict to these aggregation windows. */
+            timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d")[];
+            /** @description Only fire when position volume ≥ this value (USD). */
+            min_volume_usd?: number;
+            max_volume_usd?: number;
+            min_buy_usd?: number;
+            min_sell_volume_usd?: number;
+            /** Format: int64 */
+            min_txns?: number;
+            /** Format: int64 */
+            min_unique_traders?: number;
+            /** @description Only fire when price change % ≥ this value. */
+            min_price_change_pct?: number;
+            /** @description Only fire when probability change % ≥ this value. */
+            min_probability_change_pct?: number;
+            min_fees?: number;
+        };
+        /** @description Subscription filters for the `market_volume_milestone` event. */
+        MarketVolumeMilestoneFilters: {
+            /** @description **Required.** Aggregation windows to monitor (e.g. ["1h", "24h"]). */
+            timeframes: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d")[];
+            /** @description Restrict to these markets. Empty = all markets. */
+            condition_ids?: string[];
+            /** @description Specific USD milestones to trigger on (e.g. [10000, 100000, 1000000]). Empty = all milestones. */
+            milestone_amounts?: number[];
+        };
+        /** @description Subscription filters for the `event_volume_milestone` event. */
+        EventVolumeMilestoneFilters: {
+            /** @description **Required.** Aggregation windows to monitor. */
+            timeframes: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d")[];
+            /** @description Restrict to these events. */
+            event_slugs?: string[];
+            /** @description Specific USD milestones to trigger on. */
+            milestone_amounts?: number[];
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `position_volume_milestone` event. */
+        PositionVolumeMilestoneFilters: {
+            /** @description **Required.** Aggregation windows to monitor. */
+            timeframes: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d")[];
+            /** @description Restrict to these outcome token IDs. */
+            position_ids?: string[];
+            /** @description Restrict to positions within these markets. */
+            condition_ids?: string[];
+            /** @description Specific USD milestones to trigger on. */
+            milestone_amounts?: number[];
+        };
+        /** @description Subscription filters for the `probability_spike` event. */
+        ProbabilitySpikeFilters: {
+            /** @description Restrict to specific outcome token IDs. Empty = all positions. */
+            position_ids?: string[];
+            /** @description Restrict to specific market condition IDs. Empty = all markets. */
+            condition_ids?: string[];
+            /** @description Restrict to specific events. Empty = all events. */
+            event_slugs?: string[];
+            /** @description Restrict to these outcome names (e.g. ["Yes", "No"]). */
+            outcomes?: string[];
+            /** @description Minimum probability percentage move to trigger (e.g. `10` for a 10% move). */
+            min_probability_change_pct?: number;
+            /**
+             * @description `"up"` = probability rising only (default when omitted), `"down"` = falling only, `"both"` = either direction.
+             * @enum {string}
+             */
+            spike_direction?: "up" | "down" | "both";
+            /** @description Observation window in seconds. The first trade in each window sets the reference price; subsequent trades are compared to it. E.g. `60` detects moves that occur within 60 seconds. */
+            window_secs?: number;
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `price_spike` event. */
+        PriceSpikeFilters: {
+            /** @description Restrict to specific outcome token IDs. Empty = all positions. */
+            position_ids?: string[];
+            /** @description Restrict to specific market condition IDs. Empty = all markets. */
+            condition_ids?: string[];
+            /** @description Restrict to specific events. Empty = all events. */
+            event_slugs?: string[];
+            /** @description Restrict to these outcome names (e.g. ["Yes", "No"]). */
+            outcomes?: string[];
+            /** @description Minimum price percentage move to trigger (e.g. `10` for a 10% move). */
+            min_price_change_pct?: number;
+            /**
+             * @description `"up"` = price rising only (default when omitted), `"down"` = falling only, `"both"` = either direction.
+             * @enum {string}
+             */
+            spike_direction?: "up" | "down" | "both";
+            /** @description Observation window in seconds. The first trade in each window sets the reference price; subsequent trades are compared to it. E.g. `60` detects moves that occur within 60 seconds. */
+            window_secs?: number;
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `market_volume_spike` event. `spike_ratio` is required. */
+        MarketVolumeSpikeFilters: {
+            /** @description **Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio. The snapshot is set automatically on first data and resets after each fire. */
+            spike_ratio: number;
+            /** @description Force snapshot reset after this many seconds (max 600 / 10 minutes). */
+            window_secs?: number;
+            /** @description Restrict to these markets. Empty = all markets. */
+            condition_ids?: string[];
+            /** @description Restrict to these aggregation windows. Empty = all windows. */
+            timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "1d" | "24h" | "7d" | "30d")[];
+        };
+        /** @description Subscription filters for the `event_volume_spike` event. `spike_ratio` is required. */
+        EventVolumeSpikeFilters: {
+            /** @description **Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio. */
+            spike_ratio: number;
+            /** @description Force snapshot reset after this many seconds (max 600 / 10 minutes). */
+            window_secs?: number;
+            /** @description Restrict to these events. */
+            event_slugs?: string[];
+            /** @description Restrict to these aggregation windows. */
+            timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "1d" | "24h" | "7d" | "30d")[];
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `position_volume_spike` event. `spike_ratio` is required. */
+        PositionVolumeSpikeFilters: {
+            /** @description **Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio. */
+            spike_ratio: number;
+            /** @description Force snapshot reset after this many seconds (max 600 / 10 minutes). */
+            window_secs?: number;
+            /** @description Restrict to these outcome token IDs. */
+            position_ids?: string[];
+            /** @description Restrict to positions within these markets. */
+            condition_ids?: string[];
+            /** @description Restrict to these outcome names. */
+            outcomes?: string[];
+            /** @description Restrict to these aggregation windows. */
+            timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "1d" | "24h" | "7d" | "30d")[];
+        };
+        /** @description Subscription filters for the `close_to_bond` event. At least one of `min_probability` or `max_probability` is required. */
+        CloseToBondFilters: {
+            /** @description Trigger when the YES outcome price is ≥ this value (e.g. 0.95 for 95% certainty). At least one of `min_probability` or `max_probability` must be set. */
+            min_probability?: number;
+            /** @description Trigger when the YES outcome price is ≤ this value (e.g. 0.05 for near-certain NO). */
+            max_probability?: number;
+            /** @description Restrict to these markets. */
+            condition_ids?: string[];
+            /** @description Restrict to these outcome token IDs. */
+            position_ids?: string[];
+            /** @description Restrict to markets in these events. */
+            event_slugs?: string[];
+            /** @description Restrict to these outcome names (e.g. ["Yes", "No"]). */
+            outcomes?: string[];
+            /** @description Restrict by outcome index. 0 = Yes/Up, 1 = No. Position 0 usually represents the Up/Yes side in binary markets. */
+            position_outcome_indices?: number[];
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        } | unknown | unknown;
+        /** @description Subscription filters for the `market_created` event. All fields are optional. */
+        MarketCreatedFilters: {
+            /** @description Restrict to markets with these tags or category names (case-insensitive match). */
+            tags?: string[];
+            /** @description Restrict to markets belonging to these events. */
+            event_slugs?: string[];
+            /** @description When `true`, suppress webhooks for short-term "updown" markets (event slugs containing `updown`). Default: `false`. */
+            exclude_shortterm_markets?: boolean;
+        };
+        /** @description Subscription filters for the `oracle_events` event. All fields are optional. */
+        OracleEventsFilters: {
+            /** @description Restrict to these event types (case-insensitive). Empty = all. */
+            oracle_event_types?: ("AssertionMade" | "AssertionDisputed" | "AssertionSettled" | "RequestPrice" | "ProposePrice" | "DisputePrice" | "Settle" | "QuestionResolved" | "QuestionEmergencyResolved" | "QuestionReset" | "QuestionInitialized" | "QuestionPaused" | "QuestionUnpaused" | "QuestionFlagged" | "QuestionUnflagged" | "ConditionResolution" | "NegRiskOutcomeReported")[];
+            /** @description Restrict to events for these condition IDs. */
+            condition_ids?: string[];
+        };
+        /** @description Subscription filters for the `asset_price_tick` event. All fields are optional. */
+        AssetPriceTickFilters: {
+            /** @description Restrict to these crypto assets. Empty = all assets. */
+            asset_symbols?: ("BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE")[];
+        };
+        /** @description Subscription filters for the `asset_price_window_update` event. All fields are optional. */
+        AssetPriceWindowUpdateFilters: {
+            /** @description Restrict to these crypto assets. Empty = all assets. */
+            asset_symbols?: ("BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE")[];
+            /** @description Restrict to these candle sizes. Empty = all sizes. */
+            timeframes?: ("5m" | "15m" | "1h" | "4h" | "1d" | "24h")[];
+        };
         /**
          * @description All alert event types supported by both HTTP webhooks and the alerts WebSocket.
          * @enum {string}
@@ -3131,7 +2782,7 @@ export interface components {
          *         "fee": 0.125,
          *         "side": "Buy",
          *         "price": 0.5,
-         *         "exchange": "CTFExchange",
+         *         "exchange": "polymarket",
          *         "trade_type": "OrderFilled"
          *       }
          *     }
@@ -3198,7 +2849,7 @@ export interface components {
          *         "side": "Buy",
          *         "price": 0.5,
          *         "probability": 0.5,
-         *         "exchange": "CTFExchange",
+         *         "exchange": "polymarket",
          *         "trade_type": "OrderFilled"
          *       }
          *     }
@@ -3265,7 +2916,7 @@ export interface components {
          *         "side": "Buy",
          *         "price": 0.5,
          *         "probability": 0.5,
-         *         "exchange": "CTFExchange",
+         *         "exchange": "polymarket",
          *         "trade_type": "OrderFilled"
          *       }
          *     }
@@ -3332,7 +2983,7 @@ export interface components {
          *         "side": "Buy",
          *         "price": 0.5,
          *         "probability": 0.5,
-         *         "exchange": "CTFExchange",
+         *         "exchange": "polymarket",
          *         "trade_type": "OrderFilled"
          *       }
          *     }

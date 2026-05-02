@@ -18,6 +18,8 @@ import type {
 	GetTraderPnlBreakdownParams,
 	GetTraderPnlCalendarParams,
 	GetTraderPnlCandlesParams,
+	GetTraderPnlV3CandlesParams,
+	PnlV3CandleEntry,
 	GetGlobalPnlParams,
 	GetTraderPositionPnlParams,
 	TraderOutcomePnlEntry,
@@ -67,6 +69,11 @@ export class TraderNamespace extends Namespace {
 	async getTraderPnlCandles(params: GetTraderPnlCandlesParams, venue?: Venue): Promise<HttpResponse<PnlCandleEntry[]>> {
 		const { address, ...query } = params;
 		return this.get<PnlCandleEntry[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/candles`, { params: query });
+	}
+
+	async getTraderPnlV3Candles(params: GetTraderPnlV3CandlesParams, venue?: Venue): Promise<HttpResponse<PnlV3CandleEntry[]>> {
+		const { address, ...query } = params;
+		return this.get<PnlV3CandleEntry[]>(venue, `/trader/pnl_v3/${encodeURIComponent(address)}/candles`, { params: query });
 	}
 
 	async getTraderOutcomePnl(params: GetTraderPositionPnlParams, venue?: Venue): Promise<HttpResponse<TraderOutcomePnlEntry[]>> {

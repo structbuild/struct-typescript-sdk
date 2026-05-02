@@ -546,6 +546,76 @@ export interface GetPositionTopTradersParams extends OperationQuery<"get_positio
 
 export interface GetOracleEventsParams extends OperationQuery<"get_oracle_events"> {}
 
+export type ApprovalKind = Schemas["ApprovalKind"];
+export type ApprovalsInfo = Schemas["ApprovalsInfo"];
+export type ApprovalsSummary = Schemas["ApprovalsSummary"];
+export type BalanceInfo = Schemas["BalanceInfo"];
+export type BuilderCredentials = Schemas["BuilderCredentials"];
+export type BuilderSignRequest = Schemas["BuilderSignRequest"];
+export type BuilderSignResponse = Schemas["BuilderSignResponse"];
+export type CancelAllRequest = Schemas["CancelAllRequest"];
+export type CancelOrderRequest = Schemas["CancelOrderRequest"];
+export type ClobCredentials = Schemas["ClobCredentials"];
+export type ClobCredsRequest = Schemas["ClobCredsRequest"];
+export type ClobCredsResponse = Schemas["ClobCredsResponse"];
+export type ExchangeKindDto = Schemas["ExchangeKindDto"];
+export type OnboardStatus = Schemas["OnboardStatus"];
+export type OrderType = Schemas["OrderType"];
+export type PnlV3CandleEntry = Schemas["PnlV3CandleEntry"];
+export type PostOrderRequest = Schemas["PostOrderRequest"];
+export type PostOrderResponse = Schemas["PostOrderResponse"];
+export type RefreshBalanceAllowanceRequest = Schemas["RefreshBalanceAllowanceRequest"];
+export type RegisterRelayerKeyRequest = Schemas["RegisterRelayerKeyRequest"];
+export type RelayerKeyResponse = Schemas["RelayerKeyResponse"];
+export type RevokeRelayerKeyRequest = Schemas["RevokeRelayerKeyRequest"];
+export type SafeInfo = Schemas["SafeInfo"];
+export type SignedSafeTx = Schemas["SignedSafeTx"];
+export type SmartMoneyDailyRow = Schemas["SmartMoneyDailyRow"];
+export type SmartMoneyEntryAlert = Schemas["SmartMoneyEntryAlert"];
+export type SmartMoneyEntryBatch = Schemas["SmartMoneyEntryBatch"];
+export type SmartMoneyFumbledEventRow = Schemas["SmartMoneyFumbledEventRow"];
+export type SmartMoneyHighConvictionEntryAlert = Schemas["SmartMoneyHighConvictionEntryAlert"];
+export type SmartMoneyHighConvictionEntryBatch = Schemas["SmartMoneyHighConvictionEntryBatch"];
+export type SmartMoneyInsiderPatternEntryAlert = Schemas["SmartMoneyInsiderPatternEntryAlert"];
+export type SmartMoneyInsiderPatternEntryBatch = Schemas["SmartMoneyInsiderPatternEntryBatch"];
+export type SmartMoneyMarketLifetimeRow = Schemas["SmartMoneyMarketLifetimeRow"];
+export type SmartMoneyReasonCode = Schemas["SmartMoneyReasonCode"];
+export type SmartMoneyReasonCodesResponse = Schemas["SmartMoneyReasonCodesResponse"];
+export type SmartMoneyReentryAlert = Schemas["SmartMoneyReentryAlert"];
+export type SmartMoneyReentryBatch = Schemas["SmartMoneyReentryBatch"];
+export type SmartMoneyReentryEventRow = Schemas["SmartMoneyReentryEventRow"];
+export type SmartMoneySortBy = Schemas["SmartMoneySortBy"];
+export type SmartMoneyTraderLifetimeRow = Schemas["SmartMoneyTraderLifetimeRow"];
+export type SmartMoneyTraderProfileReasonCode = Schemas["SmartMoneyTraderProfileReasonCode"];
+export type TradingErrorEnvelope = Schemas["TradingErrorEnvelope"];
+export type WalletDetection = Schemas["WalletDetection"];
+
+export interface GetSmartMoneyLeaderboardParams extends OperationQuery<"smart_money_leaderboard"> {}
+
+export interface GetSmartMoneyMarketSummaryParams {
+	conditionId: string;
+}
+
+export interface GetSmartMoneyTraderSummaryParams {
+	address: string;
+}
+
+export interface GetSmartMoneyTraderDailyParams extends OperationQuery<"smart_money_trader_daily"> {
+	address: string;
+}
+
+export interface GetSmartMoneyTraderFumbledParams extends OperationQuery<"smart_money_trader_fumbled"> {
+	address: string;
+}
+
+export interface GetSmartMoneyTraderReentriesParams extends OperationQuery<"smart_money_trader_reentries"> {
+	address: string;
+}
+
+export interface GetTraderPnlV3CandlesParams extends OperationQuery<"get_trader_pnl_v3_candles"> {
+	address: string;
+}
+
 export type WebhookResponse = WebhookSchemas["WebhookResponse"];
 export type WebhookListResponseBody = WebhookSchemas["WebhookListResponseBody"];
 export type WebhookTestResponseBody = WebhookSchemas["WebhookTestResponseBody"];
@@ -607,8 +677,8 @@ export type TraderNewTradeFilters = WebhookSchemas["TraderNewTradeFilters"];
 export type PriceSpikePayload = WebhookSchemas["PriceSpikePayload"];
 export type PriceSpikeFilters = WebhookSchemas["PriceSpikeFilters"];
 export type TraderTradeEventFilters = WebhookSchemas["TraderTradeEventFilters"];
-export type NewTradeFilterType = WebhookSchemas["NewTradeFilterType"];
-export type TradeEventFilterType = WebhookSchemas["TradeEventFilterType"];
+export type NewTradeFilterType = NonNullable<TraderNewTradeFilters["trade_types"]>[number];
+export type TradeEventFilterType = NonNullable<TraderTradeEventFilters["trade_types"]>[number];
 
 export type WebhookDeliveryEnvelope = WebhookSchemas["WebhookDeliveryEnvelope"];
 export type WebhookTraderTradeEventPayload = WebhookSchemas["WebhookTraderTradeEventPayload"];
