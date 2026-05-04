@@ -9,12 +9,12 @@ allowed-tools: Bash, Read, Edit, Write, Grep, Glob, Task
 
 ## Step 1: Run prep and capture errors
 
-Run `bun run prep` and parse the output. Identify:
+Run `bun run prep` (or `bun run prep:staging` if the user passed `staging`) and parse the output. Identify:
 
 - **Phantom routes**: SDK methods that reference paths no longer in the OpenAPI spec
 - **Unimplemented routes**: OpenAPI spec paths with no corresponding SDK method
 
-If prep passes with no errors, stop — nothing to fix.
+If prep passes with no errors, skip Steps 2–5 and proceed directly to Step 6 (description leak scan). Always run Step 6 regardless of whether prep passed or failed.
 
 ## Step 2: Investigate each phantom route
 
@@ -57,6 +57,44 @@ For each unimplemented route:
 ## Step 5: Verify
 
 Run `bun run prep` again. It must pass with zero errors (exit code 0). If it fails, repeat from Step 2.
+
+## Step 6: Scan for description leaks
+
+Even when prep passes, OpenAPI `description` and `summary` fields can leak internal implementation details. Public SDK consumers should see *what* an endpoint does, not *how* it is built.
+
+Scan all files in `openapi/` and report any `description`/`summary` text that reveals:
+
+- **Storage or transport tech** — names of databases, caches, message queues, search engines, object stores, or any other infra primitive that holds or moves data
+- **Data-pipeline jargon** — terms describing precomputation strategies, table roles in a warehouse, or orchestration tooling that should be invisible to API consumers
+- **Internal-only references** — service names, repo names, ticket IDs, owner team names, or anything prefixed with "internal"
+- **Author markers** — `TODO`, `FIXME`, `HACK`, `XXX`, "deprecated but…", or apologies/explanations aimed at internal readers
+- **SQL fragments or column names** that obviously came from a query rather than user-facing copy
+
+Do **not** enumerate the specific forbidden terms in this file — `.claude/` is committed to git and naming the project's stack here would itself be the leak. Generate the term list at scan time from your general knowledge of the categories above.
+
+### How to scan
+
+For each spec file, restrict matches to lines containing `"description"` or `"summary"` (avoids false positives in schema names) using ripgrep with a case-insensitive regex assembled from the categories above. Iterate over `openapi/polymarket.json`, `openapi/webhooks.json`, `openapi/ws.json`, `openapi/ws-alerts.json`.
+
+### Reporting
+
+For each match, report:
+- File and line number
+- Which category it fell into (storage/pipeline/internal/author-marker/sql)
+- The full `description`/`summary` string
+- The owning operation ID or schema name (look upward in the JSON for the nearest `operationId` or schema key)
+
+Group findings by spec file. Do not silently rewrite the spec — these files are auto-fetched by `bun run fetch-specs` and will be overwritten on next run.
+
+### Fixing leaks
+
+Spec descriptions originate in the backend repo (`/Users/quantum/Documents/GitHub/struct-backend`). Hand the report to the user and offer to:
+
+1. Open the backend repo and locate the route handler / schema with the leaking description
+2. Rewrite the description to describe behavior only — what it returns, what params mean — never the storage layer, materialization strategy, or internal service names
+3. Re-run `bun run fetch-specs` once the backend change is deployed to refresh the local spec
+
+If no leaks are found, say so explicitly.
 
 ## Conventions
 

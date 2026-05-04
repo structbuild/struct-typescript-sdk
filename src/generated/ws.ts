@@ -202,7 +202,7 @@ export interface components {
              */
             threshold: number;
         };
-        /** @description Condition metrics webhook payload (Arc-optimized, no internal metadata) */
+        /** @description Condition metrics webhook payload. */
         ConditionMetricsPayload: {
             condition_id?: string | null;
             timeframe?: string | null;
@@ -284,7 +284,7 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
-        /** @description Event metrics webhook payload (Arc-optimized, no internal metadata) */
+        /** @description Event metrics webhook payload. */
         EventMetricsPayload: {
             event_slug?: string | null;
             timeframe?: string | null;
@@ -297,7 +297,7 @@ export interface components {
             /** Format: int64 */
             unique_traders?: number | null;
         };
-        /** @description Event PnL webhook payload (Arc-optimized) */
+        /** @description Event PnL webhook payload. */
         EventPnlPayload: {
             trader?: string | null;
             event_slug?: string | null;
@@ -453,7 +453,7 @@ export interface components {
             exchange: string;
             trade_type: string;
         };
-        /** @description Global PnL webhook payload (Arc-optimized) */
+        /** @description Global PnL webhook payload. */
         GlobalPnlPayload: {
             trader?: string | null;
             /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
@@ -551,7 +551,7 @@ export interface components {
             /** @description Whether this is a neg-risk market */
             neg_risk: boolean;
         };
-        /** @description Market PnL webhook payload (Arc-optimized) */
+        /** @description Market PnL webhook payload. */
         MarketPnlPayload: {
             trader?: string | null;
             condition_id?: string | null;
@@ -1040,7 +1040,7 @@ export interface components {
              */
             oracle_event_types?: string[];
         };
-        /** @description Position metrics webhook payload (Arc-optimized, no internal metadata) */
+        /** @description Position metrics webhook payload. */
         PositionMetricsPayload: {
             position_id?: string | null;
             outcome?: string | null;

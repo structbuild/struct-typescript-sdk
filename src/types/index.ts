@@ -563,6 +563,7 @@ export type OnboardStatus = Schemas["OnboardStatus"];
 export type OrderType = Schemas["OrderType"];
 export type PnlV3AnalyticsTimeframe = Schemas["PnlV3AnalyticsTimeframe"];
 export type PnlV3CandleEntry = Schemas["PnlV3CandleEntry"];
+export type PnlV3CandlestickBar = Schemas["PnlV3CandlestickBar"];
 export type PnlV3ChangeWindow = Schemas["PnlV3ChangeWindow"];
 export type PnlV3ChangesResponse = Schemas["PnlV3ChangesResponse"];
 export type PnlV3LatestSnapshot = Schemas["PnlV3LatestSnapshot"];

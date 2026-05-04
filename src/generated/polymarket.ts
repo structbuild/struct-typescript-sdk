@@ -1743,8 +1743,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get trader PnL v3 candles
-         * @description Retrieve ClickHouse-backed PnL v3 candles with total PnL OHLC, realized/unrealized PnL, balances, portfolio value, and open-position count.
+         * Get trader PnL candles
+         * @description Retrieve a trader's PnL chart candles, including total PnL, realized and unrealized PnL, balances, portfolio value, and open-position count.
          */
         get: operations["get_trader_pnl_v3_candles"];
         put?: never;
@@ -1763,7 +1763,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get trader PnL v3 changes
+         * Get trader PnL changes
          * @description Retrieve absolute and percentage PnL, portfolio, balance, and open-position changes over 1h, 24h, 7d, 30d, and lifetime.
          */
         get: operations["get_trader_pnl_v3_changes"];
@@ -1783,8 +1783,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get trader PnL v3 best/worst periods
-         * @description Retrieve best and worst daily, weekly, and monthly total-PnL and portfolio periods using daily PnL candles.
+         * Get trader best and worst PnL periods
+         * @description Retrieve the trader's best and worst daily, weekly, and monthly periods for total PnL and portfolio value.
          */
         get: operations["get_trader_pnl_v3_periods"];
         put?: never;
@@ -1803,7 +1803,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get trader PnL v3 risk
+         * Get trader PnL risk
          * @description Retrieve max drawdown, current drawdown, max runup, high, low, and latest values over a timeframe.
          */
         get: operations["get_trader_pnl_v3_risk"];
@@ -4473,6 +4473,82 @@ export interface components {
              * @description Portfolio value close/latest value for the candle.
              */
             portfolio_close: number;
+            /**
+             * Format: int32
+             * @description Latest open position count at candle close.
+             */
+            num_open_positions: number;
+        };
+        PnlV3CandlestickBar: {
+            /**
+             * Format: double
+             * @description Total PnL low value for the candle.
+             */
+            l?: number | null;
+            /**
+             * Format: double
+             * @description Total PnL high value for the candle.
+             */
+            h?: number | null;
+            /**
+             * Format: double
+             * @description Total PnL open value for the candle.
+             */
+            o?: number | null;
+            /**
+             * Format: double
+             * @description Total PnL close/latest value for the candle.
+             */
+            c?: number | null;
+            /**
+             * Format: int64
+             * @description Timestamp in epoch seconds at the start of the candle bucket.
+             */
+            t: number;
+            /** Format: int64 */
+            open_block: number;
+            /** Format: int64 */
+            close_block: number;
+            /**
+             * Format: double
+             * @description Latest realized PnL at candle close.
+             */
+            realized_pnl: number;
+            /**
+             * Format: double
+             * @description Latest unrealized/open-position value at candle close.
+             */
+            unrealized_pnl: number;
+            /**
+             * Format: double
+             * @description Latest USDC balance at candle close.
+             */
+            usdc_balance: number;
+            /**
+             * Format: double
+             * @description Latest pUSD balance at candle close.
+             */
+            pusd_balance: number;
+            /**
+             * Format: double
+             * @description Portfolio value low value for the candle.
+             */
+            portfolio_l?: number | null;
+            /**
+             * Format: double
+             * @description Portfolio value high value for the candle.
+             */
+            portfolio_h?: number | null;
+            /**
+             * Format: double
+             * @description Portfolio value open value for the candle.
+             */
+            portfolio_o?: number | null;
+            /**
+             * Format: double
+             * @description Portfolio value close/latest value for the candle.
+             */
+            portfolio_c?: number | null;
             /**
              * Format: int32
              * @description Latest open position count at candle close.
@@ -9893,13 +9969,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description PnL v3 candles */
+            /** @description Trader PnL candles */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PnlV3CandleEntry"][];
+                    "application/json": components["schemas"]["PnlV3CandlestickBar"][];
                 };
             };
         };
@@ -9916,7 +9992,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description PnL v3 changes */
+            /** @description Trader PnL changes */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -9942,7 +10018,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description PnL v3 best/worst periods */
+            /** @description Trader best and worst PnL periods */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -9968,7 +10044,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description PnL v3 risk */
+            /** @description Trader PnL risk */
             200: {
                 headers: {
                     [name: string]: unknown;

@@ -404,7 +404,7 @@
       "address": "polymarket_events_stream",
       "title": "Events Stream",
       "summary": "Real-time Polymarket events stream — filter or ids mode, 500ms to 10s cadence",
-      "description": "Low-latency push feed of `PolymarketEvent` rows — same row shape `GET /polymarket/events` returns. Server maintains an in-memory cache of **open** events only, refreshed via a slow full poll + a fast (500ms) newest-first poll, and merged live from the `prediction_event_metrics` and `prediction_trades` Kafka streams with per-timeframe block/timestamp ordering.\n\n**Seeding:** No initial snapshot is pushed on subscribe. Clients seed local state from `GET /polymarket/events` and then apply deltas from this stream.\n\n**Subscription model:** A client has up to 8 active slots per room (4 cadences × 2 modes). Re-subscribing to the same `(interval_ms, mode)` replaces the previous subscription. Unsubscribe one slot with `action: \"unsubscribe\" + interval_ms + mode`, or clear everything with `action: \"unsubscribe_all\"`.\n\n**Cadence (`interval_ms`):** `500`, `1000`, `3000`, or `10000`. Each cadence is a separate flush bucket — ids/filters subscribed at 500ms see updates up to 2× per second, 10000ms once per 10s.\n\n**Filter mode:** Evaluated in-memory on every flush against rows that actually changed since the last tick. Same validation as the REST list endpoint (timeframe, search length, list size caps). `search` is a case-insensitive substring match on `title` (not FTS). No sort / limit — you get every matching row that changed.\n\n**Ids mode:** Filter by explicit `event_slugs` and/or `event_ids`. Max 500 ids per subscription. Updates push when a matching id changes in cache.\n\n**When updates fire:** only when a cache row is dirtied by (a) a fresh Kafka metric snapshot with `latest_block >= cached`, (b) a confirmed trade with `block >= cached`, (c) a slow-poll field diff, or (d) the fast new-entries poll discovering a brand-new event. Quiet events produce zero messages.",
+      "description": "Low-latency push feed of `PolymarketEvent` rows — same row shape `GET /polymarket/events` returns. The stream sends updates for open events as market activity and event metrics change.\n\n**Seeding:** No initial snapshot is pushed on subscribe. Clients seed local state from `GET /polymarket/events` and then apply deltas from this stream.\n\n**Subscription model:** A client has up to 8 active slots per room (4 cadences × 2 modes). Re-subscribing to the same `(interval_ms, mode)` replaces the previous subscription. Unsubscribe one slot with `action: \"unsubscribe\" + interval_ms + mode`, or clear everything with `action: \"unsubscribe_all\"`.\n\n**Cadence (`interval_ms`):** `500`, `1000`, `3000`, or `10000`. Each cadence is a separate flush bucket — ids/filters subscribed at 500ms see updates up to 2× per second, 10000ms once per 10s.\n\n**Filter mode:** Evaluated on every flush against rows that actually changed since the last tick. Same validation as the REST list endpoint (timeframe, search length, list size caps). `search` is a case-insensitive substring match on `title` (not FTS). No sort / limit — you get every matching row that changed.\n\n**Ids mode:** Filter by explicit `event_slugs` and/or `event_ids`. Max 500 ids per subscription. Updates push when a matching event changes.\n\n**When updates fire:** updates are sent when matching event rows change. Quiet events produce zero messages.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/EventsStreamSubscribe"
@@ -424,7 +424,7 @@
       "address": "polymarket_markets_stream",
       "title": "Markets Stream",
       "summary": "Real-time Polymarket markets stream — filter or ids mode, 500ms to 10s cadence",
-      "description": "Low-latency push feed of market rows — same row shape `GET /polymarket/market` returns, including per-outcome price with `latest_block` + `latest_confirmed_at` watermarks. Server maintains an in-memory cache of **open** markets only, refreshed via a slow full poll + a fast (500ms) newest-first poll, and merged live from the `prediction_condition_metrics` and `prediction_trades` Kafka streams with per-timeframe block/timestamp ordering.\n\n**Seeding:** No initial snapshot is pushed on subscribe. Clients seed from `GET /polymarket/market` and then apply deltas from this stream.\n\n**Subscription model:** A client has up to 8 active slots per room (4 cadences × 2 modes). Re-subscribing to the same `(interval_ms, mode)` replaces the previous subscription. Unsubscribe one slot with `action: \"unsubscribe\" + interval_ms + mode`, or clear everything with `action: \"unsubscribe_all\"`.\n\n**Cadence (`interval_ms`):** `500`, `1000`, `3000`, or `10000`.\n\n**Filter mode:** Same validation as the REST list endpoint (timeframe, search length, list caps). `search` is a case-insensitive substring match on `title`. No sort / limit — you get every matching row that changed.\n\n**Ids mode:** Any combination of `condition_ids`, `market_slugs`, and `event_slugs` (matches all child markets of those events). Max 500 total per subscription.\n\n**When updates fire:** only when a cache row is dirtied by (a) a fresh Kafka metric snapshot with `latest_block >= cached`, (b) a confirmed trade with `block >= cached`, (c) a slow-poll field diff, or (d) the fast new-entries poll discovering a brand-new market. Quiet markets produce zero messages.\n\n**Outcome prices:** Each outcome in `outcomes[]` carries `latest_block` and `latest_confirmed_at` (Unix seconds) — the block/ts of the most recent price write from `prediction_position_metrics`. Consumers can use these to reject out-of-order price merges locally.",
+      "description": "Low-latency push feed of market rows — same row shape `GET /polymarket/market` returns, including per-outcome price with `latest_block` + `latest_confirmed_at` watermarks. The stream sends updates for open markets as market data, prices, and activity change.\n\n**Seeding:** No initial snapshot is pushed on subscribe. Clients seed from `GET /polymarket/market` and then apply deltas from this stream.\n\n**Subscription model:** A client has up to 8 active slots per room (4 cadences × 2 modes). Re-subscribing to the same `(interval_ms, mode)` replaces the previous subscription. Unsubscribe one slot with `action: \"unsubscribe\" + interval_ms + mode`, or clear everything with `action: \"unsubscribe_all\"`.\n\n**Cadence (`interval_ms`):** `500`, `1000`, `3000`, or `10000`.\n\n**Filter mode:** Same validation as the REST list endpoint (timeframe, search length, list caps). `search` is a case-insensitive substring match on `title`. No sort / limit — you get every matching row that changed.\n\n**Ids mode:** Any combination of `condition_ids`, `market_slugs`, and `event_slugs` (matches all child markets of those events). Max 500 total per subscription.\n\n**When updates fire:** updates are sent when matching market rows change. Quiet markets produce zero messages.\n\n**Outcome prices:** Each outcome in `outcomes[]` carries `latest_block` and `latest_confirmed_at` (Unix seconds) — the block/ts of the most recent price update. Consumers can use these to reject out-of-order price merges locally.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/MarketsStreamSubscribe"
@@ -4113,7 +4113,7 @@
       },
       "ConditionMetricsPayload": {
         "type": "object",
-        "description": "Condition metrics webhook payload (Arc-optimized, no internal metadata)",
+        "description": "Condition metrics webhook payload.",
         "properties": {
           "condition_id": {
             "type": [
@@ -4437,7 +4437,7 @@
       },
       "EventMetricsPayload": {
         "type": "object",
-        "description": "Event metrics webhook payload (Arc-optimized, no internal metadata)",
+        "description": "Event metrics webhook payload.",
         "properties": {
           "event_slug": {
             "type": [
@@ -4483,7 +4483,7 @@
       },
       "EventPnlPayload": {
         "type": "object",
-        "description": "Event PnL webhook payload (Arc-optimized)",
+        "description": "Event PnL webhook payload.",
         "required": [
           "timeframe"
         ],
@@ -4856,7 +4856,7 @@
       },
       "GlobalPnlPayload": {
         "type": "object",
-        "description": "Global PnL webhook payload (Arc-optimized)",
+        "description": "Global PnL webhook payload.",
         "required": [
           "timeframe"
         ],
@@ -5173,7 +5173,7 @@
       },
       "MarketPnlPayload": {
         "type": "object",
-        "description": "Market PnL webhook payload (Arc-optimized)",
+        "description": "Market PnL webhook payload.",
         "required": [
           "timeframe"
         ],
@@ -6422,7 +6422,7 @@
       },
       "PositionMetricsPayload": {
         "type": "object",
-        "description": "Position metrics webhook payload (Arc-optimized, no internal metadata)",
+        "description": "Position metrics webhook payload.",
         "properties": {
           "position_id": {
             "type": [
