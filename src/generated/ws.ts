@@ -1959,7 +1959,7 @@ export interface components {
             /** @description Trader wallet addresses (lowercase 0x-prefixed) */
             traders?: string[];
             /** @description Only receive events of these types. Empty array = all types. */
-            trade_types?: ("OrderFilled" | "OrdersMatched" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[];
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "MakerRebate" | "Reward" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[];
             /**
              * @description Trade status filter: "confirmed" (default) = on-chain only, "pending" = mempool only, "all" = both
              * @enum {string}
@@ -2036,6 +2036,39 @@ export interface components {
             fee_shares?: number;
             /** @description Absent for pending trades */
             fee_pct?: number;
+            exchange: number;
+        } | {
+            /** @enum {string} */
+            trade_type: "MakerRebate" | "Reward";
+            id: string;
+            hash: string;
+            block?: number;
+            confirmed_at?: number;
+            received_at?: number;
+            log_index?: number;
+            block_index?: number;
+            trader: {
+                address?: string;
+                name?: string | null;
+                pseudonym?: string | null;
+                profile_image?: string | null;
+                x_username?: string | null;
+                verified_badge?: boolean;
+            };
+            /** @description Payout distributor address */
+            taker?: string;
+            usd_amount?: number;
+            /** @description Always 0 for payout credits */
+            shares_amount?: number;
+            /** @description Always 0 for payout credits */
+            price?: number;
+            /** @description Always 0 for payout credits */
+            fee?: number;
+            /** @description Always 0 for payout credits */
+            fee_shares?: number;
+            /** @description Always 0 for payout credits */
+            fee_pct?: number;
+            /** @description Unknown/non-exchange credit source */
             exchange: number;
         } | {
             /** @enum {string} */
@@ -3025,10 +3058,48 @@ export interface components {
             exchange: number;
         };
         /**
+         * MakerRebate / Reward
+         * @description pUSD credit paid directly to the trader wallet.
+         */
+        TradeRedemptionEvent: {
+            /** @enum {string} */
+            trade_type: "MakerRebate" | "Reward";
+            id: string;
+            hash: string;
+            block?: number;
+            confirmed_at?: number;
+            received_at?: number;
+            log_index?: number;
+            block_index?: number;
+            trader: {
+                address?: string;
+                name?: string | null;
+                pseudonym?: string | null;
+                profile_image?: string | null;
+                x_username?: string | null;
+                verified_badge?: boolean;
+            };
+            /** @description Payout distributor address */
+            taker?: string;
+            usd_amount?: number;
+            /** @description Always 0 for payout credits */
+            shares_amount?: number;
+            /** @description Always 0 for payout credits */
+            price?: number;
+            /** @description Always 0 for payout credits */
+            fee?: number;
+            /** @description Always 0 for payout credits */
+            fee_shares?: number;
+            /** @description Always 0 for payout credits */
+            fee_pct?: number;
+            /** @description Unknown/non-exchange credit source */
+            exchange: number;
+        };
+        /**
          * Redemption
          * @description Positions redeemed after market resolution.
          */
-        TradeRedemptionEvent: {
+        TradeMergeEvent: {
             /** @enum {string} */
             trade_type: "Redemption";
             id: string;
@@ -3066,7 +3137,7 @@ export interface components {
          * Merge
          * @description Outcome tokens burned to receive collateral.
          */
-        TradeMergeEvent: {
+        TradeSplitEvent: {
             /** @enum {string} */
             trade_type: "Merge";
             id: string;
@@ -3101,7 +3172,7 @@ export interface components {
          * Split
          * @description Collateral deposited to receive outcome tokens.
          */
-        TradeSplitEvent: {
+        TradePositionsConvertedEvent: {
             /** @enum {string} */
             trade_type: "Split";
             id: string;
@@ -3136,7 +3207,7 @@ export interface components {
          * PositionsConverted
          * @description NegRisk NO tokens converted to YES tokens + collateral.
          */
-        TradePositionsConvertedEvent: {
+        TradeCancelledEvent: {
             /** @enum {string} */
             trade_type: "PositionsConverted";
             id: string;
@@ -3163,7 +3234,7 @@ export interface components {
          * Cancelled
          * @description Order cancelled on-chain.
          */
-        TradeCancelledEvent: {
+        TradeOracleLifecycleEvent: {
             /** @enum {string} */
             trade_type: "Cancelled";
             id: string;
@@ -3184,7 +3255,7 @@ export interface components {
          * Oracle Lifecycle Event
          * @description Market lifecycle events: Initialization, Proposal, Dispute, Settled, Resolution, ConditionResolution, Reset, Flag, Unflag, Pause, Unpause, ManualResolution, NegRiskOutcomeReported.
          */
-        TradeOracleLifecycleEvent: {
+        TradeRegisterTokenEvent: {
             /** @enum {string} */
             trade_type: "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported";
             id: string;
@@ -3218,7 +3289,7 @@ export interface components {
          * RegisterToken
          * @description YES/NO token pair registered for a condition.
          */
-        TradeRegisterTokenEvent: {
+        TradeApprovalEvent: {
             /** @enum {string} */
             trade_type: "RegisterToken";
             id: string;
@@ -3231,36 +3302,6 @@ export interface components {
             condition_id: string;
             token0?: string;
             token1?: string;
-            question?: string | null;
-            image_url?: string | null;
-            slug?: string | null;
-            event_slug?: string | null;
-            exchange: number;
-        };
-        /**
-         * Approval
-         * @description ERC-1155 setApprovalForAll — operator approved/revoked.
-         */
-        TradeApprovalEvent: {
-            /** @enum {string} */
-            trade_type: "Approval";
-            id: string;
-            hash: string;
-            block?: number;
-            confirmed_at?: number;
-            received_at?: number;
-            log_index?: number;
-            block_index?: number;
-            trader: {
-                address?: string;
-                name?: string | null;
-                pseudonym?: string | null;
-                profile_image?: string | null;
-                x_username?: string | null;
-                verified_badge?: boolean;
-            };
-            operator?: string;
-            approved?: boolean;
             question?: string | null;
             image_url?: string | null;
             slug?: string | null;

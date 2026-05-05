@@ -10442,6 +10442,174 @@
             "additionalProperties": false
           },
           {
+            "title": "MakerRebate / Reward",
+            "description": "pUSD credit paid directly to the trader wallet.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "block",
+              "confirmed_at",
+              "log_index",
+              "block_index",
+              "trader",
+              "usd_amount",
+              "exchange"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "confirmed_at": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "log_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "block_index": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "order_hash": {
+                "type": "string"
+              },
+              "trader": {
+                "type": "object",
+                "required": [
+                  "address",
+                  "name",
+                  "pseudonym",
+                  "profile_image",
+                  "x_username",
+                  "verified_badge"
+                ],
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "taker": {
+                "type": "string"
+              },
+              "side": {
+                "type": "string",
+                "enum": [
+                  "Buy",
+                  "Sell"
+                ]
+              },
+              "condition_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "position_id": {
+                "type": "string"
+              },
+              "outcome": {
+                "type": "string"
+              },
+              "outcome_index": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "question": {
+                "type": "string"
+              },
+              "image_url": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": "string"
+              },
+              "usd_amount": {
+                "type": "number"
+              },
+              "shares_amount": {
+                "type": "number"
+              },
+              "price": {
+                "type": "number"
+              },
+              "probability": {
+                "type": "number"
+              },
+              "fee": {
+                "type": "number"
+              },
+              "fee_shares": {
+                "type": "number"
+              },
+              "fee_pct": {
+                "type": "number"
+              },
+              "exchange": {
+                "type": "string",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "Unknown"
+                ],
+                "description": "Exchange contract that processed the event"
+              },
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "MakerRebate",
+                  "Reward"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          {
             "title": "Redemption",
             "description": "Positions redeemed after market resolution.",
             "type": "object",
@@ -12279,6 +12447,8 @@
                 "Cancelled",
                 "PositionsConverted",
                 "OrdersMatched",
+                "MakerRebate",
+                "Reward",
                 "Initialization",
                 "Proposal",
                 "Dispute",

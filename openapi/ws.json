@@ -9124,6 +9124,8 @@
                 "Split",
                 "Cancelled",
                 "PositionsConverted",
+                "MakerRebate",
+                "Reward",
                 "Initialization",
                 "Proposal",
                 "Dispute",
@@ -9392,6 +9394,114 @@
               },
               "exchange": {
                 "type": "integer"
+              }
+            }
+          },
+          {
+            "title": "MakerRebate / Reward",
+            "description": "pUSD credit paid directly to the trader wallet.",
+            "type": "object",
+            "required": [
+              "trade_type",
+              "id",
+              "hash",
+              "trader",
+              "exchange"
+            ],
+            "properties": {
+              "trade_type": {
+                "type": "string",
+                "enum": [
+                  "MakerRebate",
+                  "Reward"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string"
+              },
+              "block": {
+                "type": "integer"
+              },
+              "confirmed_at": {
+                "type": "integer"
+              },
+              "received_at": {
+                "type": "integer"
+              },
+              "log_index": {
+                "type": "integer"
+              },
+              "block_index": {
+                "type": "integer"
+              },
+              "trader": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "pseudonym": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "profile_image": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "x_username": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "verified_badge": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "taker": {
+                "type": "string",
+                "description": "Payout distributor address"
+              },
+              "usd_amount": {
+                "type": "number"
+              },
+              "shares_amount": {
+                "type": "number",
+                "description": "Always 0 for payout credits"
+              },
+              "price": {
+                "type": "number",
+                "description": "Always 0 for payout credits"
+              },
+              "fee": {
+                "type": "number",
+                "description": "Always 0 for payout credits"
+              },
+              "fee_shares": {
+                "type": "number",
+                "description": "Always 0 for payout credits"
+              },
+              "fee_pct": {
+                "type": "number",
+                "description": "Always 0 for payout credits"
+              },
+              "exchange": {
+                "type": "integer",
+                "description": "Unknown/non-exchange credit source"
               }
             }
           },
@@ -12625,6 +12735,114 @@
         }
       },
       "TradeRedemptionEvent": {
+        "title": "MakerRebate / Reward",
+        "description": "pUSD credit paid directly to the trader wallet.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "MakerRebate",
+              "Reward"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "block": {
+            "type": "integer"
+          },
+          "confirmed_at": {
+            "type": "integer"
+          },
+          "received_at": {
+            "type": "integer"
+          },
+          "log_index": {
+            "type": "integer"
+          },
+          "block_index": {
+            "type": "integer"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string"
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "verified_badge": {
+                "type": "boolean"
+              }
+            }
+          },
+          "taker": {
+            "type": "string",
+            "description": "Payout distributor address"
+          },
+          "usd_amount": {
+            "type": "number"
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Always 0 for payout credits"
+          },
+          "price": {
+            "type": "number",
+            "description": "Always 0 for payout credits"
+          },
+          "fee": {
+            "type": "number",
+            "description": "Always 0 for payout credits"
+          },
+          "fee_shares": {
+            "type": "number",
+            "description": "Always 0 for payout credits"
+          },
+          "fee_pct": {
+            "type": "number",
+            "description": "Always 0 for payout credits"
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Unknown/non-exchange credit source"
+          }
+        }
+      },
+      "TradeMergeEvent": {
         "title": "Redemption",
         "description": "Positions redeemed after market resolution.",
         "type": "object",
@@ -12771,7 +12989,7 @@
           }
         }
       },
-      "TradeMergeEvent": {
+      "TradeSplitEvent": {
         "title": "Merge",
         "description": "Outcome tokens burned to receive collateral.",
         "type": "object",
@@ -12900,7 +13118,7 @@
           }
         }
       },
-      "TradeSplitEvent": {
+      "TradePositionsConvertedEvent": {
         "title": "Split",
         "description": "Collateral deposited to receive outcome tokens.",
         "type": "object",
@@ -13029,7 +13247,7 @@
           }
         }
       },
-      "TradePositionsConvertedEvent": {
+      "TradeCancelledEvent": {
         "title": "PositionsConverted",
         "description": "NegRisk NO tokens converted to YES tokens + collateral.",
         "type": "object",
@@ -13117,7 +13335,7 @@
           }
         }
       },
-      "TradeCancelledEvent": {
+      "TradeOracleLifecycleEvent": {
         "title": "Cancelled",
         "description": "Order cancelled on-chain.",
         "type": "object",
@@ -13187,7 +13405,7 @@
           }
         }
       },
-      "TradeOracleLifecycleEvent": {
+      "TradeRegisterTokenEvent": {
         "title": "Oracle Lifecycle Event",
         "description": "Market lifecycle events: Initialization, Proposal, Dispute, Settled, Resolution, ConditionResolution, Reset, Flag, Unflag, Pause, Unpause, ManualResolution, NegRiskOutcomeReported.",
         "type": "object",
@@ -13348,7 +13566,7 @@
           }
         }
       },
-      "TradeRegisterTokenEvent": {
+      "TradeApprovalEvent": {
         "title": "RegisterToken",
         "description": "YES/NO token pair registered for a condition.",
         "type": "object",
@@ -13395,115 +13613,6 @@
           },
           "token1": {
             "type": "string"
-          },
-          "question": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "image_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "exchange": {
-            "type": "integer"
-          }
-        }
-      },
-      "TradeApprovalEvent": {
-        "title": "Approval",
-        "description": "ERC-1155 setApprovalForAll — operator approved/revoked.",
-        "type": "object",
-        "required": [
-          "trade_type",
-          "id",
-          "hash",
-          "trader",
-          "exchange"
-        ],
-        "properties": {
-          "trade_type": {
-            "type": "string",
-            "enum": [
-              "Approval"
-            ]
-          },
-          "id": {
-            "type": "string"
-          },
-          "hash": {
-            "type": "string"
-          },
-          "block": {
-            "type": "integer"
-          },
-          "confirmed_at": {
-            "type": "integer"
-          },
-          "received_at": {
-            "type": "integer"
-          },
-          "log_index": {
-            "type": "integer"
-          },
-          "block_index": {
-            "type": "integer"
-          },
-          "trader": {
-            "type": "object",
-            "properties": {
-              "address": {
-                "type": "string"
-              },
-              "name": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "pseudonym": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "profile_image": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "x_username": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "verified_badge": {
-                "type": "boolean"
-              }
-            }
-          },
-          "operator": {
-            "type": "string"
-          },
-          "approved": {
-            "type": "boolean"
           },
           "question": {
             "type": [

@@ -2006,7 +2006,7 @@ export interface paths {
         put?: never;
         /**
          * Sign builder HMAC headers for an outbound relayer-v2 / CLOB request
-         * @description Returns the `POLY_API_KEY`, `POLY_SIGNATURE`, `POLY_TIMESTAMP`, `POLY_PASSPHRASE` headers the SDK must attach to a request it's about to make to `relayer-v2.polymarket.com` or `clob.polymarket.com`. Lets the SDK call Polymarket directly while builder credentials stay server-side. Match the request body verbatim — HMAC signs `timestamp + method + path + body`, so any divergence between what's signed and what's sent breaks signature recovery upstream.
+         * @description Returns builder HMAC values the SDK attaches as `POLY_BUILDER_*` headers to a request it's about to make to `relayer-v2.polymarket.com` or builder-scoped CLOB endpoints. Lets the SDK call Polymarket directly while builder credentials stay server-side. Match the request body verbatim — HMAC signs `timestamp + method + path + body`, so any divergence between what's signed and sent breaks signature recovery upstream.
          */
         post: operations["builder_sign"];
         delete?: never;
@@ -2332,7 +2332,7 @@ export interface paths {
         };
         /**
          * Detect which Polymarket wallet type an EOA actually uses
-         * @description An EOA can have either a Safe (current default, gasless onboarding via SafeProxyFactory) or a legacy Polymarket Proxy (Magic-Link / email wallets). This probes both CREATE2-derived addresses on-chain and returns whichever is deployed. Falls back to Safe when neither is — that's what the next deployment call will create.
+         * @description Detects the wallet address Polymarket should treat as the funder. Existing Safe/proxy users stay on their deployed legacy wallet. New users fall back to the deterministic deposit wallet.
          */
         get: operations["detect_wallet_type"];
         put?: never;
@@ -2398,6 +2398,7 @@ export interface components {
          */
         ApprovalsInfo: {
             safe: string;
+            address: string;
             summary: components["schemas"]["ApprovalsSummary"];
             approvals: components["schemas"]["Approval"][];
         };
@@ -4091,14 +4092,23 @@ export interface components {
         OnboardStatus: {
             eoa: string;
             safe: string;
+            deposit_wallet: string;
+            wallet: string;
+            wallet_type: string;
+            /** Format: int32 */
+            signature_type: number;
             safe_deployed: boolean;
+            deposit_wallet_deployed: boolean;
             approvals_set: boolean;
             /**
              * @description Whether CLOB API credentials have been minted. Always `false` from
              *     this endpoint — credential state is held client-side.
              */
             clob_credentials_minted: boolean;
-            /** @description Outstanding setup steps. Possible values: `deploy_safe`, `set_approvals`. */
+            /**
+             * @description Outstanding setup steps. Possible values: `deploy_deposit_wallet`,
+             *     `deploy_safe`, `set_approvals`.
+             */
             pending_actions: string[];
         };
         /**
@@ -4403,82 +4413,6 @@ export interface components {
         PnlTimeframe: "1d" | "7d" | "30d" | "lifetime";
         /** @enum {string} */
         PnlV3AnalyticsTimeframe: "1d" | "24h" | "7d" | "30d" | "lifetime";
-        PnlV3CandleEntry: {
-            /**
-             * Format: int64
-             * @description Timestamp in epoch seconds at the start of the candle bucket.
-             */
-            t: number;
-            /**
-             * Format: double
-             * @description Total PnL open value for the candle.
-             */
-            open: number;
-            /**
-             * Format: double
-             * @description Total PnL high value for the candle.
-             */
-            high: number;
-            /**
-             * Format: double
-             * @description Total PnL low value for the candle.
-             */
-            low: number;
-            /**
-             * Format: double
-             * @description Total PnL close/latest value for the candle.
-             */
-            close: number;
-            /** Format: int64 */
-            open_block: number;
-            /** Format: int64 */
-            close_block: number;
-            /**
-             * Format: double
-             * @description Latest realized PnL at candle close.
-             */
-            realized_pnl: number;
-            /**
-             * Format: double
-             * @description Latest unrealized/open-position value at candle close.
-             */
-            unrealized_pnl: number;
-            /**
-             * Format: double
-             * @description Latest USDC balance at candle close.
-             */
-            usdc_balance: number;
-            /**
-             * Format: double
-             * @description Latest pUSD balance at candle close.
-             */
-            pusd_balance: number;
-            /**
-             * Format: double
-             * @description Portfolio value open value for the candle.
-             */
-            portfolio_open: number;
-            /**
-             * Format: double
-             * @description Portfolio value high value for the candle.
-             */
-            portfolio_high: number;
-            /**
-             * Format: double
-             * @description Portfolio value low value for the candle.
-             */
-            portfolio_low: number;
-            /**
-             * Format: double
-             * @description Portfolio value close/latest value for the candle.
-             */
-            portfolio_close: number;
-            /**
-             * Format: int32
-             * @description Latest open position count at candle close.
-             */
-            num_open_positions: number;
-        };
         PnlV3CandlestickBar: {
             /**
              * Format: double
@@ -5305,7 +5239,8 @@ export interface components {
             clob_credentials: components["schemas"]["ClobCredentials"];
             /**
              * Format: int32
-             * @description Polymarket signature type the wallet uses. `0` = EOA, `2` = Safe.
+             * @description Polymarket signature type the wallet uses. `0` = EOA, `2` = Safe,
+             *     `3` = deposit wallet / POLY_1271.
              */
             signature_type: number;
         };
@@ -6239,6 +6174,12 @@ export interface components {
         }) | (components["schemas"]["OrderFilledTrade"] & {
             /** @enum {string} */
             trade_type: "OrdersMatched";
+        }) | (components["schemas"]["OrderFilledTrade"] & {
+            /** @enum {string} */
+            trade_type: "MakerRebate";
+        }) | (components["schemas"]["OrderFilledTrade"] & {
+            /** @enum {string} */
+            trade_type: "Reward";
         }) | (components["schemas"]["RedemptionTrade"] & {
             /** @enum {string} */
             trade_type: "Redemption";
@@ -6303,7 +6244,7 @@ export interface components {
         /** @enum {string} */
         TradeSide: "0" | "1";
         /** @enum {string} */
-        TradeType: "0" | "1" | "2" | "3" | "4" | "5" | "6";
+        TradeType: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "22" | "23";
         /**
          * @description Trader profile info embedded in API responses
          *
@@ -6679,19 +6620,24 @@ export interface components {
         WalletDetection: {
             eoa: string;
             safe: string;
+            deposit_wallet: string;
             proxy: string;
             safe_deployed: boolean;
+            deposit_wallet_deployed: boolean;
             proxy_deployed: boolean;
             /**
              * @description Whichever of `safe` / `proxy` is actually deployed. Falls back to
-             *     `safe` when neither is.
+             *     `deposit_wallet` when no legacy wallet is deployed.
              */
             funder: string;
             /**
              * Format: int32
-             * @description Polymarket signature type: `2` = POLY_GNOSIS_SAFE, `1` = POLY_PROXY.
+             * @description Polymarket signature type: `3` = POLY_1271, `2` = POLY_GNOSIS_SAFE,
+             *     `1` = POLY_PROXY.
              */
             signature_type: number;
+            /** @description Stable wallet classification for clients that need branching logic. */
+            wallet_type: string;
         };
         /**
          * @description Crypto asset symbols accepted by `asset_price_tick` and `asset_price_window_update` filters.
@@ -8620,7 +8566,7 @@ export interface operations {
                 outcome?: string;
                 /** @description Outcome index: 0 (Yes), 1 (No) */
                 outcome_index?: components["schemas"]["OutcomeIndex"];
-                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched */
+                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched, MakerRebate, Reward */
                 trade_types?: string;
                 /** @description Min USD amount */
                 min_usd_amount?: number;
@@ -9963,7 +9909,7 @@ export interface operations {
                 count_back?: number;
                 /** @description Opaque cursor from a previous response to fetch older candles. */
                 pagination_key?: string;
-                /** @description Fill missing buckets with flat synthetic candles at the last close value. Default: true. */
+                /** @description Fill missing buckets with flat synthetic candles at the last close value, including forward-fill to the requested `to` timestamp or now. Default: true. */
                 fill_gaps?: boolean;
             };
             header?: never;
@@ -10131,7 +10077,7 @@ export interface operations {
                 outcome?: string;
                 /** @description Outcome index: 0 (Yes), 1 (No) */
                 outcome_index?: components["schemas"]["OutcomeIndex"];
-                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched */
+                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched, MakerRebate, Reward */
                 trade_types?: string;
                 /** @description Min USD amount */
                 min_usd_amount?: number;

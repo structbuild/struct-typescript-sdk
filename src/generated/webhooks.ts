@@ -2497,6 +2497,51 @@ export interface components {
             log_index: number;
             /** Format: int64 */
             block_index: number;
+            order_hash?: string;
+            trader: {
+                address: string;
+                name: string | null;
+                pseudonym: string | null;
+                profile_image: string | null;
+                x_username: string | null;
+                verified_badge: boolean;
+            };
+            taker?: string;
+            /** @enum {string} */
+            side?: "Buy" | "Sell";
+            condition_id?: string | null;
+            position_id?: string;
+            outcome?: string;
+            outcome_index?: number | null;
+            question?: string;
+            image_url?: string;
+            slug?: string;
+            event_slug?: string;
+            usd_amount: number;
+            shares_amount?: number;
+            price?: number;
+            probability?: number;
+            fee?: number;
+            fee_shares?: number;
+            fee_pct?: number;
+            /**
+             * @description Exchange contract that processed the event
+             * @enum {string}
+             */
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @enum {string} */
+            trade_type: "MakerRebate" | "Reward";
+        } | {
+            id: string;
+            hash: string;
+            /** Format: int64 */
+            block: number;
+            /** Format: int64 */
+            confirmed_at: number;
+            /** Format: int64 */
+            log_index: number;
+            /** Format: int64 */
+            block_index: number;
             trader: {
                 address: string;
                 name: string | null;
@@ -3010,7 +3055,7 @@ export interface components {
             /** @description Only fire when event probability is ≤ this value. Events without probability data do not match. */
             max_probability?: number;
             /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
-            trade_types?: ("OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[];
+            trade_types?: ("OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "MakerRebate" | "Reward" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[];
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
             exclude_shortterm_markets?: boolean;
         };
