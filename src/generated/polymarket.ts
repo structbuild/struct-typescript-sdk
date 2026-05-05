@@ -4505,55 +4505,61 @@ export interface components {
              * @description Timestamp in epoch seconds at the start of the candle bucket.
              */
             t: number;
-            /** Format: int64 */
-            open_block: number;
-            /** Format: int64 */
-            close_block: number;
+            /**
+             * Format: int64
+             * @description Opening block for this candle.
+             */
+            ob: number;
+            /**
+             * Format: int64
+             * @description Closing block for this candle.
+             */
+            cb: number;
             /**
              * Format: double
              * @description Latest realized PnL at candle close.
              */
-            realized_pnl: number;
+            rp: number;
             /**
              * Format: double
              * @description Latest unrealized/open-position value at candle close.
              */
-            unrealized_pnl: number;
+            up: number;
             /**
              * Format: double
              * @description Latest USDC balance at candle close.
              */
-            usdc_balance: number;
+            ub: number;
             /**
              * Format: double
              * @description Latest pUSD balance at candle close.
              */
-            pusd_balance: number;
+            pb: number;
             /**
              * Format: double
              * @description Portfolio value low value for the candle.
              */
-            portfolio_l?: number | null;
+            pl?: number | null;
             /**
              * Format: double
              * @description Portfolio value high value for the candle.
              */
-            portfolio_h?: number | null;
+            ph?: number | null;
             /**
              * Format: double
              * @description Portfolio value open value for the candle.
              */
-            portfolio_o?: number | null;
+            po?: number | null;
             /**
              * Format: double
              * @description Portfolio value close/latest value for the candle.
              */
-            portfolio_c?: number | null;
+            pc?: number | null;
             /**
              * Format: int32
              * @description Latest open position count at candle close.
              */
-            num_open_positions: number;
+            nop: number;
         };
         PnlV3ChangeWindow: {
             timeframe: string;
