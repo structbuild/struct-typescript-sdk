@@ -1869,17 +1869,17 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
-        /** @description A single asset price history record from the `asset_price_history` table. */
+        /** @description One bucket of an asset's price history at a fixed time-window resolution. */
         AssetPriceHistoryRow: {
             asset_symbol: string;
             /**
              * Format: double
-             * @description Opening price at start_time (cast to f64 from NUMERIC in query)
+             * @description Opening price at `start_time`.
              */
             asset_open_price: number;
             /**
              * Format: double
-             * @description Closing price at end_time (cast to f64 from NUMERIC in query)
+             * @description Closing price at `end_time`.
              */
             asset_close_price: number;
             /** Format: double */
@@ -1903,7 +1903,11 @@ export interface components {
         AssetSymbol: "BTC" | "ETH" | "XRP" | "SOL" | "DOGE" | "BNB" | "HYPE";
         /** @enum {string} */
         AssetVariant: "5m" | "15m" | "1h" | "4h" | "1d";
-        /** @description Lightweight row — derived metrics only, no bids/asks JSONB. */
+        /**
+         * @description One bucket of derived order-book metrics for a position at a point in time.
+         *     Only summary metrics are returned — the underlying bid/ask ladders are
+         *     available from the snapshot endpoint.
+         */
         SpreadRow: {
             /** Format: int64 */
             ts: number;
@@ -2213,12 +2217,9 @@ export interface components {
             builder_taker_fee_rate_bps: number;
         };
         /**
-         * @description Documentation-only response shape for endpoints that embed display
-         *     metadata onto each row (`/`, `/{builder_code}`, `/tags/{tag}`). Mirrors
-         *     `BuilderLatestRow` and adds a nullable `metadata` field. Not used as a
-         *     data structure at runtime — the actual response is built by
-         *     `BuilderLatestRow` plus a JSON-level merge from the metadata cache, which
-         *     produces this exact shape.
+         * @description Latest builder stats with builder display metadata (name, icon, links)
+         *     merged onto each row. Returned by endpoints that embed display metadata,
+         *     such as `/`, `/{builder_code}`, and `/tags/{tag}`.
          */
         BuilderLatestRowWithMetadata: components["schemas"]["BuilderLatestRow"] & {
             metadata?: null | components["schemas"]["BuilderMetadataInline"];
@@ -3017,10 +3018,8 @@ export interface components {
             accepting_orders: boolean | null;
             /** @default null */
             uma_resolution_status: string | null;
-            /** @default [] */
-            clob_rewards: components["schemas"]["ClobReward"][];
-            /** @default [] */
-            outcomes: components["schemas"]["EventMarketOutcome"][];
+            clob_rewards?: components["schemas"]["ClobReward"][];
+            outcomes?: components["schemas"]["EventMarketOutcome"][];
             /** @default null */
             winning_outcome: null | components["schemas"]["EventMarketOutcome"];
         };
@@ -3082,8 +3081,8 @@ export interface components {
         /**
          * @description Metric to order by when `sort=<value>` is provided.
          *
-         *     `unique_*` ranks by window-distinct addresses — exact `uniqExact` count
-         *     of addresses active in the timeframe.
+         *     `unique_*` variants rank by the number of distinct wallet addresses
+         *     active in the selected timeframe.
          * @enum {string}
          */
         TagSortBy: "volume" | "txns" | "unique_traders" | "unique_makers" | "unique_takers" | "fees";
@@ -3515,7 +3514,7 @@ export interface components {
             slug?: string | null;
             /**
              * Format: int64
-             * @description Total unique holders across all outcomes (from holder_stats)
+             * @description Total unique holders across all outcomes of this market.
              */
             total_holders: number;
             /** @description Holders grouped by outcome */
@@ -3529,8 +3528,17 @@ export interface components {
             last_price?: number | null;
             /** Format: double */
             last_probability?: number | null;
+            /** @description Per-timeframe metrics keyed by lookback window. Each timeframe key is optional — present only when data exists for that window. */
             metrics?: {
-                [key: string]: components["schemas"]["OutcomeTimeframeMetrics"];
+                "1m"?: components["schemas"]["OutcomeTimeframeMetrics"];
+                "5m"?: components["schemas"]["OutcomeTimeframeMetrics"];
+                "30m"?: components["schemas"]["OutcomeTimeframeMetrics"];
+                "1h"?: components["schemas"]["OutcomeTimeframeMetrics"];
+                "6h"?: components["schemas"]["OutcomeTimeframeMetrics"];
+                "24h"?: components["schemas"]["OutcomeTimeframeMetrics"];
+                "7d"?: components["schemas"]["OutcomeTimeframeMetrics"];
+                "30d"?: components["schemas"]["OutcomeTimeframeMetrics"];
+                lifetime?: components["schemas"]["OutcomeTimeframeMetrics"];
             };
         };
         /** @description Outcome for market API responses */
@@ -3607,8 +3615,17 @@ export interface components {
             tags?: string[];
             event_slug?: string | null;
             resolution_source?: string | null;
+            /** @description Per-timeframe metrics keyed by lookback window. Each timeframe key is optional — present only when data exists for that window. */
             metrics?: {
-                [key: string]: components["schemas"]["SimpleTimeframeMetrics"];
+                "1m"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "5m"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "30m"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "1h"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "6h"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "24h"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "7d"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "30d"?: components["schemas"]["SimpleTimeframeMetrics"];
+                lifetime?: components["schemas"]["SimpleTimeframeMetrics"];
             };
             /** Format: double */
             relevance_score?: number | null;
@@ -3984,7 +4001,7 @@ export interface components {
             price?: number | null;
             /**
              * Format: int64
-             * @description Total holders count from holder_stats
+             * @description Total holders count for this outcome.
              */
             total_holders: number;
             /** @description Top holders for this outcome */
@@ -4540,14 +4557,20 @@ export interface components {
              * @default null
              */
             status: string | null;
-            /** @default {} */
-            metrics: {
-                [key: string]: components["schemas"]["SimpleTimeframeMetrics"];
+            /** @description Per-timeframe metrics keyed by lookback window. Each timeframe key is optional — present only when data exists for that window. */
+            metrics?: {
+                "1m"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "5m"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "30m"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "1h"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "6h"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "24h"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "7d"?: components["schemas"]["SimpleTimeframeMetrics"];
+                "30d"?: components["schemas"]["SimpleTimeframeMetrics"];
+                lifetime?: components["schemas"]["SimpleTimeframeMetrics"];
             };
-            /** @default [] */
-            tags: components["schemas"]["PolymarketTag"][];
-            /** @default [] */
-            markets: components["schemas"]["EventMarket"][];
+            tags?: components["schemas"]["PolymarketTag"][];
+            markets?: components["schemas"]["EventMarket"][];
             /** @default null */
             series: null | components["schemas"]["PolymarketSeries"];
         };
@@ -4616,39 +4639,27 @@ export interface components {
             label: string;
             /** @default null */
             slug: string | null;
-            /**
-             * Format: double
-             * @default null
-             */
-            volume_usd: number;
-            /**
-             * Format: int64
-             * @default null
-             */
-            txn_count: number;
+            /** Format: double */
+            volume_usd?: number;
+            /** Format: int64 */
+            txn_count?: number;
             /**
              * Format: int64
              * @description Distinct active traders in the window.
-             * @default null
              */
-            unique_traders: number;
+            unique_traders?: number;
             /**
              * Format: int64
              * @description Distinct active makers in the window.
-             * @default null
              */
-            unique_makers: number;
+            unique_makers?: number;
             /**
              * Format: int64
              * @description Distinct active takers in the window.
-             * @default null
              */
-            unique_takers: number;
-            /**
-             * Format: double
-             * @default null
-             */
-            fees_usd: number;
+            unique_takers?: number;
+            /** Format: double */
+            fees_usd?: number;
         };
         /** @description Polymarket user profile (public API format) */
         PolymarketUserProfile: {
@@ -4712,7 +4723,7 @@ export interface components {
             price?: number | null;
             /**
              * Format: int64
-             * @description Total holders count from holder_stats
+             * @description Total holders of this position.
              */
             total_holders: number;
             /** @description Top holders */
@@ -7139,54 +7150,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        condition_id: string;
-                        id?: string | null;
-                        market_slug?: string | null;
-                        question?: string | null;
-                        title?: string | null;
-                        description?: string | null;
-                        image_url?: string | null;
-                        oracle?: string | null;
-                        status: string;
-                        /** Format: int64 */
-                        created_time?: number | null;
-                        /** Format: int64 */
-                        start_time?: number | null;
-                        /** Format: int64 */
-                        game_start_time?: number | null;
-                        /** Format: int64 */
-                        closed_time?: number | null;
-                        /** Format: int64 */
-                        end_time?: number | null;
-                        accepting_orders?: boolean | null;
-                        uma_resolution_status?: string | null;
-                        is_neg_risk?: boolean | null;
-                        market_maker_address?: string | null;
-                        creator?: string | null;
-                        category?: string | null;
-                        /** Format: double */
-                        volume_usd?: number | null;
-                        /** Format: double */
-                        liquidity_usd?: number | null;
-                        /** Format: double */
-                        highest_probability?: number | null;
-                        /** Format: int64 */
-                        total_holders?: number | null;
-                        /** Format: double */
-                        total_daily_rate?: number | null;
-                        winning_outcome?: null | components["schemas"]["MarketOutcome"];
-                        outcomes?: components["schemas"]["MarketOutcome"][];
-                        clob_rewards?: components["schemas"]["ClobReward"][];
-                        tags?: string[];
-                        event_slug?: string | null;
-                        resolution_source?: string | null;
-                        metrics?: {
-                            [key: string]: components["schemas"]["SimpleTimeframeMetrics"];
-                        };
-                        /** Format: double */
-                        relevance_score?: number | null;
-                    }[];
+                    "application/json": components["schemas"]["MarketResponse"][];
                 };
             };
             /** @description Market not found */
@@ -7374,54 +7338,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        condition_id: string;
-                        id?: string | null;
-                        market_slug?: string | null;
-                        question?: string | null;
-                        title?: string | null;
-                        description?: string | null;
-                        image_url?: string | null;
-                        oracle?: string | null;
-                        status: string;
-                        /** Format: int64 */
-                        created_time?: number | null;
-                        /** Format: int64 */
-                        start_time?: number | null;
-                        /** Format: int64 */
-                        game_start_time?: number | null;
-                        /** Format: int64 */
-                        closed_time?: number | null;
-                        /** Format: int64 */
-                        end_time?: number | null;
-                        accepting_orders?: boolean | null;
-                        uma_resolution_status?: string | null;
-                        is_neg_risk?: boolean | null;
-                        market_maker_address?: string | null;
-                        creator?: string | null;
-                        category?: string | null;
-                        /** Format: double */
-                        volume_usd?: number | null;
-                        /** Format: double */
-                        liquidity_usd?: number | null;
-                        /** Format: double */
-                        highest_probability?: number | null;
-                        /** Format: int64 */
-                        total_holders?: number | null;
-                        /** Format: double */
-                        total_daily_rate?: number | null;
-                        winning_outcome?: null | components["schemas"]["MarketOutcome"];
-                        outcomes?: components["schemas"]["MarketOutcome"][];
-                        clob_rewards?: components["schemas"]["ClobReward"][];
-                        tags?: string[];
-                        event_slug?: string | null;
-                        resolution_source?: string | null;
-                        metrics?: {
-                            [key: string]: components["schemas"]["SimpleTimeframeMetrics"];
-                        };
-                        /** Format: double */
-                        relevance_score?: number | null;
-                    }[];
+                    "application/json": components["schemas"]["MarketResponse"][];
                 };
             };
             /** @description Market not found */
