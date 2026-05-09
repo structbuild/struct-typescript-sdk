@@ -25,6 +25,7 @@ export type WsRoomId =
 	| "polymarket_market_metrics"
 	| "polymarket_event_metrics"
 	| "polymarket_position_metrics"
+	| "polymarket_tag_metrics"
 	| "polymarket_trader_pnl"
 	| "polymarket_trader_positions"
 	| "polymarket_accounts"
@@ -49,6 +50,7 @@ export type AssetWindowUpdatesSubscribeFilters = Omit<WsSchemas["AssetWindowUpda
 export type MarketMetricsSubscribeFilters = Omit<WsSchemas["MarketMetricsSubscribeMessage"], "action">;
 export type EventMetricsSubscribeFilters = Omit<WsSchemas["EventMetricsSubscribeMessage"], "action">;
 export type PositionMetricsSubscribeFilters = Omit<WsSchemas["PositionMetricsSubscribeMessage"], "action">;
+export type TagMetricsSubscribeFilters = Omit<WsSchemas["TagMetricsSubscribeMessage"], "action">;
 export type TraderPnlSubscribeFilters = Omit<WsSchemas["TraderPnlSubscribeMessage"], "action">;
 export type AccountsSubscribeFilters = Omit<WsSchemas["AccountsSubscribeMessage"], "action">;
 export type OrderBookSubscribeFilters = Omit<WsSchemas["OrderBookSubscribeMessage"], "action">;
@@ -69,6 +71,7 @@ export type AssetWindowUpdateEvent = WsSchemas["AssetWindowUpdateEvent"];
 export type MarketMetricsEvent = WsSchemas["MarketMetricsEvent"];
 export type EventMetricsEvent = WsSchemas["EventMetricsEvent"];
 export type PositionMetricsEvent = WsSchemas["PositionMetricsEvent"];
+export type TagMetricsEvent = WsSchemas["TagMetricsEvent"];
 export type TraderGlobalPnlEvent = WsSchemas["TraderGlobalPnlEvent"];
 export type TraderMarketPnlEvent = WsSchemas["TraderMarketPnlEvent"];
 export type TraderEventPnlEvent = WsSchemas["TraderEventPnlEvent"];
@@ -96,7 +99,6 @@ export type TradePositionsConvertedEvent = WsSchemas["TradePositionsConvertedEve
 export type TradeCancelledEvent = WsSchemas["TradeCancelledEvent"];
 export type TradeOracleLifecycleEvent = WsSchemas["TradeOracleLifecycleEvent"];
 export type TradeRegisterTokenEvent = WsSchemas["TradeRegisterTokenEvent"];
-export type TradeApprovalEvent = WsSchemas["TradeApprovalEvent"];
 export type WsAlertSubscribeMessage = WsAlertSchemas["WsAlertSubscribeMessage"];
 export type WsAlertUnsubscribeMessage = WsAlertSchemas["WsAlertUnsubscribeMessage"];
 export type WsAlertEventPayload = WsAlertSchemas["WsAlertEventPayload"];
@@ -112,6 +114,7 @@ export type AssetWindowUpdatesSubscribeResponse = WsSchemas["AssetWindowUpdatesS
 export type MarketMetricsSubscribeResponse = WsSchemas["MarketMetricsSubscribeResponse"];
 export type EventMetricsSubscribeResponse = WsSchemas["EventMetricsSubscribeResponse"];
 export type PositionMetricsSubscribeResponse = WsSchemas["PositionMetricsSubscribeResponse"];
+export type TagMetricsSubscribeResponse = WsSchemas["TagMetricsSubscribeResponse"];
 export type TraderPnlSubscribeResponse = WsSchemas["TraderPnlSubscribeResponse"];
 export type AccountsSubscribeResponse = WsSchemas["AccountsSubscribeResponse"];
 export type OrderBookSubscribeResponse = WsSchemas["OrderBookSubscribeResponse"];
@@ -124,6 +127,7 @@ export interface WebSocketEventMap {
 	market_metrics_update: MarketMetricsEvent;
 	event_metrics_update: EventMetricsEvent;
 	position_metrics_update: PositionMetricsEvent;
+	tag_metrics_update: TagMetricsEvent;
 	trader_global_pnl_update: TraderGlobalPnlEvent;
 	trader_market_pnl_update: TraderMarketPnlEvent;
 	trader_event_pnl_update: TraderEventPnlEvent;
@@ -153,6 +157,7 @@ export interface WsSubscriptionMap {
 	polymarket_market_metrics: MarketMetricsSubscribeFilters;
 	polymarket_event_metrics: EventMetricsSubscribeFilters;
 	polymarket_position_metrics: PositionMetricsSubscribeFilters;
+	polymarket_tag_metrics: TagMetricsSubscribeFilters;
 	polymarket_trader_pnl: TraderPnlSubscribeFilters;
 	polymarket_trader_positions: TraderPositionsSubscribeFilters;
 	polymarket_accounts: AccountsSubscribeFilters;
@@ -170,6 +175,7 @@ export interface WsSubscribeResponseMap {
 	polymarket_market_metrics: MarketMetricsSubscribeResponse;
 	polymarket_event_metrics: EventMetricsSubscribeResponse;
 	polymarket_position_metrics: PositionMetricsSubscribeResponse;
+	polymarket_tag_metrics: TagMetricsSubscribeResponse;
 	polymarket_trader_pnl: TraderPnlSubscribeResponse;
 	polymarket_trader_positions: TraderPositionsSubscribeResponse;
 	polymarket_accounts: AccountsSubscribeResponse;

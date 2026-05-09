@@ -3,7 +3,7 @@
   "info": {
     "title": "Polymarket WebSocket Streams API",
     "version": "1.0.0",
-    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n| `polymarket_oracle_events` (Oracle Events) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
+    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_tag_metrics` (Tag Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n| `polymarket_oracle_events` (Oracle Events) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
   },
   "servers": {
     "production": {
@@ -190,33 +190,11 @@
         }
       }
     },
-    "polymarket_trades.approval": {
-      "address": "polymarket_trades",
-      "title": "Approval",
-      "summary": "ERC-1155 setApprovalForAll — operator approved/revoked",
-      "description": "ERC-1155 setApprovalForAll — operator approved/revoked\n\nAll trade-type channels share the same `polymarket_trades` room. Filter by `trade_types` in your subscribe message to receive only specific types.",
-      "tags": [
-        {
-          "name": "Trades"
-        }
-      ],
-      "messages": {
-        "subscribe": {
-          "$ref": "#/components/messages/TradesStreamSubscribe"
-        },
-        "subscribeResponse": {
-          "$ref": "#/components/messages/TradesStreamSubscribeResponse"
-        },
-        "event": {
-          "$ref": "#/components/messages/TradeApproval"
-        }
-      }
-    },
     "polymarket_asset_prices": {
       "address": "polymarket_asset_prices",
       "title": "Asset Prices",
       "summary": "Asset prices stream",
-      "description": "Real-time crypto-asset price feed (BTC, ETH, SOL, XRP, …). Delivers both raw `asset_price_tick` events on every price update and `asset_price_window_update` events at candle open/close boundaries.\n\n**Filter (optional):** `asset_symbols` — uppercase symbols to filter by. Empty array subscribes to all symbols.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time crypto-asset price feed (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Delivers both raw `asset_price_tick` events on every price update and `asset_price_window_update` events at candle open/close boundaries.\n\n**Filter (optional):** `asset_symbols` — uppercase symbols to filter by. Empty array subscribes to all symbols.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/AssetPricesSubscribe"
@@ -236,7 +214,7 @@
       "address": "polymarket_asset_window_updates",
       "title": "Asset Window Updates",
       "summary": "Asset window updates stream",
-      "description": "Filtered stream of asset-price candle open/close events. Unlike `polymarket_asset_prices`, this room **requires** at least one filter so clients receive only the symbols and/or timeframes they care about.\n\n**Filters (at least one required):**\n- `asset_symbols` — uppercase symbols (e.g. `\"BTC\"`, `\"ETH\"`)\n- `timeframes` — candle sizes: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"` / `\"24h\"`\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Filtered stream of asset-price candle open/close events. Unlike `polymarket_asset_prices`, this room **requires** at least one filter so clients receive only the symbols and/or timeframes they care about.\n\n**Filters (at least one required):**\n- `asset_symbols` — uppercase symbols: `\"BTC\"`, `\"ETH\"`, `\"SOL\"`, `\"XRP\"`, `\"DOGE\"`, `\"BNB\"`, `\"HYPE\"`\n- `timeframes` — candle sizes: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"` / `\"24h\"`\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/AssetWindowUpdatesSubscribe"
@@ -280,6 +258,23 @@
         },
         "eventMetricsEvent": {
           "$ref": "#/components/messages/EventMetricsEvent"
+        }
+      }
+    },
+    "polymarket_tag_metrics": {
+      "address": "polymarket_tag_metrics",
+      "title": "Tag Metrics",
+      "summary": "Tag metrics stream",
+      "description": "Real-time volume and transaction-count metrics aggregated by tag, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required):** `tags` — tag labels or slugs, matched case-insensitively.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/TagMetricsSubscribe"
+        },
+        "subscribeResponse": {
+          "$ref": "#/components/messages/TagMetricsSubscribeResponse"
+        },
+        "tagMetricsEvent": {
+          "$ref": "#/components/messages/TagMetricsEvent"
         }
       }
     },
@@ -1088,40 +1083,6 @@
         }
       ]
     },
-    "subscribeTradesApproval": {
-      "action": "send",
-      "channel": {
-        "$ref": "#/channels/polymarket_trades.approval"
-      },
-      "summary": "Subscribe to approval trades",
-      "tags": [
-        {
-          "name": "Trades"
-        }
-      ],
-      "messages": [
-        {
-          "$ref": "#/channels/polymarket_trades.approval/messages/subscribe"
-        }
-      ]
-    },
-    "receiveTradesApproval": {
-      "action": "receive",
-      "channel": {
-        "$ref": "#/channels/polymarket_trades.approval"
-      },
-      "summary": "Receive approval events",
-      "tags": [
-        {
-          "name": "Trades"
-        }
-      ],
-      "messages": [
-        {
-          "$ref": "#/channels/polymarket_trades.approval/messages/event"
-        }
-      ]
-    },
     "subscribePolymarketAssetPrices": {
       "action": "send",
       "channel": {
@@ -1230,6 +1191,33 @@
         },
         {
           "$ref": "#/channels/polymarket_event_metrics/messages/eventMetricsEvent"
+        }
+      ]
+    },
+    "subscribePolymarketTagMetrics": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_tag_metrics"
+      },
+      "summary": "Subscribe to tag metrics stream",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_tag_metrics/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketTagMetrics": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_tag_metrics"
+      },
+      "summary": "Receive tag metrics stream events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_tag_metrics/messages/subscribeResponse"
+        },
+        {
+          "$ref": "#/channels/polymarket_tag_metrics/messages/tagMetricsEvent"
         }
       ]
     },
@@ -2093,6 +2081,8 @@
               "position_id": "12345678901234567",
               "outcome": "Yes",
               "outcome_index": 0,
+              "question": "Will Bitcoin hit $100k?",
+              "image_url": "https://example.com/markets/bitcoin-100k.png",
               "slug": "will-bitcoin-hit-100k",
               "event_slug": "bitcoin-price-markets",
               "usd_amount": 1500.5,
@@ -2270,29 +2260,6 @@
               "condition_id": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
               "token0": "0xtoken0address",
               "token1": "0xtoken1address",
-              "exchange": 1
-            }
-          }
-        ]
-      },
-      "TradeApproval": {
-        "summary": "ERC-1155 setApprovalForAll — operator approved/revoked",
-        "payload": {
-          "$ref": "#/components/schemas/TradeApprovalEvent"
-        },
-        "examples": [
-          {
-            "payload": {
-              "trade_type": "Approval",
-              "id": "0xapproval123",
-              "hash": "0xapprovalhash",
-              "block": 65000800,
-              "confirmed_at": 1743500800,
-              "trader": {
-                "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
-              },
-              "operator": "0xoperatoraddress",
-              "approved": true,
               "exchange": 1
             }
           }
@@ -2481,9 +2448,15 @@
               "timeframe": "1h",
               "timestamp": 1743500000,
               "usd_volume": "125000.50",
+              "shares_volume": "154000.00",
+              "builder_usd_volume": "31250.12",
+              "builder_shares_volume": "38500.00",
               "fees": 250.0,
+              "builder_fees": 62.5,
               "txns": 340,
-              "unique_traders": 85
+              "builder_txns": 85,
+              "unique_traders": 85,
+              "unique_builder_traders": 24
             }
           }
         ]
@@ -2533,9 +2506,15 @@
               "timeframe": "24h",
               "timestamp": 1743500000,
               "usd_volume": "2500000.00",
+              "shares_volume": "3100000.00",
+              "builder_usd_volume": "625000.00",
+              "builder_shares_volume": "775000.00",
               "fees": 5000.0,
+              "builder_fees": 1250.0,
               "txns": 12400,
-              "unique_traders": 3200
+              "builder_txns": 3100,
+              "unique_traders": 3200,
+              "unique_builder_traders": 800
             }
           }
         ]
@@ -2550,6 +2529,64 @@
             "payload": {
               "event_slugs": [
                 "will-bitcoin-hit-100k"
+              ],
+              "rejected": [],
+              "error": null
+            }
+          }
+        ]
+      },
+      "TagMetricsSubscribe": {
+        "summary": "Subscribe to tag metrics stream",
+        "payload": {
+          "$ref": "#/components/schemas/TagMetricsSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "action": "subscribe",
+              "tags": [
+                "politics"
+              ]
+            }
+          }
+        ]
+      },
+      "TagMetricsEvent": {
+        "summary": "aggregated metrics update for one timeframe of a tag",
+        "payload": {
+          "$ref": "#/components/schemas/TagMetricsEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "tag": "politics",
+              "timeframe": "24h",
+              "timestamp": 1743500000,
+              "usd_volume": "1750000.00",
+              "shares_volume": "2200000.00",
+              "builder_usd_volume": "425000.00",
+              "builder_shares_volume": "535000.00",
+              "fees": 3500.0,
+              "builder_fees": 875.0,
+              "txns": 9200,
+              "builder_txns": 2300,
+              "unique_traders": 2400,
+              "unique_builder_traders": 610
+            }
+          }
+        ]
+      },
+      "TagMetricsSubscribeResponse": {
+        "summary": "Subscription acknowledgement for tag metrics stream",
+        "payload": {
+          "$ref": "#/components/schemas/TagMetricsSubscribeResponse"
+        },
+        "examples": [
+          {
+            "payload": {
+              "tags": [
+                "politics"
               ],
               "rejected": [],
               "error": null
@@ -2590,11 +2627,25 @@
               "usd_volume": "45000.00",
               "usd_buy_volume": "28000.00",
               "usd_sell_volume": "17000.00",
+              "shares_volume": "56000.00",
+              "shares_buy_volume": "34800.00",
+              "shares_sell_volume": "21200.00",
+              "builder_usd_volume": "11250.00",
+              "builder_usd_buy_volume": "7000.00",
+              "builder_usd_sell_volume": "4250.00",
+              "builder_shares_volume": "14000.00",
+              "builder_shares_buy_volume": "8700.00",
+              "builder_shares_sell_volume": "5300.00",
               "fees": 90.0,
+              "builder_fees": 22.5,
               "txns": 120,
               "buys": 80,
               "sells": 40,
+              "builder_txns": 30,
+              "builder_buys": 20,
+              "builder_sells": 10,
               "unique_traders": 35,
+              "unique_builder_traders": 9,
               "price_open": 0.62,
               "price_close": 0.65,
               "price_high": 0.67,
@@ -2602,7 +2653,10 @@
               "probability_open": 0.62,
               "probability_close": 0.65,
               "probability_high": 0.67,
-              "probability_low": 0.6
+              "probability_low": 0.6,
+              "avg_trade_shares": 466.67,
+              "avg_buy_shares": 435.0,
+              "avg_sell_shares": 530.0
             }
           }
         ]
@@ -3900,6 +3954,22 @@
           }
         }
       },
+      "AssetPriceTickFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `asset_price_tick` event. All fields are optional.",
+        "properties": {
+          "asset_symbols": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/WebhookAssetSymbol"
+            },
+            "description": "Restrict to these crypto assets. Empty = all assets."
+          }
+        }
+      },
       "AssetPriceTickPayload": {
         "type": "object",
         "description": "Webhook payload for an asset price tick.",
@@ -3910,8 +3980,8 @@
         ],
         "properties": {
           "symbol": {
-            "type": "string",
-            "description": "Asset symbol: \"BTC\", \"ETH\", \"SOL\", \"XRP\", \"DOGE\", \"BNB\", or \"HYPE\""
+            "$ref": "#/components/schemas/WebhookAssetSymbol",
+            "description": "Asset symbol"
           },
           "price": {
             "type": "number",
@@ -3922,6 +3992,34 @@
             "type": "integer",
             "format": "int64",
             "description": "Tick timestamp as reported by the WebSocket feed (milliseconds since epoch)"
+          }
+        }
+      },
+      "AssetPriceWindowUpdateFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `asset_price_window_update` event. All fields are optional.",
+        "properties": {
+          "asset_symbols": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/WebhookAssetSymbol"
+            },
+            "description": "Restrict to these crypto assets. Empty = all assets.",
+            "maxItems": 500
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/AssetWindowFilterTimeframe"
+            },
+            "description": "Restrict to these candle sizes. Empty = all sizes.",
+            "maxItems": 500
           }
         }
       },
@@ -3939,12 +4037,12 @@
         ],
         "properties": {
           "symbol": {
-            "type": "string",
-            "description": "Asset symbol: \"BTC\", \"ETH\", \"SOL\", \"XRP\", \"DOGE\", \"BNB\", or \"HYPE\""
+            "$ref": "#/components/schemas/WebhookAssetSymbol",
+            "description": "Asset symbol"
           },
           "variant": {
-            "type": "string",
-            "description": "Time-window variant: \"5m\", \"15m\", \"1h\", \"4h\", \"1d\", or \"24h\""
+            "$ref": "#/components/schemas/AssetPriceWindowVariant",
+            "description": "Time-window variant"
           },
           "start_time": {
             "type": "integer",
@@ -3967,8 +4065,130 @@
             "description": "Closing price at end_time (0.0 on an \"open\" update — not yet available)"
           },
           "update_type": {
-            "type": "string",
+            "$ref": "#/components/schemas/AssetPriceWindowUpdateType",
             "description": "\"open\" when the window starts, \"close\" when the window is complete"
+          }
+        }
+      },
+      "AssetPriceWindowUpdateType": {
+        "type": "string",
+        "description": "Whether this update is the open or the close of a candle.",
+        "enum": [
+          "open",
+          "close"
+        ]
+      },
+      "AssetPriceWindowVariant": {
+        "type": "string",
+        "description": "Time-window variant emitted by the asset price window stream.",
+        "enum": [
+          "5m",
+          "15m",
+          "1h",
+          "4h",
+          "1d",
+          "24h"
+        ]
+      },
+      "AssetWindowFilterTimeframe": {
+        "type": "string",
+        "description": "Candle sizes accepted by `asset_price_window_update.timeframes`.",
+        "enum": [
+          "5m",
+          "15m",
+          "1h",
+          "4h",
+          "1d",
+          "24h"
+        ]
+      },
+      "CloseToBondFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `close_to_bond` event. At least one of\n`min_probability` or `max_probability` is required (enforced at runtime).",
+        "properties": {
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Trigger when the YES outcome price is ≥ this value (e.g. 0.95 for 95% certainty). At least one of `min_probability` or `max_probability` must be set.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Trigger when the YES outcome price is ≤ this value (e.g. 0.05 for near-certain NO).",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "position_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome token IDs.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in these events.",
+            "maxItems": 500
+          },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
+          "position_outcome_indices": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            },
+            "description": "Restrict by outcome index. 0 = Yes/Up, 1 = No. Position 0 usually represents the Up/Yes side in binary markets.",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -4113,47 +4333,119 @@
       },
       "ConditionMetricsPayload": {
         "type": "object",
-        "description": "Condition metrics webhook payload.",
+        "description": "Payload delivered when a market's volume or transaction metrics cross a configured threshold",
         "properties": {
           "condition_id": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market condition ID"
           },
           "timeframe": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "description": "Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.",
+                "enum": [
+                  "1m",
+                  "5m",
+                  "15m",
+                  "30m",
+                  "1h",
+                  "4h",
+                  "6h",
+                  "1d",
+                  "24h",
+                  "7d",
+                  "30d"
+                ]
+              }
+            ],
+            "description": "Aggregation window"
           },
           "volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total trading volume in USD for this timeframe"
+          },
+          "shares_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Total shares/contracts volume for this timeframe"
+          },
+          "builder_usd_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed trading volume in USD"
+          },
+          "builder_shares_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed shares/contracts volume"
           },
           "fees": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total fees collected in USD"
+          },
+          "builder_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed fees in USD"
           },
           "txns": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total number of transactions"
+          },
+          "builder_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Builder-attributed transaction count"
           },
           "unique_traders": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Number of unique traders"
+          },
+          "unique_builder_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Number of unique builder-attributed traders"
           }
         }
       },
@@ -4435,49 +4727,192 @@
           }
         }
       },
+      "EventMetricsFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `event_metrics` event. All fields are optional.",
+        "properties": {
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these events. Empty = all events.",
+            "maxItems": 500
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/MetricFilterTimeframe"
+            },
+            "description": "Restrict to these aggregation windows.",
+            "maxItems": 500
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when aggregated event volume ≥ this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "min_unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "min_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
       "EventMetricsPayload": {
         "type": "object",
-        "description": "Event metrics webhook payload.",
+        "description": "Payload delivered when an event's aggregated volume or transaction metrics cross a configured threshold",
         "properties": {
           "event_slug": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Event slug"
           },
           "timeframe": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "description": "Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.",
+                "enum": [
+                  "1m",
+                  "5m",
+                  "15m",
+                  "30m",
+                  "1h",
+                  "4h",
+                  "6h",
+                  "1d",
+                  "24h",
+                  "7d",
+                  "30d"
+                ]
+              }
+            ],
+            "description": "Aggregation window"
           },
           "volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total aggregated volume across all markets in the event (USD)"
+          },
+          "shares_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Total aggregated shares/contracts volume across all markets in the event"
+          },
+          "builder_usd_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed aggregated volume in USD"
+          },
+          "builder_shares_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed aggregated shares/contracts volume"
           },
           "fees": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total fees collected in USD"
+          },
+          "builder_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed fees in USD"
           },
           "txns": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total number of transactions"
+          },
+          "builder_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Builder-attributed transaction count"
           },
           "unique_traders": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Number of unique traders"
+          },
+          "unique_builder_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Number of unique builder-attributed traders"
           }
         }
       },
@@ -4625,6 +5060,54 @@
           }
         }
       },
+      "EventVolumeMilestoneFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `event_volume_milestone` event.",
+        "required": [
+          "timeframes"
+        ],
+        "properties": {
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetricFilterTimeframe"
+            },
+            "description": "**Required.** Aggregation windows to monitor.",
+            "maxItems": 500,
+            "minItems": 1
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these events.",
+            "maxItems": 500
+          },
+          "milestone_amounts": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Specific USD milestones to trigger on.",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
       "EventVolumeMilestonePayload": {
         "type": "object",
         "description": "Event volume milestone webhook payload",
@@ -4662,6 +5145,60 @@
             "type": "integer",
             "format": "int64",
             "description": "Total transactions in this timeframe"
+          }
+        }
+      },
+      "EventVolumeSpikeFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `event_volume_spike` event. `spike_ratio` is required.",
+        "required": [
+          "spike_ratio"
+        ],
+        "properties": {
+          "spike_ratio": {
+            "type": "number",
+            "format": "double",
+            "description": "**Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio.",
+            "exclusiveMinimum": 1
+          },
+          "window_secs": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Force snapshot reset after this many seconds (max 600 / 10 minutes).",
+            "maximum": 600,
+            "minimum": 1
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these events.",
+            "maxItems": 500
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/VolumeSpikeFilterTimeframe"
+            },
+            "description": "Restrict to these aggregation windows.",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -4731,7 +5268,7 @@
       },
       "FirstTradePayload": {
         "type": "object",
-        "description": "First trade webhook payload with zero-copy Arc<str> for string sharing",
+        "description": "Payload delivered when a tracked trader executes their first-ever trade on Polymarket",
         "required": [
           "trader",
           "taker",
@@ -4751,29 +5288,29 @@
         "properties": {
           "trader": {
             "type": "string",
-            "description": "Trader/taker address (zero-copy Arc)"
+            "description": "Limit-order maker wallet address (lowercase)"
           },
           "taker": {
             "type": "string",
-            "description": "Taker address (same as trader, zero-copy Arc)"
+            "description": "Order filler wallet address (lowercase)"
           },
           "position_id": {
             "type": "string",
-            "description": "Position ID (ERC1155 token ID, zero-copy Arc)"
+            "description": "ERC-1155 outcome token ID"
           },
           "condition_id": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Condition ID (market condition, zero-copy Arc)"
+            "description": "Parent market condition ID (0x-prefixed hex)"
           },
           "outcome": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Market outcome (e.g., \"Yes\", \"No\", zero-copy Arc)"
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
           },
           "outcome_index": {
             "type": [
@@ -4781,7 +5318,7 @@
               "null"
             ],
             "format": "int32",
-            "description": "Outcome index (0 = Yes, 1 = No)",
+            "description": "Outcome index: 0 = Yes/Up, 1 = No",
             "minimum": 0
           },
           "question": {
@@ -4789,29 +5326,36 @@
               "string",
               "null"
             ],
-            "description": "Market question (zero-copy Arc)"
+            "description": "Market question text"
           },
           "market_slug": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Market slug (zero-copy Arc)"
+            "description": "Market slug"
           },
           "event_slug": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Event slug (parent event, zero-copy Arc)"
+            "description": "Parent event slug"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market image URL"
           },
           "trade_id": {
             "type": "string",
-            "description": "Trade ID (zero-copy Arc)"
+            "description": "Unique trade identifier"
           },
           "hash": {
             "type": "string",
-            "description": "Transaction hash (zero-copy Arc)"
+            "description": "Transaction hash"
           },
           "block": {
             "type": "integer",
@@ -4822,35 +5366,74 @@
           "confirmed_at": {
             "type": "integer",
             "format": "int64",
-            "description": "Confirmed timestamp (Unix seconds)",
+            "description": "Block confirmation timestamp (Unix seconds)",
             "minimum": 0
           },
           "amount_usd": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "USD size of the trade (6 decimal places)"
           },
           "shares_amount": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Outcome shares traded (6 decimal places)"
           },
           "fee": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Fee paid in USD (6 decimal places)"
           },
           "side": {
-            "type": "string",
-            "description": "Trade side (Buy/Sell, zero-copy Arc)"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Trade direction for trade-fill webhook payloads.",
+                "enum": [
+                  "Buy",
+                  "Sell"
+                ]
+              }
+            ],
+            "description": "Trade direction"
           },
           "price": {
             "type": "number",
             "format": "double",
-            "description": "Price per share (0.0 - 1.0)"
+            "description": "Outcome token price (0.0–1.0)",
+            "maximum": 1,
+            "minimum": 0
           },
           "exchange": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "CTFExchangeV2",
+                  "NegRiskExchangeV2",
+                  "Unknown"
+                ]
+              }
+            ],
+            "description": "Exchange contract that processed the trade"
           },
           "trade_type": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "enum": [
+                  "OrderFilled",
+                  "OrdersMatched"
+                ]
+              }
+            ],
+            "description": "Trade type (webhook events only fire on order fills)"
           }
         }
       },
@@ -5048,6 +5631,41 @@
           }
         }
       },
+      "MarketCreatedFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `market_created` event. All fields are optional.",
+        "properties": {
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets with these tags or category names (case-insensitive match).",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets belonging to these events.",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets (event slugs containing `updown`). Default: `false`."
+          }
+        }
+      },
       "MarketCreatedOutcome": {
         "type": "object",
         "description": "Outcome entry in the market created payload — mirrors `NewMarketOutcome`",
@@ -5168,6 +5786,74 @@
           "neg_risk": {
             "type": "boolean",
             "description": "Whether this is a neg-risk market"
+          }
+        }
+      },
+      "MarketMetricsFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `condition_metrics` event. All fields are optional.",
+        "properties": {
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets. Empty = all markets.",
+            "maxItems": 500
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/MetricFilterTimeframe"
+            },
+            "description": "Restrict to these aggregation windows. Empty = all windows.",
+            "maxItems": 500
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when volume ≥ this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when volume ≤ this value (USD)."
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Only fire when transaction count ≥ this value."
+          },
+          "min_unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Only fire when unique trader count ≥ this value."
+          },
+          "min_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total fees ≥ this value (USD)."
           }
         }
       },
@@ -5300,6 +5986,94 @@
           }
         }
       },
+      "MarketVolumeMilestoneFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `market_volume_milestone` event.",
+        "required": [
+          "timeframes"
+        ],
+        "properties": {
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetricFilterTimeframe"
+            },
+            "description": "**Required.** Aggregation windows to monitor (e.g. \\[\"1h\", \"24h\"\\]).",
+            "maxItems": 500,
+            "minItems": 1
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets. Empty = all markets.",
+            "maxItems": 500
+          },
+          "milestone_amounts": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Specific USD milestones to trigger on (e.g. \\[10000, 100000, 1000000\\]). Empty = all milestones.",
+            "maxItems": 500
+          }
+        }
+      },
+      "MarketVolumeSpikeFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `market_volume_spike` event. `spike_ratio` is required.",
+        "required": [
+          "spike_ratio"
+        ],
+        "properties": {
+          "spike_ratio": {
+            "type": "number",
+            "format": "double",
+            "description": "**Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio. The snapshot is set automatically on first data and resets after each fire.",
+            "exclusiveMinimum": 1
+          },
+          "window_secs": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Force snapshot reset after this many seconds (max 600 / 10 minutes).",
+            "maximum": 600,
+            "minimum": 1
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets. Empty = all markets.",
+            "maxItems": 500
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/VolumeSpikeFilterTimeframe"
+            },
+            "description": "Restrict to these aggregation windows. Empty = all windows.",
+            "maxItems": 500
+          }
+        }
+      },
       "MarketVolumeSpikePayload": {
         "type": "object",
         "description": "Market volume spike webhook payload",
@@ -5375,6 +6149,20 @@
             "description": "Total fees in this timeframe"
           }
         }
+      },
+      "MetricFilterTimeframe": {
+        "type": "string",
+        "description": "Aggregation windows emitted by the metrics / milestone streams.",
+        "enum": [
+          "1m",
+          "5m",
+          "30m",
+          "1h",
+          "6h",
+          "24h",
+          "7d",
+          "30d"
+        ]
       },
       "NegRiskOutcomeReportedEvent": {
         "type": "object",
@@ -5472,7 +6260,7 @@
       },
       "NewMarketPayload": {
         "type": "object",
-        "description": "New market entry webhook payload\n\nFired when a trader places their first trade in a specific condition/market.\nThe payload contains the full details of the triggering trade.",
+        "description": "Payload delivered when a trader places their first trade in a specific market (fires once per trader+market pair)",
         "required": [
           "trader",
           "taker",
@@ -5492,22 +6280,22 @@
         "properties": {
           "trader": {
             "type": "string",
-            "description": "Trader address (placed the limit order)"
+            "description": "Limit-order maker wallet address (lowercase)"
           },
           "taker": {
             "type": "string",
-            "description": "Taker address (filled the order — often the exchange contract)"
+            "description": "Order filler wallet address (lowercase)"
           },
           "position_id": {
             "type": "string",
-            "description": "Position ID (ERC1155 token ID)"
+            "description": "ERC-1155 outcome token ID"
           },
           "condition_id": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Condition ID (market condition)"
+            "description": "Parent market condition ID"
           },
           "outcome": {
             "type": [
@@ -5522,7 +6310,7 @@
               "null"
             ],
             "format": "int32",
-            "description": "Outcome index (0 = Yes, 1 = No)",
+            "description": "Outcome index: 0 = Yes/Up, 1 = No",
             "minimum": 0
           },
           "question": {
@@ -5530,7 +6318,7 @@
               "string",
               "null"
             ],
-            "description": "Market question"
+            "description": "Market question text"
           },
           "market_slug": {
             "type": [
@@ -5544,11 +6332,18 @@
               "string",
               "null"
             ],
-            "description": "Event slug (parent event)"
+            "description": "Parent event slug"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market image URL"
           },
           "trade_id": {
             "type": "string",
-            "description": "Trade ID"
+            "description": "Unique trade identifier"
           },
           "hash": {
             "type": "string",
@@ -5563,32 +6358,43 @@
           "confirmed_at": {
             "type": "integer",
             "format": "int64",
-            "description": "Confirmed timestamp (Unix seconds)",
+            "description": "Block confirmation timestamp (Unix seconds)",
             "minimum": 0
           },
           "amount_usd": {
             "type": "number",
             "format": "double",
-            "description": "USD size of the trade"
+            "description": "USD size of the trade (6 decimal places)"
           },
           "shares_amount": {
             "type": "number",
             "format": "double",
-            "description": "Outcome shares traded"
+            "description": "Outcome shares traded (6 decimal places)"
           },
           "fee": {
             "type": "number",
             "format": "double",
-            "description": "Fee paid (USD)"
+            "description": "Fee paid in USD (6 decimal places)"
           },
           "side": {
-            "type": "string",
-            "description": "Trade side (\"Buy\" or \"Sell\")"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Trade direction for trade-fill webhook payloads.",
+                "enum": [
+                  "Buy",
+                  "Sell"
+                ]
+              }
+            ],
+            "description": "Trade direction"
           },
           "price": {
             "type": "number",
             "format": "double",
-            "description": "Price per share (0.0–1.0)"
+            "description": "Outcome token price (0.0–1.0)",
+            "maximum": 1,
+            "minimum": 0
           },
           "probability": {
             "type": [
@@ -5596,19 +6402,54 @@
               "null"
             ],
             "format": "double",
-            "description": "Implied probability (0.0–1.0); None when outcome is unknown"
+            "description": "Implied probability (0.0–1.0); null when outcome is unknown",
+            "maximum": 1,
+            "minimum": 0
           },
           "exchange": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "CTFExchangeV2",
+                  "NegRiskExchangeV2",
+                  "Unknown"
+                ]
+              }
+            ],
+            "description": "Exchange contract that processed the trade"
           },
           "trade_type": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "enum": [
+                  "OrderFilled",
+                  "OrdersMatched"
+                ]
+              }
+            ],
+            "description": "Trade type (webhook events only fire on order fills)"
           }
         }
       },
+      "NewTradeFilterType": {
+        "type": "string",
+        "description": "Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on\nfill-style trades only.",
+        "enum": [
+          "OrderFilled",
+          "OrdersMatched"
+        ]
+      },
       "NewTradePayload": {
         "type": "object",
-        "description": "New trade webhook payload",
+        "description": "Payload delivered on every order-filled trade",
         "required": [
           "trader",
           "taker",
@@ -5628,22 +6469,22 @@
         "properties": {
           "trader": {
             "type": "string",
-            "description": "Trader address (the limit-order maker)"
+            "description": "Limit-order maker wallet address (lowercase)"
           },
           "taker": {
             "type": "string",
-            "description": "Taker address (the order filler — often the exchange contract)"
+            "description": "Order filler wallet address (lowercase)"
           },
           "position_id": {
             "type": "string",
-            "description": "Position ID (ERC1155 token ID)"
+            "description": "ERC-1155 outcome token ID"
           },
           "condition_id": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Condition ID"
+            "description": "Parent market condition ID"
           },
           "outcome": {
             "type": [
@@ -5658,7 +6499,7 @@
               "null"
             ],
             "format": "int32",
-            "description": "Outcome index (0 = Yes, 1 = No)",
+            "description": "Outcome index: 0 = Yes/Up, 1 = No",
             "minimum": 0
           },
           "question": {
@@ -5666,7 +6507,7 @@
               "string",
               "null"
             ],
-            "description": "Market question"
+            "description": "Market question text"
           },
           "market_slug": {
             "type": [
@@ -5680,11 +6521,18 @@
               "string",
               "null"
             ],
-            "description": "Event slug"
+            "description": "Parent event slug"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market image URL"
           },
           "trade_id": {
             "type": "string",
-            "description": "Trade ID"
+            "description": "Unique trade identifier"
           },
           "hash": {
             "type": "string",
@@ -5699,32 +6547,43 @@
           "confirmed_at": {
             "type": "integer",
             "format": "int64",
-            "description": "Confirmed timestamp (Unix seconds)",
+            "description": "Block confirmation timestamp (Unix seconds)",
             "minimum": 0
           },
           "amount_usd": {
             "type": "number",
             "format": "double",
-            "description": "USD size of the trade"
+            "description": "USD size of the trade (6 decimal places)"
           },
           "shares_amount": {
             "type": "number",
             "format": "double",
-            "description": "Outcome shares traded"
+            "description": "Outcome shares traded (6 decimal places)"
           },
           "fee": {
             "type": "number",
             "format": "double",
-            "description": "Fee paid (USD)"
+            "description": "Fee paid in USD (6 decimal places)"
           },
           "side": {
-            "type": "string",
-            "description": "Trade side (\"Buy\" or \"Sell\")"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Trade direction for trade-fill webhook payloads.",
+                "enum": [
+                  "Buy",
+                  "Sell"
+                ]
+              }
+            ],
+            "description": "Trade direction"
           },
           "price": {
             "type": "number",
             "format": "double",
-            "description": "Price per share (0.0–1.0)"
+            "description": "Outcome token price (0.0–1.0)",
+            "maximum": 1,
+            "minimum": 0
           },
           "probability": {
             "type": [
@@ -5732,15 +6591,65 @@
               "null"
             ],
             "format": "double",
-            "description": "Implied probability of the event (0.0–1.0); None when outcome is unknown"
+            "description": "Implied probability (0.0–1.0); null when outcome is unknown",
+            "maximum": 1,
+            "minimum": 0
           },
           "exchange": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "CTFExchangeV2",
+                  "NegRiskExchangeV2",
+                  "Unknown"
+                ]
+              }
+            ],
+            "description": "Exchange contract that processed the trade"
           },
           "trade_type": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "enum": [
+                  "OrderFilled",
+                  "OrdersMatched"
+                ]
+              }
+            ],
+            "description": "Trade type (webhook events only fire on order fills)"
           }
         }
+      },
+      "OracleEventFilterType": {
+        "type": "string",
+        "description": "Oracle event variants accepted by `oracle_events.oracle_event_types`.",
+        "enum": [
+          "AssertionMade",
+          "AssertionDisputed",
+          "AssertionSettled",
+          "RequestPrice",
+          "ProposePrice",
+          "DisputePrice",
+          "Settle",
+          "QuestionResolved",
+          "QuestionEmergencyResolved",
+          "QuestionReset",
+          "QuestionInitialized",
+          "QuestionPaused",
+          "QuestionUnpaused",
+          "QuestionFlagged",
+          "QuestionUnflagged",
+          "ConditionResolution",
+          "NegRiskOutcomeReported"
+        ]
       },
       "OracleEventTyped": {
         "oneOf": [
@@ -6104,6 +7013,43 @@
         ],
         "description": "Tagged enum for all oracle event types — serializes with `\"event_type\": \"...\"` discriminator\nand only includes fields relevant to each type."
       },
+      "OracleEventsFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `oracle_events` event. All fields are optional.",
+        "properties": {
+          "oracle_event_types": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/OracleEventFilterType"
+            },
+            "description": "Restrict to these event types (case-insensitive). Empty = all."
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to events for these condition IDs.",
+            "maxItems": 500
+          }
+        }
+      },
+      "PnlFilterTimeframe": {
+        "type": "string",
+        "description": "PnL aggregation windows accepted by `*_pnl.timeframes`.",
+        "enum": [
+          "1d",
+          "7d",
+          "30d",
+          "lifetime"
+        ]
+      },
       "PnlTimeframeFilter": {
         "type": "string",
         "description": "PnL timeframe enum for webhook filtering",
@@ -6128,6 +7074,7 @@
           "trader_event_pnl",
           "condition_metrics",
           "event_metrics",
+          "tag_metrics",
           "position_metrics",
           "market_volume_milestone",
           "event_volume_milestone",
@@ -6146,7 +7093,7 @@
       },
       "PolymarketWebhookFilter": {
         "type": "object",
-        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets\n- market_created: event_slugs, tags, exclude_shortterm_markets\n- probability_spike: condition_ids, event_slugs, outcomes, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets\n- trader_event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded, exclude_shortterm_markets\n- trader_market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, exclude_shortterm_markets\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
+        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- tag_metrics: tags, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets\n- market_created: event_slugs, tags, exclude_shortterm_markets\n- probability_spike: condition_ids, event_slugs, outcomes, min_probability, max_probability, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets\n- trader_event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded, exclude_shortterm_markets\n- trader_market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, exclude_shortterm_markets\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
         "properties": {
           "wallet_addresses": {
             "type": "array",
@@ -6420,62 +7367,284 @@
           }
         }
       },
+      "PositionMetricsFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `position_metrics` event. All fields are optional.",
+        "properties": {
+          "position_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome token IDs.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to positions within these markets.",
+            "maxItems": 500
+          },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to positions with these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/MetricFilterTimeframe"
+            },
+            "description": "Restrict to these aggregation windows.",
+            "maxItems": 500
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when position volume ≥ this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "min_buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "min_sell_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "min_unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "min_price_change_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when price change % ≥ this value."
+          },
+          "min_probability_change_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when probability change % ≥ this value."
+          },
+          "min_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
       "PositionMetricsPayload": {
         "type": "object",
-        "description": "Position metrics webhook payload.",
+        "description": "Payload delivered when a position's volume or transaction metrics cross a configured threshold",
         "properties": {
           "position_id": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "ERC-1155 outcome token ID"
           },
           "outcome": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
           },
           "outcome_index": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int32"
+            "format": "int32",
+            "description": "Outcome index"
           },
           "timeframe": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "description": "Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.",
+                "enum": [
+                  "1m",
+                  "5m",
+                  "15m",
+                  "30m",
+                  "1h",
+                  "4h",
+                  "6h",
+                  "1d",
+                  "24h",
+                  "7d",
+                  "30d"
+                ]
+              }
+            ],
+            "description": "Aggregation window"
           },
           "volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total trading volume in USD"
           },
           "buy_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Buy volume in USD"
           },
           "sell_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Sell volume in USD"
+          },
+          "shares_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Total shares/contracts volume"
+          },
+          "shares_buy_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Buy shares/contracts volume"
+          },
+          "shares_sell_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Sell shares/contracts volume"
+          },
+          "builder_usd_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed volume in USD"
+          },
+          "builder_usd_buy_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed buy volume in USD"
+          },
+          "builder_usd_sell_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed sell volume in USD"
+          },
+          "builder_shares_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed shares/contracts volume"
+          },
+          "builder_shares_buy_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed buy shares/contracts volume"
+          },
+          "builder_shares_sell_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed sell shares/contracts volume"
           },
           "fees": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total fees in USD"
+          },
+          "builder_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed fees in USD"
           },
           "txns": {
             "type": [
@@ -6498,7 +7667,35 @@
             ],
             "format": "int64"
           },
+          "builder_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "builder_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "builder_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
           "unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "unique_builder_traders": {
             "type": [
               "integer",
               "null"
@@ -6510,56 +7707,156 @@
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0
           },
           "price_close": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0
           },
           "price_high": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0
           },
           "price_low": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0
           },
           "probability_open": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0
           },
           "probability_close": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0
           },
           "probability_high": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0
           },
           "probability_low": {
             "type": [
               "number",
               "null"
             ],
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "avg_trade_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
             "format": "double"
+          },
+          "avg_buy_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_sell_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "PositionVolumeMilestoneFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `position_volume_milestone` event.",
+        "required": [
+          "timeframes"
+        ],
+        "properties": {
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MetricFilterTimeframe"
+            },
+            "description": "**Required.** Aggregation windows to monitor.",
+            "maxItems": 500,
+            "minItems": 1
+          },
+          "position_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome token IDs.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to positions within these markets.",
+            "maxItems": 500
+          },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
+          "milestone_amounts": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Specific USD milestones to trigger on.",
+            "maxItems": 500
           }
         }
       },
@@ -6643,6 +7940,75 @@
             "type": "integer",
             "format": "int64",
             "description": "Sell transactions"
+          }
+        }
+      },
+      "PositionVolumeSpikeFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `position_volume_spike` event. `spike_ratio` is required.",
+        "required": [
+          "spike_ratio"
+        ],
+        "properties": {
+          "spike_ratio": {
+            "type": "number",
+            "format": "double",
+            "description": "**Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio.",
+            "exclusiveMinimum": 1
+          },
+          "window_secs": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Force snapshot reset after this many seconds (max 600 / 10 minutes).",
+            "maximum": 600,
+            "minimum": 1
+          },
+          "position_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome token IDs.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to positions within these markets.",
+            "maxItems": 500
+          },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome names.",
+            "maxItems": 500
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/VolumeSpikeFilterTimeframe"
+            },
+            "description": "Restrict to these aggregation windows.",
+            "maxItems": 500
           }
         }
       },
@@ -6739,6 +8105,128 @@
           }
         }
       },
+      "PriceSpikeFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `price_spike` event.",
+        "properties": {
+          "position_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to specific outcome token IDs. Empty = all positions.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to specific market condition IDs. Empty = all markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to specific events. Empty = all events.",
+            "maxItems": 500
+          },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
+          "min_price_change_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum price percentage move to trigger (e.g. `10` for a 10% move)."
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum YES probability (0-1).",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum YES probability (0-1).",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum trades accumulated in the observation window before firing."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum USD volume accumulated in the observation window before firing."
+          },
+          "spike_direction": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SpikeDirection",
+                "description": "`\"up\"` = price rising only (default when omitted), `\"down\"` = falling only, `\"both\"` = either direction."
+              }
+            ]
+          },
+          "window_secs": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Observation window in seconds. The first trade in each window sets the reference price; subsequent trades are compared to it. E.g. `60` detects moves that occur within 60 seconds.",
+            "maximum": 600,
+            "minimum": 1
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
       "PriceSpikePayload": {
         "type": "object",
         "description": "Position price spike webhook payload",
@@ -6814,6 +8302,128 @@
             "type": "number",
             "format": "double",
             "description": "Detected spike percentage from the snapshot baseline. Positive = rising, negative = falling."
+          }
+        }
+      },
+      "ProbabilitySpikeFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `probability_spike` event.",
+        "properties": {
+          "position_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to specific outcome token IDs. Empty = all positions.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to specific market condition IDs. Empty = all markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to specific events. Empty = all events.",
+            "maxItems": 500
+          },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum YES probability (0-1). At least one of `min_probability`/`max_probability` is enforced at runtime if you want a probability gate.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum YES probability (0-1).",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "min_probability_change_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum probability percentage move to trigger (e.g. `10` for a 10% move)."
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Minimum trades accumulated in the observation window before firing."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum USD volume accumulated in the observation window before firing."
+          },
+          "spike_direction": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SpikeDirection",
+                "description": "`\"up\"` = probability rising only (default when omitted), `\"down\"` = falling only, `\"both\"` = either direction."
+              }
+            ]
+          },
+          "window_secs": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Observation window in seconds. The first trade in each window sets the reference price; subsequent trades are compared to it. E.g. `60` detects moves that occur within 60 seconds.",
+            "maximum": 600,
+            "minimum": 1
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -8041,6 +9651,939 @@
           "both"
         ]
       },
+      "TagMetricsFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `tag_metrics` event. All fields are optional.",
+        "properties": {
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these tags. Empty = all tags.",
+            "maxItems": 500
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/MetricFilterTimeframe"
+            },
+            "description": "Restrict to these aggregation windows.",
+            "maxItems": 500
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when aggregated tag volume >= this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "min_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "min_unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "min_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          }
+        }
+      },
+      "TagMetricsPayload": {
+        "type": "object",
+        "description": "Payload delivered when a tag's aggregated volume or transaction metrics cross a configured threshold",
+        "properties": {
+          "tag": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Tag label or slug"
+          },
+          "timeframe": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "description": "Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.",
+                "enum": [
+                  "1m",
+                  "5m",
+                  "15m",
+                  "30m",
+                  "1h",
+                  "4h",
+                  "6h",
+                  "1d",
+                  "24h",
+                  "7d",
+                  "30d"
+                ]
+              }
+            ],
+            "description": "Aggregation window"
+          },
+          "volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Total aggregated volume for the tag (USD)"
+          },
+          "shares_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Total aggregated shares/contracts volume for the tag"
+          },
+          "builder_usd_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed aggregated volume in USD"
+          },
+          "builder_shares_volume": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed aggregated shares/contracts volume"
+          },
+          "fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Total fees collected in USD"
+          },
+          "builder_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder-attributed fees in USD"
+          },
+          "txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Total number of transactions"
+          },
+          "builder_txns": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Builder-attributed transaction count"
+          },
+          "unique_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Number of unique traders"
+          },
+          "unique_builder_traders": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Number of unique builder-attributed traders"
+          }
+        }
+      },
+      "TradeEventFilterType": {
+        "type": "string",
+        "description": "Trade-event types accepted by `trader_trade_event.trade_types`. Covers the\nfull set of typed prediction-trade variants.",
+        "enum": [
+          "OrderFilled",
+          "Redemption",
+          "Merge",
+          "Split",
+          "Cancelled",
+          "PositionsConverted",
+          "OrdersMatched",
+          "Initialization",
+          "Proposal",
+          "Dispute",
+          "Settled",
+          "Resolution",
+          "ConditionResolution",
+          "Reset",
+          "Flag",
+          "Unflag",
+          "Pause",
+          "Unpause",
+          "ManualResolution",
+          "NegRiskOutcomeReported",
+          "RegisterToken",
+          "Approval"
+        ]
+      },
+      "TraderEventPnlFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_event_pnl` event. All fields are optional.",
+        "properties": {
+          "traders": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Track only these trader wallet addresses.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these events.",
+            "maxItems": 500
+          },
+          "min_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when per-event realized PnL ≥ this value (USD)."
+          },
+          "max_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when per-event realized PnL ≤ this value (USD)."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total event volume ≥ this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total event volume ≤ this value (USD)."
+          },
+          "min_buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when buy volume within the event ≥ this value (USD)."
+          },
+          "min_sell_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when sell volume within the event ≥ this value (USD)."
+          },
+          "min_markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Only fire when the trader has traded in ≥ this many markets within the event."
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/PnlFilterTimeframe"
+            },
+            "description": "Restrict to these PnL windows."
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "TraderFirstTradeFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_first_trade` event. All fields are optional.",
+        "properties": {
+          "wallet_addresses": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Only fire for trades by these wallet addresses (lowercase). Empty = all traders.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to trades in these markets. Empty = all markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to trades in markets belonging to these events.",
+            "maxItems": 500
+          },
+          "min_usd_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum trade size in USD. Omit to match all sizes."
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when the outcome probability is ≥ this value.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when the outcome probability is ≤ this value.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets (event slugs containing `updown`). Default: `false`."
+          }
+        }
+      },
+      "TraderGlobalPnlFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_global_pnl` event. All fields are optional.",
+        "properties": {
+          "traders": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Track only these trader wallet addresses. Empty = all traders.",
+            "maxItems": 500
+          },
+          "min_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when realized PnL ≥ this value (USD). Use negative values for loss thresholds."
+          },
+          "max_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when realized PnL ≤ this value (USD)."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total trading volume ≥ this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total trading volume ≤ this value (USD)."
+          },
+          "min_buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when buy volume ≥ this value (USD)."
+          },
+          "min_sell_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when sell volume ≥ this value (USD)."
+          },
+          "min_win_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when market win rate ≥ this percentage (0.0–100.0).",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "min_markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Only fire when the trader has traded in ≥ this many markets."
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/PnlFilterTimeframe"
+            },
+            "description": "Restrict to these PnL windows. Empty = all windows."
+          }
+        }
+      },
+      "TraderMarketPnlFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_market_pnl` event. All fields are optional.",
+        "properties": {
+          "traders": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Track only these trader wallet addresses.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in these events.",
+            "maxItems": 500
+          },
+          "min_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when per-market realized PnL ≥ this value (USD)."
+          },
+          "max_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when per-market realized PnL ≤ this value (USD)."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total volume (buy + sell + redemption + merge) ≥ this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total volume ≤ this value (USD)."
+          },
+          "min_buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when buy volume in the market ≥ this value (USD)."
+          },
+          "min_sell_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when sell volume in the market ≥ this value (USD)."
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/PnlFilterTimeframe"
+            },
+            "description": "Restrict to these PnL windows."
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "TraderNewMarketFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_new_market` event. All fields are optional.",
+        "properties": {
+          "wallet_addresses": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Only fire for these wallet addresses (lowercase). Empty = all traders.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets belonging to these events.",
+            "maxItems": 500
+          },
+          "min_usd_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum trade size in USD. Omit to match all sizes."
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when the outcome probability is ≥ this value.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when the outcome probability is ≤ this value.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "TraderNewTradeFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_new_trade` event. All fields are optional.",
+        "properties": {
+          "wallet_addresses": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Only fire for trades by these wallet addresses. Empty = all traders.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets belonging to these events.",
+            "maxItems": 500
+          },
+          "min_usd_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum trade size in USD. Defaults to 0 (matches all trades).",
+            "default": 0.0
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when outcome probability is ≥ this value.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when outcome probability is ≤ this value.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "trade_types": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string",
+              "description": "Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on\nfill-style trades only.",
+              "enum": [
+                "OrderFilled",
+                "OrdersMatched"
+              ]
+            },
+            "description": "Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default).",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "TraderTradeEventFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_trade_event` event. All fields are optional.\n`event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that\nexclude `PositionsConverted`, because conversion events do not currently carry\n`event_slug` in the typed webhook payload.",
+        "properties": {
+          "wallet_addresses": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Only fire for events associated with these wallet addresses. Empty = all traders.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets. For `PositionsConverted`, this also matches the NegRisk `market_id`.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets belonging to these events. Requires explicit `trade_types` that exclude `PositionsConverted`.",
+            "maxItems": 500
+          },
+          "min_usd_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum USD amount for the underlying event. Defaults to 0 (matches all events).",
+            "default": 0.0
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when event probability is ≥ this value. Events without probability data do not match.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when event probability is ≤ this value. Events without probability data do not match.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "trade_types": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string",
+              "description": "Trade-event types accepted by `trader_trade_event.trade_types`. Covers the\nfull set of typed prediction-trade variants.",
+              "enum": [
+                "OrderFilled",
+                "Redemption",
+                "Merge",
+                "Split",
+                "Cancelled",
+                "PositionsConverted",
+                "OrdersMatched",
+                "Initialization",
+                "Proposal",
+                "Dispute",
+                "Settled",
+                "Resolution",
+                "ConditionResolution",
+                "Reset",
+                "Flag",
+                "Unflag",
+                "Pause",
+                "Unpause",
+                "ManualResolution",
+                "NegRiskOutcomeReported",
+                "RegisterToken",
+                "Approval"
+              ]
+            },
+            "description": "Only fire for these trade types. Empty = all supported trade-event variants.",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`."
+          }
+        }
+      },
+      "TraderWhaleTradeFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_whale_trade` event. All fields are optional.",
+        "properties": {
+          "wallet_addresses": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Only fire for trades by these wallet addresses. Empty = all traders.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets belonging to these events.",
+            "maxItems": 500
+          },
+          "min_usd_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum trade size in USD. Defaults to 0 (matches all trades).",
+            "default": 0.0
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when outcome probability is ≥ this value.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when outcome probability is ≤ this value.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
       "UpdateWebhookRequestBody": {
         "type": "object",
         "description": "Request body for updating a webhook",
@@ -8140,6 +10683,21 @@
             "description": "Total transactions in this timeframe"
           }
         }
+      },
+      "VolumeSpikeFilterTimeframe": {
+        "type": "string",
+        "description": "Aggregation windows accepted by `*_volume_spike.timeframes`. Includes `1d`\nin addition to the metric set.",
+        "enum": [
+          "1m",
+          "5m",
+          "30m",
+          "1h",
+          "6h",
+          "1d",
+          "24h",
+          "7d",
+          "30d"
+        ]
       },
       "WebhookAssetSymbol": {
         "type": "string",
@@ -8607,7 +11165,7 @@
       },
       "WhaleTradePayload": {
         "type": "object",
-        "description": "Whale trade webhook payload",
+        "description": "Payload delivered when a trade exceeds the configured size and probability thresholds",
         "required": [
           "trader",
           "taker",
@@ -8627,22 +11185,22 @@
         "properties": {
           "trader": {
             "type": "string",
-            "description": "Trader address (the limit-order maker)"
+            "description": "Limit-order maker wallet address (lowercase)"
           },
           "taker": {
             "type": "string",
-            "description": "Taker address (the order filler — often the exchange contract)"
+            "description": "Order filler wallet address (lowercase)"
           },
           "position_id": {
             "type": "string",
-            "description": "Position ID (ERC1155 token ID)"
+            "description": "ERC-1155 outcome token ID"
           },
           "condition_id": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Condition ID"
+            "description": "Parent market condition ID"
           },
           "outcome": {
             "type": [
@@ -8657,7 +11215,7 @@
               "null"
             ],
             "format": "int32",
-            "description": "Outcome index (0 = Yes, 1 = No)",
+            "description": "Outcome index: 0 = Yes/Up, 1 = No",
             "minimum": 0
           },
           "question": {
@@ -8665,7 +11223,7 @@
               "string",
               "null"
             ],
-            "description": "Market question"
+            "description": "Market question text"
           },
           "market_slug": {
             "type": [
@@ -8679,11 +11237,18 @@
               "string",
               "null"
             ],
-            "description": "Event slug"
+            "description": "Parent event slug"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market image URL"
           },
           "trade_id": {
             "type": "string",
-            "description": "Trade ID"
+            "description": "Unique trade identifier"
           },
           "hash": {
             "type": "string",
@@ -8698,32 +11263,43 @@
           "confirmed_at": {
             "type": "integer",
             "format": "int64",
-            "description": "Confirmed timestamp (Unix seconds)",
+            "description": "Block confirmation timestamp (Unix seconds)",
             "minimum": 0
           },
           "amount_usd": {
             "type": "number",
             "format": "double",
-            "description": "USD size of the trade"
+            "description": "USD size of the trade (6 decimal places)"
           },
           "shares_amount": {
             "type": "number",
             "format": "double",
-            "description": "Outcome shares traded"
+            "description": "Outcome shares traded (6 decimal places)"
           },
           "fee": {
             "type": "number",
             "format": "double",
-            "description": "Fee paid (USD)"
+            "description": "Fee paid in USD (6 decimal places)"
           },
           "side": {
-            "type": "string",
-            "description": "Trade side (\"Buy\" or \"Sell\")"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Trade direction for trade-fill webhook payloads.",
+                "enum": [
+                  "Buy",
+                  "Sell"
+                ]
+              }
+            ],
+            "description": "Trade direction"
           },
           "price": {
             "type": "number",
             "format": "double",
-            "description": "Price per share (0.0–1.0)"
+            "description": "Outcome token price (0.0–1.0)",
+            "maximum": 1,
+            "minimum": 0
           },
           "probability": {
             "type": [
@@ -8731,13 +11307,40 @@
               "null"
             ],
             "format": "double",
-            "description": "Implied probability of the event (0.0–1.0); None when outcome is unknown"
+            "description": "Implied probability (0.0–1.0); null when outcome is unknown",
+            "maximum": 1,
+            "minimum": 0
           },
           "exchange": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "enum": [
+                  "CTFExchange",
+                  "NegRiskExchange",
+                  "ConditionalTokens",
+                  "NegRiskAdapter",
+                  "CTFExchangeV2",
+                  "NegRiskExchangeV2",
+                  "Unknown"
+                ]
+              }
+            ],
+            "description": "Exchange contract that processed the trade"
           },
           "trade_type": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "enum": [
+                  "OrderFilled",
+                  "OrdersMatched"
+                ]
+              }
+            ],
+            "description": "Trade type (webhook events only fire on order fills)"
           }
         }
       },
@@ -9126,6 +11729,7 @@
                 "PositionsConverted",
                 "MakerRebate",
                 "Reward",
+                "Yield",
                 "Initialization",
                 "Proposal",
                 "Dispute",
@@ -9139,8 +11743,7 @@
                 "Unpause",
                 "ManualResolution",
                 "NegRiskOutcomeReported",
-                "RegisterToken",
-                "Approval"
+                "RegisterToken"
               ]
             },
             "description": "Only receive events of these types. Empty array = all types."
@@ -9398,7 +12001,7 @@
             }
           },
           {
-            "title": "MakerRebate / Reward",
+            "title": "MakerRebate / Reward / Yield",
             "description": "pUSD credit paid directly to the trader wallet.",
             "type": "object",
             "required": [
@@ -9413,7 +12016,8 @@
                 "type": "string",
                 "enum": [
                   "MakerRebate",
-                  "Reward"
+                  "Reward",
+                  "Yield"
                 ]
               },
               "id": {
@@ -10305,115 +12909,6 @@
                 "type": "integer"
               }
             }
-          },
-          {
-            "title": "Approval",
-            "description": "ERC-1155 setApprovalForAll — operator approved/revoked.",
-            "type": "object",
-            "required": [
-              "trade_type",
-              "id",
-              "hash",
-              "trader",
-              "exchange"
-            ],
-            "properties": {
-              "trade_type": {
-                "type": "string",
-                "enum": [
-                  "Approval"
-                ]
-              },
-              "id": {
-                "type": "string"
-              },
-              "hash": {
-                "type": "string"
-              },
-              "block": {
-                "type": "integer"
-              },
-              "confirmed_at": {
-                "type": "integer"
-              },
-              "received_at": {
-                "type": "integer"
-              },
-              "log_index": {
-                "type": "integer"
-              },
-              "block_index": {
-                "type": "integer"
-              },
-              "trader": {
-                "type": "object",
-                "properties": {
-                  "address": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "pseudonym": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "profile_image": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "x_username": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "verified_badge": {
-                    "type": "boolean"
-                  }
-                }
-              },
-              "operator": {
-                "type": "string"
-              },
-              "approved": {
-                "type": "boolean"
-              },
-              "question": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "image_url": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "slug": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "event_slug": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "exchange": {
-                "type": "integer"
-              }
-            }
           }
         ],
         "discriminator": "trade_type"
@@ -10437,7 +12932,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Uppercase asset symbols (e.g. \"BTC\", \"ETH\"). Empty = subscribe to all."
+            "description": "Uppercase asset symbols (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Empty = subscribe to all."
           }
         }
       },
@@ -10471,7 +12966,7 @@
           },
           "symbol": {
             "type": "string",
-            "description": "Uppercase asset symbol (e.g. \"BTC\")"
+            "description": "Uppercase asset symbol (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE)"
           },
           "price": {
             "type": "number",
@@ -10510,7 +13005,7 @@
           },
           "symbol": {
             "type": "string",
-            "description": "Uppercase asset symbol (e.g. \"BTC\")"
+            "description": "Uppercase asset symbol (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE)"
           },
           "variant": {
             "type": "string",
@@ -10564,7 +13059,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Uppercase asset symbols (e.g. \"BTC\", \"ETH\")"
+            "description": "Uppercase asset symbols (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE)"
           },
           "timeframes": {
             "type": "array",
@@ -10674,9 +13169,15 @@
           "condition_id",
           "timeframe",
           "usd_volume",
+          "shares_volume",
+          "builder_usd_volume",
+          "builder_shares_volume",
           "fees",
+          "builder_fees",
           "txns",
-          "unique_traders"
+          "builder_txns",
+          "unique_traders",
+          "unique_builder_traders"
         ],
         "properties": {
           "condition_id": {
@@ -10708,16 +13209,41 @@
             "type": "string",
             "description": "USD volume in this timeframe window (decimal string)"
           },
+          "shares_volume": {
+            "type": "string",
+            "description": "Shares/contracts volume in this timeframe window (decimal string)"
+          },
+          "builder_usd_volume": {
+            "type": "string",
+            "description": "Builder-attributed USD volume in this timeframe window (decimal string)"
+          },
+          "builder_shares_volume": {
+            "type": "string",
+            "description": "Builder-attributed shares/contracts volume in this timeframe window (decimal string)"
+          },
           "fees": {
             "type": "number",
             "description": "Total fees in this window"
+          },
+          "builder_fees": {
+            "type": "number",
+            "description": "Builder-attributed fees in this window"
           },
           "txns": {
             "type": "integer",
             "format": "int64",
             "description": "Number of transactions"
           },
+          "builder_txns": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Builder-attributed transactions"
+          },
           "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_builder_traders": {
             "type": "integer",
             "format": "int64"
           }
@@ -10779,9 +13305,15 @@
           "event_slug",
           "timeframe",
           "usd_volume",
+          "shares_volume",
+          "builder_usd_volume",
+          "builder_shares_volume",
           "fees",
+          "builder_fees",
           "txns",
-          "unique_traders"
+          "builder_txns",
+          "unique_traders",
+          "unique_builder_traders"
         ],
         "properties": {
           "event_slug": {
@@ -10812,14 +13344,168 @@
             "type": "string",
             "description": "USD volume in this timeframe window (decimal string)"
           },
+          "shares_volume": {
+            "type": "string",
+            "description": "Shares/contracts volume in this timeframe window (decimal string)"
+          },
+          "builder_usd_volume": {
+            "type": "string",
+            "description": "Builder-attributed USD volume in this timeframe window (decimal string)"
+          },
+          "builder_shares_volume": {
+            "type": "string",
+            "description": "Builder-attributed shares/contracts volume in this timeframe window (decimal string)"
+          },
           "fees": {
+            "type": "number"
+          },
+          "builder_fees": {
             "type": "number"
           },
           "txns": {
             "type": "integer",
             "format": "int64"
           },
+          "builder_txns": {
+            "type": "integer",
+            "format": "int64"
+          },
           "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_builder_traders": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "TagMetricsSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the tag metrics stream. tags is required and must be non-empty.",
+        "required": [
+          "action",
+          "tags"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tag labels or slugs, matched case-insensitively",
+            "minItems": 1
+          }
+        }
+      },
+      "TagMetricsSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a tag metrics subscription",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "TagMetricsEvent": {
+        "type": "object",
+        "description": "Server-pushed event: aggregated metrics update for one timeframe of a tag. Envelope type: \"tag_metrics_update\". One event is emitted per timeframe window on each update.",
+        "required": [
+          "tag",
+          "timeframe",
+          "usd_volume",
+          "shares_volume",
+          "builder_usd_volume",
+          "builder_shares_volume",
+          "fees",
+          "builder_fees",
+          "txns",
+          "builder_txns",
+          "unique_traders",
+          "unique_builder_traders"
+        ],
+        "properties": {
+          "tag": {
+            "type": "string"
+          },
+          "timeframe": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "5m",
+              "30m",
+              "1h",
+              "6h",
+              "24h",
+              "7d",
+              "30d"
+            ]
+          },
+          "timestamp": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Optional event timestamp (Unix seconds)"
+          },
+          "usd_volume": {
+            "type": "string",
+            "description": "USD volume in this timeframe window (decimal string)"
+          },
+          "shares_volume": {
+            "type": "string",
+            "description": "Shares/contracts volume in this timeframe window (decimal string)"
+          },
+          "builder_usd_volume": {
+            "type": "string",
+            "description": "Builder-attributed USD volume in this timeframe window (decimal string)"
+          },
+          "builder_shares_volume": {
+            "type": "string",
+            "description": "Builder-attributed shares/contracts volume in this timeframe window (decimal string)"
+          },
+          "fees": {
+            "type": "number"
+          },
+          "builder_fees": {
+            "type": "number"
+          },
+          "txns": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "builder_txns": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_builder_traders": {
             "type": "integer",
             "format": "int64"
           }
@@ -10884,11 +13570,25 @@
           "usd_volume",
           "usd_buy_volume",
           "usd_sell_volume",
+          "shares_volume",
+          "shares_buy_volume",
+          "shares_sell_volume",
+          "builder_usd_volume",
+          "builder_usd_buy_volume",
+          "builder_usd_sell_volume",
+          "builder_shares_volume",
+          "builder_shares_buy_volume",
+          "builder_shares_sell_volume",
           "fees",
+          "builder_fees",
           "txns",
           "buys",
           "sells",
+          "builder_txns",
+          "builder_buys",
+          "builder_sells",
           "unique_traders",
+          "unique_builder_traders",
           "price_open",
           "price_close",
           "price_high",
@@ -10896,7 +13596,10 @@
           "probability_open",
           "probability_close",
           "probability_high",
-          "probability_low"
+          "probability_low",
+          "avg_trade_shares",
+          "avg_buy_shares",
+          "avg_sell_shares"
         ],
         "properties": {
           "condition_id": {
@@ -10953,7 +13656,46 @@
             "type": "string",
             "description": "USD sell volume (decimal string)"
           },
+          "shares_volume": {
+            "type": "string",
+            "description": "Total shares/contracts volume (decimal string)"
+          },
+          "shares_buy_volume": {
+            "type": "string",
+            "description": "Buy shares/contracts volume (decimal string)"
+          },
+          "shares_sell_volume": {
+            "type": "string",
+            "description": "Sell shares/contracts volume (decimal string)"
+          },
+          "builder_usd_volume": {
+            "type": "string",
+            "description": "Builder-attributed USD volume (decimal string)"
+          },
+          "builder_usd_buy_volume": {
+            "type": "string",
+            "description": "Builder-attributed USD buy volume (decimal string)"
+          },
+          "builder_usd_sell_volume": {
+            "type": "string",
+            "description": "Builder-attributed USD sell volume (decimal string)"
+          },
+          "builder_shares_volume": {
+            "type": "string",
+            "description": "Builder-attributed shares/contracts volume (decimal string)"
+          },
+          "builder_shares_buy_volume": {
+            "type": "string",
+            "description": "Builder-attributed buy shares/contracts volume (decimal string)"
+          },
+          "builder_shares_sell_volume": {
+            "type": "string",
+            "description": "Builder-attributed sell shares/contracts volume (decimal string)"
+          },
           "fees": {
+            "type": "number"
+          },
+          "builder_fees": {
             "type": "number"
           },
           "txns": {
@@ -10968,7 +13710,23 @@
             "type": "integer",
             "format": "int64"
           },
+          "builder_txns": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "builder_buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "builder_sells": {
+            "type": "integer",
+            "format": "int64"
+          },
           "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_builder_traders": {
             "type": "integer",
             "format": "int64"
           },
@@ -11003,6 +13761,15 @@
           "probability_low": {
             "type": "number",
             "description": "Lowest implied probability in window (0–1)"
+          },
+          "avg_trade_shares": {
+            "type": "number"
+          },
+          "avg_buy_shares": {
+            "type": "number"
+          },
+          "avg_sell_shares": {
+            "type": "number"
           }
         }
       },
@@ -12735,7 +15502,7 @@
         }
       },
       "TradeRedemptionEvent": {
-        "title": "MakerRebate / Reward",
+        "title": "MakerRebate / Reward / Yield",
         "description": "pUSD credit paid directly to the trader wallet.",
         "type": "object",
         "required": [
@@ -12750,7 +15517,8 @@
             "type": "string",
             "enum": [
               "MakerRebate",
-              "Reward"
+              "Reward",
+              "Yield"
             ]
           },
           "id": {
@@ -13563,83 +16331,6 @@
               "string",
               "null"
             ]
-          }
-        }
-      },
-      "TradeApprovalEvent": {
-        "title": "RegisterToken",
-        "description": "YES/NO token pair registered for a condition.",
-        "type": "object",
-        "required": [
-          "trade_type",
-          "id",
-          "hash",
-          "condition_id",
-          "exchange"
-        ],
-        "properties": {
-          "trade_type": {
-            "type": "string",
-            "enum": [
-              "RegisterToken"
-            ]
-          },
-          "id": {
-            "type": "string"
-          },
-          "hash": {
-            "type": "string"
-          },
-          "block": {
-            "type": "integer"
-          },
-          "confirmed_at": {
-            "type": "integer"
-          },
-          "received_at": {
-            "type": "integer"
-          },
-          "log_index": {
-            "type": "integer"
-          },
-          "block_index": {
-            "type": "integer"
-          },
-          "condition_id": {
-            "type": "string"
-          },
-          "token0": {
-            "type": "string"
-          },
-          "token1": {
-            "type": "string"
-          },
-          "question": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "image_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "exchange": {
-            "type": "integer"
           }
         }
       }
