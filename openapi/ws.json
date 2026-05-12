@@ -4439,6 +4439,22 @@
             "format": "int64",
             "description": "Number of unique traders"
           },
+          "unique_makers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Number of unique makers"
+          },
+          "unique_takers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Number of unique takers"
+          },
           "unique_builder_traders": {
             "type": [
               "integer",
@@ -4905,6 +4921,22 @@
             ],
             "format": "int64",
             "description": "Number of unique traders"
+          },
+          "unique_makers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Number of unique makers"
+          },
+          "unique_takers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Number of unique takers"
           },
           "unique_builder_traders": {
             "type": [
@@ -7695,6 +7727,20 @@
             ],
             "format": "int64"
           },
+          "unique_makers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "unique_takers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
           "unique_builder_traders": {
             "type": [
               "integer",
@@ -9822,6 +9868,22 @@
             ],
             "format": "int64",
             "description": "Number of unique traders"
+          },
+          "unique_makers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Number of unique makers"
+          },
+          "unique_takers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Number of unique takers"
           },
           "unique_builder_traders": {
             "type": [
@@ -13177,6 +13239,8 @@
           "txns",
           "builder_txns",
           "unique_traders",
+          "unique_makers",
+          "unique_takers",
           "unique_builder_traders"
         ],
         "properties": {
@@ -13240,6 +13304,14 @@
             "description": "Builder-attributed transactions"
           },
           "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_makers": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_takers": {
             "type": "integer",
             "format": "int64"
           },
@@ -13313,6 +13385,8 @@
           "txns",
           "builder_txns",
           "unique_traders",
+          "unique_makers",
+          "unique_takers",
           "unique_builder_traders"
         ],
         "properties": {
@@ -13371,6 +13445,14 @@
             "format": "int64"
           },
           "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_makers": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_takers": {
             "type": "integer",
             "format": "int64"
           },
@@ -13444,6 +13526,8 @@
           "txns",
           "builder_txns",
           "unique_traders",
+          "unique_makers",
+          "unique_takers",
           "unique_builder_traders"
         ],
         "properties": {
@@ -13502,6 +13586,14 @@
             "format": "int64"
           },
           "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_makers": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_takers": {
             "type": "integer",
             "format": "int64"
           },
@@ -13588,6 +13680,8 @@
           "builder_buys",
           "builder_sells",
           "unique_traders",
+          "unique_makers",
+          "unique_takers",
           "unique_builder_traders",
           "price_open",
           "price_close",
@@ -13723,6 +13817,14 @@
             "format": "int64"
           },
           "unique_traders": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_makers": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unique_takers": {
             "type": "integer",
             "format": "int64"
           },

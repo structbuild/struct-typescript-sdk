@@ -550,6 +550,148 @@ export interface GetPositionTopTradersParams extends OperationQuery<"get_positio
 
 export interface GetOracleEventsParams extends OperationQuery<"get_oracle_events"> {}
 
+export type Approval = Schemas["Approval"];
+export type ApprovalKind = Schemas["ApprovalKind"];
+export type ApprovalsInfo = Schemas["ApprovalsInfo"];
+export type ApprovalsSummary = Schemas["ApprovalsSummary"];
+export type BalanceInfo = Schemas["BalanceInfo"];
+export type BuilderCredentials = Schemas["BuilderCredentials"];
+export type BuilderSignRequest = Schemas["BuilderSignRequest"];
+export type BuilderSignResponse = Schemas["BuilderSignResponse"];
+export type CancelAllRequest = Schemas["CancelAllRequest"];
+export type CancelOrderRequest = Schemas["CancelOrderRequest"];
+export type ClobCredentials = Schemas["ClobCredentials"];
+export type ClobCredsRequest = Schemas["ClobCredsRequest"];
+export type ClobCredsResponse = Schemas["ClobCredsResponse"];
+export type ExchangeKindDto = Schemas["ExchangeKindDto"];
+export type OnboardStatus = Schemas["OnboardStatus"];
+export type OrderType = Schemas["OrderType"];
+export type PostOrderRequest = Schemas["PostOrderRequest"];
+export type PostOrderResponse = Schemas["PostOrderResponse"];
+export type RefreshBalanceAllowanceRequest = Schemas["RefreshBalanceAllowanceRequest"];
+export type RegisterRelayerKeyRequest = Schemas["RegisterRelayerKeyRequest"];
+export type RelayerKeyResponse = Schemas["RelayerKeyResponse"];
+export type RevokeRelayerKeyRequest = Schemas["RevokeRelayerKeyRequest"];
+export type SafeInfo = Schemas["SafeInfo"];
+export type SignedSafeTx = Schemas["SignedSafeTx"];
+export type TradingErrorEnvelope = Schemas["TradingErrorEnvelope"];
+export type WalletDetection = Schemas["WalletDetection"];
+
+export type CategoryEntry = Schemas["CategoryEntry"];
+export type EventEntry = Schemas["EventEntry"];
+export type GlobalEntry = Schemas["GlobalEntry"];
+export type MarketEntry = Schemas["MarketEntry"];
+export type PositionEntry = Schemas["PositionEntry"];
+export type PolymarketCategory = Schemas["PolymarketCategory"];
+
+export type EventOrCategoryPnlV3SortBy = Schemas["EventOrCategoryPnlV3SortBy"];
+export type MarketPnlV3SortBy = Schemas["MarketPnlV3SortBy"];
+export type PositionPnlV3SortBy = Schemas["PositionPnlV3SortBy"];
+export type TraderPnlV3SortBy = Schemas["TraderPnlV3SortBy"];
+
+export type PnlV3AnalyticsTimeframe = Schemas["PnlV3AnalyticsTimeframe"];
+export type PnlV3CandlestickBar = Schemas["PnlV3CandlestickBar"];
+export type PnlV3ChangeWindow = Schemas["PnlV3ChangeWindow"];
+export type PnlV3ChangesResponse = Schemas["PnlV3ChangesResponse"];
+export type PnlV3LatestSnapshot = Schemas["PnlV3LatestSnapshot"];
+export type PnlV3PeriodExtremes = Schemas["PnlV3PeriodExtremes"];
+export type PnlV3PeriodMetric = Schemas["PnlV3PeriodMetric"];
+export type PnlV3PeriodsResponse = Schemas["PnlV3PeriodsResponse"];
+export type PnlV3RiskMarketMetadata = Schemas["PnlV3RiskMarketMetadata"];
+export type PnlV3RiskMetric = Schemas["PnlV3RiskMetric"];
+export type PnlV3RiskResponse = Schemas["PnlV3RiskResponse"];
+
+export type SmartMoneyDailyRow = Schemas["SmartMoneyDailyRow"];
+export type SmartMoneyEntryAlert = Schemas["SmartMoneyEntryAlert"];
+export type SmartMoneyEntryBatch = Schemas["SmartMoneyEntryBatch"];
+export type SmartMoneyFumbledEventRow = Schemas["SmartMoneyFumbledEventRow"];
+export type SmartMoneyHighConvictionEntryAlert = Schemas["SmartMoneyHighConvictionEntryAlert"];
+export type SmartMoneyHighConvictionEntryBatch = Schemas["SmartMoneyHighConvictionEntryBatch"];
+export type SmartMoneyInsiderPatternEntryAlert = Schemas["SmartMoneyInsiderPatternEntryAlert"];
+export type SmartMoneyInsiderPatternEntryBatch = Schemas["SmartMoneyInsiderPatternEntryBatch"];
+export type SmartMoneyMarketLifetimeRow = Schemas["SmartMoneyMarketLifetimeRow"];
+export type SmartMoneyReasonCode = Schemas["SmartMoneyReasonCode"];
+export type SmartMoneyReasonCodesResponse = Schemas["SmartMoneyReasonCodesResponse"];
+export type SmartMoneyReentryAlert = Schemas["SmartMoneyReentryAlert"];
+export type SmartMoneyReentryBatch = Schemas["SmartMoneyReentryBatch"];
+export type SmartMoneyReentryEventRow = Schemas["SmartMoneyReentryEventRow"];
+export type SmartMoneySortBy = Schemas["SmartMoneySortBy"];
+export type SmartMoneyTraderLifetimeRow = Schemas["SmartMoneyTraderLifetimeRow"];
+export type SmartMoneyTraderProfileReasonCode = Schemas["SmartMoneyTraderProfileReasonCode"];
+export type WhitelistedTradersResponse = Schemas["WhitelistedTradersResponse"];
+
+export interface GetSmartMoneyLeaderboardParams extends OperationQuery<"smart_money_leaderboard"> {}
+
+export interface GetSmartMoneyMarketSummaryParams {
+	conditionId: string;
+}
+
+export interface GetSmartMoneyTraderSummaryParams {
+	address: string;
+}
+
+export interface GetSmartMoneyTraderDailyParams extends OperationQuery<"smart_money_trader_daily"> {
+	address: string;
+}
+
+export interface GetSmartMoneyTraderFumbledParams extends OperationQuery<"smart_money_trader_fumbled"> {
+	address: string;
+}
+
+export interface GetSmartMoneyTraderReentriesParams extends OperationQuery<"smart_money_trader_reentries"> {
+	address: string;
+}
+
+export interface GetTraderPnlV3Params extends OperationQuery<"get_trader_pnl_v3"> {
+	address: string;
+}
+
+export interface GetTraderPnlV3CandlesParams extends OperationQuery<"get_trader_pnl_v3_candles"> {
+	address: string;
+}
+
+export interface GetTraderPnlV3ChangesParams {
+	address: string;
+}
+
+export interface GetTraderPnlV3PeriodsParams extends OperationQuery<"get_trader_pnl_v3_periods"> {
+	address: string;
+}
+
+export interface GetTraderPnlV3RiskParams extends OperationQuery<"get_trader_pnl_v3_risk"> {
+	address: string;
+}
+
+export interface GetTraderMarketPnlV3Params extends OperationQuery<"get_trader_market_pnl_v3"> {
+	address: string;
+}
+
+export interface GetTraderEventPnlV3Params extends OperationQuery<"get_trader_event_pnl_v3"> {
+	address: string;
+}
+
+export interface GetTraderCategoryPnlV3Params extends OperationQuery<"get_trader_category_pnl_v3"> {
+	address: string;
+}
+
+export interface GetTraderPositionPnlV3Params extends OperationQuery<"get_trader_position_pnl_v3"> {
+	address: string;
+}
+
+export interface GetGlobalPnlV3Params extends OperationQuery<"get_global_pnl_v3"> {}
+
+export interface GetTopTradesMarketsV3Params extends OperationQuery<"get_top_trades_markets_v3"> {}
+
+export interface GetTraderWhitelistV3Params {}
+
+export interface GetEventTopTradersV3Params extends OperationQuery<"get_event_top_traders_v3"> {}
+
+export interface GetMarketTopTradersV3Params extends OperationQuery<"get_market_top_traders_v3"> {}
+
+export interface GetPositionTopTradersV3Params extends OperationQuery<"get_position_top_traders_v3"> {}
+
+export interface GetCategoryTopTradersV3Params extends OperationQuery<"get_category_top_traders_v3"> {}
+
 export type WebhookResponse = WebhookSchemas["WebhookResponse"];
 export type WebhookListResponseBody = WebhookSchemas["WebhookListResponseBody"];
 export type WebhookTestResponseBody = WebhookSchemas["WebhookTestResponseBody"];

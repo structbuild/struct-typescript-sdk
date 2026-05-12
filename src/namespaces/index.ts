@@ -11,4 +11,5 @@ export { BuildersNamespace } from "./builders.js";
 export { SearchNamespace } from "./search.js";
 export { OrderBookNamespace } from "./orderBook.js";
 export { AnalyticsNamespace } from "./analytics.js";
+export { SmartMoneyNamespace } from "./smartMoney.js";
 export { WebhooksNamespace } from "./webhooks.js";

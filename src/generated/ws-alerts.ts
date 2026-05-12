@@ -310,6 +310,16 @@ export interface components {
             unique_traders?: number | null;
             /**
              * Format: int64
+             * @description Number of unique makers
+             */
+            unique_makers?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique takers
+             */
+            unique_takers?: number | null;
+            /**
+             * Format: int64
              * @description Number of unique builder-attributed traders
              */
             unique_builder_traders?: number | null;
@@ -456,6 +466,16 @@ export interface components {
              * @description Number of unique traders
              */
             unique_traders?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique makers
+             */
+            unique_makers?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique takers
+             */
+            unique_takers?: number | null;
             /**
              * Format: int64
              * @description Number of unique builder-attributed traders
@@ -1483,6 +1503,10 @@ export interface components {
             /** Format: int64 */
             unique_traders?: number | null;
             /** Format: int64 */
+            unique_makers?: number | null;
+            /** Format: int64 */
+            unique_takers?: number | null;
+            /** Format: int64 */
             unique_builder_traders?: number | null;
             /** Format: double */
             price_open?: number | null;
@@ -2139,6 +2163,16 @@ export interface components {
              * @description Number of unique traders
              */
             unique_traders?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique makers
+             */
+            unique_makers?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique takers
+             */
+            unique_takers?: number | null;
             /**
              * Format: int64
              * @description Number of unique builder-attributed traders
@@ -3893,6 +3927,8 @@ export interface components {
          *         "txns": 320,
          *         "builder_txns": 80,
          *         "unique_traders": 85,
+         *         "unique_makers": 60,
+         *         "unique_takers": 48,
          *         "unique_builder_traders": 24
          *       }
          *     }
@@ -3951,6 +3987,8 @@ export interface components {
          *         "txns": 740,
          *         "builder_txns": 185,
          *         "unique_traders": 210,
+         *         "unique_makers": 132,
+         *         "unique_takers": 98,
          *         "unique_builder_traders": 54
          *       }
          *     }
@@ -4009,6 +4047,8 @@ export interface components {
          *         "txns": 740,
          *         "builder_txns": 185,
          *         "unique_traders": 210,
+         *         "unique_makers": 132,
+         *         "unique_takers": 98,
          *         "unique_builder_traders": 54
          *       }
          *     }
@@ -4081,6 +4121,8 @@ export interface components {
          *         "builder_buys": 24,
          *         "builder_sells": 16,
          *         "unique_traders": 48,
+         *         "unique_makers": 32,
+         *         "unique_takers": 24,
          *         "unique_builder_traders": 12,
          *         "price_open": 0.48,
          *         "price_close": 0.52,

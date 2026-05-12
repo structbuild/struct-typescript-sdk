@@ -5,6 +5,8 @@ import type {
 	Tag,
 	GetTagsParams,
 	GetTagParams,
+	GetCategoryTopTradersV3Params,
+	CategoryEntry,
 } from "../types/index.js";
 
 export class TagsNamespace extends Namespace {
@@ -14,5 +16,9 @@ export class TagsNamespace extends Namespace {
 
 	async getTag(params: GetTagParams, venue?: Venue): Promise<HttpResponse<Tag>> {
 		return this.get<Tag>(venue, `/tags/${encodePathParam(params.identifier)}`);
+	}
+
+	async getCategoryTopTradersV3(params?: GetCategoryTopTradersV3Params, venue?: Venue): Promise<HttpResponse<CategoryEntry[]>> {
+		return this.get<CategoryEntry[]>(venue, "/tags/top-traders-v3", { params: { ...params } });
 	}
 }

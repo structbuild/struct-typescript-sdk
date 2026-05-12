@@ -929,6 +929,16 @@ export interface components {
             unique_traders?: number | null;
             /**
              * Format: int64
+             * @description Number of unique makers
+             */
+            unique_makers?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique takers
+             */
+            unique_takers?: number | null;
+            /**
+             * Format: int64
              * @description Number of unique builder-attributed traders
              */
             unique_builder_traders?: number | null;
@@ -1075,6 +1085,16 @@ export interface components {
              * @description Number of unique traders
              */
             unique_traders?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique makers
+             */
+            unique_makers?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique takers
+             */
+            unique_takers?: number | null;
             /**
              * Format: int64
              * @description Number of unique builder-attributed traders
@@ -2102,6 +2122,10 @@ export interface components {
             /** Format: int64 */
             unique_traders?: number | null;
             /** Format: int64 */
+            unique_makers?: number | null;
+            /** Format: int64 */
+            unique_takers?: number | null;
+            /** Format: int64 */
             unique_builder_traders?: number | null;
             /** Format: double */
             price_open?: number | null;
@@ -2758,6 +2782,16 @@ export interface components {
              * @description Number of unique traders
              */
             unique_traders?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique makers
+             */
+            unique_makers?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique takers
+             */
+            unique_takers?: number | null;
             /**
              * Format: int64
              * @description Number of unique builder-attributed traders
