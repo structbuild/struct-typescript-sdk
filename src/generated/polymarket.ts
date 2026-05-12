@@ -3273,6 +3273,7 @@ export interface components {
         CandlestickResolution: "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D";
         CategoryEntry: {
             category?: string | null;
+            trader?: null | components["schemas"]["TraderProfile"];
             /** Format: double */
             current_pnl: number;
             /** Format: double */
@@ -3692,6 +3693,7 @@ export interface components {
         };
         EventEntry: {
             event_slug?: string | null;
+            trader?: null | components["schemas"]["TraderProfile"];
             /** Format: double */
             current_pnl: number;
             /** Format: double */
@@ -4056,7 +4058,7 @@ export interface components {
             positions: number;
         };
         GlobalEntry: {
-            trader: string;
+            trader: components["schemas"]["TraderProfile"];
             /** Format: double */
             current_pnl: number;
             /** Format: double */
@@ -4387,7 +4389,11 @@ export interface components {
         MarketEntry: {
             condition_id?: string | null;
             event_slug?: string | null;
-            trader?: string | null;
+            market_slug?: string | null;
+            title?: string | null;
+            image_url?: string | null;
+            question?: string | null;
+            trader?: null | components["schemas"]["TraderProfile"];
             /** Format: double */
             current_pnl: number;
             /** Format: double */
@@ -5499,7 +5505,9 @@ export interface components {
             market_slug?: string | null;
             event_slug?: string | null;
             title?: string | null;
+            question?: string | null;
             image_url?: string | null;
+            trader?: null | components["schemas"]["TraderProfile"];
             outcome?: string | null;
             /** Format: int32 */
             outcome_index?: number | null;
@@ -7331,6 +7339,14 @@ export interface components {
         };
         /** @enum {string} */
         TraderPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "events_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "total_credit_count" | "total_credit_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "last_block";
+        TraderProfile: {
+            address: string;
+            name?: string | null;
+            pseudonym?: string | null;
+            profile_image?: string | null;
+            x_username?: string | null;
+            verified_badge: boolean;
+        };
         /**
          * @description Bucket row returned by the per-trader `/analytics/timeseries` and
          *     `/analytics/deltas` endpoints. Mirrors `TimeBucketRow` minus the
@@ -8530,7 +8546,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
                 limit?: number;
-                /** @description Max 10000. Takes precedence over pagination_key. */
+                /** @description Max 2500. Takes precedence over pagination_key. */
                 offset?: number;
                 /** @description Cursor from a previous response */
                 pagination_key?: string;
@@ -9229,7 +9245,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
                 limit?: number;
-                /** @description Max 10000. Takes precedence over pagination_key. */
+                /** @description Max 2500. Takes precedence over pagination_key. */
                 offset?: number;
                 /** @description Cursor from a previous response */
                 pagination_key?: string;
@@ -9427,7 +9443,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
                 limit?: number;
-                /** @description Max 10000. Takes precedence over pagination_key. */
+                /** @description Max 2500. Takes precedence over pagination_key. */
                 offset?: number;
                 /** @description Cursor from a previous response */
                 pagination_key?: string;
@@ -10358,7 +10374,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
                 limit?: number;
-                /** @description Max 10000. Takes precedence over pagination_key. */
+                /** @description Max 2500. Takes precedence over pagination_key. */
                 offset?: number;
                 /** @description Cursor from a previous response */
                 pagination_key?: string;
@@ -10922,7 +10938,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 500 */
                 limit?: number;
-                /** @description Max 10000. Takes precedence over pagination_key. */
+                /** @description Max 2500. Takes precedence over pagination_key. */
                 offset?: number;
                 /** @description Cursor from a previous response */
                 pagination_key?: string;
@@ -10990,7 +11006,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 500 */
                 limit?: number;
-                /** @description Max 10000. Takes precedence over pagination_key. */
+                /** @description Max 2500. Takes precedence over pagination_key. */
                 offset?: number;
                 /** @description Cursor from a previous response */
                 pagination_key?: string;
@@ -11035,7 +11051,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 500 */
                 limit?: number;
-                /** @description Max 10000. Takes precedence over pagination_key. */
+                /** @description Max 2500. Takes precedence over pagination_key. */
                 offset?: number;
                 /** @description Cursor from a previous response */
                 pagination_key?: string;
@@ -11242,7 +11258,7 @@ export interface operations {
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
                 limit?: number;
-                /** @description Max 10000. Takes precedence over pagination_key. */
+                /** @description Max 2500. Takes precedence over pagination_key. */
                 offset?: number;
                 /** @description Cursor from a previous response */
                 pagination_key?: string;

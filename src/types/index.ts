@@ -577,6 +577,7 @@ export type SignedSafeTx = Schemas["SignedSafeTx"];
 export type TradingErrorEnvelope = Schemas["TradingErrorEnvelope"];
 export type WalletDetection = Schemas["WalletDetection"];
 
+export type TraderProfile = Schemas["TraderProfile"];
 export type CategoryEntry = Schemas["CategoryEntry"];
 export type EventEntry = Schemas["EventEntry"];
 export type GlobalEntry = Schemas["GlobalEntry"];
