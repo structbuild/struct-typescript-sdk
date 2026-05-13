@@ -3,7 +3,7 @@
   "info": {
     "title": "Polymarket WebSocket Streams API",
     "version": "1.0.0",
-    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_tag_metrics` (Tag Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n| `polymarket_oracle_events` (Oracle Events) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
+    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_tag_metrics` (Tag Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_pnl_v3` (Trader PnL v3) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_trader_positions_v3` (Trader Positions v3) | 0.005 |\n| `polymarket_trader_position_resolved_v3` (Trader Position Resolved v3) | 0.025 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n| `polymarket_oracle_events` (Oracle Events) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
   },
   "servers": {
     "production": {
@@ -318,6 +318,32 @@
         }
       }
     },
+    "polymarket_trader_pnl_v3": {
+      "address": "polymarket_trader_pnl_v3",
+      "title": "Trader PnL v3",
+      "summary": "Trader PnL stream (v3)",
+      "description": "Real-time profit-and-loss updates for tracked traders. PnL is computed at four granularities — `global` (whole portfolio), `market` (per condition), `event` (per event), `category` (per market category) — and each granularity is maintained over four rolling windows: `1d`, `7d`, `30d`, `lifetime`. The stream emits **one event per (granularity, timeframe) slice** whenever that slice changes; every event carries a `timeframe` field identifying which window it belongs to.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filters:**\n• `update_types` — subset of `[\"global\", \"market\", \"event\", \"category\"]`. Omit or leave empty to receive all four update types.\n• `timeframes` — subset of `[\"1d\", \"7d\", \"30d\", \"lifetime\"]`. Omit or leave empty to receive all timeframes.\n\nAny unknown value in `update_types` or `timeframes` rejects the entire subscription with an `error` message (values are case-insensitive and trimmed).\n\n**Events pushed:** `trader_global_pnl_update_v3`, `trader_market_pnl_update_v3`, `trader_event_pnl_update_v3`, `trader_category_pnl_update_v3`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/TraderPnlV3Subscribe"
+        },
+        "subscribeResponse": {
+          "$ref": "#/components/messages/TraderPnlV3SubscribeResponse"
+        },
+        "traderGlobalPnlV3Event": {
+          "$ref": "#/components/messages/TraderGlobalPnlV3Event"
+        },
+        "traderMarketPnlV3Event": {
+          "$ref": "#/components/messages/TraderMarketPnlV3Event"
+        },
+        "traderEventPnlV3Event": {
+          "$ref": "#/components/messages/TraderEventPnlV3Event"
+        },
+        "traderCategoryPnlV3Event": {
+          "$ref": "#/components/messages/TraderCategoryPnlV3Event"
+        }
+      }
+    },
     "polymarket_trader_positions": {
       "address": "polymarket_trader_positions",
       "title": "Trader Positions",
@@ -332,6 +358,43 @@
         },
         "traderPositionUpdateEvent": {
           "$ref": "#/components/messages/TraderPositionUpdateEvent"
+        }
+      }
+    },
+    "polymarket_trader_positions_v3": {
+      "address": "polymarket_trader_positions_v3",
+      "title": "Trader Positions v3",
+      "summary": "Trader position updates and resolutions stream (v3)",
+      "description": "Real-time position updates for tracked traders. Emits both long-running lifetime position snapshots (PnL changes) and one-shot resolution signals when a position resolves.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filters:**\n• `update_types` — subset of `[\"lifetime\", \"resolved\"]`. Omit or leave empty to receive both.\n\n**Events pushed:**\n• `trader_position_lifetime_update_v3` — full position snapshot, pushed whenever a position's PnL changes.\n• `trader_position_resolved_v3` — pushed once when a position resolves.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/TraderPositionsV3Subscribe"
+        },
+        "subscribeResponse": {
+          "$ref": "#/components/messages/TraderPositionsV3SubscribeResponse"
+        },
+        "traderPositionLifetimeUpdateV3Event": {
+          "$ref": "#/components/messages/TraderPositionLifetimeUpdateV3Event"
+        },
+        "traderPositionResolvedV3Event": {
+          "$ref": "#/components/messages/TraderPositionResolvedV3Event"
+        }
+      }
+    },
+    "polymarket_trader_position_resolved_v3": {
+      "address": "polymarket_trader_position_resolved_v3",
+      "title": "Trader Position Resolved v3",
+      "summary": "Trader position resolution stream (v3)",
+      "description": "Real-time one-shot signals emitted when a tracked trader's position resolves. Use this room when you only need the resolution event; for the full lifetime PnL stream see `polymarket_trader_positions_v3`.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Events pushed:** `trader_position_resolved_v3` — full position snapshot at resolution. Inspect `won` to see whether the outcome paid out.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/TraderPositionResolvedV3Subscribe"
+        },
+        "subscribeResponse": {
+          "$ref": "#/components/messages/TraderPositionResolvedV3SubscribeResponse"
+        },
+        "traderPositionResolvedV3OnlyEvent": {
+          "$ref": "#/components/messages/TraderPositionResolvedV3OnlyEvent"
         }
       }
     },
@@ -1281,6 +1344,42 @@
         }
       ]
     },
+    "subscribePolymarketTraderPnlV3": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_trader_pnl_v3"
+      },
+      "summary": "Subscribe to trader pnl stream (v3)",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketTraderPnlV3": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_trader_pnl_v3"
+      },
+      "summary": "Receive trader pnl stream (v3) events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/subscribeResponse"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderGlobalPnlV3Event"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderMarketPnlV3Event"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderEventPnlV3Event"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderCategoryPnlV3Event"
+        }
+      ]
+    },
     "subscribePolymarketTraderPositions": {
       "action": "send",
       "channel": {
@@ -1305,6 +1404,63 @@
         },
         {
           "$ref": "#/channels/polymarket_trader_positions/messages/traderPositionUpdateEvent"
+        }
+      ]
+    },
+    "subscribePolymarketTraderPositionsV3": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_trader_positions_v3"
+      },
+      "summary": "Subscribe to trader position updates and resolutions stream (v3)",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trader_positions_v3/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketTraderPositionsV3": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_trader_positions_v3"
+      },
+      "summary": "Receive trader position updates and resolutions stream (v3) events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trader_positions_v3/messages/subscribeResponse"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_positions_v3/messages/traderPositionLifetimeUpdateV3Event"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_positions_v3/messages/traderPositionResolvedV3Event"
+        }
+      ]
+    },
+    "subscribePolymarketTraderPositionResolvedV3": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_trader_position_resolved_v3"
+      },
+      "summary": "Subscribe to trader position resolution stream (v3)",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trader_position_resolved_v3/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketTraderPositionResolvedV3": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_trader_position_resolved_v3"
+      },
+      "summary": "Receive trader position resolution stream (v3) events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_trader_position_resolved_v3/messages/subscribeResponse"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_position_resolved_v3/messages/traderPositionResolvedV3OnlyEvent"
         }
       ]
     },
@@ -2812,6 +2968,49 @@
           }
         ]
       },
+      "TraderPnlV3Subscribe": {
+        "summary": "Subscribe to trader pnl stream (v3)",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPnlV3SubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "action": "subscribe"
+            }
+          }
+        ]
+      },
+      "TraderGlobalPnlV3Event": {
+        "summary": "global (portfolio-level) PnL update for a trader",
+        "payload": {
+          "$ref": "#/components/schemas/TraderGlobalPnlV3Event"
+        }
+      },
+      "TraderMarketPnlV3Event": {
+        "summary": "per-market PnL update for a trader",
+        "payload": {
+          "$ref": "#/components/schemas/TraderMarketPnlV3Event"
+        }
+      },
+      "TraderEventPnlV3Event": {
+        "summary": "per-event PnL update for a trader",
+        "payload": {
+          "$ref": "#/components/schemas/TraderEventPnlV3Event"
+        }
+      },
+      "TraderCategoryPnlV3Event": {
+        "summary": "per-category PnL update for a trader",
+        "payload": {
+          "$ref": "#/components/schemas/TraderCategoryPnlV3Event"
+        }
+      },
+      "TraderPnlV3SubscribeResponse": {
+        "summary": "Subscription acknowledgement for trader pnl stream (v3)",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPnlV3SubscribeResponse"
+        }
+      },
       "TraderPositionsSubscribe": {
         "summary": "Subscribe to trader position updates stream",
         "payload": {
@@ -2880,6 +3079,62 @@
             }
           }
         ]
+      },
+      "TraderPositionsV3Subscribe": {
+        "summary": "Subscribe to trader position updates and resolutions stream (v3)",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionsV3SubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "action": "subscribe"
+            }
+          }
+        ]
+      },
+      "TraderPositionLifetimeUpdateV3Event": {
+        "summary": "lifetime position snapshot for a tracked trader",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionLifetimeUpdateV3Event"
+        }
+      },
+      "TraderPositionResolvedV3Event": {
+        "summary": "a position has resolved",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionResolvedV3Event"
+        }
+      },
+      "TraderPositionsV3SubscribeResponse": {
+        "summary": "Subscription acknowledgement for trader position updates and resolutions stream (v3)",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionsV3SubscribeResponse"
+        }
+      },
+      "TraderPositionResolvedV3Subscribe": {
+        "summary": "Subscribe to trader position resolution stream (v3)",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionResolvedV3SubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "action": "subscribe"
+            }
+          }
+        ]
+      },
+      "TraderPositionResolvedV3OnlyEvent": {
+        "summary": "a position has resolved",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionResolvedV3OnlyEvent"
+        }
+      },
+      "TraderPositionResolvedV3SubscribeResponse": {
+        "summary": "Subscription acknowledgement for trader position resolution stream (v3)",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionResolvedV3SubscribeResponse"
+        }
       },
       "AccountsSubscribe": {
         "summary": "Subscribe to account balances stream",
@@ -14397,6 +14652,711 @@
           }
         }
       },
+      "TraderPnlV3SubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the trader PnL v3 stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes.",
+        "required": [
+          "action",
+          "traders"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "EVM wallet addresses",
+            "minItems": 1
+          },
+          "update_types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "global",
+                "market",
+                "event",
+                "category"
+              ]
+            },
+            "description": "Restrict pushed updates to this subset of PnL granularities. Empty/omitted = all four. Unknown values reject the subscription.",
+            "uniqueItems": true
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1d",
+                "7d",
+                "30d",
+                "lifetime"
+              ]
+            },
+            "description": "Restrict pushed updates to these aggregation timeframes. Empty/omitted = all four. Unknown values reject the subscription.",
+            "uniqueItems": true
+          }
+        }
+      },
+      "TraderPnlV3SubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a trader PnL v3 subscription. Echoes the accepted (normalized) filter sets so clients can confirm the active subscription.",
+        "properties": {
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "update_types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "global",
+                "market",
+                "event",
+                "category"
+              ]
+            },
+            "description": "Accepted update types. Empty = all."
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1d",
+                "7d",
+                "30d",
+                "lifetime"
+              ]
+            },
+            "description": "Accepted timeframes. Empty = all."
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Trader addresses that were rejected (invalid EVM format)."
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Set if the entire subscription was rejected (e.g. empty traders, or an invalid update_type / timeframe value)."
+          }
+        }
+      },
+      "TraderGlobalPnlV3Event": {
+        "type": "object",
+        "description": "Server-pushed event: global (portfolio-level) PnL update for a trader. Envelope type: \"trader_global_pnl_update_v3\".",
+        "required": [
+          "trader",
+          "current_pnl"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader EVM wallet address"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "current_pnl": {
+            "type": "number"
+          },
+          "pnl_1d": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "pnl_7d": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "pnl_30d": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "events_traded": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "markets_traded": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_volume_usd": {
+            "type": "number"
+          },
+          "buy_volume_usd": {
+            "type": "number"
+          },
+          "sell_volume_usd": {
+            "type": "number"
+          },
+          "redemption_volume_usd": {
+            "type": "number"
+          },
+          "merge_volume_usd": {
+            "type": "number"
+          },
+          "maker_rebate_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "maker_rebate_usd": {
+            "type": "number"
+          },
+          "reward_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "reward_usd": {
+            "type": "number"
+          },
+          "yield_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "yield_usd": {
+            "type": "number"
+          },
+          "total_credit_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_credit_usd": {
+            "type": "number"
+          },
+          "markets_won": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "markets_lost": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "market_win_rate_pct": {
+            "type": "number"
+          },
+          "total_wins_usd": {
+            "type": "number"
+          },
+          "total_losses_usd": {
+            "type": "number"
+          },
+          "avg_win_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "avg_loss_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "profit_factor": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "avg_hold_time_seconds": {
+            "type": "number"
+          },
+          "total_fees": {
+            "type": "number"
+          },
+          "best_market_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "best_market_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worst_market_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "worst_market_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          }
+        }
+      },
+      "TraderMarketPnlV3Event": {
+        "type": "object",
+        "description": "Server-pushed event: per-market PnL update for a trader. Envelope type: \"trader_market_pnl_update_v3\".",
+        "required": [
+          "trader",
+          "condition_id"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "condition_id": {
+            "type": "string",
+            "description": "64-char hex condition ID"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "unrealized_pnl_usd": {
+            "type": "number"
+          },
+          "current_shares_balance": {
+            "type": "number"
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcomes_traded": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "buy_usd": {
+            "type": "number"
+          },
+          "sell_usd": {
+            "type": "number"
+          },
+          "redemption_usd": {
+            "type": "number"
+          },
+          "merge_usd": {
+            "type": "number"
+          },
+          "total_fees": {
+            "type": "number"
+          },
+          "total_shares_bought": {
+            "type": "number"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          }
+        }
+      },
+      "TraderEventPnlV3Event": {
+        "type": "object",
+        "description": "Server-pushed event: per-event PnL update for a trader. Envelope type: \"trader_event_pnl_update_v3\".",
+        "required": [
+          "trader",
+          "event_slug"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "markets_traded": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "outcomes_traded": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_volume_usd": {
+            "type": "number"
+          },
+          "buy_usd": {
+            "type": "number"
+          },
+          "sell_usd": {
+            "type": "number"
+          },
+          "redemption_usd": {
+            "type": "number"
+          },
+          "merge_usd": {
+            "type": "number"
+          },
+          "total_fees": {
+            "type": "number"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "unrealized_pnl_usd": {
+            "type": "number"
+          },
+          "current_shares_balance": {
+            "type": "number"
+          },
+          "markets_won": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "markets_lost": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "market_win_rate_pct": {
+            "type": "number"
+          },
+          "total_wins_usd": {
+            "type": "number"
+          },
+          "total_losses_usd": {
+            "type": "number"
+          },
+          "avg_win_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "avg_loss_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "profit_factor": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "avg_hold_time_seconds": {
+            "type": "number"
+          },
+          "best_market_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "best_market_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worst_market_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "worst_market_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          }
+        }
+      },
+      "TraderCategoryPnlV3Event": {
+        "type": "object",
+        "description": "Server-pushed event: per-category PnL update for a trader. Envelope type: \"trader_category_pnl_update_v3\".",
+        "required": [
+          "trader",
+          "category"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "category": {
+            "type": "string"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "unrealized_pnl_usd": {
+            "type": "number"
+          },
+          "current_shares_balance": {
+            "type": "number"
+          },
+          "markets_in_category": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "markets_traded": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "outcomes_traded": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_volume_usd": {
+            "type": "number"
+          },
+          "buy_usd": {
+            "type": "number"
+          },
+          "sell_usd": {
+            "type": "number"
+          },
+          "redemption_usd": {
+            "type": "number"
+          },
+          "merge_usd": {
+            "type": "number"
+          },
+          "total_fees": {
+            "type": "number"
+          },
+          "total_shares_bought": {
+            "type": "number"
+          },
+          "markets_won": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "markets_lost": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "market_win_rate_pct": {
+            "type": "number"
+          },
+          "avg_hold_time_seconds": {
+            "type": "number"
+          },
+          "best_market_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "best_market_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worst_market_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "worst_market_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "total_wins_usd": {
+            "type": "number"
+          },
+          "total_losses_usd": {
+            "type": "number"
+          },
+          "avg_win_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "avg_loss_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "profit_factor": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          }
+        }
+      },
       "TraderPositionsSubscribeMessage": {
         "type": "object",
         "description": "Subscribe to the trader positions stream. traders is required and must be non-empty.",
@@ -14614,6 +15574,478 @@
               "null"
             ],
             "description": "Realized PnL as a percentage of cost basis"
+          }
+        }
+      },
+      "TraderPositionsV3SubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the trader positions v3 stream. `traders` is required and must be non-empty. `update_types` is an optional narrowing filter — empty/omitted = both.",
+        "required": [
+          "action",
+          "traders"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "EVM wallet addresses",
+            "minItems": 1
+          },
+          "update_types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "lifetime",
+                "resolved"
+              ]
+            },
+            "description": "Restrict pushed updates to this subset. Empty/omitted = both. Unknown values reject the subscription.",
+            "uniqueItems": true
+          }
+        }
+      },
+      "TraderPositionsV3SubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a trader positions v3 subscription.",
+        "properties": {
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "update_types": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "lifetime",
+                "resolved"
+              ]
+            },
+            "description": "Accepted update types. Empty = all."
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "TraderPositionLifetimeUpdateV3Event": {
+        "type": "object",
+        "description": "Server-pushed event: lifetime position snapshot for a tracked trader. Envelope type: \"trader_position_lifetime_update_v3\". Pushed whenever the position's PnL changes.",
+        "required": [
+          "trader",
+          "position_id"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader EVM wallet address"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "ERC-1155 token ID (decimal string)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "total_buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_splits": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "winning_outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "total_shares_bought": {
+            "type": "number"
+          },
+          "total_shares_sold": {
+            "type": "number"
+          },
+          "buy_usd": {
+            "type": "number"
+          },
+          "sell_usd": {
+            "type": "number"
+          },
+          "avg_entry_price": {
+            "type": "number",
+            "description": "Average entry price (0–1)"
+          },
+          "total_fees": {
+            "type": "number"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "redemption_usd": {
+            "type": "number"
+          },
+          "won": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "True if this outcome resolved as winner"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          }
+        }
+      },
+      "TraderPositionResolvedV3Event": {
+        "type": "object",
+        "description": "Server-pushed event: a position has resolved. Envelope type: \"trader_position_resolved_v3\". Pushed once per resolved position. Inspect `won` to see whether the outcome paid out.",
+        "required": [
+          "trader",
+          "position_id"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader EVM wallet address"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "ERC-1155 token ID (decimal string)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "total_buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_splits": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "winning_outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "total_shares_bought": {
+            "type": "number"
+          },
+          "total_shares_sold": {
+            "type": "number"
+          },
+          "buy_usd": {
+            "type": "number"
+          },
+          "sell_usd": {
+            "type": "number"
+          },
+          "avg_entry_price": {
+            "type": "number",
+            "description": "Average entry price (0–1)"
+          },
+          "total_fees": {
+            "type": "number"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "redemption_usd": {
+            "type": "number"
+          },
+          "won": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "True if this outcome resolved as winner"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          }
+        }
+      },
+      "TraderPositionResolvedV3SubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the trader position-resolved v3 stream. `traders` is required and must be non-empty.",
+        "required": [
+          "action",
+          "traders"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "EVM wallet addresses",
+            "minItems": 1
+          }
+        }
+      },
+      "TraderPositionResolvedV3SubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a trader position-resolved v3 subscription.",
+        "properties": {
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "TraderPositionResolvedV3OnlyEvent": {
+        "type": "object",
+        "description": "Server-pushed event: a position has resolved. Envelope type: \"trader_position_resolved_v3\". Pushed once per resolved position. Inspect `won` to see whether the outcome paid out.",
+        "required": [
+          "trader",
+          "position_id"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader EVM wallet address"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "ERC-1155 token ID (decimal string)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "total_buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_splits": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "winning_outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "total_shares_bought": {
+            "type": "number"
+          },
+          "total_shares_sold": {
+            "type": "number"
+          },
+          "buy_usd": {
+            "type": "number"
+          },
+          "sell_usd": {
+            "type": "number"
+          },
+          "avg_entry_price": {
+            "type": "number",
+            "description": "Average entry price (0–1)"
+          },
+          "total_fees": {
+            "type": "number"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "redemption_usd": {
+            "type": "number"
+          },
+          "won": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "True if this outcome resolved as winner"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
           }
         }
       },

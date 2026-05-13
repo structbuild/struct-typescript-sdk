@@ -3275,31 +3275,11 @@ export interface components {
             category?: string | null;
             trader?: null | components["schemas"]["TraderProfile"];
             /** Format: double */
-            current_pnl: number;
-            /** Format: double */
             realized_pnl_usd: number;
             /** Format: double */
             unrealized_pnl_usd: number;
             /** Format: double */
             current_shares_balance: number;
-            /** Format: double */
-            total_volume_usd: number;
-            /** Format: double */
-            buy_volume_usd: number;
-            /** Format: double */
-            sell_volume_usd: number;
-            /** Format: double */
-            redemption_volume_usd: number;
-            /** Format: double */
-            merge_volume_usd: number;
-            /** Format: double */
-            total_fees: number;
-            /** Format: int64 */
-            total_buys: number;
-            /** Format: int64 */
-            total_sells: number;
-            /** Format: double */
-            total_shares_bought: number;
             /** Format: int64 */
             markets_traded: number;
             /** Format: int64 */
@@ -3316,16 +3296,40 @@ export interface components {
             avg_loss_usd: number;
             /** Format: double */
             profit_factor: number;
+            /** Format: int64 */
+            total_buys: number;
+            /** Format: int64 */
+            total_sells: number;
+            /** Format: int64 */
+            total_redemptions: number;
+            /** Format: int64 */
+            total_merges: number;
+            /** Format: double */
+            total_volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /** Format: double */
+            redemption_volume_usd: number;
+            /** Format: double */
+            merge_volume_usd: number;
+            /** Format: double */
+            total_fees: number;
             /** Format: double */
             total_wins_usd: number;
             /** Format: double */
             total_losses_usd: number;
             /** Format: double */
-            best_market_pnl_usd?: number | null;
+            best_trade_pnl_usd?: number | null;
             /** Format: double */
-            worst_market_pnl_usd?: number | null;
+            worst_trade_pnl_usd?: number | null;
+            best_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
+            worst_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             /** Format: double */
             avg_hold_time_seconds: number;
+            /** Format: double */
+            total_shares_bought: number;
             /** Format: int64 */
             buy_count: number;
             /** Format: int64 */
@@ -3342,8 +3346,6 @@ export interface components {
             first_trade_at?: number | null;
             /** Format: int64 */
             last_trade_at?: number | null;
-            /** Format: int64 */
-            snapshot_ts?: number | null;
             /** Format: int64 */
             last_block: number;
         };
@@ -3697,8 +3699,6 @@ export interface components {
             image_url?: string | null;
             trader?: null | components["schemas"]["TraderProfile"];
             /** Format: double */
-            current_pnl: number;
-            /** Format: double */
             realized_pnl_usd: number;
             /** Format: double */
             unrealized_pnl_usd: number;
@@ -3707,19 +3707,23 @@ export interface components {
             /** Format: double */
             total_volume_usd: number;
             /** Format: double */
-            buy_volume_usd: number;
+            buy_usd: number;
             /** Format: double */
-            sell_volume_usd: number;
+            sell_usd: number;
             /** Format: double */
-            redemption_volume_usd: number;
+            redemption_usd: number;
             /** Format: double */
-            merge_volume_usd: number;
+            merge_usd: number;
             /** Format: double */
             total_fees: number;
             /** Format: int64 */
             total_buys: number;
             /** Format: int64 */
             total_sells: number;
+            /** Format: int64 */
+            total_redemptions: number;
+            /** Format: int64 */
+            total_merges: number;
             /** Format: double */
             total_shares_bought: number;
             /** Format: int64 */
@@ -3727,9 +3731,9 @@ export interface components {
             /** Format: int64 */
             markets_resolved: number;
             /** Format: int64 */
-            markets_won: number;
+            winning_markets: number;
             /** Format: int64 */
-            markets_lost: number;
+            losing_markets: number;
             /** Format: double */
             market_win_rate_pct: number;
             /** Format: double */
@@ -3746,6 +3750,8 @@ export interface components {
             best_market_pnl_usd?: number | null;
             /** Format: double */
             worst_market_pnl_usd?: number | null;
+            best_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
+            worst_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             /** Format: double */
             avg_hold_time_seconds: number;
             /** Format: int64 */
@@ -3764,8 +3770,6 @@ export interface components {
             first_trade_at?: number | null;
             /** Format: int64 */
             last_trade_at?: number | null;
-            /** Format: int64 */
-            snapshot_ts?: number | null;
             /** Format: int64 */
             last_block: number;
         };
@@ -4062,15 +4066,7 @@ export interface components {
         GlobalEntry: {
             trader: components["schemas"]["TraderProfile"];
             /** Format: double */
-            current_pnl: number;
-            /** Format: double */
             realized_pnl_usd: number;
-            /** Format: double */
-            pnl_1d?: number | null;
-            /** Format: double */
-            pnl_7d?: number | null;
-            /** Format: double */
-            pnl_30d?: number | null;
             /** Format: int64 */
             events_traded: number;
             /** Format: int64 */
@@ -4112,9 +4108,11 @@ export interface components {
             /** Format: double */
             total_losses_usd: number;
             /** Format: double */
-            best_market_pnl_usd?: number | null;
+            best_trade_pnl_usd?: number | null;
             /** Format: double */
-            worst_market_pnl_usd?: number | null;
+            worst_trade_pnl_usd?: number | null;
+            best_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
+            worst_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             /** Format: double */
             avg_hold_time_seconds: number;
             /** Format: int64 */
@@ -4133,10 +4131,6 @@ export interface components {
             yield_count: number;
             /** Format: double */
             yield_usd: number;
-            /** Format: int64 */
-            total_credit_count: number;
-            /** Format: double */
-            total_credit_usd: number;
         };
         GlobalPctChange: {
             /** Format: double */
@@ -5659,7 +5653,7 @@ export interface components {
         /** @enum {string} */
         PositionPnlSortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "title";
         /** @enum {string} */
-        PositionPnlV3SortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "current_price" | "last_traded_price" | "current_shares_balance" | "last_block" | "redeem_count" | "merge_count" | "split_count" | "title" | "end_date";
+        PositionPnlV3SortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "current_price" | "last_traded_price" | "current_shares_balance" | "last_block" | "redeem_count" | "merge_count" | "split_count" | "title" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
         /**
          * @description Position status filter for open/closed positions.
          * @enum {string}
@@ -7081,14 +7075,25 @@ export interface components {
             /** @enum {string} */
             trade_type: "RegisterToken";
         });
+        /**
+         * @description Gamma metadata for the market a trader's best / worst trade landed in.
+         *     Accompanies the existing flat `best_trade_pnl_usd` / `worst_trade_pnl_usd`
+         *     numerics on trader / event / category PnL summaries.
+         */
+        TradeMarketRef: {
+            condition_id?: string | null;
+            market_slug?: string | null;
+            title?: string | null;
+            question?: string | null;
+            image_url?: string | null;
+            event_slug?: string | null;
+        };
         /** @enum {string} */
         TradeSide: "0" | "1";
         /** @enum {string} */
         TradeType: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "22" | "23" | "24";
         /**
-         * @description Trader profile info embedded in API responses
-         *
-         *     Corresponds to SQL function: `pm_build_trader(address, name, pseudonym, profile_image, x_username, verified_badge)`
+         * @description Trader profile info embedded in API responses.
          *
          *     Used in:
          *     - holders endpoints (market/event holders)
@@ -7345,7 +7350,7 @@ export interface components {
             last_trade_at?: number | null;
         };
         /** @enum {string} */
-        TraderPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "events_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "total_credit_count" | "total_credit_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "last_block";
+        TraderPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "events_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "last_block";
         TraderProfile: {
             address: string;
             name?: string | null;

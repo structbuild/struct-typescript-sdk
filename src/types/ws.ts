@@ -27,7 +27,10 @@ export type WsRoomId =
 	| "polymarket_position_metrics"
 	| "polymarket_tag_metrics"
 	| "polymarket_trader_pnl"
+	| "polymarket_trader_pnl_v3"
 	| "polymarket_trader_positions"
+	| "polymarket_trader_positions_v3"
+	| "polymarket_trader_position_resolved_v3"
 	| "polymarket_accounts"
 	| "polymarket_order_book"
 	| "polymarket_clob_rewards"
@@ -52,9 +55,12 @@ export type EventMetricsSubscribeFilters = Omit<WsSchemas["EventMetricsSubscribe
 export type PositionMetricsSubscribeFilters = Omit<WsSchemas["PositionMetricsSubscribeMessage"], "action">;
 export type TagMetricsSubscribeFilters = Omit<WsSchemas["TagMetricsSubscribeMessage"], "action">;
 export type TraderPnlSubscribeFilters = Omit<WsSchemas["TraderPnlSubscribeMessage"], "action">;
+export type TraderPnlV3SubscribeFilters = Omit<WsSchemas["TraderPnlV3SubscribeMessage"], "action">;
 export type AccountsSubscribeFilters = Omit<WsSchemas["AccountsSubscribeMessage"], "action">;
 export type OrderBookSubscribeFilters = Omit<WsSchemas["OrderBookSubscribeMessage"], "action">;
 export type TraderPositionsSubscribeFilters = Omit<WsSchemas["TraderPositionsSubscribeMessage"], "action">;
+export type TraderPositionsV3SubscribeFilters = Omit<WsSchemas["TraderPositionsV3SubscribeMessage"], "action">;
+export type TraderPositionResolvedV3SubscribeFilters = Omit<WsSchemas["TraderPositionResolvedV3SubscribeMessage"], "action">;
 export type ClobRewardsSubscribeFilters = Omit<WsSchemas["ClobRewardsSubscribeMessage"], "action">;
 export type EventsStreamSubscribeFilters = Omit<WsSchemas["EventsStreamSubscribeMessage"], "action">;
 export type MarketsStreamSubscribeFilters = Omit<WsSchemas["MarketsStreamSubscribeMessage"], "action">;
@@ -75,6 +81,13 @@ export type TagMetricsEvent = WsSchemas["TagMetricsEvent"];
 export type TraderGlobalPnlEvent = WsSchemas["TraderGlobalPnlEvent"];
 export type TraderMarketPnlEvent = WsSchemas["TraderMarketPnlEvent"];
 export type TraderEventPnlEvent = WsSchemas["TraderEventPnlEvent"];
+export type TraderGlobalPnlV3Event = WsSchemas["TraderGlobalPnlV3Event"];
+export type TraderMarketPnlV3Event = WsSchemas["TraderMarketPnlV3Event"];
+export type TraderEventPnlV3Event = WsSchemas["TraderEventPnlV3Event"];
+export type TraderCategoryPnlV3Event = WsSchemas["TraderCategoryPnlV3Event"];
+export type TraderPositionLifetimeUpdateV3Event = WsSchemas["TraderPositionLifetimeUpdateV3Event"];
+export type TraderPositionResolvedV3Event = WsSchemas["TraderPositionResolvedV3Event"];
+export type TraderPositionResolvedV3OnlyEvent = WsSchemas["TraderPositionResolvedV3OnlyEvent"];
 export type AccountsUpdateEvent = WsSchemas["AccountsUpdateEvent"];
 export type UsdceUpdateEvent = WsSchemas["UsdceUpdateEvent"];
 export type MaticUpdateEvent = WsSchemas["MaticUpdateEvent"];
@@ -116,6 +129,9 @@ export type EventMetricsSubscribeResponse = WsSchemas["EventMetricsSubscribeResp
 export type PositionMetricsSubscribeResponse = WsSchemas["PositionMetricsSubscribeResponse"];
 export type TagMetricsSubscribeResponse = WsSchemas["TagMetricsSubscribeResponse"];
 export type TraderPnlSubscribeResponse = WsSchemas["TraderPnlSubscribeResponse"];
+export type TraderPnlV3SubscribeResponse = WsSchemas["TraderPnlV3SubscribeResponse"];
+export type TraderPositionsV3SubscribeResponse = WsSchemas["TraderPositionsV3SubscribeResponse"];
+export type TraderPositionResolvedV3SubscribeResponse = WsSchemas["TraderPositionResolvedV3SubscribeResponse"];
 export type AccountsSubscribeResponse = WsSchemas["AccountsSubscribeResponse"];
 export type OrderBookSubscribeResponse = WsSchemas["OrderBookSubscribeResponse"];
 
@@ -131,6 +147,12 @@ export interface WebSocketEventMap {
 	trader_global_pnl_update: TraderGlobalPnlEvent;
 	trader_market_pnl_update: TraderMarketPnlEvent;
 	trader_event_pnl_update: TraderEventPnlEvent;
+	trader_global_pnl_update_v3: TraderGlobalPnlV3Event;
+	trader_market_pnl_update_v3: TraderMarketPnlV3Event;
+	trader_event_pnl_update_v3: TraderEventPnlV3Event;
+	trader_category_pnl_update_v3: TraderCategoryPnlV3Event;
+	trader_position_lifetime_update_v3: TraderPositionLifetimeUpdateV3Event;
+	trader_position_resolved_v3: TraderPositionResolvedV3Event | TraderPositionResolvedV3OnlyEvent;
 	accounts_update: AccountsUpdateEvent;
 	usdce_update: UsdceUpdateEvent;
 	matic_update: MaticUpdateEvent;
@@ -159,7 +181,10 @@ export interface WsSubscriptionMap {
 	polymarket_position_metrics: PositionMetricsSubscribeFilters;
 	polymarket_tag_metrics: TagMetricsSubscribeFilters;
 	polymarket_trader_pnl: TraderPnlSubscribeFilters;
+	polymarket_trader_pnl_v3: TraderPnlV3SubscribeFilters;
 	polymarket_trader_positions: TraderPositionsSubscribeFilters;
+	polymarket_trader_positions_v3: TraderPositionsV3SubscribeFilters;
+	polymarket_trader_position_resolved_v3: TraderPositionResolvedV3SubscribeFilters;
 	polymarket_accounts: AccountsSubscribeFilters;
 	polymarket_order_book: OrderBookSubscribeFilters;
 	polymarket_clob_rewards: ClobRewardsSubscribeFilters;
@@ -177,7 +202,10 @@ export interface WsSubscribeResponseMap {
 	polymarket_position_metrics: PositionMetricsSubscribeResponse;
 	polymarket_tag_metrics: TagMetricsSubscribeResponse;
 	polymarket_trader_pnl: TraderPnlSubscribeResponse;
+	polymarket_trader_pnl_v3: TraderPnlV3SubscribeResponse;
 	polymarket_trader_positions: TraderPositionsSubscribeResponse;
+	polymarket_trader_positions_v3: TraderPositionsV3SubscribeResponse;
+	polymarket_trader_position_resolved_v3: TraderPositionResolvedV3SubscribeResponse;
 	polymarket_accounts: AccountsSubscribeResponse;
 	polymarket_order_book: OrderBookSubscribeResponse;
 	polymarket_clob_rewards: ClobRewardsSubscribeResponse;

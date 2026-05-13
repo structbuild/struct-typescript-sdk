@@ -3684,6 +3684,243 @@ export interface components {
             /** @description "1d", "7d", "30d", or "lifetime" */
             timeframe?: string | null;
         };
+        /** @description Subscribe to the trader PnL v3 stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. */
+        TraderPnlV3SubscribeMessage: {
+            /** @enum {string} */
+            action: "subscribe" | "unsubscribe_all";
+            /** @description EVM wallet addresses */
+            traders: string[];
+            /** @description Restrict pushed updates to this subset of PnL granularities. Empty/omitted = all four. Unknown values reject the subscription. */
+            update_types?: ("global" | "market" | "event" | "category")[];
+            /** @description Restrict pushed updates to these aggregation timeframes. Empty/omitted = all four. Unknown values reject the subscription. */
+            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
+        };
+        /** @description Server acknowledgement for a trader PnL v3 subscription. Echoes the accepted (normalized) filter sets so clients can confirm the active subscription. */
+        TraderPnlV3SubscribeResponse: {
+            traders?: string[];
+            /** @description Accepted update types. Empty = all. */
+            update_types?: ("global" | "market" | "event" | "category")[];
+            /** @description Accepted timeframes. Empty = all. */
+            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
+            /** @description Trader addresses that were rejected (invalid EVM format). */
+            rejected?: string[];
+            /** @description Set if the entire subscription was rejected (e.g. empty traders, or an invalid update_type / timeframe value). */
+            error?: string | null;
+        };
+        /** @description Server-pushed event: global (portfolio-level) PnL update for a trader. Envelope type: "trader_global_pnl_update_v3". */
+        TraderGlobalPnlV3Event: {
+            /** @description Trader EVM wallet address */
+            trader: string;
+            /** @description "1d", "7d", "30d", or "lifetime" */
+            timeframe?: string | null;
+            current_pnl: number;
+            pnl_1d?: number | null;
+            pnl_7d?: number | null;
+            pnl_30d?: number | null;
+            /** Format: int64 */
+            events_traded?: number;
+            /** Format: int64 */
+            markets_traded?: number;
+            /** Format: int64 */
+            total_buys?: number;
+            /** Format: int64 */
+            total_sells?: number;
+            /** Format: int64 */
+            total_redemptions?: number;
+            /** Format: int64 */
+            total_merges?: number;
+            total_volume_usd?: number;
+            buy_volume_usd?: number;
+            sell_volume_usd?: number;
+            redemption_volume_usd?: number;
+            merge_volume_usd?: number;
+            /** Format: int64 */
+            maker_rebate_count?: number;
+            maker_rebate_usd?: number;
+            /** Format: int64 */
+            reward_count?: number;
+            reward_usd?: number;
+            /** Format: int64 */
+            yield_count?: number;
+            yield_usd?: number;
+            /** Format: int64 */
+            total_credit_count?: number;
+            total_credit_usd?: number;
+            /** Format: int64 */
+            markets_won?: number;
+            /** Format: int64 */
+            markets_lost?: number;
+            market_win_rate_pct?: number;
+            total_wins_usd?: number;
+            total_losses_usd?: number;
+            avg_win_usd?: number | null;
+            avg_loss_usd?: number | null;
+            profit_factor?: number | null;
+            avg_hold_time_seconds?: number;
+            total_fees?: number;
+            best_market_pnl_usd?: number | null;
+            best_market_condition_id?: string | null;
+            worst_market_pnl_usd?: number | null;
+            worst_market_condition_id?: string | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            first_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            last_trade_at?: number | null;
+        };
+        /** @description Server-pushed event: per-market PnL update for a trader. Envelope type: "trader_market_pnl_update_v3". */
+        TraderMarketPnlV3Event: {
+            trader: string;
+            /** @description "1d", "7d", "30d", or "lifetime" */
+            timeframe?: string | null;
+            /** @description 64-char hex condition ID */
+            condition_id: string;
+            realized_pnl_usd?: number;
+            unrealized_pnl_usd?: number;
+            current_shares_balance?: number;
+            category?: string | null;
+            event_slug?: string | null;
+            /** Format: int64 */
+            outcomes_traded?: number;
+            /** Format: int64 */
+            total_buys?: number;
+            /** Format: int64 */
+            total_sells?: number;
+            /** Format: int64 */
+            total_redemptions?: number;
+            /** Format: int64 */
+            total_merges?: number;
+            buy_usd?: number;
+            sell_usd?: number;
+            redemption_usd?: number;
+            merge_usd?: number;
+            total_fees?: number;
+            total_shares_bought?: number;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            first_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            last_trade_at?: number | null;
+        };
+        /** @description Server-pushed event: per-event PnL update for a trader. Envelope type: "trader_event_pnl_update_v3". */
+        TraderEventPnlV3Event: {
+            trader: string;
+            /** @description "1d", "7d", "30d", or "lifetime" */
+            timeframe?: string | null;
+            event_slug: string;
+            /** Format: int64 */
+            markets_traded?: number;
+            /** Format: int64 */
+            outcomes_traded?: number;
+            /** Format: int64 */
+            total_buys?: number;
+            /** Format: int64 */
+            total_sells?: number;
+            /** Format: int64 */
+            total_redemptions?: number;
+            /** Format: int64 */
+            total_merges?: number;
+            total_volume_usd?: number;
+            buy_usd?: number;
+            sell_usd?: number;
+            redemption_usd?: number;
+            merge_usd?: number;
+            total_fees?: number;
+            realized_pnl_usd?: number;
+            unrealized_pnl_usd?: number;
+            current_shares_balance?: number;
+            /** Format: int64 */
+            markets_won?: number;
+            /** Format: int64 */
+            markets_lost?: number;
+            market_win_rate_pct?: number;
+            total_wins_usd?: number;
+            total_losses_usd?: number;
+            avg_win_usd?: number | null;
+            avg_loss_usd?: number | null;
+            profit_factor?: number | null;
+            avg_hold_time_seconds?: number;
+            best_market_pnl_usd?: number | null;
+            best_market_condition_id?: string | null;
+            worst_market_pnl_usd?: number | null;
+            worst_market_condition_id?: string | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            first_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            last_trade_at?: number | null;
+        };
+        /** @description Server-pushed event: per-category PnL update for a trader. Envelope type: "trader_category_pnl_update_v3". */
+        TraderCategoryPnlV3Event: {
+            trader: string;
+            /** @description "1d", "7d", "30d", or "lifetime" */
+            timeframe?: string | null;
+            category: string;
+            realized_pnl_usd?: number;
+            unrealized_pnl_usd?: number;
+            current_shares_balance?: number;
+            /** Format: int64 */
+            markets_in_category?: number;
+            /** Format: int64 */
+            markets_traded?: number;
+            /** Format: int64 */
+            outcomes_traded?: number;
+            /** Format: int64 */
+            total_buys?: number;
+            /** Format: int64 */
+            total_sells?: number;
+            /** Format: int64 */
+            total_redemptions?: number;
+            /** Format: int64 */
+            total_merges?: number;
+            total_volume_usd?: number;
+            buy_usd?: number;
+            sell_usd?: number;
+            redemption_usd?: number;
+            merge_usd?: number;
+            total_fees?: number;
+            total_shares_bought?: number;
+            /** Format: int64 */
+            markets_won?: number;
+            /** Format: int64 */
+            markets_lost?: number;
+            market_win_rate_pct?: number;
+            avg_hold_time_seconds?: number;
+            best_market_pnl_usd?: number | null;
+            best_market_condition_id?: string | null;
+            worst_market_pnl_usd?: number | null;
+            worst_market_condition_id?: string | null;
+            total_wins_usd?: number;
+            total_losses_usd?: number;
+            avg_win_usd?: number | null;
+            avg_loss_usd?: number | null;
+            profit_factor?: number | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            first_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            last_trade_at?: number | null;
+        };
         /** @description Subscribe to the trader positions stream. traders is required and must be non-empty. */
         TraderPositionsSubscribeMessage: {
             /** @enum {string} */
@@ -3743,6 +3980,168 @@ export interface components {
             current_shares_balance?: number | null;
             /** @description Realized PnL as a percentage of cost basis */
             realized_pnl_pct?: number | null;
+        };
+        /** @description Subscribe to the trader positions v3 stream. `traders` is required and must be non-empty. `update_types` is an optional narrowing filter — empty/omitted = both. */
+        TraderPositionsV3SubscribeMessage: {
+            /** @enum {string} */
+            action: "subscribe" | "unsubscribe_all";
+            /** @description EVM wallet addresses */
+            traders: string[];
+            /** @description Restrict pushed updates to this subset. Empty/omitted = both. Unknown values reject the subscription. */
+            update_types?: ("lifetime" | "resolved")[];
+        };
+        /** @description Server acknowledgement for a trader positions v3 subscription. */
+        TraderPositionsV3SubscribeResponse: {
+            traders?: string[];
+            /** @description Accepted update types. Empty = all. */
+            update_types?: ("lifetime" | "resolved")[];
+            rejected?: string[];
+            error?: string | null;
+        };
+        /** @description Server-pushed event: lifetime position snapshot for a tracked trader. Envelope type: "trader_position_lifetime_update_v3". Pushed whenever the position's PnL changes. */
+        TraderPositionLifetimeUpdateV3Event: {
+            /** @description Trader EVM wallet address */
+            trader: string;
+            /** @description ERC-1155 token ID (decimal string) */
+            position_id: string;
+            condition_id?: string | null;
+            event_slug?: string | null;
+            /** @description Outcome name (e.g. "Yes") */
+            outcome?: string | null;
+            outcome_index?: number | null;
+            /** Format: int64 */
+            total_buys?: number;
+            /** Format: int64 */
+            total_sells?: number;
+            /** Format: int64 */
+            total_redemptions?: number;
+            /** Format: int64 */
+            total_merges?: number;
+            /** Format: int64 */
+            total_splits?: number;
+            winning_outcome_index?: number | null;
+            total_shares_bought?: number;
+            total_shares_sold?: number;
+            buy_usd?: number;
+            sell_usd?: number;
+            /** @description Average entry price (0–1) */
+            avg_entry_price?: number;
+            total_fees?: number;
+            realized_pnl_usd?: number;
+            redemption_usd?: number;
+            /** @description True if this outcome resolved as winner */
+            won?: boolean | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            first_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            last_trade_at?: number | null;
+        };
+        /** @description Server-pushed event: a position has resolved. Envelope type: "trader_position_resolved_v3". Pushed once per resolved position. Inspect `won` to see whether the outcome paid out. */
+        TraderPositionResolvedV3Event: {
+            /** @description Trader EVM wallet address */
+            trader: string;
+            /** @description ERC-1155 token ID (decimal string) */
+            position_id: string;
+            condition_id?: string | null;
+            event_slug?: string | null;
+            /** @description Outcome name (e.g. "Yes") */
+            outcome?: string | null;
+            outcome_index?: number | null;
+            /** Format: int64 */
+            total_buys?: number;
+            /** Format: int64 */
+            total_sells?: number;
+            /** Format: int64 */
+            total_redemptions?: number;
+            /** Format: int64 */
+            total_merges?: number;
+            /** Format: int64 */
+            total_splits?: number;
+            winning_outcome_index?: number | null;
+            total_shares_bought?: number;
+            total_shares_sold?: number;
+            buy_usd?: number;
+            sell_usd?: number;
+            /** @description Average entry price (0–1) */
+            avg_entry_price?: number;
+            total_fees?: number;
+            realized_pnl_usd?: number;
+            redemption_usd?: number;
+            /** @description True if this outcome resolved as winner */
+            won?: boolean | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            first_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            last_trade_at?: number | null;
+        };
+        /** @description Subscribe to the trader position-resolved v3 stream. `traders` is required and must be non-empty. */
+        TraderPositionResolvedV3SubscribeMessage: {
+            /** @enum {string} */
+            action: "subscribe" | "unsubscribe_all";
+            /** @description EVM wallet addresses */
+            traders: string[];
+        };
+        /** @description Server acknowledgement for a trader position-resolved v3 subscription. */
+        TraderPositionResolvedV3SubscribeResponse: {
+            traders?: string[];
+            rejected?: string[];
+            error?: string | null;
+        };
+        /** @description Server-pushed event: a position has resolved. Envelope type: "trader_position_resolved_v3". Pushed once per resolved position. Inspect `won` to see whether the outcome paid out. */
+        TraderPositionResolvedV3OnlyEvent: {
+            /** @description Trader EVM wallet address */
+            trader: string;
+            /** @description ERC-1155 token ID (decimal string) */
+            position_id: string;
+            condition_id?: string | null;
+            event_slug?: string | null;
+            /** @description Outcome name (e.g. "Yes") */
+            outcome?: string | null;
+            outcome_index?: number | null;
+            /** Format: int64 */
+            total_buys?: number;
+            /** Format: int64 */
+            total_sells?: number;
+            /** Format: int64 */
+            total_redemptions?: number;
+            /** Format: int64 */
+            total_merges?: number;
+            /** Format: int64 */
+            total_splits?: number;
+            winning_outcome_index?: number | null;
+            total_shares_bought?: number;
+            total_shares_sold?: number;
+            buy_usd?: number;
+            sell_usd?: number;
+            /** @description Average entry price (0–1) */
+            avg_entry_price?: number;
+            total_fees?: number;
+            realized_pnl_usd?: number;
+            redemption_usd?: number;
+            /** @description True if this outcome resolved as winner */
+            won?: boolean | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            first_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            last_trade_at?: number | null;
         };
         /** @description Subscribe to the accounts stream. `wallets` is required. Share balance updates (`accounts_update`) are always delivered. Set `include_usdce`, `include_pusd`, or `include_matic` to also receive those balance streams. */
         AccountsSubscribeMessage: {

@@ -578,6 +578,7 @@ export type TradingErrorEnvelope = Schemas["TradingErrorEnvelope"];
 export type WalletDetection = Schemas["WalletDetection"];
 
 export type TraderProfile = Schemas["TraderProfile"];
+export type TradeMarketRef = Schemas["TradeMarketRef"];
 export type CategoryEntry = Schemas["CategoryEntry"];
 export type EventEntry = Schemas["EventEntry"];
 export type GlobalEntry = Schemas["GlobalEntry"];
@@ -849,11 +850,19 @@ export type {
 	PositionMetricsSubscribeFilters,
 	TagMetricsSubscribeFilters,
 	TraderPnlSubscribeFilters,
+	TraderPnlV3SubscribeFilters,
 	AccountsSubscribeFilters,
 	OrderBookSubscribeFilters,
 	TraderPositionsSubscribeFilters,
+	TraderPositionsV3SubscribeFilters,
+	TraderPositionResolvedV3SubscribeFilters,
 	TraderPositionsSubscribeResponse,
+	TraderPositionsV3SubscribeResponse,
+	TraderPositionResolvedV3SubscribeResponse,
 	TraderPositionUpdateEvent,
+	TraderPositionLifetimeUpdateV3Event,
+	TraderPositionResolvedV3Event,
+	TraderPositionResolvedV3OnlyEvent,
 	ClobRewardsSubscribeFilters,
 	ClobRewardsUpdateEvent,
 	ClobRewardsSubscribeResponse,
@@ -887,6 +896,10 @@ export type {
 	TraderGlobalPnlEvent,
 	TraderMarketPnlEvent,
 	TraderEventPnlEvent,
+	TraderGlobalPnlV3Event,
+	TraderMarketPnlV3Event,
+	TraderEventPnlV3Event,
+	TraderCategoryPnlV3Event,
 	AccountsUpdateEvent,
 	UsdceUpdateEvent,
 	MaticUpdateEvent,
@@ -901,6 +914,7 @@ export type {
 	PositionMetricsSubscribeResponse,
 	TagMetricsSubscribeResponse,
 	TraderPnlSubscribeResponse,
+	TraderPnlV3SubscribeResponse,
 	AccountsSubscribeResponse,
 	OrderBookSubscribeResponse,
 	TradeOrderFilledEvent,
