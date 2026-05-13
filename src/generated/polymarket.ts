@@ -3885,7 +3885,7 @@ export interface components {
             avg_trade_shares: number;
         };
         /** @enum {string} */
-        EventOrCategoryPnlV3SortBy: "realized_pnl_usd" | "unrealized_pnl" | "total_market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_market_pnl_usd" | "worst_market_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block";
+        EventOrCategoryPnlV3SortBy: "realized_pnl_usd" | "unrealized_pnl" | "total_market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_market_pnl_usd" | "worst_market_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block" | "open_position_count";
         /** @enum {string} */
         EventPnlSortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "total_fees" | "realized_pnl_pct";
         /** @enum {string} */
@@ -4510,7 +4510,7 @@ export interface components {
         /** @enum {string} */
         MarketPnlSortBy: "realized_pnl_usd" | "buy_usd" | "total_buys" | "total_fees" | "outcomes_traded" | "realized_pnl_pct";
         /** @enum {string} */
-        MarketPnlV3SortBy: "realized_pnl_usd" | "unrealized_pnl" | "market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block";
+        MarketPnlV3SortBy: "realized_pnl_usd" | "unrealized_pnl" | "market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block" | "open_position_count";
         /** @description Formatted market response with structured metrics, tags, outcomes, and event */
         MarketResponse: {
             condition_id: string;
@@ -5522,6 +5522,13 @@ export interface components {
             total_sell_usd?: number | null;
             /** Format: double */
             redemption_usd?: number | null;
+            /**
+             * Format: double
+             * @description Merge proceeds (Y+N → collateral). Tracked separately from
+             *     `total_sell_usd` so the API can surface true trade-sell volume.
+             *     Realized PnL = trade sells + redemption + merge − buys − fees.
+             */
+            merge_usd?: number | null;
             /** Format: double */
             avg_entry_price?: number | null;
             /** Format: double */
@@ -7350,7 +7357,7 @@ export interface components {
             last_trade_at?: number | null;
         };
         /** @enum {string} */
-        TraderPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "events_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "last_block";
+        TraderPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "events_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "last_block" | "unrealized_pnl" | "open_position_count";
         TraderProfile: {
             address: string;
             name?: string | null;
