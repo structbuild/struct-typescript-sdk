@@ -3693,6 +3693,8 @@ export interface components {
         };
         EventEntry: {
             event_slug?: string | null;
+            title?: string | null;
+            image_url?: string | null;
             trader?: null | components["schemas"]["TraderProfile"];
             /** Format: double */
             current_pnl: number;
@@ -5548,6 +5550,11 @@ export interface components {
             current_value?: number | null;
             /** Format: double */
             realized_pnl_pct?: number | null;
+            /** Format: int64 */
+            end_date?: number | null;
+            is_neg_risk?: boolean | null;
+            redeemable?: boolean | null;
+            mergeable?: boolean | null;
         };
         /** @description Response for position (position_id) holders endpoint */
         PositionHoldersResponse: {
@@ -5652,7 +5659,7 @@ export interface components {
         /** @enum {string} */
         PositionPnlSortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "title";
         /** @enum {string} */
-        PositionPnlV3SortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "current_price" | "last_traded_price" | "current_shares_balance" | "last_block" | "redeem_count" | "merge_count" | "split_count" | "title";
+        PositionPnlV3SortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "current_price" | "last_traded_price" | "current_shares_balance" | "last_block" | "redeem_count" | "merge_count" | "split_count" | "title" | "end_date";
         /**
          * @description Position status filter for open/closed positions.
          * @enum {string}
