@@ -775,6 +775,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/holders/markets_v3": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get market holders (v3)
+         * @description Retrieve holders of a market grouped by outcome, sorted by shares held. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Set `include_pnl=true` to include a per-holder `pnl` object. Uses cursor-based pagination.
+         */
+        get: operations["get_market_holders_v3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/holders/positions/{position_id}": {
         parameters: {
             query?: never;
@@ -807,6 +827,26 @@ export interface paths {
          * @description Retrieve historical holder snapshots for a position over a time range. Each candle includes timestamp `t`, holder count `h`, latest block, total open share balance, total holder cost basis, and optional market/event holder counts when available.
          */
         get: operations["get_position_holders_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/holders/positions_v3/{position_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get position holders (v3)
+         * @description Retrieve holders of a specific position (ERC1155 token), sorted by shares held. Set `include_pnl=true` to include a per-holder `pnl` object. Uses cursor-based pagination.
+         */
+        get: operations["get_position_holders_v3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4313,6 +4353,67 @@ export interface components {
             /** Format: int64 */
             last_trade_at?: number | null;
         };
+        /** @description Holder-level PnL (v3) — included when `include_pnl=true`. */
+        HolderPnlV3: {
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: double */
+            total_shares_bought?: number | null;
+            /** Format: double */
+            total_shares_sold?: number | null;
+            /** Format: double */
+            total_buy_usd?: number | null;
+            /** Format: double */
+            total_sell_usd?: number | null;
+            /** Format: double */
+            redemption_usd?: number | null;
+            /**
+             * Format: double
+             * @description Merge proceeds (combining outcome tokens back to collateral).
+             *     Counted toward realized PnL alongside sells and redemptions.
+             */
+            merge_usd?: number | null;
+            /** Format: double */
+            avg_entry_price?: number | null;
+            /** Format: double */
+            avg_exit_price?: number | null;
+            /**
+             * Format: double
+             * @description Volume-weighted average trade price across buys + sells.
+             */
+            avg_price?: number | null;
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+            /** Format: double */
+            last_traded_price?: number | null;
+            /** Format: double */
+            realized_pnl_pct?: number | null;
+            /**
+             * @description `true` when the position has resolved in the holder's favor and
+             *     can be redeemed for collateral.
+             */
+            redeemable?: boolean | null;
+        };
+        /** @description Individual holder with v3 PnL. */
+        HolderV3: {
+            /** @description Trader profile. */
+            trader: components["schemas"]["Trader"];
+            /** @description Position shares held (raw balance as decimal string for precision). */
+            shares: string;
+            /** @description USD value of shares (shares × latest price). */
+            shares_usd?: string | null;
+            /** @description USD balance of the holder's wallet. */
+            usd_balance?: string | null;
+            pnl?: null | components["schemas"]["HolderPnlV3"];
+        };
         /**
          * @description Market category filter for the trader leaderboard.
          *     Mirrors `common::gamma::categories::Category` plus `overall` (= all).
@@ -4456,6 +4557,22 @@ export interface components {
             total_holders: number;
             /** @description Holders grouped by outcome */
             outcomes: components["schemas"]["OutcomeHolders"][];
+        };
+        /** @description Response for market (condition_id) holders endpoint (v3). */
+        MarketHoldersV3Response: {
+            /** @description Market condition ID. */
+            condition_id: string;
+            /** @description Market question / title. */
+            question?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /**
+             * Format: int64
+             * @description Total unique holders across all outcomes of this market.
+             */
+            total_holders: number;
+            /** @description Holders grouped by outcome. */
+            outcomes: components["schemas"]["OutcomeHoldersV3"][];
         };
         /** @description Market outcome with timeframe metrics (websocket API format) */
         MarketMetadataOutcome: {
@@ -4896,6 +5013,30 @@ export interface components {
             total_holders: number;
             /** @description Top holders for this outcome */
             holders: components["schemas"]["Holder"][];
+        };
+        /** @description Holders grouped by outcome (v3). */
+        OutcomeHoldersV3: {
+            /**
+             * Format: int32
+             * @description Outcome index (0, 1, etc.).
+             */
+            outcome_index: number;
+            /** @description Outcome name (Yes, No, etc.). */
+            outcome_name: string;
+            /** @description Position ID for this outcome. */
+            position_id: string;
+            /**
+             * Format: double
+             * @description Current price / probability.
+             */
+            price?: number | null;
+            /**
+             * Format: int64
+             * @description Total holders for this outcome.
+             */
+            total_holders: number;
+            /** @description Top holders for this outcome. */
+            holders: components["schemas"]["HolderV3"][];
         };
         /** @enum {string} */
         OutcomeIndex: "0" | "1";
@@ -5483,6 +5624,8 @@ export interface components {
         };
         /** @description Per-position detail for Split/Merge/Redemption trades. */
         PositionDetail: {
+            /** @description Market condition ID for this ERC1155 position. */
+            condition_id?: string | null;
             /** @description ERC1155 position ID */
             position_id: string;
             /**
@@ -5533,6 +5676,11 @@ export interface components {
             avg_entry_price?: number | null;
             /** Format: double */
             avg_exit_price?: number | null;
+            /**
+             * Format: double
+             * @description Volume-weighted average trade price across buys + sells.
+             */
+            avg_price?: number | null;
             /** Format: double */
             realized_pnl_usd?: number | null;
             /** Format: double */
@@ -5582,6 +5730,32 @@ export interface components {
             total_holders: number;
             /** @description Top holders */
             holders: components["schemas"]["Holder"][];
+        };
+        /** @description Response for position (position_id) holders endpoint (v3). */
+        PositionHoldersV3Response: {
+            /** @description Position ID (ERC1155 token ID). */
+            position_id: string;
+            /** @description Condition ID this position belongs to. */
+            condition_id?: string | null;
+            /** @description Outcome name (Yes, No, etc.). */
+            outcome_name?: string | null;
+            /**
+             * Format: int32
+             * @description Outcome index.
+             */
+            outcome_index?: number | null;
+            /**
+             * Format: double
+             * @description Current price / probability.
+             */
+            price?: number | null;
+            /**
+             * Format: int64
+             * @description Total holders of this position.
+             */
+            total_holders: number;
+            /** @description Top holders. */
+            holders: components["schemas"]["HolderV3"][];
         };
         /** @description Response type for position metrics query */
         PositionMetricsResponse: {
@@ -5714,6 +5888,7 @@ export interface components {
             fee?: number | null;
             /** Format: double */
             fee_pct?: number | null;
+            position_details?: components["schemas"]["PositionDetail"][];
             exchange: components["schemas"]["PolymarketExchange"];
         };
         /**
@@ -8813,6 +8988,48 @@ export interface operations {
             };
         };
     };
+    get_market_holders_v3: {
+        parameters: {
+            query?: {
+                /** @description Market condition ID (0x-prefixed hex) */
+                condition_id?: string;
+                /** @description Market slug */
+                market_slug?: string;
+                /** @description Results limit per outcome (default: 10, max: 100) */
+                limit?: number;
+                /** @description Cursor-based pagination key */
+                pagination_key?: string;
+                /** @description Minimum shares held (decimal string) */
+                min_shares?: string;
+                /** @description Maximum shares held (decimal string) */
+                max_shares?: string;
+                /** @description Include nested holder PnL data (default: false, +1 credit) */
+                include_pnl?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Market holders grouped by outcome (sorted by shares DESC). */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketHoldersV3Response"];
+                };
+            };
+            /** @description Market not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_position_holders: {
         parameters: {
             query?: {
@@ -8886,6 +9103,47 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HolderHistoryCandle"][];
+                };
+            };
+            /** @description Position not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_position_holders_v3: {
+        parameters: {
+            query?: {
+                /** @description Results limit (default: 10, max: 100) */
+                limit?: number;
+                /** @description Cursor-based pagination key */
+                pagination_key?: string;
+                /** @description Minimum shares held (decimal string) */
+                min_shares?: string;
+                /** @description Maximum shares held (decimal string) */
+                max_shares?: string;
+                /** @description Include nested holder PnL data (default: false, +1 credit) */
+                include_pnl?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description Position ID (ERC1155 token ID) */
+                position_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Position holders (sorted by shares DESC). Holder `pnl` is included only when `include_pnl=true`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PositionHoldersV3Response"];
                 };
             };
             /** @description Position not found */

@@ -76,6 +76,11 @@ export type LeaderboardCategory = Schemas["LeaderboardCategory"];
 export type LeaderboardEntry = Schemas["LeaderboardEntry"];
 export type LeaderboardSortBy = Schemas["LeaderboardSortBy"];
 export type MarketHoldersResponse = Schemas["MarketHoldersResponse"];
+export type MarketHoldersV3Response = Schemas["MarketHoldersV3Response"];
+export type OutcomeHoldersV3 = Schemas["OutcomeHoldersV3"];
+export type HolderV3 = Schemas["HolderV3"];
+export type HolderPnlV3 = Schemas["HolderPnlV3"];
+export type PositionHoldersV3Response = Schemas["PositionHoldersV3Response"];
 export type MarketMetadataOutcome = Omit<Schemas["MarketMetadataOutcome"], "metrics"> & {
 	metrics?: TimeframeRecord<OutcomeTimeframeMetrics>;
 };
@@ -318,6 +323,12 @@ export interface GetMarketHoldersParams extends OperationQuery<"get_market_holde
 export interface GetMarketHoldersHistoryParams extends OperationQuery<"get_market_holders_history"> {}
 
 export interface GetPositionHoldersParams extends OperationQuery<"get_position_holders"> {
+	positionId: string;
+}
+
+export interface GetMarketHoldersV3Params extends OperationQuery<"get_market_holders_v3"> {}
+
+export interface GetPositionHoldersV3Params extends OperationQuery<"get_position_holders_v3"> {
 	positionId: string;
 }
 
