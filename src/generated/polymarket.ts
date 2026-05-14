@@ -3747,9 +3747,9 @@ export interface components {
             /** Format: double */
             total_losses_usd: number;
             /** Format: double */
-            best_market_pnl_usd?: number | null;
+            best_trade_pnl_usd?: number | null;
             /** Format: double */
-            worst_market_pnl_usd?: number | null;
+            worst_trade_pnl_usd?: number | null;
             best_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             worst_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             /** Format: double */
@@ -3885,7 +3885,7 @@ export interface components {
             avg_trade_shares: number;
         };
         /** @enum {string} */
-        EventOrCategoryPnlV3SortBy: "realized_pnl_usd" | "open_positions_value" | "total_market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_market_pnl_usd" | "worst_market_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block" | "open_position_count";
+        EventOrCategoryPnlV3SortBy: "realized_pnl_usd" | "open_positions_value" | "total_market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block" | "open_position_count";
         /** @enum {string} */
         EventPnlSortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "total_fees" | "realized_pnl_pct";
         /** @enum {string} */
