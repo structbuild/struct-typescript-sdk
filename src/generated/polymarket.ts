@@ -3317,6 +3317,8 @@ export interface components {
             /** Format: double */
             realized_pnl_usd: number;
             /** Format: double */
+            realized_pnl_pct?: number | null;
+            /** Format: double */
             open_positions_value: number;
             /** Format: double */
             current_shares_balance: number;
@@ -3344,6 +3346,11 @@ export interface components {
             total_redemptions: number;
             /** Format: int64 */
             total_merges: number;
+            /**
+             * Format: int64
+             * @description Number of split transactions in the selected timeframe.
+             */
+            total_splits?: number;
             /** Format: double */
             total_volume_usd: number;
             /** Format: double */
@@ -3354,6 +3361,11 @@ export interface components {
             redemption_volume_usd: number;
             /** Format: double */
             merge_volume_usd: number;
+            /**
+             * Format: double
+             * @description USD collateral split into outcome tokens in the selected timeframe.
+             */
+            split_volume_usd?: number;
             /** Format: double */
             total_fees: number;
             /** Format: double */
@@ -3362,8 +3374,10 @@ export interface components {
             total_losses_usd: number;
             /** Format: double */
             best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
             /** Format: double */
             worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
             best_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             worst_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             /** Format: double */
@@ -3381,6 +3395,12 @@ export interface components {
             /** Format: int64 */
             split_count: number;
             /** Format: int64 */
+            converted_count: number;
+            /** Format: double */
+            converted_shares_gained: number;
+            /** Format: double */
+            converted_shares_lost: number;
+            /** Format: int64 */
             outcomes_traded: number;
             /** Format: int64 */
             first_trade_at?: number | null;
@@ -3388,6 +3408,8 @@ export interface components {
             last_trade_at?: number | null;
             /** Format: int64 */
             last_block: number;
+            /** Format: int64 */
+            open_position_count: number;
         };
         /**
          * @description Lookback window for `/analytics/changes` endpoints.
@@ -3741,6 +3763,8 @@ export interface components {
             /** Format: double */
             realized_pnl_usd: number;
             /** Format: double */
+            realized_pnl_pct?: number | null;
+            /** Format: double */
             open_positions_value: number;
             /** Format: double */
             current_shares_balance: number;
@@ -3754,6 +3778,11 @@ export interface components {
             redemption_usd: number;
             /** Format: double */
             merge_usd: number;
+            /**
+             * Format: double
+             * @description USD collateral split into outcome tokens in the selected timeframe.
+             */
+            split_volume_usd?: number;
             /** Format: double */
             total_fees: number;
             /** Format: int64 */
@@ -3764,6 +3793,11 @@ export interface components {
             total_redemptions: number;
             /** Format: int64 */
             total_merges: number;
+            /**
+             * Format: int64
+             * @description Number of split transactions in the selected timeframe.
+             */
+            total_splits?: number;
             /** Format: double */
             total_shares_bought: number;
             /** Format: int64 */
@@ -3788,8 +3822,10 @@ export interface components {
             total_losses_usd: number;
             /** Format: double */
             best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
             /** Format: double */
             worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
             best_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             worst_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             /** Format: double */
@@ -3805,6 +3841,12 @@ export interface components {
             /** Format: int64 */
             split_count: number;
             /** Format: int64 */
+            converted_count: number;
+            /** Format: double */
+            converted_shares_gained: number;
+            /** Format: double */
+            converted_shares_lost: number;
+            /** Format: int64 */
             outcomes_traded: number;
             /** Format: int64 */
             first_trade_at?: number | null;
@@ -3812,6 +3854,8 @@ export interface components {
             last_trade_at?: number | null;
             /** Format: int64 */
             last_block: number;
+            /** Format: int64 */
+            open_position_count: number;
         };
         /** @description Enriched market data for event API responses */
         EventMarket: {
@@ -3925,7 +3969,7 @@ export interface components {
             avg_trade_shares: number;
         };
         /** @enum {string} */
-        EventOrCategoryPnlV3SortBy: "realized_pnl_usd" | "open_positions_value" | "total_market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block" | "open_position_count";
+        EventOrCategoryPnlV3SortBy: "realized_pnl_usd" | "open_positions_value" | "total_market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block" | "open_position_count";
         /** @enum {string} */
         EventPnlSortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "total_fees" | "realized_pnl_pct";
         /** @enum {string} */
@@ -4107,8 +4151,14 @@ export interface components {
             trader: components["schemas"]["TraderProfile"];
             /** Format: double */
             realized_pnl_usd: number;
+            /** Format: double */
+            realized_pnl_pct?: number | null;
+            /** Format: double */
+            open_positions_value: number;
             /** Format: int64 */
             events_traded: number;
+            /** Format: int64 */
+            categories_traded: number;
             /** Format: int64 */
             markets_traded: number;
             /** Format: int64 */
@@ -4131,6 +4181,17 @@ export interface components {
             total_redemptions: number;
             /** Format: int64 */
             total_merges: number;
+            /**
+             * Format: int64
+             * @description Number of split transactions in the selected timeframe.
+             */
+            total_splits?: number;
+            /** Format: int64 */
+            converted_count: number;
+            /** Format: double */
+            converted_shares_gained: number;
+            /** Format: double */
+            converted_shares_lost: number;
             /** Format: double */
             total_volume_usd: number;
             /** Format: double */
@@ -4141,6 +4202,11 @@ export interface components {
             redemption_volume_usd: number;
             /** Format: double */
             merge_volume_usd: number;
+            /**
+             * Format: double
+             * @description USD collateral split into outcome tokens in the selected timeframe.
+             */
+            split_volume_usd?: number;
             /** Format: double */
             total_fees: number;
             /** Format: double */
@@ -4149,8 +4215,10 @@ export interface components {
             total_losses_usd: number;
             /** Format: double */
             best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
             /** Format: double */
             worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
             best_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             worst_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
             /** Format: double */
@@ -4171,6 +4239,8 @@ export interface components {
             yield_count: number;
             /** Format: double */
             yield_usd: number;
+            /** Format: int64 */
+            open_position_count: number;
         };
         GlobalPctChange: {
             /** Format: double */
@@ -4492,9 +4562,9 @@ export interface components {
             question?: string | null;
             trader?: null | components["schemas"]["TraderProfile"];
             /** Format: double */
-            current_pnl: number;
-            /** Format: double */
             realized_pnl_usd: number;
+            /** Format: double */
+            realized_pnl_pct?: number | null;
             /** Format: double */
             open_positions_value: number;
             /** Format: double */
@@ -4515,6 +4585,11 @@ export interface components {
             total_buys: number;
             /** Format: int64 */
             total_sells: number;
+            /**
+             * Format: int64
+             * @description Number of split transactions in the selected timeframe.
+             */
+            total_splits?: number;
             /** Format: double */
             total_shares_bought: number;
             /** Format: double */
@@ -4529,6 +4604,17 @@ export interface components {
             merge_count: number;
             /** Format: int64 */
             split_count: number;
+            /**
+             * Format: double
+             * @description USD collateral split into outcome tokens in the selected timeframe.
+             */
+            split_volume_usd?: number;
+            /** Format: int64 */
+            converted_count: number;
+            /** Format: double */
+            converted_shares_gained: number;
+            /** Format: double */
+            converted_shares_lost: number;
             /** Format: int64 */
             outcomes_traded: number;
             resolved: boolean;
@@ -4541,6 +4627,8 @@ export interface components {
             snapshot_ts?: number | null;
             /** Format: int64 */
             last_block: number;
+            /** Format: int64 */
+            open_position_count: number;
         };
         /** @description Response for market (condition_id) holders endpoint */
         MarketHoldersResponse: {
@@ -4627,7 +4715,7 @@ export interface components {
         /** @enum {string} */
         MarketPnlSortBy: "realized_pnl_usd" | "buy_usd" | "total_buys" | "total_fees" | "outcomes_traded" | "realized_pnl_pct";
         /** @enum {string} */
-        MarketPnlV3SortBy: "realized_pnl_usd" | "open_positions_value" | "market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block" | "open_position_count";
+        MarketPnlV3SortBy: "realized_pnl_usd" | "open_positions_value" | "market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "total_shares_sold" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block" | "open_position_count";
         /** @description Formatted market response with structured metrics, tags, outcomes, and event */
         MarketResponse: {
             condition_id: string;
@@ -5655,6 +5743,12 @@ export interface components {
             total_buys?: number | null;
             /** Format: int64 */
             total_sells?: number | null;
+            /** Format: int64 */
+            converted_count?: number | null;
+            /** Format: double */
+            converted_shares_gained?: number | null;
+            /** Format: double */
+            converted_shares_lost?: number | null;
             /** Format: double */
             total_shares_bought?: number | null;
             /** Format: double */
@@ -5667,9 +5761,7 @@ export interface components {
             redemption_usd?: number | null;
             /**
              * Format: double
-             * @description Merge proceeds (Y+N → collateral). Tracked separately from
-             *     `total_sell_usd` so the API can surface true trade-sell volume.
-             *     Realized PnL = trade sells + redemption + merge − buys − fees.
+             * @description USD value from merge activity.
              */
             merge_usd?: number | null;
             /** Format: double */
@@ -5678,7 +5770,7 @@ export interface components {
             avg_exit_price?: number | null;
             /**
              * Format: double
-             * @description Volume-weighted average trade price across buys + sells.
+             * @description Volume-weighted average trade price across buys and sells.
              */
             avg_price?: number | null;
             /** Format: double */
@@ -7258,7 +7350,7 @@ export interface components {
             trade_type: "RegisterToken";
         });
         /**
-         * @description Gamma metadata for the market a trader's best / worst trade landed in.
+         * @description Market metadata for the market a trader's best / worst trade landed in.
          *     Accompanies the existing flat `best_trade_pnl_usd` / `worst_trade_pnl_usd`
          *     numerics on trader / event / category PnL summaries.
          */
@@ -7532,7 +7624,7 @@ export interface components {
             last_trade_at?: number | null;
         };
         /** @enum {string} */
-        TraderPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "events_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "last_block" | "open_positions_value" | "open_position_count";
+        TraderPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "events_traded" | "categories_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_splits" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "last_block" | "open_positions_value" | "open_position_count";
         TraderProfile: {
             address: string;
             name?: string | null;
