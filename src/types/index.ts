@@ -70,6 +70,8 @@ export type GlobalPnlSortBy = Schemas["GlobalPnlSortBy"];
 export type GlobalPnlTrader = Schemas["GlobalPnlTrader"];
 export type Holder = Schemas["Holder"];
 export type HolderHistoryCandle = Schemas["HolderHistoryCandle"];
+export type HolderCountHistoryV3Candle = Schemas["HolderCountHistoryV3Candle"];
+export type PositionHolderHistoryV3Candle = Schemas["PositionHolderHistoryV3Candle"];
 export type GlobalCountsResponse = Schemas["GlobalCountsResponse"];
 export type HolderPnl = Schemas["HolderPnl"];
 export type LeaderboardCategory = Schemas["LeaderboardCategory"];
@@ -129,6 +131,8 @@ export type TraderVolumeDataPoint = Schemas["TraderVolumeDataPoint"];
 export type TraderPnlSummary = Schemas["TraderPnlSummary"];
 export type TraderWithPnl = Schemas["TraderWithPnl"];
 export type PositionPnlSortBy = Schemas["PositionPnlSortBy"];
+export type PositionClosedPnlV3SortBy = Schemas["PositionClosedPnlV3SortBy"];
+export type PositionOpenPnlV3SortBy = Schemas["PositionOpenPnlV3SortBy"];
 export type EventMarketChartOutcome = Schemas["EventMarketChartOutcome"];
 export type PositionChartOutcome = Schemas["PositionChartOutcome"];
 export type AssetPriceHistoryRow = Schemas["AssetPriceHistoryRow"];
@@ -335,6 +339,16 @@ export interface GetPositionHoldersV3Params extends OperationQuery<"get_position
 export interface GetPositionHoldersHistoryParams {
 	positionId: string;
 	hours?: number;
+}
+
+export interface GetEventHoldersHistoryV3Params extends OperationQuery<"get_event_holders_history_v3"> {
+	event_slug: string;
+}
+
+export interface GetMarketHoldersHistoryV3Params extends OperationQuery<"get_market_holders_history_v3"> {}
+
+export interface GetPositionHoldersHistoryV3Params extends OperationQuery<"get_position_holders_history_v3"> {
+	position_id: string;
 }
 
 export interface GetMarketsParams extends OperationQuery<"list_markets"> {}

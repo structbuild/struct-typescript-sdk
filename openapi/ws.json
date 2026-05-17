@@ -14826,6 +14826,10 @@
             "type": "integer",
             "format": "int64"
           },
+          "total_splits": {
+            "type": "integer",
+            "format": "int64"
+          },
           "total_volume_usd": {
             "type": "number"
           },
@@ -14839,6 +14843,9 @@
             "type": "number"
           },
           "merge_volume_usd": {
+            "type": "number"
+          },
+          "split_volume_usd": {
             "type": "number"
           },
           "maker_rebate_count": {
@@ -14910,25 +14917,25 @@
           "total_fees": {
             "type": "number"
           },
-          "best_market_pnl_usd": {
+          "best_trade_pnl_usd": {
             "type": [
               "number",
               "null"
             ]
           },
-          "best_market_condition_id": {
+          "best_trade_condition_id": {
             "type": [
               "string",
               "null"
             ]
           },
-          "worst_market_pnl_usd": {
+          "worst_trade_pnl_usd": {
             "type": [
               "number",
               "null"
             ]
           },
-          "worst_market_condition_id": {
+          "worst_trade_condition_id": {
             "type": [
               "string",
               "null"
@@ -14977,7 +14984,7 @@
           "realized_pnl_usd": {
             "type": "number"
           },
-          "unrealized_pnl_usd": {
+          "open_positions_value": {
             "type": "number"
           },
           "current_shares_balance": {
@@ -15015,6 +15022,10 @@
             "type": "integer",
             "format": "int64"
           },
+          "total_splits": {
+            "type": "integer",
+            "format": "int64"
+          },
           "buy_usd": {
             "type": "number"
           },
@@ -15025,6 +15036,9 @@
             "type": "number"
           },
           "merge_usd": {
+            "type": "number"
+          },
+          "split_volume_usd": {
             "type": "number"
           },
           "total_fees": {
@@ -15096,6 +15110,10 @@
             "type": "integer",
             "format": "int64"
           },
+          "total_splits": {
+            "type": "integer",
+            "format": "int64"
+          },
           "total_volume_usd": {
             "type": "number"
           },
@@ -15111,13 +15129,16 @@
           "merge_usd": {
             "type": "number"
           },
+          "split_volume_usd": {
+            "type": "number"
+          },
           "total_fees": {
             "type": "number"
           },
           "realized_pnl_usd": {
             "type": "number"
           },
-          "unrealized_pnl_usd": {
+          "open_positions_value": {
             "type": "number"
           },
           "current_shares_balance": {
@@ -15161,25 +15182,25 @@
           "avg_hold_time_seconds": {
             "type": "number"
           },
-          "best_market_pnl_usd": {
+          "best_trade_pnl_usd": {
             "type": [
               "number",
               "null"
             ]
           },
-          "best_market_condition_id": {
+          "best_trade_condition_id": {
             "type": [
               "string",
               "null"
             ]
           },
-          "worst_market_pnl_usd": {
+          "worst_trade_pnl_usd": {
             "type": [
               "number",
               "null"
             ]
           },
-          "worst_market_condition_id": {
+          "worst_trade_condition_id": {
             "type": [
               "string",
               "null"
@@ -15227,7 +15248,7 @@
           "realized_pnl_usd": {
             "type": "number"
           },
-          "unrealized_pnl_usd": {
+          "open_positions_value": {
             "type": "number"
           },
           "current_shares_balance": {
@@ -15261,6 +15282,10 @@
             "type": "integer",
             "format": "int64"
           },
+          "total_splits": {
+            "type": "integer",
+            "format": "int64"
+          },
           "total_volume_usd": {
             "type": "number"
           },
@@ -15274,6 +15299,9 @@
             "type": "number"
           },
           "merge_usd": {
+            "type": "number"
+          },
+          "split_volume_usd": {
             "type": "number"
           },
           "total_fees": {
@@ -15296,25 +15324,25 @@
           "avg_hold_time_seconds": {
             "type": "number"
           },
-          "best_market_pnl_usd": {
+          "best_trade_pnl_usd": {
             "type": [
               "number",
               "null"
             ]
           },
-          "best_market_condition_id": {
+          "best_trade_condition_id": {
             "type": [
               "string",
               "null"
             ]
           },
-          "worst_market_pnl_usd": {
+          "worst_trade_pnl_usd": {
             "type": [
               "number",
               "null"
             ]
           },
-          "worst_market_condition_id": {
+          "worst_trade_condition_id": {
             "type": [
               "string",
               "null"
@@ -15703,10 +15731,6 @@
             "type": "integer",
             "format": "int64"
           },
-          "total_redemptions": {
-            "type": "integer",
-            "format": "int64"
-          },
           "total_merges": {
             "type": "integer",
             "format": "int64"
@@ -15817,10 +15841,6 @@
             "format": "int64"
           },
           "total_sells": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "total_redemptions": {
             "type": "integer",
             "format": "int64"
           },
@@ -15983,10 +16003,6 @@
             "format": "int64"
           },
           "total_sells": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "total_redemptions": {
             "type": "integer",
             "format": "int64"
           },

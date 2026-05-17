@@ -1178,7 +1178,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -3321,7 +3321,7 @@ export interface components {
          * @description All alert event types supported by both HTTP webhooks and the alerts WebSocket.
          * @enum {string}
          */
-        WsAlertEventType: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "price_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "oracle_events" | "asset_price_tick" | "asset_price_window_update";
+        WsAlertEventType: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "price_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "oracle_events" | "asset_price_tick" | "asset_price_window_update";
         /** @description Server acknowledgement for a successful alert subscription. */
         WsAlertSubscribedResponse: {
             /** @enum {string} */
@@ -3885,6 +3885,396 @@ export interface components {
              */
             timestamp: number;
             data: components["schemas"]["EventPnlPayload"];
+        };
+        WsAlertTraderGlobalPnlV3SubscribeMessage: {
+            /** @enum {string} */
+            op: "subscribe";
+            /** @enum {string} */
+            event: "trader_global_pnl_v3";
+        } & components["schemas"]["TraderGlobalPnlV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_global_pnl_v3";
+        };
+        WsAlertTraderGlobalPnlV3UnsubscribeMessage: {
+            /** @enum {string} */
+            op: "unsubscribe";
+            /** @enum {string} */
+            event: "trader_global_pnl_v3";
+        } & components["schemas"]["TraderGlobalPnlV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_global_pnl_v3";
+        };
+        /**
+         * @description Pushed `trader_global_pnl_v3` alert. The `data` payload matches the corresponding HTTP webhook payload schema.
+         * @example {
+         *       "event": "trader_global_pnl_v3",
+         *       "timestamp": 1743500000000,
+         *       "data": {
+         *         "trader": "0x0000000000000000000000000000000000000000",
+         *         "timeframe": "7d",
+         *         "current_pnl": 250,
+         *         "pnl_1d": 50,
+         *         "pnl_7d": 250,
+         *         "pnl_30d": 800,
+         *         "events_traded": 3,
+         *         "markets_traded": 5,
+         *         "total_buys": 12,
+         *         "total_sells": 8,
+         *         "total_redemptions": 1,
+         *         "total_merges": 0,
+         *         "total_splits": 0,
+         *         "total_volume_usd": 1500,
+         *         "buy_volume_usd": 900,
+         *         "sell_volume_usd": 600,
+         *         "redemption_volume_usd": 50,
+         *         "merge_volume_usd": 0,
+         *         "split_volume_usd": 0,
+         *         "maker_rebate_count": 0,
+         *         "maker_rebate_usd": 0,
+         *         "reward_count": 0,
+         *         "reward_usd": 0,
+         *         "yield_count": 0,
+         *         "yield_usd": 0,
+         *         "total_credit_count": 0,
+         *         "total_credit_usd": 0,
+         *         "markets_won": 3,
+         *         "markets_lost": 2,
+         *         "market_win_rate_pct": 60,
+         *         "total_wins_usd": 400,
+         *         "total_losses_usd": 150,
+         *         "avg_win_usd": 133.3,
+         *         "avg_loss_usd": 75,
+         *         "profit_factor": 2.67,
+         *         "avg_hold_time_seconds": 86400,
+         *         "total_fees": 7.5,
+         *         "best_trade_pnl_usd": 180,
+         *         "best_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "worst_trade_pnl_usd": -50,
+         *         "worst_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000001",
+         *         "first_trade_at": 1700000000,
+         *         "last_trade_at": 1700000000
+         *       }
+         *     }
+         */
+        WsAlertTraderGlobalPnlV3Event: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_global_pnl_v3";
+            /**
+             * Format: int64
+             * @description Unix timestamp in milliseconds
+             */
+            timestamp: number;
+            data: components["schemas"]["GlobalPnlV3Payload"];
+        };
+        WsAlertTraderMarketPnlV3SubscribeMessage: {
+            /** @enum {string} */
+            op: "subscribe";
+            /** @enum {string} */
+            event: "trader_market_pnl_v3";
+        } & components["schemas"]["TraderMarketPnlV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_market_pnl_v3";
+        };
+        WsAlertTraderMarketPnlV3UnsubscribeMessage: {
+            /** @enum {string} */
+            op: "unsubscribe";
+            /** @enum {string} */
+            event: "trader_market_pnl_v3";
+        } & components["schemas"]["TraderMarketPnlV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_market_pnl_v3";
+        };
+        /**
+         * @description Pushed `trader_market_pnl_v3` alert. The `data` payload matches the corresponding HTTP webhook payload schema.
+         * @example {
+         *       "event": "trader_market_pnl_v3",
+         *       "timestamp": 1743500000000,
+         *       "data": {
+         *         "trader": "0x0000000000000000000000000000000000000000",
+         *         "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "event_slug": "test-event-0000000000",
+         *         "category": "crypto",
+         *         "timeframe": "7d",
+         *         "realized_pnl_usd": 100,
+         *         "open_positions_value": 20,
+         *         "current_shares_balance": 150,
+         *         "outcomes_traded": 2,
+         *         "total_buys": 4,
+         *         "total_sells": 3,
+         *         "total_redemptions": 1,
+         *         "total_merges": 0,
+         *         "total_splits": 0,
+         *         "buy_usd": 300,
+         *         "sell_usd": 200,
+         *         "redemption_usd": 50,
+         *         "merge_usd": 0,
+         *         "split_volume_usd": 0,
+         *         "total_fees": 2.5,
+         *         "total_shares_bought": 500,
+         *         "first_trade_at": 1700000000,
+         *         "last_trade_at": 1700000000
+         *       }
+         *     }
+         */
+        WsAlertTraderMarketPnlV3Event: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_market_pnl_v3";
+            /**
+             * Format: int64
+             * @description Unix timestamp in milliseconds
+             */
+            timestamp: number;
+            data: components["schemas"]["MarketPnlV3Payload"];
+        };
+        WsAlertTraderEventPnlV3SubscribeMessage: {
+            /** @enum {string} */
+            op: "subscribe";
+            /** @enum {string} */
+            event: "trader_event_pnl_v3";
+        } & components["schemas"]["TraderEventPnlV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_event_pnl_v3";
+        };
+        WsAlertTraderEventPnlV3UnsubscribeMessage: {
+            /** @enum {string} */
+            op: "unsubscribe";
+            /** @enum {string} */
+            event: "trader_event_pnl_v3";
+        } & components["schemas"]["TraderEventPnlV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_event_pnl_v3";
+        };
+        /**
+         * @description Pushed `trader_event_pnl_v3` alert. The `data` payload matches the corresponding HTTP webhook payload schema.
+         * @example {
+         *       "event": "trader_event_pnl_v3",
+         *       "timestamp": 1743500000000,
+         *       "data": {
+         *         "trader": "0x0000000000000000000000000000000000000000",
+         *         "event_slug": "test-event-0000000000",
+         *         "timeframe": "7d",
+         *         "markets_traded": 2,
+         *         "outcomes_traded": 3,
+         *         "total_buys": 6,
+         *         "total_sells": 4,
+         *         "total_redemptions": 1,
+         *         "total_merges": 0,
+         *         "total_splits": 0,
+         *         "total_volume_usd": 800,
+         *         "buy_usd": 480,
+         *         "sell_usd": 320,
+         *         "redemption_usd": 50,
+         *         "merge_usd": 0,
+         *         "split_volume_usd": 0,
+         *         "total_fees": 4,
+         *         "realized_pnl_usd": 150,
+         *         "open_positions_value": 20,
+         *         "current_shares_balance": 100,
+         *         "markets_won": 1,
+         *         "markets_lost": 1,
+         *         "market_win_rate_pct": 50,
+         *         "total_wins_usd": 200,
+         *         "total_losses_usd": 50,
+         *         "avg_win_usd": 200,
+         *         "avg_loss_usd": 50,
+         *         "profit_factor": 4,
+         *         "avg_hold_time_seconds": 86400,
+         *         "best_trade_pnl_usd": 180,
+         *         "best_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "worst_trade_pnl_usd": -50,
+         *         "worst_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000001",
+         *         "first_trade_at": 1700000000,
+         *         "last_trade_at": 1700000000
+         *       }
+         *     }
+         */
+        WsAlertTraderEventPnlV3Event: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_event_pnl_v3";
+            /**
+             * Format: int64
+             * @description Unix timestamp in milliseconds
+             */
+            timestamp: number;
+            data: components["schemas"]["EventPnlV3Payload"];
+        };
+        WsAlertTraderCategoryPnlV3SubscribeMessage: {
+            /** @enum {string} */
+            op: "subscribe";
+            /** @enum {string} */
+            event: "trader_category_pnl_v3";
+        } & components["schemas"]["TraderCategoryPnlV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_category_pnl_v3";
+        };
+        WsAlertTraderCategoryPnlV3UnsubscribeMessage: {
+            /** @enum {string} */
+            op: "unsubscribe";
+            /** @enum {string} */
+            event: "trader_category_pnl_v3";
+        } & components["schemas"]["TraderCategoryPnlV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_category_pnl_v3";
+        };
+        /**
+         * @description Pushed `trader_category_pnl_v3` alert. The `data` payload matches the corresponding HTTP webhook payload schema.
+         * @example {
+         *       "event": "trader_category_pnl_v3",
+         *       "timestamp": 1743500000000,
+         *       "data": {
+         *         "trader": "0x0000000000000000000000000000000000000000",
+         *         "category": "crypto",
+         *         "timeframe": "7d",
+         *         "realized_pnl_usd": 250,
+         *         "open_positions_value": 50,
+         *         "current_shares_balance": 100,
+         *         "markets_in_category": 15,
+         *         "markets_traded": 5,
+         *         "outcomes_traded": 8,
+         *         "total_buys": 12,
+         *         "total_sells": 8,
+         *         "total_redemptions": 1,
+         *         "total_merges": 0,
+         *         "total_splits": 0,
+         *         "total_volume_usd": 1500,
+         *         "buy_usd": 900,
+         *         "sell_usd": 600,
+         *         "redemption_usd": 50,
+         *         "merge_usd": 0,
+         *         "split_volume_usd": 0,
+         *         "total_fees": 7.5,
+         *         "total_shares_bought": 500,
+         *         "markets_won": 3,
+         *         "markets_lost": 2,
+         *         "market_win_rate_pct": 60,
+         *         "avg_hold_time_seconds": 86400,
+         *         "best_trade_pnl_usd": 180,
+         *         "best_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "worst_trade_pnl_usd": -50,
+         *         "worst_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000001",
+         *         "total_wins_usd": 400,
+         *         "total_losses_usd": 150,
+         *         "avg_win_usd": 133.3,
+         *         "avg_loss_usd": 75,
+         *         "profit_factor": 2.67,
+         *         "first_trade_at": 1700000000,
+         *         "last_trade_at": 1700000000
+         *       }
+         *     }
+         */
+        WsAlertTraderCategoryPnlV3Event: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_category_pnl_v3";
+            /**
+             * Format: int64
+             * @description Unix timestamp in milliseconds
+             */
+            timestamp: number;
+            data: components["schemas"]["CategoryPnlV3Payload"];
+        };
+        WsAlertTraderPositionResolvedV3SubscribeMessage: {
+            /** @enum {string} */
+            op: "subscribe";
+            /** @enum {string} */
+            event: "trader_position_resolved_v3";
+        } & components["schemas"]["TraderPositionResolvedV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_position_resolved_v3";
+        };
+        WsAlertTraderPositionResolvedV3UnsubscribeMessage: {
+            /** @enum {string} */
+            op: "unsubscribe";
+            /** @enum {string} */
+            event: "trader_position_resolved_v3";
+        } & components["schemas"]["TraderPositionResolvedV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_position_resolved_v3";
+        };
+        /**
+         * @description Pushed `trader_position_resolved_v3` alert. The `data` payload matches the corresponding HTTP webhook payload schema.
+         * @example {
+         *       "event": "trader_position_resolved_v3",
+         *       "timestamp": 1743500000000,
+         *       "data": {
+         *         "trader": "0x0000000000000000000000000000000000000000",
+         *         "position_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "event_slug": "test-event-0000000000",
+         *         "outcome": "Yes",
+         *         "outcome_index": 0,
+         *         "winning_outcome_index": 0,
+         *         "won": true,
+         *         "total_buys": 4,
+         *         "total_sells": 2,
+         *         "total_merges": 0,
+         *         "total_splits": 0,
+         *         "total_shares_bought": 500,
+         *         "total_shares_sold": 200,
+         *         "buy_usd": 300,
+         *         "sell_usd": 150,
+         *         "avg_entry_price": 0.6,
+         *         "total_fees": 2.5,
+         *         "realized_pnl_usd": 100,
+         *         "redemption_usd": 50,
+         *         "first_trade_at": 1700000000,
+         *         "last_trade_at": 1700000000
+         *       }
+         *     }
+         */
+        WsAlertTraderPositionResolvedV3Event: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_position_resolved_v3";
+            /**
+             * Format: int64
+             * @description Unix timestamp in milliseconds
+             */
+            timestamp: number;
+            data: components["schemas"]["PositionResolvedV3Payload"];
         };
         WsAlertConditionMetricsSubscribeMessage: {
             /** @enum {string} */
@@ -4906,11 +5296,41 @@ export interface components {
             data: components["schemas"]["AssetPriceWindowUpdatePayload"];
         };
         /** @description Typed subscribe request for the alerts WebSocket. The request shape depends on `event`; filters follow the schema associated with that event type. */
-        WsAlertSubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketSubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlSubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsSubscribeMessage"] | components["schemas"]["WsAlertEventMetricsSubscribeMessage"] | components["schemas"]["WsAlertTagMetricsSubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeSubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertCloseToBondSubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedSubscribeMessage"] | components["schemas"]["WsAlertOracleEventsSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateSubscribeMessage"];
+        WsAlertSubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketSubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderCategoryPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderPositionResolvedV3SubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsSubscribeMessage"] | components["schemas"]["WsAlertEventMetricsSubscribeMessage"] | components["schemas"]["WsAlertTagMetricsSubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeSubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertCloseToBondSubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedSubscribeMessage"] | components["schemas"]["WsAlertOracleEventsSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateSubscribeMessage"];
         /** @description Typed unsubscribe request for the alerts WebSocket. The request shape depends on `event` and must match the original subscription filters. */
-        WsAlertUnsubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketUnsubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlUnsubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertEventMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertTagMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertCloseToBondUnsubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedUnsubscribeMessage"] | components["schemas"]["WsAlertOracleEventsUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateUnsubscribeMessage"];
+        WsAlertUnsubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketUnsubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderCategoryPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderPositionResolvedV3UnsubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertEventMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertTagMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertCloseToBondUnsubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedUnsubscribeMessage"] | components["schemas"]["WsAlertOracleEventsUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateUnsubscribeMessage"];
         /** @description Typed pushed-event envelope for the alerts WebSocket. The `data` payload depends on `event` and matches the corresponding HTTP webhook payload schema. */
-        WsAlertEventPayload: components["schemas"]["WsAlertTraderFirstTradeEvent"] | components["schemas"]["WsAlertTraderNewMarketEvent"] | components["schemas"]["WsAlertTraderWhaleTradeEvent"] | components["schemas"]["WsAlertTraderNewTradeEvent"] | components["schemas"]["WsAlertTraderTradeEventEvent"] | components["schemas"]["WsAlertTraderGlobalPnlEvent"] | components["schemas"]["WsAlertTraderMarketPnlEvent"] | components["schemas"]["WsAlertTraderEventPnlEvent"] | components["schemas"]["WsAlertConditionMetricsEvent"] | components["schemas"]["WsAlertEventMetricsEvent"] | components["schemas"]["WsAlertTagMetricsEvent"] | components["schemas"]["WsAlertPositionMetricsEvent"] | components["schemas"]["WsAlertMarketVolumeMilestoneEvent"] | components["schemas"]["WsAlertEventVolumeMilestoneEvent"] | components["schemas"]["WsAlertPositionVolumeMilestoneEvent"] | components["schemas"]["WsAlertProbabilitySpikeEvent"] | components["schemas"]["WsAlertPriceSpikeEvent"] | components["schemas"]["WsAlertMarketVolumeSpikeEvent"] | components["schemas"]["WsAlertEventVolumeSpikeEvent"] | components["schemas"]["WsAlertPositionVolumeSpikeEvent"] | components["schemas"]["WsAlertCloseToBondEvent"] | components["schemas"]["WsAlertMarketCreatedEvent"] | components["schemas"]["WsAlertOracleEventsEvent"] | components["schemas"]["WsAlertAssetPriceTickEvent"] | components["schemas"]["WsAlertAssetPriceWindowUpdateEvent"];
+        WsAlertEventPayload: components["schemas"]["WsAlertTraderFirstTradeEvent"] | components["schemas"]["WsAlertTraderNewMarketEvent"] | components["schemas"]["WsAlertTraderWhaleTradeEvent"] | components["schemas"]["WsAlertTraderNewTradeEvent"] | components["schemas"]["WsAlertTraderTradeEventEvent"] | components["schemas"]["WsAlertTraderGlobalPnlEvent"] | components["schemas"]["WsAlertTraderMarketPnlEvent"] | components["schemas"]["WsAlertTraderEventPnlEvent"] | components["schemas"]["WsAlertTraderGlobalPnlV3Event"] | components["schemas"]["WsAlertTraderMarketPnlV3Event"] | components["schemas"]["WsAlertTraderEventPnlV3Event"] | components["schemas"]["WsAlertTraderCategoryPnlV3Event"] | components["schemas"]["WsAlertTraderPositionResolvedV3Event"] | components["schemas"]["WsAlertConditionMetricsEvent"] | components["schemas"]["WsAlertEventMetricsEvent"] | components["schemas"]["WsAlertTagMetricsEvent"] | components["schemas"]["WsAlertPositionMetricsEvent"] | components["schemas"]["WsAlertMarketVolumeMilestoneEvent"] | components["schemas"]["WsAlertEventVolumeMilestoneEvent"] | components["schemas"]["WsAlertPositionVolumeMilestoneEvent"] | components["schemas"]["WsAlertProbabilitySpikeEvent"] | components["schemas"]["WsAlertPriceSpikeEvent"] | components["schemas"]["WsAlertMarketVolumeSpikeEvent"] | components["schemas"]["WsAlertEventVolumeSpikeEvent"] | components["schemas"]["WsAlertPositionVolumeSpikeEvent"] | components["schemas"]["WsAlertCloseToBondEvent"] | components["schemas"]["WsAlertMarketCreatedEvent"] | components["schemas"]["WsAlertOracleEventsEvent"] | components["schemas"]["WsAlertAssetPriceTickEvent"] | components["schemas"]["WsAlertAssetPriceWindowUpdateEvent"];
+        TraderGlobalPnlV3Filters: {
+            [key: string]: unknown;
+        };
+        GlobalPnlV3Payload: {
+            [key: string]: unknown;
+        };
+        TraderMarketPnlV3Filters: {
+            [key: string]: unknown;
+        };
+        MarketPnlV3Payload: {
+            [key: string]: unknown;
+        };
+        TraderEventPnlV3Filters: {
+            [key: string]: unknown;
+        };
+        EventPnlV3Payload: {
+            [key: string]: unknown;
+        };
+        TraderCategoryPnlV3Filters: {
+            [key: string]: unknown;
+        };
+        CategoryPnlV3Payload: {
+            [key: string]: unknown;
+        };
+        TraderPositionResolvedV3Filters: {
+            [key: string]: unknown;
+        };
+        PositionResolvedV3Payload: {
+            [key: string]: unknown;
+        };
     };
     responses: never;
     parameters: never;
@@ -4930,6 +5350,11 @@ export interface WsAlertSubscribeMap {
 	trader_global_pnl: components["schemas"]["WsAlertTraderGlobalPnlSubscribeMessage"];
 	trader_market_pnl: components["schemas"]["WsAlertTraderMarketPnlSubscribeMessage"];
 	trader_event_pnl: components["schemas"]["WsAlertTraderEventPnlSubscribeMessage"];
+	trader_global_pnl_v3: components["schemas"]["WsAlertTraderGlobalPnlV3SubscribeMessage"];
+	trader_market_pnl_v3: components["schemas"]["WsAlertTraderMarketPnlV3SubscribeMessage"];
+	trader_event_pnl_v3: components["schemas"]["WsAlertTraderEventPnlV3SubscribeMessage"];
+	trader_category_pnl_v3: components["schemas"]["WsAlertTraderCategoryPnlV3SubscribeMessage"];
+	trader_position_resolved_v3: components["schemas"]["WsAlertTraderPositionResolvedV3SubscribeMessage"];
 	condition_metrics: components["schemas"]["WsAlertConditionMetricsSubscribeMessage"];
 	event_metrics: components["schemas"]["WsAlertEventMetricsSubscribeMessage"];
 	tag_metrics: components["schemas"]["WsAlertTagMetricsSubscribeMessage"];
@@ -4958,6 +5383,11 @@ export interface WsAlertEventDataMap {
 	trader_global_pnl: components["schemas"]["GlobalPnlPayload"];
 	trader_market_pnl: components["schemas"]["MarketPnlPayload"];
 	trader_event_pnl: components["schemas"]["EventPnlPayload"];
+	trader_global_pnl_v3: components["schemas"]["GlobalPnlV3Payload"];
+	trader_market_pnl_v3: components["schemas"]["MarketPnlV3Payload"];
+	trader_event_pnl_v3: components["schemas"]["EventPnlV3Payload"];
+	trader_category_pnl_v3: components["schemas"]["CategoryPnlV3Payload"];
+	trader_position_resolved_v3: components["schemas"]["PositionResolvedV3Payload"];
 	condition_metrics: components["schemas"]["ConditionMetricsPayload"];
 	event_metrics: components["schemas"]["EventMetricsPayload"];
 	tag_metrics: components["schemas"]["TagMetricsPayload"];

@@ -7,12 +7,17 @@ import type {
 	PositionHoldersResponse,
 	PositionHoldersV3Response,
 	HolderHistoryCandle,
+	HolderCountHistoryV3Candle,
+	PositionHolderHistoryV3Candle,
 	GetMarketHoldersParams,
 	GetMarketHoldersV3Params,
 	GetPositionHoldersParams,
 	GetPositionHoldersV3Params,
 	GetMarketHoldersHistoryParams,
 	GetPositionHoldersHistoryParams,
+	GetEventHoldersHistoryV3Params,
+	GetMarketHoldersHistoryV3Params,
+	GetPositionHoldersHistoryV3Params,
 } from "../types/index.js";
 
 export class HoldersNamespace extends Namespace {
@@ -41,5 +46,19 @@ async getPositionHolders(params: GetPositionHoldersParams, venue?: Venue): Promi
 async getPositionHoldersHistory(params: GetPositionHoldersHistoryParams, venue?: Venue): Promise<HttpResponse<HolderHistoryCandle[]>> {
 		const { positionId, ...query } = params;
 		return this.get<HolderHistoryCandle[]>(venue, `/holders/positions/${encodeURIComponent(positionId)}/history`, { params: query });
+	}
+
+	async getEventHoldersHistoryV3(params: GetEventHoldersHistoryV3Params, venue?: Venue): Promise<HttpResponse<HolderCountHistoryV3Candle[]>> {
+		const { event_slug, ...query } = params;
+		return this.get<HolderCountHistoryV3Candle[]>(venue, `/holders/events_v3/${encodeURIComponent(event_slug)}/history`, { params: query });
+	}
+
+	async getMarketHoldersHistoryV3(params: GetMarketHoldersHistoryV3Params, venue?: Venue): Promise<HttpResponse<HolderCountHistoryV3Candle[]>> {
+		return this.get<HolderCountHistoryV3Candle[]>(venue, "/holders/markets_v3/history", { params: { ...params } });
+	}
+
+	async getPositionHoldersHistoryV3(params: GetPositionHoldersHistoryV3Params, venue?: Venue): Promise<HttpResponse<PositionHolderHistoryV3Candle[]>> {
+		const { position_id, ...query } = params;
+		return this.get<PositionHolderHistoryV3Candle[]>(venue, `/holders/positions_v3/${encodeURIComponent(position_id)}/history`, { params: query });
 	}
 }

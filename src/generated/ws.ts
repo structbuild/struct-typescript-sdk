@@ -3729,11 +3729,14 @@ export interface components {
             total_redemptions?: number;
             /** Format: int64 */
             total_merges?: number;
+            /** Format: int64 */
+            total_splits?: number;
             total_volume_usd?: number;
             buy_volume_usd?: number;
             sell_volume_usd?: number;
             redemption_volume_usd?: number;
             merge_volume_usd?: number;
+            split_volume_usd?: number;
             /** Format: int64 */
             maker_rebate_count?: number;
             maker_rebate_usd?: number;
@@ -3758,10 +3761,10 @@ export interface components {
             profit_factor?: number | null;
             avg_hold_time_seconds?: number;
             total_fees?: number;
-            best_market_pnl_usd?: number | null;
-            best_market_condition_id?: string | null;
-            worst_market_pnl_usd?: number | null;
-            worst_market_condition_id?: string | null;
+            best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
+            worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
             /**
              * Format: int64
              * @description Unix seconds
@@ -3781,7 +3784,7 @@ export interface components {
             /** @description 64-char hex condition ID */
             condition_id: string;
             realized_pnl_usd?: number;
-            unrealized_pnl_usd?: number;
+            open_positions_value?: number;
             current_shares_balance?: number;
             category?: string | null;
             event_slug?: string | null;
@@ -3795,10 +3798,13 @@ export interface components {
             total_redemptions?: number;
             /** Format: int64 */
             total_merges?: number;
+            /** Format: int64 */
+            total_splits?: number;
             buy_usd?: number;
             sell_usd?: number;
             redemption_usd?: number;
             merge_usd?: number;
+            split_volume_usd?: number;
             total_fees?: number;
             total_shares_bought?: number;
             /**
@@ -3830,14 +3836,17 @@ export interface components {
             total_redemptions?: number;
             /** Format: int64 */
             total_merges?: number;
+            /** Format: int64 */
+            total_splits?: number;
             total_volume_usd?: number;
             buy_usd?: number;
             sell_usd?: number;
             redemption_usd?: number;
             merge_usd?: number;
+            split_volume_usd?: number;
             total_fees?: number;
             realized_pnl_usd?: number;
-            unrealized_pnl_usd?: number;
+            open_positions_value?: number;
             current_shares_balance?: number;
             /** Format: int64 */
             markets_won?: number;
@@ -3850,10 +3859,10 @@ export interface components {
             avg_loss_usd?: number | null;
             profit_factor?: number | null;
             avg_hold_time_seconds?: number;
-            best_market_pnl_usd?: number | null;
-            best_market_condition_id?: string | null;
-            worst_market_pnl_usd?: number | null;
-            worst_market_condition_id?: string | null;
+            best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
+            worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
             /**
              * Format: int64
              * @description Unix seconds
@@ -3872,7 +3881,7 @@ export interface components {
             timeframe?: string | null;
             category: string;
             realized_pnl_usd?: number;
-            unrealized_pnl_usd?: number;
+            open_positions_value?: number;
             current_shares_balance?: number;
             /** Format: int64 */
             markets_in_category?: number;
@@ -3888,11 +3897,14 @@ export interface components {
             total_redemptions?: number;
             /** Format: int64 */
             total_merges?: number;
+            /** Format: int64 */
+            total_splits?: number;
             total_volume_usd?: number;
             buy_usd?: number;
             sell_usd?: number;
             redemption_usd?: number;
             merge_usd?: number;
+            split_volume_usd?: number;
             total_fees?: number;
             total_shares_bought?: number;
             /** Format: int64 */
@@ -3901,10 +3913,10 @@ export interface components {
             markets_lost?: number;
             market_win_rate_pct?: number;
             avg_hold_time_seconds?: number;
-            best_market_pnl_usd?: number | null;
-            best_market_condition_id?: string | null;
-            worst_market_pnl_usd?: number | null;
-            worst_market_condition_id?: string | null;
+            best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
+            worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
             total_wins_usd?: number;
             total_losses_usd?: number;
             avg_win_usd?: number | null;
@@ -4014,8 +4026,6 @@ export interface components {
             /** Format: int64 */
             total_sells?: number;
             /** Format: int64 */
-            total_redemptions?: number;
-            /** Format: int64 */
             total_merges?: number;
             /** Format: int64 */
             total_splits?: number;
@@ -4057,8 +4067,6 @@ export interface components {
             total_buys?: number;
             /** Format: int64 */
             total_sells?: number;
-            /** Format: int64 */
-            total_redemptions?: number;
             /** Format: int64 */
             total_merges?: number;
             /** Format: int64 */
@@ -4114,8 +4122,6 @@ export interface components {
             total_buys?: number;
             /** Format: int64 */
             total_sells?: number;
-            /** Format: int64 */
-            total_redemptions?: number;
             /** Format: int64 */
             total_merges?: number;
             /** Format: int64 */
