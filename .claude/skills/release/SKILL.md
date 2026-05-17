@@ -1,6 +1,6 @@
 ---
 name: release
-description: Commit, bump version, publish to npm, and push. Run after changes are ready to release.
+description: Commit, bump version, publish (npm for prod, git-tag-only for staging), and push. Run after changes are ready to release.
 disable-model-invocation: false
 allowed-tools: Bash, Read, Grep, Glob
 ---
@@ -9,8 +9,8 @@ allowed-tools: Bash, Read, Grep, Glob
 
 ## Modes
 
-- **Default (prod):** publishes to the `latest` dist-tag. Users on `@structbuild/sdk` get this.
-- **Staging:** user passes `staging` as the argument. Publishes under the `staging` dist-tag so `latest` stays pinned to the last prod release. Consumers opt in with `@structbuild/sdk@staging`.
+- **Default (prod):** publishes to npm under the `latest` dist-tag. Users on `@structbuild/sdk` get this.
+- **Staging:** user passes `staging` as the argument. **Does NOT publish to npm.** Ships via a git tag (`vX.Y.Z-staging.N`) on the `staging` branch; consumers install with a GitHub ref. This keeps the npm `latest` tag pinned to the last prod release and avoids polluting npm with staging prereleases.
 
 ## Step 1: Check for changes
 
@@ -21,26 +21,48 @@ Run `git status` and `git diff --stat` to see what needs to be committed. If the
 1. Run `git log --oneline -5` to match the commit message style
 2. Stage all changed files by name (not `git add -A`)
 3. Write a concise commit message summarizing the changes
-4. Commit with `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>` trailer
+4. Commit with `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>` trailer
 
 ## Step 3: Version bump
 
-- **Staging mode:** `npm version prerelease --preid=staging` (produces e.g. `0.3.10-staging.0`, bumpable repeatedly).
-- **Prod mode:** if the user specifies a version type (e.g. `minor`, `major`, `prepatch`, `preminor`, `premajor`, `prerelease`), use that: `npm version <type>`. Otherwise default to `npm version patch`.
+- **Staging mode:** edit `package.json` directly to bump the `-staging.N` suffix (e.g. `0.6.0-staging.3` → `0.6.0-staging.4`). Do **not** use `npm version` — it auto-creates a tag that we want to create explicitly in Step 4 after the version-bump commit is in place. Stage and commit `package.json` together with the spec/code changes from Step 2 (one combined commit is fine).
+- **Prod mode:** if the user specifies a version type (e.g. `minor`, `major`, `prepatch`, `preminor`, `premajor`, `prerelease`), use that: `npm version <type>`. Otherwise default to `npm version patch`. `npm version` auto-commits the bump and creates a git tag.
 
-`npm version` auto-commits the version bump.
+## Step 4: Publish / Tag
 
-## Step 4: Publish
+- **Staging mode (git tag only, NO npm publish):**
+  1. `git push origin staging` — push the version-bump commit.
+  2. `git tag vX.Y.Z-staging.N` at HEAD (lightweight tag is fine; annotate if you want a message).
+  3. `git push origin vX.Y.Z-staging.N` — push the tag.
+  4. **Never** run `npm publish` in staging mode. Staging releases are consumed via GitHub refs only.
 
-- **Staging mode:** `npm publish --tag staging`. Never omit `--tag` in staging mode — bare `npm publish` would move the `latest` tag and break prod consumers.
-- **Prod mode:** `npm publish`.
+- **Prod mode:** `npm publish`. Then `git push` and `git push --tags` (the version tag was created by `npm version`).
 
-Confirm the publish succeeds and note which dist-tag was moved.
+## Step 5: Update consumer repos (staging mode only)
 
-## Step 5: Push
+For staging releases, consumer repos pinning `@structbuild/sdk` via a GitHub ref need their `package.json` bumped manually:
 
-Run `git push` to push all commits to origin. Then `git push --tags` so the version tag created by `npm version` reaches the remote.
+```json
+"@structbuild/sdk": "github:structbuild/struct-typescript-sdk#vX.Y.Z-staging.N"
+```
+
+Then reinstall **with the consumer's package manager** — check the consumer's `packageManager` field (or its lockfile) and use that. Don't assume bun; explorer-style repos may use pnpm/npm/yarn and running the wrong installer will create a stray lockfile.
+
+This step is skipped for prod mode (consumers pull from npm).
 
 ## Step 6: Report
 
-Print the new version number, the dist-tag it was published under, and the install command consumers should use (`@structbuild/sdk` for prod, `@structbuild/sdk@staging` for staging).
+Print the new version number, how it was published (npm dist-tag for prod; git tag + branch for staging), and the install instructions:
+
+- **Prod:** `bun add @structbuild/sdk` / `pnpm add @structbuild/sdk` (resolves to npm `latest`).
+- **Staging:** `"@structbuild/sdk": "github:structbuild/struct-typescript-sdk#vX.Y.Z-staging.N"` in the consumer's `package.json`, then install with their package manager.
+
+## Why staging avoids npm
+
+We previously published staging prereleases to npm under a `staging` dist-tag. We stopped because:
+
+1. Staging spec churn meant frequent breaking renames — every one polluted npm with a version that can never be unpublished.
+2. Consumer repos already pinned via GitHub refs for other reasons (private branches, fast iteration), so npm wasn't doing useful work.
+3. A git tag is reversible (we can re-point or delete); a published npm version is not.
+
+If you find yourself wanting to `npm publish --tag staging` again, push back on the user and confirm — the answer is almost always "no, use a git tag."
