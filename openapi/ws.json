@@ -14657,6 +14657,226 @@
           }
         }
       },
+      "TraderPositionsSubscribeMessage": {
+        "type": "object",
+        "description": "Subscribe to the trader positions stream. traders is required and must be non-empty.",
+        "required": [
+          "action",
+          "traders"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "EVM wallet addresses",
+            "minItems": 1
+          }
+        }
+      },
+      "TraderPositionsSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a trader positions subscription",
+        "properties": {
+          "traders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "TraderPositionUpdateEvent": {
+        "type": "object",
+        "description": "Server-pushed event: full position snapshot for a tracked trader. Envelope type: \"trader_position_update\". Pushed whenever a position's PnL changes.",
+        "required": [
+          "trader"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader EVM wallet address"
+          },
+          "position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ERC-1155 token ID (decimal string)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market title / question"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "won": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "True if this outcome resolved as winner"
+          },
+          "total_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_shares_bought": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total_shares_sold": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total_buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total_sell_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "redemption_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "avg_entry_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Average entry price (0–1)"
+          },
+          "avg_exit_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Average exit price (0–1)"
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total_fees": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "current_shares_balance": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Current ERC-1155 token balance"
+          },
+          "realized_pnl_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Realized PnL as a percentage of cost basis"
+          }
+        }
+      },
       "TraderPnlV3SubscribeMessage": {
         "type": "object",
         "description": "Subscribe to the trader PnL v3 stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes.",
@@ -15387,226 +15607,6 @@
             ],
             "format": "int64",
             "description": "Unix seconds"
-          }
-        }
-      },
-      "TraderPositionsSubscribeMessage": {
-        "type": "object",
-        "description": "Subscribe to the trader positions stream. traders is required and must be non-empty.",
-        "required": [
-          "action",
-          "traders"
-        ],
-        "properties": {
-          "action": {
-            "type": "string",
-            "enum": [
-              "subscribe",
-              "unsubscribe_all"
-            ]
-          },
-          "traders": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "EVM wallet addresses",
-            "minItems": 1
-          }
-        }
-      },
-      "TraderPositionsSubscribeResponse": {
-        "type": "object",
-        "description": "Server acknowledgement for a trader positions subscription",
-        "properties": {
-          "traders": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "rejected": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "error": {
-            "type": [
-              "string",
-              "null"
-            ]
-          }
-        }
-      },
-      "TraderPositionUpdateEvent": {
-        "type": "object",
-        "description": "Server-pushed event: full position snapshot for a tracked trader. Envelope type: \"trader_position_update\". Pushed whenever a position's PnL changes.",
-        "required": [
-          "trader"
-        ],
-        "properties": {
-          "trader": {
-            "type": "string",
-            "description": "Trader EVM wallet address"
-          },
-          "position_id": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "ERC-1155 token ID (decimal string)"
-          },
-          "condition_id": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "market_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "title": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market title / question"
-          },
-          "image_url": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "outcome": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Outcome name (e.g. \"Yes\")"
-          },
-          "outcome_index": {
-            "type": [
-              "integer",
-              "null"
-            ]
-          },
-          "won": {
-            "type": [
-              "boolean",
-              "null"
-            ],
-            "description": "True if this outcome resolved as winner"
-          },
-          "total_buys": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_sells": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_shares_bought": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "total_shares_sold": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "total_buy_usd": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "total_sell_usd": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "redemption_usd": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "avg_entry_price": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Average entry price (0–1)"
-          },
-          "avg_exit_price": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Average exit price (0–1)"
-          },
-          "realized_pnl_usd": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "total_fees": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "first_trade_at": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64",
-            "description": "Unix seconds"
-          },
-          "last_trade_at": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64",
-            "description": "Unix seconds"
-          },
-          "current_shares_balance": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Current ERC-1155 token balance"
-          },
-          "realized_pnl_pct": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "description": "Realized PnL as a percentage of cost basis"
           }
         }
       },

@@ -3684,6 +3684,66 @@ export interface components {
             /** @description "1d", "7d", "30d", or "lifetime" */
             timeframe?: string | null;
         };
+        /** @description Subscribe to the trader positions stream. traders is required and must be non-empty. */
+        TraderPositionsSubscribeMessage: {
+            /** @enum {string} */
+            action: "subscribe" | "unsubscribe_all";
+            /** @description EVM wallet addresses */
+            traders: string[];
+        };
+        /** @description Server acknowledgement for a trader positions subscription */
+        TraderPositionsSubscribeResponse: {
+            traders?: string[];
+            rejected?: string[];
+            error?: string | null;
+        };
+        /** @description Server-pushed event: full position snapshot for a tracked trader. Envelope type: "trader_position_update". Pushed whenever a position's PnL changes. */
+        TraderPositionUpdateEvent: {
+            /** @description Trader EVM wallet address */
+            trader: string;
+            /** @description ERC-1155 token ID (decimal string) */
+            position_id?: string | null;
+            condition_id?: string | null;
+            market_slug?: string | null;
+            event_slug?: string | null;
+            /** @description Market title / question */
+            title?: string | null;
+            image_url?: string | null;
+            /** @description Outcome name (e.g. "Yes") */
+            outcome?: string | null;
+            outcome_index?: number | null;
+            /** @description True if this outcome resolved as winner */
+            won?: boolean | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            total_shares_bought?: number | null;
+            total_shares_sold?: number | null;
+            total_buy_usd?: number | null;
+            total_sell_usd?: number | null;
+            redemption_usd?: number | null;
+            /** @description Average entry price (0–1) */
+            avg_entry_price?: number | null;
+            /** @description Average exit price (0–1) */
+            avg_exit_price?: number | null;
+            realized_pnl_usd?: number | null;
+            total_fees?: number | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            first_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Unix seconds
+             */
+            last_trade_at?: number | null;
+            /** @description Current ERC-1155 token balance */
+            current_shares_balance?: number | null;
+            /** @description Realized PnL as a percentage of cost basis */
+            realized_pnl_pct?: number | null;
+        };
         /** @description Subscribe to the trader PnL v3 stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. */
         TraderPnlV3SubscribeMessage: {
             /** @enum {string} */
@@ -3932,66 +3992,6 @@ export interface components {
              * @description Unix seconds
              */
             last_trade_at?: number | null;
-        };
-        /** @description Subscribe to the trader positions stream. traders is required and must be non-empty. */
-        TraderPositionsSubscribeMessage: {
-            /** @enum {string} */
-            action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses */
-            traders: string[];
-        };
-        /** @description Server acknowledgement for a trader positions subscription */
-        TraderPositionsSubscribeResponse: {
-            traders?: string[];
-            rejected?: string[];
-            error?: string | null;
-        };
-        /** @description Server-pushed event: full position snapshot for a tracked trader. Envelope type: "trader_position_update". Pushed whenever a position's PnL changes. */
-        TraderPositionUpdateEvent: {
-            /** @description Trader EVM wallet address */
-            trader: string;
-            /** @description ERC-1155 token ID (decimal string) */
-            position_id?: string | null;
-            condition_id?: string | null;
-            market_slug?: string | null;
-            event_slug?: string | null;
-            /** @description Market title / question */
-            title?: string | null;
-            image_url?: string | null;
-            /** @description Outcome name (e.g. "Yes") */
-            outcome?: string | null;
-            outcome_index?: number | null;
-            /** @description True if this outcome resolved as winner */
-            won?: boolean | null;
-            /** Format: int64 */
-            total_buys?: number | null;
-            /** Format: int64 */
-            total_sells?: number | null;
-            total_shares_bought?: number | null;
-            total_shares_sold?: number | null;
-            total_buy_usd?: number | null;
-            total_sell_usd?: number | null;
-            redemption_usd?: number | null;
-            /** @description Average entry price (0–1) */
-            avg_entry_price?: number | null;
-            /** @description Average exit price (0–1) */
-            avg_exit_price?: number | null;
-            realized_pnl_usd?: number | null;
-            total_fees?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            /** @description Current ERC-1155 token balance */
-            current_shares_balance?: number | null;
-            /** @description Realized PnL as a percentage of cost basis */
-            realized_pnl_pct?: number | null;
         };
         /** @description Subscribe to the trader positions v3 stream. `traders` is required and must be non-empty. `update_types` is an optional narrowing filter — empty/omitted = both. */
         TraderPositionsV3SubscribeMessage: {

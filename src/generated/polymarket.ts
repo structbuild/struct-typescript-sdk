@@ -3472,6 +3472,12 @@ export interface components {
             open_position_count: number;
         };
         /**
+         * @description Sort surface for v3 category endpoints. Categories keep the full
+         *     legacy metric set (matches the receiver's `INDEXED_CATEGORY_METRICS`).
+         * @enum {string}
+         */
+        CategoryPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at";
+        /**
          * @description Lookback window for `/analytics/changes` endpoints.
          * @enum {string}
          */
@@ -4029,9 +4035,14 @@ export interface components {
             avg_trade_shares: number;
         };
         /** @enum {string} */
-        EventOrCategoryPnlV3SortBy: "realized_pnl_usd" | "open_positions_value" | "total_market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block" | "open_position_count";
-        /** @enum {string} */
         EventPnlSortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "total_fees" | "realized_pnl_pct";
+        /**
+         * @description Sort surface for v3 event endpoints. Trimmed in lockstep with the
+         *     receiver's `INDEXED_EVENT_METRICS`; only these five are indexed for
+         *     event rollups, anything else returns a 400.
+         * @enum {string}
+         */
+        EventPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "total_shares_bought" | "first_trade_at" | "last_trade_at";
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
         /**
@@ -4792,8 +4803,14 @@ export interface components {
         };
         /** @enum {string} */
         MarketPnlSortBy: "realized_pnl_usd" | "buy_usd" | "total_buys" | "total_fees" | "outcomes_traded" | "realized_pnl_pct";
-        /** @enum {string} */
-        MarketPnlV3SortBy: "realized_pnl_usd" | "open_positions_value" | "market_balance" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "total_shares_sold" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block" | "open_position_count";
+        /**
+         * @description Sort surfaces for v3 market endpoints. Trimmed in lockstep with
+         *     `pnl_serving_store::domain::sorts::market::INDEXED_MARKET_METRICS`;
+         *     only these six are indexed on the receiver — any other value
+         *     returns a 400 with "is not indexed".
+         * @enum {string}
+         */
+        MarketPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "total_shares_bought" | "total_shares_sold" | "first_trade_at" | "last_trade_at";
         /** @description Formatted market response with structured metrics, tags, outcomes, and event */
         MarketResponse: {
             condition_id: string;
@@ -8947,7 +8964,7 @@ export interface operations {
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
                 /** @description Default: realized_pnl_usd */
-                sort_by?: components["schemas"]["EventOrCategoryPnlV3SortBy"];
+                sort_by?: components["schemas"]["EventPnlV3SortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
@@ -10982,7 +10999,7 @@ export interface operations {
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
                 /** @description Default: realized_pnl_usd */
-                sort_by?: components["schemas"]["EventOrCategoryPnlV3SortBy"];
+                sort_by?: components["schemas"]["CategoryPnlV3SortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
@@ -11546,7 +11563,7 @@ export interface operations {
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
                 /** @description Default: realized_pnl_usd */
-                sort_by?: components["schemas"]["EventOrCategoryPnlV3SortBy"];
+                sort_by?: components["schemas"]["CategoryPnlV3SortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 500 */
@@ -11614,7 +11631,7 @@ export interface operations {
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
                 /** @description Default: realized_pnl_usd */
-                sort_by?: components["schemas"]["EventOrCategoryPnlV3SortBy"];
+                sort_by?: components["schemas"]["EventPnlV3SortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 500 */

@@ -611,7 +611,8 @@ export type MarketEntry = Schemas["MarketEntry"];
 export type PositionEntry = Schemas["PositionEntry"];
 export type PolymarketCategory = Schemas["PolymarketCategory"];
 
-export type EventOrCategoryPnlV3SortBy = Schemas["EventOrCategoryPnlV3SortBy"];
+export type CategoryPnlV3SortBy = Schemas["CategoryPnlV3SortBy"];
+export type EventPnlV3SortBy = Schemas["EventPnlV3SortBy"];
 export type MarketPnlV3SortBy = Schemas["MarketPnlV3SortBy"];
 export type PositionPnlV3SortBy = Schemas["PositionPnlV3SortBy"];
 export type TraderPnlV3SortBy = Schemas["TraderPnlV3SortBy"];
