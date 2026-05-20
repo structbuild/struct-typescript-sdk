@@ -34,7 +34,6 @@ import type {
 	GetTraderPositionPnlV3Params,
 	GetGlobalPnlV3Params,
 	GetTopTradesMarketsV3Params,
-	GetTraderWhitelistV3Params,
 	PnlV3CandlestickBar,
 	PnlV3ChangesResponse,
 	PnlV3PeriodsResponse,
@@ -44,7 +43,6 @@ import type {
 	EventEntry,
 	CategoryEntry,
 	PositionEntry,
-	WhitelistedTradersResponse,
 } from "../types/index.js";
 
 export class TraderNamespace extends Namespace {
@@ -154,9 +152,5 @@ export class TraderNamespace extends Namespace {
 
 	async getTopTradesMarketsV3(params?: GetTopTradesMarketsV3Params, venue?: Venue): Promise<HttpResponse<MarketEntry[]>> {
 		return this.get<MarketEntry[]>(venue, "/trader/top_trades_markets_v3", { params: { ...params } });
-	}
-
-	async getTraderWhitelistV3(_params?: GetTraderWhitelistV3Params, venue?: Venue): Promise<HttpResponse<WhitelistedTradersResponse>> {
-		return this.get<WhitelistedTradersResponse>(venue, "/trader/whitelist_v3");
 	}
 }
