@@ -53,6 +53,7 @@ export type GlobalPctChange = Schemas["GlobalPctChange"];
 export type RetainedCounts = Schemas["RetainedCounts"];
 export type RetentionFractions = Schemas["RetentionFractions"];
 export type TagBuilderRow = Schemas["TagBuilderRow"];
+export type TagBuilderRowWithMetadata = Schemas["TagBuilderRowWithMetadata"];
 export type TopTraderRow = Schemas["TopTraderRow"];
 export type TopTradersSortBy = Schemas["TopTradersSortBy"];
 export type TraderBuilderSortBy = Schemas["TraderBuilderSortBy"];
@@ -127,6 +128,7 @@ export type PositionPnlSortBy = Schemas["PositionPnlSortBy"];
 export type EventMarketChartOutcome = Schemas["EventMarketChartOutcome"];
 export type PositionChartOutcome = Schemas["PositionChartOutcome"];
 export type AssetPriceHistoryRow = Schemas["AssetPriceHistoryRow"];
+export type AssetCandlestickBar = Schemas["AssetCandlestickBar"];
 export type AssetSymbol = Schemas["AssetSymbol"];
 export type AssetVariant = Schemas["AssetVariant"];
 export type PriceJump = Schemas["PriceJump"];
@@ -149,6 +151,10 @@ export type SpreadRow = Schemas["SpreadRow"];
 export type AssertionDisputedEvent = Schemas["AssertionDisputedEvent"];
 export type AssertionMadeEvent = Schemas["AssertionMadeEvent"];
 export type AssertionSettledEvent = Schemas["AssertionSettledEvent"];
+export type DisputePriceEvent = Schemas["DisputePriceEvent"];
+export type ProposePriceEvent = Schemas["ProposePriceEvent"];
+export type RequestPriceEvent = Schemas["RequestPriceEvent"];
+export type SettleEvent = Schemas["SettleEvent"];
 export type CancelledTrade = Schemas["CancelledTrade"];
 export type ConditionResolutionEvent = Schemas["ConditionResolutionEvent"];
 export type MergeTrade = Schemas["MergeTrade"];
@@ -294,6 +300,8 @@ export interface GetMarketOrderBookParams extends OperationQuery<"get_market_ord
 export interface GetSpreadHistoryParams extends OperationQuery<"get_spread_history"> {}
 
 export interface GetAssetHistoryParams extends OperationQuery<"get_asset_history"> {}
+
+export interface GetAssetCandlestickParams extends OperationQuery<"get_asset_candlestick"> {}
 
 export interface GetBondsParams extends OperationQuery<"get_bonds"> {}
 
@@ -541,6 +549,8 @@ export interface GetTagBuildersParams extends OperationQuery<"list_tag_builders"
 export type TopTraderEventEntry = Schemas["TopTraderEventEntry"];
 export type TopTraderMarketEntry = Schemas["TopTraderMarketEntry"];
 export type TopTraderPositionEntry = Schemas["TopTraderPositionEntry"];
+export type TradeMarketRef = Schemas["TradeMarketRef"];
+export type PolymarketCategory = Schemas["PolymarketCategory"];
 
 export interface GetEventTopTradersParams extends OperationQuery<"get_event_top_traders"> {}
 

@@ -310,6 +310,16 @@ export interface components {
             unique_traders?: number | null;
             /**
              * Format: int64
+             * @description Number of unique makers
+             */
+            unique_makers?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique takers
+             */
+            unique_takers?: number | null;
+            /**
+             * Format: int64
              * @description Number of unique builder-attributed traders
              */
             unique_builder_traders?: number | null;
@@ -456,6 +466,16 @@ export interface components {
              * @description Number of unique traders
              */
             unique_traders?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique makers
+             */
+            unique_makers?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique takers
+             */
+            unique_takers?: number | null;
             /**
              * Format: int64
              * @description Number of unique builder-attributed traders
@@ -1158,7 +1178,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -1482,6 +1502,10 @@ export interface components {
             builder_sells?: number | null;
             /** Format: int64 */
             unique_traders?: number | null;
+            /** Format: int64 */
+            unique_makers?: number | null;
+            /** Format: int64 */
+            unique_takers?: number | null;
             /** Format: int64 */
             unique_builder_traders?: number | null;
             /** Format: double */
@@ -2139,6 +2163,16 @@ export interface components {
              * @description Number of unique traders
              */
             unique_traders?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique makers
+             */
+            unique_makers?: number | null;
+            /**
+             * Format: int64
+             * @description Number of unique takers
+             */
+            unique_takers?: number | null;
             /**
              * Format: int64
              * @description Number of unique builder-attributed traders
@@ -3296,6 +3330,10 @@ export interface components {
             /** Format: int64 */
             unique_traders: number;
             /** Format: int64 */
+            unique_makers: number;
+            /** Format: int64 */
+            unique_takers: number;
+            /** Format: int64 */
             unique_builder_traders: number;
         };
         /** @description Subscribe to the event metrics stream. event_slugs is required and must be non-empty. */
@@ -3338,6 +3376,10 @@ export interface components {
             /** Format: int64 */
             unique_traders: number;
             /** Format: int64 */
+            unique_makers: number;
+            /** Format: int64 */
+            unique_takers: number;
+            /** Format: int64 */
             unique_builder_traders: number;
         };
         /** @description Subscribe to the tag metrics stream. tags is required and must be non-empty. */
@@ -3379,6 +3421,10 @@ export interface components {
             builder_txns: number;
             /** Format: int64 */
             unique_traders: number;
+            /** Format: int64 */
+            unique_makers: number;
+            /** Format: int64 */
+            unique_takers: number;
             /** Format: int64 */
             unique_builder_traders: number;
         };
@@ -3451,6 +3497,10 @@ export interface components {
             builder_sells: number;
             /** Format: int64 */
             unique_traders: number;
+            /** Format: int64 */
+            unique_makers: number;
+            /** Format: int64 */
+            unique_takers: number;
             /** Format: int64 */
             unique_builder_traders: number;
             /** @description OHLC open price (0–1) */
