@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   publish:
+    if: ${{ !contains(github.ref_name, '-staging.') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,16 +33,11 @@ jobs:
 
       - run: bun run prep
 
-      - name: Publish (prod)
-        if: ${{ !contains(github.ref_name, '-staging.') }}
-        run: npm publish --provenance --access public
-
-      - name: Publish (staging)
-        if: ${{ contains(github.ref_name, '-staging.') }}
-        run: npm publish --provenance --access public --tag staging
+      - run: npm publish --provenance --access public
 
   github-release:
-    needs: publish
+    needs: [publish]
+    if: ${{ always() && (needs.publish.result == 'success' || needs.publish.result == 'skipped') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
