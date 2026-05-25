@@ -129,6 +129,7 @@ export type EventMarketChartOutcome = Schemas["EventMarketChartOutcome"];
 export type PositionChartOutcome = Schemas["PositionChartOutcome"];
 export type AssetPriceHistoryRow = Schemas["AssetPriceHistoryRow"];
 export type AssetCandlestickBar = Schemas["AssetCandlestickBar"];
+export type AssetCandlestickResolution = Schemas["AssetCandlestickResolution"];
 export type AssetSymbol = Schemas["AssetSymbol"];
 export type AssetVariant = Schemas["AssetVariant"];
 export type PriceJump = Schemas["PriceJump"];

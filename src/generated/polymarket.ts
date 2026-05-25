@@ -1957,6 +1957,8 @@ export interface components {
             /** Format: int64 */
             t: number;
         };
+        /** @enum {string} */
+        AssetCandlestickResolution: "1S" | "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D";
         /** @description One bucket of an asset's price history at a fixed time-window resolution. */
         AssetPriceHistoryRow: {
             asset_symbol: string;
@@ -5620,8 +5622,8 @@ export interface operations {
             query: {
                 /** @description Asset ticker: BTC, ETH, XRP, SOL, DOGE, BNB, HYPE */
                 asset_symbol: components["schemas"]["AssetSymbol"];
-                /** @description Candle interval: 1, 5, 15, 30, 60, 240, D, 1D */
-                resolution: components["schemas"]["CandlestickResolution"];
+                /** @description Candle interval (TradingView naming): 1S (1 second), 1, 5, 15, 30, 60, 240, D, 1D */
+                resolution: components["schemas"]["AssetCandlestickResolution"];
                 /** @description Number of candles (max: 2500) */
                 count_back?: number;
                 /** @description Start timestamp (Unix seconds) */
