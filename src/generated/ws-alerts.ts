@@ -1095,6 +1095,16 @@ export interface components {
             exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
             trade_type: "OrderFilled" | "OrdersMatched";
+            /**
+             * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
+             *     trades; may be `0x0000…` for V2 trades placed without a builder code.
+             */
+            builder_code?: string | null;
+            /**
+             * Format: double
+             * @description Builder fee in USDC. Absent when no builder code is attached.
+             */
+            builder_fee?: number | null;
         };
         /**
          * @description Oracle event variants accepted by `oracle_events.oracle_event_types`.
@@ -1178,7 +1188,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "trader_exit_markers_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -2184,7 +2194,7 @@ export interface components {
          *     full set of typed prediction-trade variants.
          * @enum {string}
          */
-        TradeEventFilterType: "OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval";
+        TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
         /** @description Subscription filters for the `trader_event_pnl` event. All fields are optional. */
         TraderEventPnlFilters: {
             /** @description Track only these trader wallet addresses. */
@@ -2430,7 +2440,7 @@ export interface components {
              */
             max_probability?: number | null;
             /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
-            trade_types?: ("OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[] | null;
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -2803,6 +2813,16 @@ export interface components {
             exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
             trade_type: "OrderFilled" | "OrdersMatched";
+            /**
+             * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
+             *     trades; may be `0x0000…` for V2 trades placed without a builder code.
+             */
+            builder_code?: string | null;
+            /**
+             * Format: double
+             * @description Builder fee in USDC. Absent when no builder code is attached.
+             */
+            builder_fee?: number | null;
         };
         /** @description Outer envelope for every webhook HTTP POST delivery. The `data` field contains the event-specific payload. Delivery headers sent with every POST: `X-Webhook-ID` (subscription UUID), `X-Delivery-ID` (this attempt's UUID), `X-Event-Type` (event name string, e.g. `trader_first_trade`), `X-Attempt` (attempt number, 1-indexed). When the webhook has a secret configured, `X-Webhook-Signature: sha256=<hmac-hex>` is also included — compute HMAC-SHA256 over the raw request body using your secret to verify. */
         WebhookDeliveryEnvelope: {
@@ -2872,6 +2892,10 @@ export interface components {
              * @enum {string}
              */
             exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code. */
+            builder_code?: string;
+            /** @description Builder fee in USDC. Absent when no builder code is attached. */
+            builder_fee?: number;
             /** @enum {string} */
             trade_type: "OrderFilled" | "OrdersMatched";
         } | {
@@ -2917,6 +2941,10 @@ export interface components {
              * @enum {string}
              */
             exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code. */
+            builder_code?: string;
+            /** @description Builder fee in USDC. Absent when no builder code is attached. */
+            builder_fee?: number;
             /** @enum {string} */
             trade_type: "MakerRebate" | "Reward" | "Yield";
         } | {
@@ -3058,6 +3086,15 @@ export interface components {
             market_id: string;
             index_set: string;
             shares_amount: number;
+            fee?: number;
+            fee_pct?: number;
+            /** @description Per-position conversion amounts. */
+            position_details?: {
+                position_id: string;
+                outcome_index: number;
+                outcome?: string;
+                amount: string;
+            }[];
             /**
              * @description Exchange contract that processed the event
              * @enum {string}
@@ -3321,7 +3358,7 @@ export interface components {
          * @description All alert event types supported by both HTTP webhooks and the alerts WebSocket.
          * @enum {string}
          */
-        WsAlertEventType: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "price_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "oracle_events" | "asset_price_tick" | "asset_price_window_update";
+        WsAlertEventType: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "trader_pnl_v3_exits" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "price_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "oracle_events" | "asset_price_tick" | "asset_price_window_update";
         /** @description Server acknowledgement for a successful alert subscription. */
         WsAlertSubscribedResponse: {
             /** @enum {string} */
@@ -3526,7 +3563,9 @@ export interface components {
          *         "price": 0.5,
          *         "probability": 0.5,
          *         "exchange": "CTFExchange",
-         *         "trade_type": "OrderFilled"
+         *         "trade_type": "OrderFilled",
+         *         "builder_code": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "builder_fee": 0.25
          *       }
          *     }
          */
@@ -3594,7 +3633,9 @@ export interface components {
          *         "price": 0.5,
          *         "probability": 0.5,
          *         "exchange": "CTFExchange",
-         *         "trade_type": "OrderFilled"
+         *         "trade_type": "OrderFilled",
+         *         "builder_code": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "builder_fee": 0.05
          *       }
          *     }
          */
@@ -4279,6 +4320,68 @@ export interface components {
              */
             timestamp: number;
             data: components["schemas"]["PositionResolvedV3Payload"];
+        };
+        WsAlertTraderPnlV3ExitsSubscribeMessage: {
+            /** @enum {string} */
+            op: "subscribe";
+            /** @enum {string} */
+            event: "trader_pnl_v3_exits";
+        } & components["schemas"]["ExitMarkersV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_pnl_v3_exits";
+        };
+        WsAlertTraderPnlV3ExitsUnsubscribeMessage: {
+            /** @enum {string} */
+            op: "unsubscribe";
+            /** @enum {string} */
+            event: "trader_pnl_v3_exits";
+        } & components["schemas"]["ExitMarkersV3Filters"] & {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_pnl_v3_exits";
+        };
+        /**
+         * @description Pushed `trader_pnl_v3_exits` alert. The `data` payload matches the corresponding HTTP webhook payload schema.
+         * @example {
+         *       "event": "trader_pnl_v3_exits",
+         *       "timestamp": 1743500000000,
+         *       "data": {
+         *         "trader": "0x0000000000000000000000000000000000000000",
+         *         "position_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "event_slug": "test-event-0000000000",
+         *         "market_slug": "test-market",
+         *         "title": "Test Market",
+         *         "question": "Will this test market resolve YES?",
+         *         "image_url": "",
+         *         "outcome": "Yes",
+         *         "outcome_index": 0,
+         *         "pnl_usd": 100,
+         *         "pnl_pct": 33.3,
+         *         "cost_basis_usd": 300,
+         *         "reason": "resolved_win",
+         *         "block": 1,
+         *         "ts": 1700000000
+         *       }
+         *     }
+         */
+        WsAlertTraderPnlV3ExitsEvent: {
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            event: "trader_pnl_v3_exits";
+            /**
+             * Format: int64
+             * @description Unix timestamp in milliseconds
+             */
+            timestamp: number;
+            data: components["schemas"]["ExitMarkersV3Payload"];
         };
         WsAlertConditionMetricsSubscribeMessage: {
             /** @enum {string} */
@@ -5300,11 +5403,11 @@ export interface components {
             data: components["schemas"]["AssetPriceWindowUpdatePayload"];
         };
         /** @description Typed subscribe request for the alerts WebSocket. The request shape depends on `event`; filters follow the schema associated with that event type. */
-        WsAlertSubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketSubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderCategoryPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderPositionResolvedV3SubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsSubscribeMessage"] | components["schemas"]["WsAlertEventMetricsSubscribeMessage"] | components["schemas"]["WsAlertTagMetricsSubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeSubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertCloseToBondSubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedSubscribeMessage"] | components["schemas"]["WsAlertOracleEventsSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateSubscribeMessage"];
+        WsAlertSubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketSubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderCategoryPnlV3SubscribeMessage"] | components["schemas"]["WsAlertTraderPositionResolvedV3SubscribeMessage"] | components["schemas"]["WsAlertTraderPnlV3ExitsSubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsSubscribeMessage"] | components["schemas"]["WsAlertEventMetricsSubscribeMessage"] | components["schemas"]["WsAlertTagMetricsSubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeSubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertCloseToBondSubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedSubscribeMessage"] | components["schemas"]["WsAlertOracleEventsSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateSubscribeMessage"];
         /** @description Typed unsubscribe request for the alerts WebSocket. The request shape depends on `event` and must match the original subscription filters. */
-        WsAlertUnsubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketUnsubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderCategoryPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderPositionResolvedV3UnsubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertEventMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertTagMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertCloseToBondUnsubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedUnsubscribeMessage"] | components["schemas"]["WsAlertOracleEventsUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateUnsubscribeMessage"];
+        WsAlertUnsubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketUnsubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderEventPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderCategoryPnlV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderPositionResolvedV3UnsubscribeMessage"] | components["schemas"]["WsAlertTraderPnlV3ExitsUnsubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertEventMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertTagMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertCloseToBondUnsubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedUnsubscribeMessage"] | components["schemas"]["WsAlertOracleEventsUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateUnsubscribeMessage"];
         /** @description Typed pushed-event envelope for the alerts WebSocket. The `data` payload depends on `event` and matches the corresponding HTTP webhook payload schema. */
-        WsAlertEventPayload: components["schemas"]["WsAlertTraderFirstTradeEvent"] | components["schemas"]["WsAlertTraderNewMarketEvent"] | components["schemas"]["WsAlertTraderWhaleTradeEvent"] | components["schemas"]["WsAlertTraderNewTradeEvent"] | components["schemas"]["WsAlertTraderTradeEventEvent"] | components["schemas"]["WsAlertTraderGlobalPnlEvent"] | components["schemas"]["WsAlertTraderMarketPnlEvent"] | components["schemas"]["WsAlertTraderEventPnlEvent"] | components["schemas"]["WsAlertTraderGlobalPnlV3Event"] | components["schemas"]["WsAlertTraderMarketPnlV3Event"] | components["schemas"]["WsAlertTraderEventPnlV3Event"] | components["schemas"]["WsAlertTraderCategoryPnlV3Event"] | components["schemas"]["WsAlertTraderPositionResolvedV3Event"] | components["schemas"]["WsAlertConditionMetricsEvent"] | components["schemas"]["WsAlertEventMetricsEvent"] | components["schemas"]["WsAlertTagMetricsEvent"] | components["schemas"]["WsAlertPositionMetricsEvent"] | components["schemas"]["WsAlertMarketVolumeMilestoneEvent"] | components["schemas"]["WsAlertEventVolumeMilestoneEvent"] | components["schemas"]["WsAlertPositionVolumeMilestoneEvent"] | components["schemas"]["WsAlertProbabilitySpikeEvent"] | components["schemas"]["WsAlertPriceSpikeEvent"] | components["schemas"]["WsAlertMarketVolumeSpikeEvent"] | components["schemas"]["WsAlertEventVolumeSpikeEvent"] | components["schemas"]["WsAlertPositionVolumeSpikeEvent"] | components["schemas"]["WsAlertCloseToBondEvent"] | components["schemas"]["WsAlertMarketCreatedEvent"] | components["schemas"]["WsAlertOracleEventsEvent"] | components["schemas"]["WsAlertAssetPriceTickEvent"] | components["schemas"]["WsAlertAssetPriceWindowUpdateEvent"];
+        WsAlertEventPayload: components["schemas"]["WsAlertTraderFirstTradeEvent"] | components["schemas"]["WsAlertTraderNewMarketEvent"] | components["schemas"]["WsAlertTraderWhaleTradeEvent"] | components["schemas"]["WsAlertTraderNewTradeEvent"] | components["schemas"]["WsAlertTraderTradeEventEvent"] | components["schemas"]["WsAlertTraderGlobalPnlEvent"] | components["schemas"]["WsAlertTraderMarketPnlEvent"] | components["schemas"]["WsAlertTraderEventPnlEvent"] | components["schemas"]["WsAlertTraderGlobalPnlV3Event"] | components["schemas"]["WsAlertTraderMarketPnlV3Event"] | components["schemas"]["WsAlertTraderEventPnlV3Event"] | components["schemas"]["WsAlertTraderCategoryPnlV3Event"] | components["schemas"]["WsAlertTraderPositionResolvedV3Event"] | components["schemas"]["WsAlertTraderPnlV3ExitsEvent"] | components["schemas"]["WsAlertConditionMetricsEvent"] | components["schemas"]["WsAlertEventMetricsEvent"] | components["schemas"]["WsAlertTagMetricsEvent"] | components["schemas"]["WsAlertPositionMetricsEvent"] | components["schemas"]["WsAlertMarketVolumeMilestoneEvent"] | components["schemas"]["WsAlertEventVolumeMilestoneEvent"] | components["schemas"]["WsAlertPositionVolumeMilestoneEvent"] | components["schemas"]["WsAlertProbabilitySpikeEvent"] | components["schemas"]["WsAlertPriceSpikeEvent"] | components["schemas"]["WsAlertMarketVolumeSpikeEvent"] | components["schemas"]["WsAlertEventVolumeSpikeEvent"] | components["schemas"]["WsAlertPositionVolumeSpikeEvent"] | components["schemas"]["WsAlertCloseToBondEvent"] | components["schemas"]["WsAlertMarketCreatedEvent"] | components["schemas"]["WsAlertOracleEventsEvent"] | components["schemas"]["WsAlertAssetPriceTickEvent"] | components["schemas"]["WsAlertAssetPriceWindowUpdateEvent"];
         TraderGlobalPnlV3Filters: {
             [key: string]: unknown;
         };
@@ -5335,6 +5438,12 @@ export interface components {
         PositionResolvedV3Payload: {
             [key: string]: unknown;
         };
+        ExitMarkersV3Filters: {
+            [key: string]: unknown;
+        };
+        ExitMarkersV3Payload: {
+            [key: string]: unknown;
+        };
     };
     responses: never;
     parameters: never;
@@ -5359,6 +5468,7 @@ export interface WsAlertSubscribeMap {
 	trader_event_pnl_v3: components["schemas"]["WsAlertTraderEventPnlV3SubscribeMessage"];
 	trader_category_pnl_v3: components["schemas"]["WsAlertTraderCategoryPnlV3SubscribeMessage"];
 	trader_position_resolved_v3: components["schemas"]["WsAlertTraderPositionResolvedV3SubscribeMessage"];
+	trader_pnl_v3_exits: components["schemas"]["WsAlertTraderPnlV3ExitsSubscribeMessage"];
 	condition_metrics: components["schemas"]["WsAlertConditionMetricsSubscribeMessage"];
 	event_metrics: components["schemas"]["WsAlertEventMetricsSubscribeMessage"];
 	tag_metrics: components["schemas"]["WsAlertTagMetricsSubscribeMessage"];
@@ -5392,6 +5502,7 @@ export interface WsAlertEventDataMap {
 	trader_event_pnl_v3: components["schemas"]["EventPnlV3Payload"];
 	trader_category_pnl_v3: components["schemas"]["CategoryPnlV3Payload"];
 	trader_position_resolved_v3: components["schemas"]["PositionResolvedV3Payload"];
+	trader_pnl_v3_exits: components["schemas"]["ExitMarkersV3Payload"];
 	condition_metrics: components["schemas"]["ConditionMetricsPayload"];
 	event_metrics: components["schemas"]["EventMetricsPayload"];
 	tag_metrics: components["schemas"]["TagMetricsPayload"];

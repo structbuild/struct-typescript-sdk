@@ -34,7 +34,9 @@ import type {
 	GetTraderPositionPnlV3Params,
 	GetGlobalPnlV3Params,
 	GetTopTradesMarketsV3Params,
+	GetTraderPnlV3ExitsParams,
 	PnlV3CandlestickBar,
+	PnlV3ExitMarker,
 	PnlV3ChangesResponse,
 	PnlV3PeriodsResponse,
 	PnlV3RiskResponse,
@@ -144,6 +146,11 @@ export class TraderNamespace extends Namespace {
 	async getTraderPositionPnlV3(params: GetTraderPositionPnlV3Params, venue?: Venue): Promise<HttpResponse<PositionEntry[]>> {
 		const { address, ...query } = params;
 		return this.get<PositionEntry[]>(venue, `/trader/pnl_v3/${encodeURIComponent(address)}/positions`, { params: query });
+	}
+
+	async getTraderPnlV3Exits(params: GetTraderPnlV3ExitsParams, venue?: Venue): Promise<HttpResponse<PnlV3ExitMarker[]>> {
+		const { address, ...query } = params;
+		return this.get<PnlV3ExitMarker[]>(venue, `/trader/pnl_v3/${encodeURIComponent(address)}/exits`, { params: query });
 	}
 
 	async getGlobalPnlV3(params?: GetGlobalPnlV3Params, venue?: Venue): Promise<HttpResponse<GlobalEntry[]>> {

@@ -84,6 +84,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/analytics_v3/changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Global analytics pct change
+         * @description Returns % change for each metric over the requested lookback window. `null` fields mean the window predates the available data.
+         */
+        get: operations["get_global_analytics_v3_changes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/analytics_v3/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Global analytics snapshot
+         * @description Returns the latest cumulative analytics metrics across all of Polymarket: volume, traders, txn counts, fees, yes/no splits, and buy distribution.
+         */
+        get: operations["get_analytics_v3_counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/analytics_v3/deltas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Global analytics candles (per-bucket deltas)
+         * @description Returns per-bucket deltas (volume, traders, fees etc. that happened *during* each bucket). Use for bar-chart visualisations of activity over time.
+         */
+        get: operations["get_global_analytics_v3_deltas"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/analytics_v3/timeseries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Global analytics timeseries (cumulative)
+         * @description Returns cumulative analytics values at the end of each bucket. Use for running-total line charts of global volume, traders, fees over time.
+         */
+        get: operations["get_global_analytics_v3_timeseries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/asset-history": {
         parameters: {
             query?: never;
@@ -96,6 +176,26 @@ export interface paths {
          * @description Returns historical price data for supported crypto assets from Polymarket API
          */
         get: operations["get_asset_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/asset-history/candlestick": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get OHLC candles for a crypto asset
+         * @description Retrieve OHLC candlestick data for a single crypto asset at the requested resolution.
+         */
+        get: operations["get_asset_candlestick"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1204,7 +1304,7 @@ export interface paths {
         };
         /**
          * Get top traders for a market (v3)
-         * @description Top traders for a market.
+         * @description Top traders for a market, ranked by realized PnL desc.
          */
         get: operations["get_market_top_traders_v3"];
         put?: never;
@@ -1895,6 +1995,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/pnl_v3/{address}/exits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader position exits (v3)
+         * @description Position exits for a trader, to overlay on the PnL chart.
+         */
+        get: operations["get_trader_pnl_v3_exits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/pnl_v3/{address}/markets": {
         parameters: {
             query?: never;
@@ -2024,7 +2144,7 @@ export interface paths {
         };
         /**
          * Get top markets across all traders (v3)
-         * @description Top markets across all traders.
+         * @description Top markets across all traders, ranked by realized PnL desc.
          */
         get: operations["get_top_trades_markets_v3"];
         put?: never;
@@ -2147,6 +2267,310 @@ export interface components {
          * @enum {string}
          */
         AnalyticsResolution: "60" | "240" | "D" | "1D" | "W" | "1W" | "M" | "1M";
+        /**
+         * @description Lookback window for `/analytics/changes` endpoints.
+         * @enum {string}
+         */
+        AnalyticsV3ChangeTimeframe: "1h" | "24h" | "7d" | "30d" | "1mo" | "1y";
+        /**
+         * @description Response body for `GET /polymarket/analytics_v3/counts`.
+         *     Cumulative analytics metrics plus entity-count enrichment.
+         */
+        AnalyticsV3GlobalCountsResponse: {
+            /**
+             * Format: int32
+             * @description Unix-second timestamp of the latest block reflected in the metrics.
+             */
+            ts: number;
+            /**
+             * Format: int64
+             * @description Latest block number processed.
+             */
+            block: number;
+            /** Format: double */
+            volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /**
+             * Format: int64
+             * @description Distinct addresses that have ever traded on Polymarket (lifetime).
+             */
+            unique_traders: number;
+            /**
+             * Format: int64
+             * @description Distinct makers ever active (lifetime distinct).
+             */
+            unique_makers: number;
+            /**
+             * Format: int64
+             * @description Distinct takers ever active (lifetime distinct).
+             */
+            unique_takers: number;
+            /** Format: int64 */
+            txn_count: number;
+            /** Format: int64 */
+            buy_count: number;
+            /** Format: int64 */
+            sell_count: number;
+            /** Format: int64 */
+            redemption_count: number;
+            /** Format: double */
+            redemption_volume_usd: number;
+            /** Format: int64 */
+            merge_count: number;
+            /** Format: double */
+            merge_volume_usd: number;
+            /** Format: int64 */
+            split_count: number;
+            /** Format: double */
+            split_volume_usd: number;
+            /** Format: int64 */
+            converted_count: number;
+            /** Format: double */
+            converted_collateral_usd: number;
+            /** Format: double */
+            converted_shares_gained: number;
+            /** Format: double */
+            converted_shares_lost: number;
+            /** Format: int64 */
+            maker_rebate_count: number;
+            /** Format: double */
+            maker_rebate_volume_usd: number;
+            /** Format: int64 */
+            reward_count: number;
+            /** Format: double */
+            reward_volume_usd: number;
+            /** Format: int64 */
+            yield_count: number;
+            /** Format: double */
+            yield_volume_usd: number;
+            /** Format: double */
+            fees_usd: number;
+            /** Format: double */
+            shares_volume: number;
+            /** Format: double */
+            buy_shares_volume: number;
+            /** Format: double */
+            sell_shares_volume: number;
+            /** Format: double */
+            yes_shares_volume: number;
+            /** Format: double */
+            no_shares_volume: number;
+            /** Format: double */
+            yes_volume_usd: number;
+            /** Format: double */
+            no_volume_usd: number;
+            /** Format: int64 */
+            yes_count: number;
+            /** Format: int64 */
+            no_count: number;
+            /** Format: int64 */
+            buy_dist_under_10: number;
+            /** Format: int64 */
+            buy_dist_10_100: number;
+            /** Format: int64 */
+            buy_dist_100_1k: number;
+            /** Format: int64 */
+            buy_dist_1k_10k: number;
+            /** Format: int64 */
+            buy_dist_10k_50k: number;
+            /** Format: int64 */
+            buy_dist_50k_plus: number;
+            /**
+             * Format: int64
+             * @description Total number of tags.
+             */
+            tags: number;
+            /**
+             * Format: int64
+             * @description Total number of events.
+             */
+            events: number;
+            /**
+             * Format: int64
+             * @description Total number of markets.
+             */
+            markets: number;
+            /**
+             * Format: int64
+             * @description Total number of unique positions / traders.
+             */
+            positions: number;
+        };
+        /**
+         * @description Per-metric % change. `None` when the window predates the entity's data
+         *     or the previous value was zero (division undefined).
+         */
+        AnalyticsV3MetricPctChange: {
+            /** Format: double */
+            volume_usd?: number | null;
+            /** Format: double */
+            buy_volume_usd?: number | null;
+            /** Format: double */
+            sell_volume_usd?: number | null;
+            /** Format: double */
+            merge_volume_usd?: number | null;
+            /** Format: double */
+            split_volume_usd?: number | null;
+            /** Format: double */
+            converted_count?: number | null;
+            /** Format: double */
+            converted_collateral_usd?: number | null;
+            /** Format: double */
+            converted_shares_gained?: number | null;
+            /** Format: double */
+            converted_shares_lost?: number | null;
+            /** Format: double */
+            maker_rebate_count?: number | null;
+            /** Format: double */
+            maker_rebate_volume_usd?: number | null;
+            /** Format: double */
+            reward_count?: number | null;
+            /** Format: double */
+            reward_volume_usd?: number | null;
+            /** Format: double */
+            yield_count?: number | null;
+            /** Format: double */
+            yield_volume_usd?: number | null;
+            /** Format: double */
+            unique_traders?: number | null;
+            /** Format: double */
+            unique_makers?: number | null;
+            /** Format: double */
+            unique_takers?: number | null;
+            /** Format: double */
+            txn_count?: number | null;
+            /** Format: double */
+            fees_usd?: number | null;
+            /** Format: double */
+            shares_volume?: number | null;
+            /** Format: double */
+            buy_shares_volume?: number | null;
+            /** Format: double */
+            sell_shares_volume?: number | null;
+            /** Format: double */
+            yes_shares_volume?: number | null;
+            /** Format: double */
+            no_shares_volume?: number | null;
+            /** Format: double */
+            yes_volume_usd?: number | null;
+            /** Format: double */
+            no_volume_usd?: number | null;
+        };
+        /**
+         * @description Bucket row returned by both `/analytics/timeseries` (cumulative values
+         *     at end of bucket) and `/analytics/deltas` (per-bucket deltas). All metrics
+         *     the snapshot `/counts` returns are included.
+         *
+         *     Short field names for compact JSON responses:
+         *       t=bucket (unix seconds), v=volume_usd, bv=buy_volume_usd, sv=sell_volume_usd,
+         *       ut=unique_traders, um=unique_makers, uk=unique_takers,
+         *       tc=txn_count, bc=buy_count, sc=sell_count,
+         *       rc=redemption_count, rv=redemption_volume_usd, mc=merge_count, mv=merge_volume_usd,
+         *       sp=split_count, spv=split_volume_usd, f=fees_usd, sh=shares_volume,
+         *       yv=yes_volume_usd, nv=no_volume_usd, yc=yes_count, nc=no_count,
+         *       bd_*=buy distribution by USD bucket
+         */
+        AnalyticsV3TimeBucketRow: {
+            /** Format: int32 */
+            t: number;
+            /** Format: double */
+            v: number;
+            /** Format: double */
+            bv: number;
+            /** Format: double */
+            sv: number;
+            /** Format: int64 */
+            tc: number;
+            /** Format: int64 */
+            bc: number;
+            /** Format: int64 */
+            sc: number;
+            /** Format: int64 */
+            rc: number;
+            /** Format: double */
+            rv: number;
+            /** Format: int64 */
+            mc: number;
+            /** Format: double */
+            mv: number;
+            /** Format: int64 */
+            sp: number;
+            /** Format: double */
+            spv: number;
+            /** Format: int64 */
+            cc: number;
+            /** Format: double */
+            ccu: number;
+            /** Format: double */
+            csg: number;
+            /** Format: double */
+            csl: number;
+            /** Format: int64 */
+            mrc: number;
+            /** Format: double */
+            mrv: number;
+            /** Format: int64 */
+            rwc: number;
+            /** Format: double */
+            rwv: number;
+            /** Format: int64 */
+            ydc: number;
+            /** Format: double */
+            ydv: number;
+            /** Format: double */
+            f: number;
+            /** Format: double */
+            sh: number;
+            /** Format: double */
+            bsh: number;
+            /** Format: double */
+            ssh: number;
+            /** Format: double */
+            ysh: number;
+            /** Format: double */
+            nsh: number;
+            /** Format: double */
+            yv: number;
+            /** Format: double */
+            nv: number;
+            /** Format: int64 */
+            yc: number;
+            /** Format: int64 */
+            nc: number;
+            /**
+             * Format: int64
+             * @description Buy distribution — count of buy trades falling in each USD bucket.
+             */
+            bd_u10: number;
+            /** Format: int64 */
+            bd_100: number;
+            /** Format: int64 */
+            bd_1k: number;
+            /** Format: int64 */
+            bd_10k: number;
+            /** Format: int64 */
+            bd_50k: number;
+            /** Format: int64 */
+            bd_50p: number;
+            /**
+             * Format: int64
+             * @description Distinct traders ACTIVE in this bucket (window-unique, not first-time).
+             */
+            ut: number;
+            /**
+             * Format: int64
+             * @description Distinct makers active in this bucket.
+             */
+            um: number;
+            /**
+             * Format: int64
+             * @description Distinct takers active in this bucket.
+             */
+            uk: number;
+        };
         /**
          * @description Sort key for the top-traders ranking.
          * @enum {string}
@@ -2337,6 +2761,20 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
+        AssetCandlestickBar: {
+            /** Format: double */
+            l?: number | null;
+            /** Format: double */
+            h?: number | null;
+            /** Format: double */
+            o?: number | null;
+            /** Format: double */
+            c?: number | null;
+            /** Format: int64 */
+            t: number;
+        };
+        /** @enum {string} */
+        AssetCandlestickResolution: "1S" | "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D";
         /** @description One bucket of an asset's price history at a fixed time-window resolution. */
         AssetPriceHistoryRow: {
             asset_symbol: string;
@@ -2705,103 +3143,56 @@ export interface components {
             /** Format: double */
             avg_vol_per_user: number;
         };
-        /** @description Outcome-level PnL entry (per outcome token / position_id) */
-        TraderOutcomePnlEntry: {
-            position_id?: string | null;
-            condition_id?: string | null;
-            market_slug?: string | null;
-            event_slug?: string | null;
-            title?: string | null;
-            image_url?: string | null;
-            outcome?: string | null;
-            /** Format: int32 */
-            outcome_index?: number | null;
-            /** @description TRUE = won, FALSE = lost, NULL = open or sold before resolution */
-            won?: boolean | null;
+        /** @enum {string} */
+        SortDirection: "asc" | "desc";
+        /** @description Trader's global PnL summary (single trader) */
+        TraderPnlSummary: {
+            trader?: string | null;
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: int64 */
+            events_traded?: number | null;
+            /** Format: int64 */
+            markets_traded?: number | null;
             /** Format: int64 */
             total_buys?: number | null;
             /** Format: int64 */
             total_sells?: number | null;
-            /** Format: double */
-            total_shares_bought?: number | null;
-            /** Format: double */
-            total_shares_sold?: number | null;
-            /** Format: double */
-            total_buy_usd?: number | null;
-            /** Format: double */
-            total_sell_usd?: number | null;
-            /**
-             * Format: double
-             * @description Payout on redemption (non-zero only if won)
-             */
-            redemption_usd?: number | null;
-            /**
-             * Format: double
-             * @description VWAP price paid per share across all buys (0–1)
-             */
-            avg_entry_price?: number | null;
-            /**
-             * Format: double
-             * @description VWAP price received per share across all sells (0–1)
-             */
-            avg_exit_price?: number | null;
-            /** Format: double */
-            realized_pnl_usd?: number | null;
-            /** Format: double */
-            total_fees?: number | null;
             /** Format: int64 */
-            first_trade_at?: number | null;
+            total_redemptions?: number | null;
             /** Format: int64 */
-            last_trade_at?: number | null;
-            /**
-             * Format: double
-             * @description Last traded price for this outcome (0–1). NULL if market_outcomes has no price yet.
-             */
-            current_price?: number | null;
-            /**
-             * Format: double
-             * @description Current shares held: balance / 1e6.
-             */
-            current_shares_balance?: number | null;
-            /**
-             * Format: double
-             * @description Estimated current USD value of held shares: (balance / 1e6) * current_price.
-             *     Only meaningful for open positions (balance above dust threshold).
-             */
-            current_value?: number | null;
-            /**
-             * Format: double
-             * @description Realized PnL as a percentage of total spend: (realized_pnl_usd / total_buy_usd) * 100.
-             *     NULL when total_buy_usd = 0.
-             */
-            realized_pnl_pct?: number | null;
-        };
-        /**
-         * @description Per-metric percentage change over a lookback window for one trader
-         *     address. A `null` field means the window predates the trader's first
-         *     activity or the prior value was zero (percentage undefined).
-         */
-        TraderMetricPctChange: {
+            total_merges?: number | null;
             /** Format: double */
-            volume_usd?: number | null;
+            total_volume_usd?: number | null;
             /** Format: double */
             buy_volume_usd?: number | null;
             /** Format: double */
             sell_volume_usd?: number | null;
             /** Format: double */
+            redemption_volume_usd?: number | null;
+            /** Format: double */
             merge_volume_usd?: number | null;
+            /** Format: int64 */
+            markets_won?: number | null;
+            /** Format: int64 */
+            markets_lost?: number | null;
             /** Format: double */
-            split_volume_usd?: number | null;
+            market_win_rate_pct?: number | null;
             /** Format: double */
-            txn_count?: number | null;
+            avg_pnl_per_market?: number | null;
             /** Format: double */
-            fees_usd?: number | null;
+            avg_pnl_per_trade?: number | null;
             /** Format: double */
-            shares_volume?: number | null;
+            avg_hold_time_seconds?: number | null;
             /** Format: double */
-            yes_volume_usd?: number | null;
+            total_fees?: number | null;
             /** Format: double */
-            no_volume_usd?: number | null;
+            best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
         };
         /**
          * @description Sort metric for the builders list endpoint.
@@ -2956,11 +3347,6 @@ export interface components {
          * @enum {string}
          */
         BuilderTimeframe: "lifetime" | "1d" | "7d" | "30d";
-        /**
-         * @description Direction filter for spike webhooks.
-         * @enum {string}
-         */
-        SpikeDirection: "up" | "down" | "both";
         /** @description Output payload for Split trades (deposit collateral → receive outcome tokens). */
         SplitTrade: {
             id: string;
@@ -2986,6 +3372,33 @@ export interface components {
             /** @description Per-position mint amounts */
             position_details?: components["schemas"]["PositionDetail"][];
             exchange: components["schemas"]["PolymarketExchange"];
+        };
+        /**
+         * @description One bucket of derived order-book metrics for a position at a point in time.
+         *     Only summary metrics are returned — the underlying bid/ask ladders are
+         *     available from the snapshot endpoint.
+         */
+        SpreadRow: {
+            /** Format: int64 */
+            ts: number;
+            position_id: string;
+            condition_id: string;
+            /** Format: double */
+            best_bid?: number | null;
+            /** Format: double */
+            best_ask?: number | null;
+            /** Format: double */
+            mid_price?: number | null;
+            /** Format: double */
+            spread?: number | null;
+            /** Format: double */
+            bid_liquidity_usd?: number | null;
+            /** Format: double */
+            ask_liquidity_usd?: number | null;
+            /** Format: int32 */
+            bid_levels?: number | null;
+            /** Format: int32 */
+            ask_levels?: number | null;
         };
         /** @description Output payload for Cancelled orders. */
         CancelledTrade: {
@@ -4515,11 +4928,10 @@ export interface components {
         /** @enum {string} */
         MarketPnlSortBy: "realized_pnl_usd" | "buy_usd" | "total_buys" | "total_fees" | "outcomes_traded" | "realized_pnl_pct";
         /**
-         * @description Sort field for v3 market PnL results. Supported values cover realized PnL,
-         *     total volume, share counts, and first or last trade time.
+         * @description Sort field for v3 per-trader market PnL results.
          * @enum {string}
          */
-        MarketPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "total_shares_bought" | "total_shares_sold" | "first_trade_at" | "last_trade_at";
+        MarketPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "total_shares_sold" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block";
         /** @description Formatted market response with structured metrics, tags, outcomes, and event */
         MarketResponse: {
             condition_id: string;
@@ -5232,6 +5644,62 @@ export interface components {
             latest?: null | components["schemas"]["PnlV3LatestSnapshot"];
             changes: components["schemas"]["PnlV3ChangeWindow"][];
         };
+        /** @description A single position exit, sized and labelled for overlay on the PnL chart. */
+        PnlV3ExitMarker: {
+            /**
+             * Format: int64
+             * @description Exit time in unix seconds.
+             */
+            t: number;
+            /**
+             * Format: int64
+             * @description Block number the exit was recorded at.
+             */
+            block: number;
+            /** @description Market condition id. */
+            condition: string;
+            /** @description Outcome token id. */
+            position: string;
+            /** @description Event slug. */
+            event_slug: string;
+            /** @description Market slug. */
+            market_slug: string;
+            /** @description Market title. */
+            title: string;
+            /** @description Market question. */
+            question: string;
+            /** @description Market image URL. */
+            image_url: string;
+            /** @description Outcome name. */
+            outcome: string;
+            /**
+             * Format: int32
+             * @description Outcome index within the market, when known.
+             */
+            outcome_index?: number | null;
+            /**
+             * Format: double
+             * @description Realized PnL in USD for the position at exit.
+             */
+            pnl_usd: number;
+            /**
+             * Format: double
+             * @description Realized PnL percent for the position at exit.
+             */
+            pnl_pct: number;
+            /**
+             * Format: double
+             * @description Amount paid into the position, in USD.
+             */
+            cost_basis_usd: number;
+            /** @description Why the position closed. */
+            reason: components["schemas"]["PnlV3ExitReason"];
+        };
+        /**
+         * @description Reason a position closed: a 2×2 of resolved-vs-sold and win-vs-loss.
+         * @enum {string}
+         */
+        PnlV3ExitReason: "resolved_win" | "resolved_loss" | "sold_win" | "sold_loss";
         PnlV3LatestSnapshot: {
             /** Format: int64 */
             t: number;
@@ -5866,6 +6334,13 @@ export interface components {
             position_details?: components["schemas"]["PositionDetail"][];
             exchange: components["schemas"]["PolymarketExchange"];
         };
+        /**
+         * @description `TagBuilderRow` with builder display metadata (name, icon, links) merged
+         *     onto each row. Returned by `/polymarket/builders/tags/{tag}`.
+         */
+        TagBuilderRowWithMetadata: components["schemas"]["TagBuilderRow"] & {
+            metadata?: null | components["schemas"]["BuilderMetadataInline"];
+        };
         /** @description One builder's stats under a single tag. */
         TagBuilderRow: {
             builder_code: string;
@@ -5923,33 +6398,6 @@ export interface components {
             avg_rev_per_user: number;
             /** Format: double */
             avg_vol_per_user: number;
-        };
-        /**
-         * @description One bucket of derived order-book metrics for a position at a point in time.
-         *     Only summary metrics are returned — the underlying bid/ask ladders are
-         *     available from the snapshot endpoint.
-         */
-        SpreadRow: {
-            /** Format: int64 */
-            ts: number;
-            position_id: string;
-            condition_id: string;
-            /** Format: double */
-            best_bid?: number | null;
-            /** Format: double */
-            best_ask?: number | null;
-            /** Format: double */
-            mid_price?: number | null;
-            /** Format: double */
-            spread?: number | null;
-            /** Format: double */
-            bid_liquidity_usd?: number | null;
-            /** Format: double */
-            ask_liquidity_usd?: number | null;
-            /** Format: int32 */
-            bid_levels?: number | null;
-            /** Format: int32 */
-            ask_levels?: number | null;
         };
         PredictionCandlestickBar: {
             /** Format: double */
@@ -6227,13 +6675,38 @@ export interface components {
             position_details?: components["schemas"]["PositionDetail"][];
             exchange: components["schemas"]["PolymarketExchange"];
         };
-        /** @enum {string} */
-        SortDirection: "asc" | "desc";
         /**
-         * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
+         * @description Direction filter for spike webhooks.
          * @enum {string}
          */
-        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d";
+        SpikeDirection: "up" | "down" | "both";
+        /**
+         * @description Per-metric percentage change over a lookback window for one trader
+         *     address. A `null` field means the window predates the trader's first
+         *     activity or the prior value was zero (percentage undefined).
+         */
+        TraderMetricPctChange: {
+            /** Format: double */
+            volume_usd?: number | null;
+            /** Format: double */
+            buy_volume_usd?: number | null;
+            /** Format: double */
+            sell_volume_usd?: number | null;
+            /** Format: double */
+            merge_volume_usd?: number | null;
+            /** Format: double */
+            split_volume_usd?: number | null;
+            /** Format: double */
+            txn_count?: number | null;
+            /** Format: double */
+            fees_usd?: number | null;
+            /** Format: double */
+            shares_volume?: number | null;
+            /** Format: double */
+            yes_volume_usd?: number | null;
+            /** Format: double */
+            no_volume_usd?: number | null;
+        };
         /** @description Output payload for RegisterToken events (YES/NO token pair registered for a condition). */
         RegisterTokenTrade: {
             id: string;
@@ -6257,15 +6730,11 @@ export interface components {
             event_slug?: string | null;
             exchange: components["schemas"]["PolymarketExchange"];
         };
-        /** @description Trader profile info - backwards compatibility */
-        TraderInfo: {
-            address: string;
-            name?: string | null;
-            pseudonym?: string | null;
-            profile_image?: string | null;
-            x_username?: string | null;
-            verified_badge?: boolean;
-        };
+        /**
+         * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
+         * @enum {string}
+         */
+        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d";
         /** @description V2 UMA OOv2: a price request was made (market initialization). */
         RequestPriceEvent: {
             id: string;
@@ -6319,54 +6788,14 @@ export interface components {
             /** Format: double */
             d30: number;
         };
-        /** @description Trader's global PnL summary (single trader) */
-        TraderPnlSummary: {
-            trader?: string | null;
-            /** Format: double */
-            realized_pnl_usd?: number | null;
-            /** Format: int64 */
-            events_traded?: number | null;
-            /** Format: int64 */
-            markets_traded?: number | null;
-            /** Format: int64 */
-            total_buys?: number | null;
-            /** Format: int64 */
-            total_sells?: number | null;
-            /** Format: int64 */
-            total_redemptions?: number | null;
-            /** Format: int64 */
-            total_merges?: number | null;
-            /** Format: double */
-            total_volume_usd?: number | null;
-            /** Format: double */
-            buy_volume_usd?: number | null;
-            /** Format: double */
-            sell_volume_usd?: number | null;
-            /** Format: double */
-            redemption_volume_usd?: number | null;
-            /** Format: double */
-            merge_volume_usd?: number | null;
-            /** Format: int64 */
-            markets_won?: number | null;
-            /** Format: int64 */
-            markets_lost?: number | null;
-            /** Format: double */
-            market_win_rate_pct?: number | null;
-            /** Format: double */
-            avg_pnl_per_market?: number | null;
-            /** Format: double */
-            avg_pnl_per_trade?: number | null;
-            /** Format: double */
-            avg_hold_time_seconds?: number | null;
-            /** Format: double */
-            total_fees?: number | null;
-            /** Format: double */
-            best_trade_pnl_usd?: number | null;
-            best_trade_condition_id?: string | null;
-            /** Format: int64 */
-            first_trade_at?: number | null;
-            /** Format: int64 */
-            last_trade_at?: number | null;
+        /** @description Trader profile info - backwards compatibility */
+        TraderInfo: {
+            address: string;
+            name?: string | null;
+            pseudonym?: string | null;
+            profile_image?: string | null;
+            x_username?: string | null;
+            verified_badge?: boolean;
         };
         /**
          * @description Trader profile info embedded in API responses.
@@ -6710,6 +7139,77 @@ export interface components {
          * @enum {string}
          */
         WebhookAssetSymbol: "BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE";
+        /** @description Outcome-level PnL entry (per outcome token / position_id) */
+        TraderOutcomePnlEntry: {
+            position_id?: string | null;
+            condition_id?: string | null;
+            market_slug?: string | null;
+            event_slug?: string | null;
+            title?: string | null;
+            image_url?: string | null;
+            outcome?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            /** @description TRUE = won, FALSE = lost, NULL = open or sold before resolution */
+            won?: boolean | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: double */
+            total_shares_bought?: number | null;
+            /** Format: double */
+            total_shares_sold?: number | null;
+            /** Format: double */
+            total_buy_usd?: number | null;
+            /** Format: double */
+            total_sell_usd?: number | null;
+            /**
+             * Format: double
+             * @description Payout on redemption (non-zero only if won)
+             */
+            redemption_usd?: number | null;
+            /**
+             * Format: double
+             * @description VWAP price paid per share across all buys (0–1)
+             */
+            avg_entry_price?: number | null;
+            /**
+             * Format: double
+             * @description VWAP price received per share across all sells (0–1)
+             */
+            avg_exit_price?: number | null;
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+            /**
+             * Format: double
+             * @description Last traded price for this outcome (0–1). NULL if market_outcomes has no price yet.
+             */
+            current_price?: number | null;
+            /**
+             * Format: double
+             * @description Current shares held: balance / 1e6.
+             */
+            current_shares_balance?: number | null;
+            /**
+             * Format: double
+             * @description Estimated current USD value of held shares: (balance / 1e6) * current_price.
+             *     Only meaningful for open positions (balance above dust threshold).
+             */
+            current_value?: number | null;
+            /**
+             * Format: double
+             * @description Realized PnL as a percentage of total spend: (realized_pnl_usd / total_buy_usd) * 100.
+             *     NULL when total_buy_usd = 0.
+             */
+            realized_pnl_pct?: number | null;
+        };
     };
     responses: never;
     parameters: never;
@@ -6824,6 +7324,111 @@ export interface operations {
             };
         };
     };
+    get_global_analytics_v3_changes: {
+        parameters: {
+            query?: {
+                /** @description Lookback window: 1h, 24h, 7d, 30d, 1mo, 1y (default: 24h) */
+                timeframe?: components["schemas"]["AnalyticsV3ChangeTimeframe"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Per-metric pct change */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsV3MetricPctChange"];
+                };
+            };
+        };
+    };
+    get_analytics_v3_counts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Latest global metrics snapshot */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsV3GlobalCountsResponse"];
+                };
+            };
+        };
+    };
+    get_global_analytics_v3_deltas: {
+        parameters: {
+            query?: {
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
+                /** @description Start timestamp (Unix seconds). Omit for all-time. */
+                from?: number;
+                /** @description End timestamp (Unix seconds) */
+                to?: number;
+                /** @description Max data points (default: 500, max: 2500) */
+                count_back?: number;
+                /** @description Cursor from previous response for next page */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Delta time-bucketed analytics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsV3TimeBucketRow"][];
+                };
+            };
+        };
+    };
+    get_global_analytics_v3_timeseries: {
+        parameters: {
+            query?: {
+                /** @description Bucket size: 60, 240, D, 1D, W, 1W, M, 1M (default: 60) */
+                resolution?: components["schemas"]["AnalyticsResolution"];
+                /** @description Start timestamp (Unix seconds). Omit for all-time. */
+                from?: number;
+                /** @description End timestamp (Unix seconds) */
+                to?: number;
+                /** @description Max data points (default: 500, max: 2500) */
+                count_back?: number;
+                /** @description Cursor from previous response for next page */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Cumulative time-bucketed analytics */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsV3TimeBucketRow"][];
+                };
+            };
+        };
+    };
     get_asset_history: {
         parameters: {
             query: {
@@ -6877,6 +7482,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    get_asset_candlestick: {
+        parameters: {
+            query: {
+                /** @description Asset ticker: BTC, ETH, XRP, SOL, DOGE, BNB, HYPE */
+                asset_symbol: components["schemas"]["AssetSymbol"];
+                /** @description Candle interval (TradingView naming): 1S (1 second), 1, 5, 15, 30, 60, 240, D, 1D */
+                resolution: components["schemas"]["AssetCandlestickResolution"];
+                /** @description Number of candles (max: 2500) */
+                count_back?: number;
+                /** @description Start timestamp (Unix seconds) */
+                from?: number;
+                /** @description End timestamp (Unix seconds) */
+                to?: number;
+                /** @description Cursor-based pagination key from previous response */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OHLC candlestick data */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetCandlestickBar"][];
+                };
             };
         };
     };
@@ -7177,13 +7815,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Per-builder breakdown */
+            /** @description Per-builder breakdown, each with embedded display metadata. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TagBuilderRow"][];
+                    "application/json": components["schemas"]["TagBuilderRowWithMetadata"][];
                 };
             };
         };
@@ -8859,10 +9497,6 @@ export interface operations {
                 market_slug?: string;
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Default: realized_pnl_usd */
-                sort_by?: components["schemas"]["MarketPnlV3SortBy"];
-                /** @description Default: desc */
-                sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
                 limit?: number;
                 /** @description Max 2500. Takes precedence over pagination_key. */
@@ -10279,6 +10913,60 @@ export interface operations {
             };
         };
     };
+    get_trader_pnl_v3_exits: {
+        parameters: {
+            query?: {
+                /** @description Default: lifetime */
+                timeframe?: components["schemas"]["PnlCandleTimeframe"];
+                /** @description Start unix seconds. Overrides the timeframe lower bound. */
+                from?: number;
+                /** @description End unix seconds */
+                to?: number;
+                /** @description Return only exits with this reason */
+                reason?: components["schemas"]["PnlV3ExitReason"];
+                /** @description Maximum exits to return. Default 500, max 2500. */
+                count_back?: number;
+                /** @description Alias for count_back. Default 500, max 2500. */
+                limit?: number;
+                /** @description Sort field: exit_time, pnl_usd, pnl_pct, cost_basis_usd. Default exit_time. */
+                sort_by?: string;
+                /** @description Sort direction for sort_by. Default desc. */
+                sort_direction?: components["schemas"]["SortDirection"];
+                /** @description Shortcut: highest or lowest. Sorts by pnl_pct desc/asc. */
+                profitability?: string;
+                /** @description Minimum realized PnL USD to include. */
+                min_pnl_usd?: number;
+                /** @description Maximum realized PnL USD to include. */
+                max_pnl_usd?: number;
+                /** @description Minimum realized PnL percent to include. */
+                min_pnl_pct?: number;
+                /** @description Maximum realized PnL percent to include. */
+                max_pnl_pct?: number;
+                /** @description Offset for ranked sort pagination. Max 3500. */
+                offset?: number;
+                /** @description Cursor from a previous response */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Trader position exits */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PnlV3ExitMarker"][];
+                };
+            };
+        };
+    };
     get_trader_market_pnl_v3: {
         parameters: {
             query?: {
@@ -10357,7 +11045,7 @@ export interface operations {
             query: {
                 /** @description Required. `open` for positions still holding shares, `closed` for positions that have been fully exited or resolved. */
                 status: "open" | "closed";
-                /** @description Only valid with `status=closed`. `true` to include winning resolutions, `false` for losing ones. */
+                /** @description Only valid with `status=closed`. `true` to include profitable closed positions, `false` for closed positions with zero or negative realized PnL. */
                 won?: boolean;
                 /** @description Case-insensitive substring match on the market title. Scoped to the chosen `status` — results never cross the open/closed boundary. */
                 search?: string;
@@ -10491,10 +11179,6 @@ export interface operations {
             query?: {
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Default: realized_pnl_usd */
-                sort_by?: components["schemas"]["MarketPnlV3SortBy"];
-                /** @description Default: desc */
-                sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
                 limit?: number;
                 /** @description Max 2500. Takes precedence over pagination_key. */

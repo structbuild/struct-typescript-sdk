@@ -27,6 +27,10 @@ type TimeframeKey = Schemas["MetricsTimeframe"];
 type TimeframeRecord<V> = Partial<Record<TimeframeKey, V>>;
 
 export type AnalyticsResolution = Schemas["AnalyticsResolution"];
+export type AnalyticsV3ChangeTimeframe = Schemas["AnalyticsV3ChangeTimeframe"];
+export type AnalyticsV3GlobalCountsResponse = Schemas["AnalyticsV3GlobalCountsResponse"];
+export type AnalyticsV3MetricPctChange = Schemas["AnalyticsV3MetricPctChange"];
+export type AnalyticsV3TimeBucketRow = Schemas["AnalyticsV3TimeBucketRow"];
 export type BondMarket = Schemas["BondMarket"];
 export type BondOutcome = Schemas["BondOutcome"];
 export type BondsSortBy = Schemas["BondsSortBy"];
@@ -53,6 +57,7 @@ export type GlobalPctChange = Schemas["GlobalPctChange"];
 export type RetainedCounts = Schemas["RetainedCounts"];
 export type RetentionFractions = Schemas["RetentionFractions"];
 export type TagBuilderRow = Schemas["TagBuilderRow"];
+export type TagBuilderRowWithMetadata = Schemas["TagBuilderRowWithMetadata"];
 export type TopTraderRow = Schemas["TopTraderRow"];
 export type TopTradersSortBy = Schemas["TopTradersSortBy"];
 export type TraderBuilderSortBy = Schemas["TraderBuilderSortBy"];
@@ -137,6 +142,8 @@ export type EventMarketChartOutcome = Schemas["EventMarketChartOutcome"];
 export type PositionChartOutcome = Schemas["PositionChartOutcome"];
 export type AssetPriceHistoryRow = Schemas["AssetPriceHistoryRow"];
 export type AssetSymbol = Schemas["AssetSymbol"];
+export type AssetCandlestickBar = Schemas["AssetCandlestickBar"];
+export type AssetCandlestickResolution = Schemas["AssetCandlestickResolution"];
 export type AssetVariant = Schemas["AssetVariant"];
 export type PriceJump = Schemas["PriceJump"];
 export type EventMarketChartDataPoint = Schemas["EventMarketChartDataPoint"];
@@ -303,6 +310,8 @@ export interface GetMarketOrderBookParams extends OperationQuery<"get_market_ord
 export interface GetSpreadHistoryParams extends OperationQuery<"get_spread_history"> {}
 
 export interface GetAssetHistoryParams extends OperationQuery<"get_asset_history"> {}
+
+export interface GetAssetCandlestickParams extends OperationQuery<"get_asset_candlestick"> {}
 
 export interface GetBondsParams extends OperationQuery<"get_bonds"> {}
 
@@ -497,6 +506,12 @@ export interface GetTraderAnalyticsTimeseriesParams extends OperationQuery<"get_
 	address: string;
 }
 
+export interface GetGlobalAnalyticsV3DeltasParams extends OperationQuery<"get_global_analytics_v3_deltas"> {}
+
+export interface GetGlobalAnalyticsV3ChangesParams extends OperationQuery<"get_global_analytics_v3_changes"> {}
+
+export interface GetGlobalAnalyticsV3TimeseriesParams extends OperationQuery<"get_global_analytics_v3_timeseries"> {}
+
 export interface GetBuildersParams extends OperationQuery<"list_builders"> {}
 
 export interface GetBuilderCompositionParams extends OperationQuery<"get_builder_composition"> {}
@@ -592,6 +607,8 @@ export type TraderPnlV3SortBy = Schemas["TraderPnlV3SortBy"];
 
 export type PnlV3AnalyticsTimeframe = Schemas["PnlV3AnalyticsTimeframe"];
 export type PnlV3CandlestickBar = Schemas["PnlV3CandlestickBar"];
+export type PnlV3ExitMarker = Schemas["PnlV3ExitMarker"];
+export type PnlV3ExitReason = Schemas["PnlV3ExitReason"];
 export type PnlV3ChangeWindow = Schemas["PnlV3ChangeWindow"];
 export type PnlV3ChangesResponse = Schemas["PnlV3ChangesResponse"];
 export type PnlV3LatestSnapshot = Schemas["PnlV3LatestSnapshot"];
@@ -635,6 +652,10 @@ export interface GetTraderCategoryPnlV3Params extends OperationQuery<"get_trader
 }
 
 export interface GetTraderPositionPnlV3Params extends OperationQuery<"get_trader_position_pnl_v3"> {
+	address: string;
+}
+
+export interface GetTraderPnlV3ExitsParams extends OperationQuery<"get_trader_pnl_v3_exits"> {
 	address: string;
 }
 
@@ -752,12 +773,14 @@ export interface WebhookEventPayloadMap {
 	oracle_events: OracleEventsPayload;
 }
 
+export type WebhookEventName = PolymarketWebhookEvent & keyof WebhookEventPayloadMap;
+
 export type WebhookEvent = {
-	[E in PolymarketWebhookEvent]: Omit<WebhookDeliveryEnvelope, "data" | "event"> & {
+	[E in WebhookEventName]: Omit<WebhookDeliveryEnvelope, "data" | "event"> & {
 		event: E;
 		data: WebhookEventPayloadMap[E];
 	};
-}[PolymarketWebhookEvent];
+}[WebhookEventName];
 
 export interface ListWebhooksParams extends WebhookOperationQuery<"list_webhooks"> {}
 
@@ -811,14 +834,15 @@ export type {
 	OrderBookSubscribeFilters,
 	TraderPositionsSubscribeFilters,
 	TraderPositionsV3SubscribeFilters,
-	TraderPositionResolvedV3SubscribeFilters,
+	TraderExitMarkersSubscribeFilters,
 	TraderPositionsSubscribeResponse,
 	TraderPositionsV3SubscribeResponse,
-	TraderPositionResolvedV3SubscribeResponse,
+	TraderExitMarkersSubscribeResponse,
 	TraderPositionUpdateEvent,
-	TraderPositionLifetimeUpdateV3Event,
-	TraderPositionResolvedV3Event,
-	TraderPositionResolvedV3OnlyEvent,
+	TraderPositionV3Row,
+	TraderPositionV3BatchEvent,
+	TraderExitMarkerRow,
+	TraderExitMarkerBatchEvent,
 	ClobRewardsSubscribeFilters,
 	ClobRewardsUpdateEvent,
 	ClobRewardsSubscribeResponse,

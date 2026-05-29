@@ -5,9 +5,15 @@ import type {
 	GlobalCountsResponse,
 	MetricPctChange,
 	TimeBucketRow,
+	AnalyticsV3GlobalCountsResponse,
+	AnalyticsV3MetricPctChange,
+	AnalyticsV3TimeBucketRow,
 	GetGlobalAnalyticsDeltasParams,
 	GetGlobalAnalyticsChangesParams,
 	GetGlobalAnalyticsTimeseriesParams,
+	GetGlobalAnalyticsV3DeltasParams,
+	GetGlobalAnalyticsV3ChangesParams,
+	GetGlobalAnalyticsV3TimeseriesParams,
 	GetEventAnalyticsDeltasParams,
 	GetEventAnalyticsChangesParams,
 	GetEventAnalyticsTimeseriesParams,
@@ -37,6 +43,22 @@ export class AnalyticsNamespace extends Namespace {
 
 	async getTimeseries(params?: GetGlobalAnalyticsTimeseriesParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {
 		return this.get<TimeBucketRow[]>(venue, "/analytics/timeseries", { params: { ...params } });
+	}
+
+	async getCountsV3(venue?: Venue): Promise<HttpResponse<AnalyticsV3GlobalCountsResponse>> {
+		return this.get<AnalyticsV3GlobalCountsResponse>(venue, "/analytics_v3/counts");
+	}
+
+	async getDeltasV3(params?: GetGlobalAnalyticsV3DeltasParams, venue?: Venue): Promise<HttpResponse<AnalyticsV3TimeBucketRow[]>> {
+		return this.get<AnalyticsV3TimeBucketRow[]>(venue, "/analytics_v3/deltas", { params: { ...params } });
+	}
+
+	async getChangesV3(params?: GetGlobalAnalyticsV3ChangesParams, venue?: Venue): Promise<HttpResponse<AnalyticsV3MetricPctChange>> {
+		return this.get<AnalyticsV3MetricPctChange>(venue, "/analytics_v3/changes", { params: { ...params } });
+	}
+
+	async getTimeseriesV3(params?: GetGlobalAnalyticsV3TimeseriesParams, venue?: Venue): Promise<HttpResponse<AnalyticsV3TimeBucketRow[]>> {
+		return this.get<AnalyticsV3TimeBucketRow[]>(venue, "/analytics_v3/timeseries", { params: { ...params } });
 	}
 
 	async getEventDeltas(params: GetEventAnalyticsDeltasParams, venue?: Venue): Promise<HttpResponse<TimeBucketRow[]>> {

@@ -1095,6 +1095,16 @@ export interface components {
             exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
             trade_type: "OrderFilled" | "OrdersMatched";
+            /**
+             * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
+             *     trades; may be `0x0000…` for V2 trades placed without a builder code.
+             */
+            builder_code?: string | null;
+            /**
+             * Format: double
+             * @description Builder fee in USDC. Absent when no builder code is attached.
+             */
+            builder_fee?: number | null;
         };
         /**
          * @description Oracle event variants accepted by `oracle_events.oracle_event_types`.
@@ -1178,7 +1188,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "trader_exit_markers_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -2184,7 +2194,7 @@ export interface components {
          *     full set of typed prediction-trade variants.
          * @enum {string}
          */
-        TradeEventFilterType: "OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval";
+        TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
         /** @description Subscription filters for the `trader_event_pnl` event. All fields are optional. */
         TraderEventPnlFilters: {
             /** @description Track only these trader wallet addresses. */
@@ -2430,7 +2440,7 @@ export interface components {
              */
             max_probability?: number | null;
             /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
-            trade_types?: ("OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[] | null;
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -2797,6 +2807,16 @@ export interface components {
             exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
             trade_type: "OrderFilled" | "OrdersMatched";
+            /**
+             * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
+             *     trades; may be `0x0000…` for V2 trades placed without a builder code.
+             */
+            builder_code?: string | null;
+            /**
+             * Format: double
+             * @description Builder fee in USDC. Absent when no builder code is attached.
+             */
+            builder_fee?: number | null;
         };
         /** @description Server acknowledgement for an oracle events stream subscription */
         OracleEventsStreamSubscribeResponse: {
@@ -2988,6 +3008,10 @@ export interface components {
             /** @description Absent for pending trades */
             fee_pct?: number;
             exchange: number;
+            /** @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code. */
+            builder_code?: string;
+            /** @description Builder fee in USDC. Absent when no builder code is attached. */
+            builder_fee?: number;
         } | {
             /** @enum {string} */
             trade_type: "MakerRebate" | "Reward" | "Yield";
@@ -3135,6 +3159,14 @@ export interface components {
             market_id?: string;
             index_set?: string;
             shares_amount?: number;
+            fee?: number;
+            fee_pct?: number;
+            /** @description Per-position conversion amounts */
+            position_details?: {
+                position_id?: string;
+                outcome_index?: number;
+                amount?: string;
+            }[];
             exchange: number;
         } | {
             /** @enum {string} */
@@ -3993,161 +4025,170 @@ export interface components {
              */
             last_trade_at?: number | null;
         };
-        /** @description Subscribe to the trader positions v3 stream. `traders` is required and must be non-empty. `update_types` is an optional narrowing filter — empty/omitted = both. */
+        /** @description Subscribe to the trader positions v3 stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `["all"]` = receive every kind of update. */
         TraderPositionsV3SubscribeMessage: {
             /** @enum {string} */
             action: "subscribe" | "unsubscribe_all";
             /** @description EVM wallet addresses */
             traders: string[];
-            /** @description Restrict pushed updates to this subset. Empty/omitted = both. Unknown values reject the subscription. */
-            update_types?: ("lifetime" | "resolved")[];
+            /** @description Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `["all"]` to accept every kind (the default). Unknown values reject the subscription. */
+            dirty_kinds?: ("trade" | "price" | "window" | "position_resolved" | "all")[];
         };
         /** @description Server acknowledgement for a trader positions v3 subscription. */
         TraderPositionsV3SubscribeResponse: {
             traders?: string[];
-            /** @description Accepted update types. Empty = all. */
-            update_types?: ("lifetime" | "resolved")[];
+            /** @description Echoed accepted dirty_kinds filter. Empty = all. */
+            dirty_kinds?: ("trade" | "price" | "window" | "position_resolved")[];
             rejected?: string[];
             error?: string | null;
         };
-        /** @description Server-pushed event: lifetime position snapshot for a tracked trader. Envelope type: "trader_position_lifetime_update_v3". Pushed whenever the position's PnL changes. */
-        TraderPositionLifetimeUpdateV3Event: {
-            /** @description Trader EVM wallet address */
-            trader: string;
+        /** @description One position-update row inside a `trader_position_v3_batch` envelope's `data` array. */
+        TraderPositionV3Row: {
             /** @description ERC-1155 token ID (decimal string) */
-            position_id: string;
+            position_id?: string | null;
             condition_id?: string | null;
+            market_slug?: string | null;
             event_slug?: string | null;
+            title?: string | null;
+            question?: string | null;
+            image_url?: string | null;
             /** @description Outcome name (e.g. "Yes") */
             outcome?: string | null;
             outcome_index?: number | null;
-            /** Format: int64 */
-            total_buys?: number;
-            /** Format: int64 */
-            total_sells?: number;
-            /** Format: int64 */
-            total_merges?: number;
-            /** Format: int64 */
-            total_splits?: number;
-            winning_outcome_index?: number | null;
-            total_shares_bought?: number;
-            total_shares_sold?: number;
-            buy_usd?: number;
-            sell_usd?: number;
-            /** @description Average entry price (0–1) */
-            avg_entry_price?: number;
-            total_fees?: number;
-            realized_pnl_usd?: number;
-            redemption_usd?: number;
-            /** @description True if this outcome resolved as winner */
+            open?: boolean | null;
+            /** @description Resolution outcome — present once the market resolved */
             won?: boolean | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: int64 */
+            converted_count?: number | null;
+            converted_shares_gained?: number | null;
+            converted_shares_lost?: number | null;
+            total_shares_bought?: number | null;
+            total_shares_sold?: number | null;
+            total_buy_usd?: number | null;
+            total_sell_usd?: number | null;
+            redemption_usd?: number | null;
+            merge_usd?: number | null;
+            /** @description 0–1 */
+            avg_entry_price?: number | null;
+            avg_exit_price?: number | null;
+            /** @description Volume-weighted across buys + sells */
+            avg_price?: number | null;
+            realized_pnl_usd?: number | null;
+            realized_pnl_pct?: number | null;
+            total_fees?: number | null;
             /**
              * Format: int64
-             * @description Unix seconds
+             * @description Unix milliseconds
              */
             first_trade_at?: number | null;
             /**
              * Format: int64
-             * @description Unix seconds
+             * @description Unix milliseconds
              */
             last_trade_at?: number | null;
-        };
-        /** @description Server-pushed event: a position has resolved. Envelope type: "trader_position_resolved_v3". Pushed once per resolved position. Inspect `won` to see whether the outcome paid out. */
-        TraderPositionResolvedV3Event: {
-            /** @description Trader EVM wallet address */
-            trader: string;
-            /** @description ERC-1155 token ID (decimal string) */
-            position_id: string;
-            condition_id?: string | null;
-            event_slug?: string | null;
-            /** @description Outcome name (e.g. "Yes") */
-            outcome?: string | null;
-            outcome_index?: number | null;
-            /** Format: int64 */
-            total_buys?: number;
-            /** Format: int64 */
-            total_sells?: number;
-            /** Format: int64 */
-            total_merges?: number;
-            /** Format: int64 */
-            total_splits?: number;
-            winning_outcome_index?: number | null;
-            total_shares_bought?: number;
-            total_shares_sold?: number;
-            buy_usd?: number;
-            sell_usd?: number;
-            /** @description Average entry price (0–1) */
-            avg_entry_price?: number;
-            total_fees?: number;
-            realized_pnl_usd?: number;
-            redemption_usd?: number;
-            /** @description True if this outcome resolved as winner */
-            won?: boolean | null;
+            /** @description Latest on-chain mark for the outcome token */
+            current_price?: number | null;
+            current_shares_balance?: number | null;
+            /** @description current_price × current_shares_balance */
+            current_value?: number | null;
+            last_traded_price?: number | null;
             /**
              * Format: int64
-             * @description Unix seconds
+             * @description Market resolution deadline (Unix seconds)
              */
-            first_trade_at?: number | null;
+            end_date?: number | null;
+            /** @description True for multi-outcome NegRisk markets */
+            is_neg_risk?: boolean | null;
+            /** @description Market resolved AND trader still holds shares */
+            redeemable?: boolean | null;
+            /** @description NegRisk market, unresolved, trader holds shares */
+            mergeable?: boolean | null;
+            /** @description What kind of activity triggered this update. One or more of: `trade` (a buy, sell, merge, split, redemption, or NegRisk convert landed), `price` (outcome price moved), `window` (a rolling-window boundary crossed), `position_resolved` (the position's market resolved on this update). */
+            dirty_kinds?: ("trade" | "price" | "window" | "position_resolved")[];
+        };
+        /** @description Server-pushed per-block batch of position updates. Envelope type: `trader_position_v3_batch`. Carries every row from the named block that matched the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` field describes what triggered that row's update — including resolutions (`position_resolved`). */
+        TraderPositionV3BatchEvent: {
+            /** @enum {string} */
+            type: "trader_position_v3_batch";
+            /** @enum {string} */
+            room_id: "polymarket_trader_positions_v3";
             /**
              * Format: int64
-             * @description Unix seconds
+             * @description Block number these rows were computed at.
              */
-            last_trade_at?: number | null;
+            block: number;
+            data: components["schemas"]["TraderPositionV3Row"][];
         };
-        /** @description Subscribe to the trader position-resolved v3 stream. `traders` is required and must be non-empty. */
-        TraderPositionResolvedV3SubscribeMessage: {
+        /** @description Subscribe to the trader exit markers stream. `traders` is required and must be non-empty. `reasons` is an optional narrowing filter — empty/omitted or `["all"]` = receive every exit reason. */
+        TraderExitMarkersSubscribeMessage: {
             /** @enum {string} */
             action: "subscribe" | "unsubscribe_all";
             /** @description EVM wallet addresses */
             traders: string[];
+            /** @description Restrict pushed exits to this subset of reasons. Omit, leave empty, or pass `["all"]` to accept every reason (the default). Unknown values reject the subscription. */
+            reasons?: ("resolved_win" | "resolved_loss" | "sold_win" | "sold_loss" | "all")[];
         };
-        /** @description Server acknowledgement for a trader position-resolved v3 subscription. */
-        TraderPositionResolvedV3SubscribeResponse: {
+        /** @description Server acknowledgement for a trader exit markers subscription. */
+        TraderExitMarkersSubscribeResponse: {
             traders?: string[];
+            /** @description Echoed accepted reasons filter. Empty = all. */
+            reasons?: ("resolved_win" | "resolved_loss" | "sold_win" | "sold_loss")[];
             rejected?: string[];
             error?: string | null;
         };
-        /** @description Server-pushed event: a position has resolved. Envelope type: "trader_position_resolved_v3". Pushed once per resolved position. Inspect `won` to see whether the outcome paid out. */
-        TraderPositionResolvedV3OnlyEvent: {
-            /** @description Trader EVM wallet address */
-            trader: string;
+        /** @description One exit row inside a `trader_exit_marker_batch` envelope's `data` array. */
+        TraderExitMarkerRow: {
+            /** @description EVM wallet address */
+            trader?: string;
             /** @description ERC-1155 token ID (decimal string) */
-            position_id: string;
-            condition_id?: string | null;
-            event_slug?: string | null;
+            position_id?: string;
+            condition_id?: string;
+            event_slug?: string;
+            market_slug?: string;
+            title?: string;
+            /** @description Full market question text */
+            question?: string;
+            image_url?: string;
             /** @description Outcome name (e.g. "Yes") */
-            outcome?: string | null;
+            outcome?: string;
             outcome_index?: number | null;
-            /** Format: int64 */
-            total_buys?: number;
-            /** Format: int64 */
-            total_sells?: number;
-            /** Format: int64 */
-            total_merges?: number;
-            /** Format: int64 */
-            total_splits?: number;
-            winning_outcome_index?: number | null;
-            total_shares_bought?: number;
-            total_shares_sold?: number;
-            buy_usd?: number;
-            sell_usd?: number;
-            /** @description Average entry price (0–1) */
-            avg_entry_price?: number;
-            total_fees?: number;
-            realized_pnl_usd?: number;
-            redemption_usd?: number;
-            /** @description True if this outcome resolved as winner */
-            won?: boolean | null;
+            /** @description Realized PnL at exit, USD */
+            pnl_usd?: number;
+            /** @description Realized PnL at exit, percent */
+            pnl_pct?: number;
+            cost_basis_usd?: number;
+            /**
+             * @description Why the position closed: `resolved_*` held to market resolution (win/loss by verdict); `sold_*` closed before resolution (win/loss by realized PnL sign).
+             * @enum {string}
+             */
+            reason?: "resolved_win" | "resolved_loss" | "sold_win" | "sold_loss";
             /**
              * Format: int64
-             * @description Unix seconds
+             * @description Block the exit was recorded at
              */
-            first_trade_at?: number | null;
+            block?: number;
             /**
              * Format: int64
-             * @description Unix seconds
+             * @description Exit time, Unix seconds
              */
-            last_trade_at?: number | null;
+            ts?: number;
+        };
+        /** @description Server-pushed per-block batch of position exits. Envelope type: `trader_exit_marker_batch`. Carries every exit from the named block that matched the subscriber's filter. Empty batches are not sent. */
+        TraderExitMarkerBatchEvent: {
+            /** @enum {string} */
+            type: "trader_exit_marker_batch";
+            /** @enum {string} */
+            room_id: "polymarket_trader_pnl_v3_exits";
+            /**
+             * Format: int64
+             * @description Block number these exits were recorded at.
+             */
+            block: number;
+            data: components["schemas"]["TraderExitMarkerRow"][];
         };
         /** @description Subscribe to the accounts stream. `wallets` is required. Share balance updates (`accounts_update`) are always delivered. Set `include_usdce`, `include_pusd`, or `include_matic` to also receive those balance streams. */
         AccountsSubscribeMessage: {
@@ -4501,6 +4542,10 @@ export interface components {
             /** @description Absent for pending trades */
             fee_pct?: number;
             exchange: number;
+            /** @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code. */
+            builder_code?: string;
+            /** @description Builder fee in USDC. Absent when no builder code is attached. */
+            builder_fee?: number;
         };
         /**
          * MakerRebate / Reward / Yield
@@ -4673,6 +4718,14 @@ export interface components {
             market_id?: string;
             index_set?: string;
             shares_amount?: number;
+            fee?: number;
+            fee_pct?: number;
+            /** @description Per-position conversion amounts */
+            position_details?: {
+                position_id?: string;
+                outcome_index?: number;
+                amount?: string;
+            }[];
             exchange: number;
         };
         /**

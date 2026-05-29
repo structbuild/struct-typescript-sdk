@@ -8,7 +8,7 @@ import type {
 	GlobalPctChange,
 	BuilderTimeBucketRow,
 	BuilderTagRow,
-	TagBuilderRow,
+	TagBuilderRowWithMetadata,
 	BuilderFeeRate,
 	BuilderFeeRateHistoryEntry,
 	BuilderMetadata,
@@ -130,8 +130,8 @@ export class BuildersNamespace extends Namespace {
 		return this.get<GlobalBuilderTagRow[]>(venue, "/builders/global/tags", { params: { ...params } });
 	}
 
-	async getTagBuilders(params: GetTagBuildersParams, venue?: Venue): Promise<HttpResponse<TagBuilderRow[]>> {
+	async getTagBuilders(params: GetTagBuildersParams, venue?: Venue): Promise<HttpResponse<TagBuilderRowWithMetadata[]>> {
 		const { tag, ...query } = params;
-		return this.get<TagBuilderRow[]>(venue, `/builders/tags/${encodePathParam(tag)}`, { params: query });
+		return this.get<TagBuilderRowWithMetadata[]>(venue, `/builders/tags/${encodePathParam(tag)}`, { params: query });
 	}
 }

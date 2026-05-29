@@ -13,6 +13,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { asset_symbol: "BTC", variant: "1h" },
 		operationId: "get_asset_history",
 	},
+	"assets.getAssetCandlestick": {
+		params: { asset_symbol: "BTC", resolution: "60" },
+		operationId: "get_asset_candlestick",
+	},
 
 	"markets.getMarkets": {
 		params: { limit: 2 },
@@ -196,6 +200,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "get_global_pnl",
 		paginate: true,
 	},
+	"trader.getTraderPnlV3Exits": {
+		params: { address: "$address", limit: 2 },
+		operationId: "get_trader_pnl_v3_exits",
+	},
 	"trader.getLeaderboard": {
 		params: { limit: 2 },
 		operationId: "get_polymarket_leaderboard",
@@ -244,6 +252,22 @@ export const methodMeta: Record<string, MethodConfig> = {
 	},
 	"analytics.getTimeseries": {
 		operationId: "get_global_analytics_timeseries",
+	},
+	"analytics.getCountsV3": {
+		operationId: "get_analytics_v3_counts",
+		shape: "object",
+		noArgs: true,
+	},
+	"analytics.getDeltasV3": {
+		operationId: "get_global_analytics_v3_deltas",
+	},
+	"analytics.getChangesV3": {
+		params: { timeframe: "24h" },
+		operationId: "get_global_analytics_v3_changes",
+		shape: "object",
+	},
+	"analytics.getTimeseriesV3": {
+		operationId: "get_global_analytics_v3_timeseries",
 	},
 	"analytics.getEventDeltas": {
 		params: { event_slug: "$eventSlug" },
