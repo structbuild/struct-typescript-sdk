@@ -278,6 +278,66 @@ export interface webhooks {
         patch?: never;
         trace?: never;
     };
+    "position-holder-metrics-v3": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Position holder metrics V3 callback
+         * @description Fired when holder metrics change for a position.
+         */
+        post: operations["position-holder-metrics-v3"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "condition-holder-metrics-v3": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Condition holder metrics V3 callback
+         * @description Fired when holder metrics change for a condition.
+         */
+        post: operations["condition-holder-metrics-v3"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "event-holder-metrics-v3": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Event holder metrics V3 callback
+         * @description Fired when holder metrics change for an event.
+         */
+        post: operations["event-holder-metrics-v3"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "market-metrics": {
         parameters: {
             query?: never;
@@ -289,7 +349,7 @@ export interface webhooks {
         put?: never;
         /**
          * Market metrics callback
-         * @description Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).
+         * @description Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).
          */
         post: operations["market-metrics"];
         delete?: never;
@@ -309,7 +369,7 @@ export interface webhooks {
         put?: never;
         /**
          * Event metrics callback
-         * @description Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).
+         * @description Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).
          */
         post: operations["event-metrics"];
         delete?: never;
@@ -329,7 +389,7 @@ export interface webhooks {
         put?: never;
         /**
          * Tag metrics callback
-         * @description Fired when a tag's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).
+         * @description Fired when a tag's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).
          */
         post: operations["tag-metrics"];
         delete?: never;
@@ -349,7 +409,7 @@ export interface webhooks {
         put?: never;
         /**
          * Position metrics callback
-         * @description Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).
+         * @description Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).
          */
         post: operations["position-metrics"];
         delete?: never;
@@ -369,7 +429,7 @@ export interface webhooks {
         put?: never;
         /**
          * Market volume milestone callback
-         * @description Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `["1h", "24h"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.
+         * @description Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `["1h", "24h"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.
          */
         post: operations["market-volume-milestone"];
         delete?: never;
@@ -389,7 +449,7 @@ export interface webhooks {
         put?: never;
         /**
          * Event volume milestone callback
-         * @description Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `["1h", "24h"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.
+         * @description Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `["1h", "24h"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.
          */
         post: operations["event-volume-milestone"];
         delete?: never;
@@ -409,7 +469,7 @@ export interface webhooks {
         put?: never;
         /**
          * Position volume milestone callback
-         * @description Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `["1h", "24h"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.
+         * @description Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `["1h", "24h"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.
          */
         post: operations["position-volume-milestone"];
         delete?: never;
@@ -429,7 +489,7 @@ export interface webhooks {
         put?: never;
         /**
          * Probability spike callback
-         * @description Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`"up"` | `"down"` | `"both"`) — defaults to `"up"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.
+         * @description Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`"up"` | `"down"` | `"both"`) — defaults to `"up"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.
          */
         post: operations["probability-spike"];
         delete?: never;
@@ -469,7 +529,7 @@ export interface webhooks {
         put?: never;
         /**
          * Market volume spike callback
-         * @description Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`. Optional `condition_ids` restricts to specific markets.
+         * @description Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`, `lifetime`. Optional `condition_ids` restricts to specific markets.
          */
         post: operations["market-volume-spike"];
         delete?: never;
@@ -876,12 +936,25 @@ export interface components {
              */
             threshold: number;
         };
+        /** @description Condition holder metrics webhook filter. */
+        ConditionHolderMetricsV3Filters: {
+            condition_ids?: string[];
+        };
+        ConditionHolderMetricsV3Payload: {
+            /** Format: int32 */
+            ts: number;
+            /** Format: int64 */
+            block: number;
+            condition_id: string;
+            /** Format: int32 */
+            holder_count: number;
+        };
         /** @description Payload delivered when a market's volume or transaction metrics cross a configured threshold */
         ConditionMetricsPayload: {
             /** @description Market condition ID */
             condition_id?: string | null;
             /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
+            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime");
             /**
              * Format: double
              * @description Total trading volume in USD for this timeframe
@@ -1012,6 +1085,19 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
+        /** @description Event holder metrics webhook filter. */
+        EventHolderMetricsV3Filters: {
+            event_slugs?: string[];
+        };
+        EventHolderMetricsV3Payload: {
+            /** Format: int32 */
+            ts: number;
+            /** Format: int64 */
+            block: number;
+            event_slug: string;
+            /** Format: int32 */
+            holder_count: number;
+        };
         /** @description Subscription filters for the `event_metrics` event. All fields are optional. */
         EventMetricsFilters: {
             /** @description Restrict to these events. Empty = all events. */
@@ -1039,7 +1125,7 @@ export interface components {
             /** @description Event slug */
             event_slug?: string | null;
             /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
+            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime");
             /**
              * Format: double
              * @description Total aggregated volume across all markets in the event (USD)
@@ -1807,7 +1893,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_exit_markers_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_exit_markers_v3" | "position_holder_metrics_v3" | "condition_holder_metrics_v3" | "event_holder_metrics_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -1996,6 +2082,27 @@ export interface components {
              */
             oracle_event_types?: string[];
         };
+        /** @description Position holder metrics webhook filter. */
+        PositionHolderMetricsV3Filters: {
+            position_ids?: string[];
+        };
+        PositionHolderMetricsV3Payload: {
+            /** Format: int32 */
+            ts: number;
+            /** Format: int64 */
+            block: number;
+            position_id: string;
+            /** Format: int32 */
+            holder_count: number;
+            /** Format: double */
+            total_balance: number;
+            /** Format: double */
+            total_cost_basis: number;
+            /** Format: int32 */
+            condition_holder_count?: number | null;
+            /** Format: int32 */
+            event_holder_count?: number | null;
+        };
         /** @description Subscription filters for the `position_metrics` event. All fields are optional. */
         PositionMetricsFilters: {
             /** @description Restrict to these outcome token IDs. */
@@ -2046,7 +2153,7 @@ export interface components {
              */
             outcome_index?: number | null;
             /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
+            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime");
             /**
              * Format: double
              * @description Total trading volume in USD
@@ -2416,15 +2523,15 @@ export interface components {
             outcome_index?: number | null;
             /**
              * Format: double
-             * @description Probability at the start of the observation window (the baseline snapshot)
+             * @description YES probability at the start of the observation window (the baseline snapshot)
              */
             previous_probability: number;
             /**
              * Format: double
-             * @description Current probability that triggered the spike
+             * @description Current YES probability that triggered the spike
              */
             current_probability: number;
-            /** @description Direction of the spike: `"up"` (probability rising) or `"down"` (probability falling) */
+            /** @description Direction of the spike: `"up"` (YES probability rising) or `"down"` (YES probability falling) */
             spike_direction: string;
             /**
              * Format: double
@@ -2746,7 +2853,7 @@ export interface components {
             /** @description Tag label or slug */
             tag?: string | null;
             /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
+            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime");
             /**
              * Format: double
              * @description Total aggregated volume for the tag (USD)
@@ -3364,7 +3471,7 @@ export interface components {
          * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
          * @enum {string}
          */
-        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d";
+        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime";
         /** @description Payload delivered when a trade exceeds the configured size and probability thresholds */
         WhaleTradePayload: {
             /** @description Limit-order maker wallet address (lowercase) */
@@ -4620,6 +4727,135 @@ export interface operations {
             content: {
                 "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
                     data?: components["schemas"]["EventPnlPayload"];
+                };
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "position-holder-metrics-v3": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["PositionHolderMetricsV3Payload"];
+                };
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "condition-holder-metrics-v3": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["ConditionHolderMetricsV3Payload"];
+                };
+            };
+        };
+        responses: {
+            /** @description Webhook delivery acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error (will retry) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "event-holder-metrics-v3": {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description UUID of the webhook subscription that fired */
+                "X-Webhook-ID": string;
+                /** @description UUID of this specific delivery attempt (matches envelope `id` field) */
+                "X-Delivery-ID": string;
+                /** @description Event name string (e.g. `trader_first_trade`) */
+                "X-Event-Type": string;
+                /** @description Delivery attempt number (1 = first attempt) */
+                "X-Attempt": number;
+                /** @description HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part. */
+                "X-Webhook-Signature"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Webhook delivery envelope. The `data` field contains the event-specific payload. */
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookDeliveryEnvelope"] & {
+                    data?: components["schemas"]["EventHolderMetricsV3Payload"];
                 };
             };
         };

@@ -3530,7 +3530,7 @@ export interface components {
          *     PnL, volume, trade counts, fees, rewards, positions, and trade timing.
          * @enum {string}
          */
-        CategoryPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "convert_collateral_usd" | "split_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at";
+        CategoryPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_converts" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at";
         /**
          * @description Lookback window for `/analytics/changes` endpoints.
          * @enum {string}
@@ -5242,7 +5242,7 @@ export interface components {
          *     active in the selected timeframe.
          * @enum {string}
          */
-        TagSortBy: "volume" | "shares_volume" | "txns" | "unique_traders" | "unique_makers" | "unique_takers" | "fees";
+        TagSortBy: "volume" | "builder_volume" | "shares_volume" | "builder_shares_volume" | "txns" | "builder_txns" | "unique_traders" | "unique_builder_traders" | "unique_makers" | "unique_takers" | "fees" | "builder_fees";
         OrderbookHistoryRow: {
             /** Format: int64 */
             ts: number;
@@ -6734,7 +6734,7 @@ export interface components {
          * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
          * @enum {string}
          */
-        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d";
+        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime";
         /** @description V2 UMA OOv2: a price request was made (market initialization). */
         RequestPriceEvent: {
             id: string;
@@ -7118,7 +7118,7 @@ export interface components {
             has_more: boolean;
         };
         /** @enum {string} */
-        TraderPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "events_traded" | "categories_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "convert_collateral_usd" | "split_volume_usd" | "total_splits" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "last_block" | "open_positions_value" | "open_position_count";
+        TraderPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "events_traded" | "categories_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_splits" | "total_converts" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "last_block" | "open_positions_value" | "open_position_count";
         TraderProfile: {
             address: string;
             name?: string | null;

@@ -3,7 +3,7 @@
   "info": {
     "title": "Polymarket WebSocket Streams API",
     "version": "1.0.0",
-    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_tag_metrics` (Tag Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_pnl_v3` (Trader PnL v3) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_trader_positions_v3` (Trader Positions v3) | 0.005 |\n| `polymarket_trader_position_resolved_v3` (Trader Position Resolved v3) | 0.025 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n| `polymarket_oracle_events` (Oracle Events) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
+    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_tag_metrics` (Tag Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_pnl_v3` (Trader PnL v3) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_trader_positions_v3` (Trader Positions v3) | 0.005 |\n| `polymarket_trader_position_resolved_v3` (Trader Position Resolved v3) | 0.025 |\n| `polymarket_holder_metrics_v3` (Holder Metrics v3) | 0.025 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n| `polymarket_oracle_events` (Oracle Events) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
   },
   "servers": {
     "production": {
@@ -231,7 +231,7 @@
       "address": "polymarket_market_metrics",
       "title": "Market Metrics",
       "summary": "Market (condition) metrics stream",
-      "description": "Real-time volume and transaction-count metrics per market condition, aggregated across multiple timeframes (`1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`). One event is pushed per timeframe window on each update.\n\n**Filter (required):** `condition_ids` — 64-char hex condition IDs. Invalid or malformed IDs are returned in `rejected`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time volume and transaction-count metrics per market condition, aggregated across multiple timeframes (`1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`). One event is pushed per timeframe window on each update.\n\n**Filter (required):** `condition_ids` — 64-char hex condition IDs. Invalid or malformed IDs are returned in `rejected`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/MarketMetricsSubscribe"
@@ -322,7 +322,7 @@
       "address": "polymarket_trader_pnl_v3",
       "title": "Trader PnL v3",
       "summary": "Trader PnL stream (v3)",
-      "description": "Real-time profit-and-loss updates for tracked traders. PnL is computed at four granularities — `global` (whole portfolio), `market` (per condition), `event` (per event), `category` (per market category) — and each granularity is maintained over four rolling windows: `1d`, `7d`, `30d`, `lifetime`. The stream emits **one event per (granularity, timeframe) slice** whenever that slice changes; every event carries a `timeframe` field identifying which window it belongs to.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filters:**\n• `update_types` — subset of `[\"global\", \"market\", \"event\", \"category\"]`. Omit or leave empty to receive all four update types.\n• `timeframes` — subset of `[\"1d\", \"7d\", \"30d\", \"lifetime\"]`. Omit or leave empty to receive all timeframes.\n\nAny unknown value in `update_types` or `timeframes` rejects the entire subscription with an `error` message (values are case-insensitive and trimmed).\n\n**Events pushed:** `trader_global_pnl_update_v3`, `trader_market_pnl_update_v3`, `trader_event_pnl_update_v3`, `trader_category_pnl_update_v3`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time profit-and-loss updates for tracked traders. PnL is computed at four granularities — `global` (whole portfolio), `market` (per condition), `event` (per event), `category` (per market category) — and each granularity is maintained over four rolling windows: `1d`, `7d`, `30d`, `lifetime`.\n\nUpdates are delivered **batched per block**: the server sends one envelope per (grain, family[, timeframe]) per block, carrying a `data` array of every row from that block matching the subscriber's filter. Empty batches are not sent. Each row carries a `dirty_kinds` array naming what triggered it. Full-row envelopes also carry a top-level `timeframe`.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filters:**\n• `update_types` — subset of `[\"global\", \"market\", \"event\", \"category\"]`. Omit or leave empty to receive all four update types.\n• `timeframes` — subset of `[\"1d\", \"7d\", \"30d\", \"lifetime\"]`. Omit or leave empty to receive all timeframes. (Tick and resolution batches are window-agnostic and ignore this filter.)\n• `dirty_kinds` — subset of `[\"trade\", \"price\", \"window\", \"market_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Applied per-row: a row is included only if its `dirty_kinds` intersects this filter.\n\nAny unknown value in `update_types`, `timeframes`, or `dirty_kinds` rejects the entire subscription with an `error` message (values are case-insensitive and trimmed).\n\n**Full-row batches** (trade/window-driven): `trader_global_pnl_v3_batch`, `trader_market_pnl_v3_batch`, `trader_event_pnl_v3_batch`, `trader_category_pnl_v3_batch`.\n**Price-tick batches** (mark-to-market): `trader_global_tick_v3_batch`, `trader_market_tick_v3_batch`, `trader_event_tick_v3_batch`, `trader_category_tick_v3_batch`.\n**Resolution batches** (market resolved): `trader_global_resolution_v3_batch`, `trader_market_resolution_v3_batch`, `trader_event_resolution_v3_batch`, `trader_category_resolution_v3_batch`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderPnlV3Subscribe"
@@ -330,17 +330,41 @@
         "subscribeResponse": {
           "$ref": "#/components/messages/TraderPnlV3SubscribeResponse"
         },
-        "traderGlobalPnlV3Event": {
-          "$ref": "#/components/messages/TraderGlobalPnlV3Event"
+        "traderGlobalPnlV3BatchEvent": {
+          "$ref": "#/components/messages/TraderGlobalPnlV3BatchEvent"
         },
-        "traderMarketPnlV3Event": {
-          "$ref": "#/components/messages/TraderMarketPnlV3Event"
+        "traderMarketPnlV3BatchEvent": {
+          "$ref": "#/components/messages/TraderMarketPnlV3BatchEvent"
         },
-        "traderEventPnlV3Event": {
-          "$ref": "#/components/messages/TraderEventPnlV3Event"
+        "traderEventPnlV3BatchEvent": {
+          "$ref": "#/components/messages/TraderEventPnlV3BatchEvent"
         },
-        "traderCategoryPnlV3Event": {
-          "$ref": "#/components/messages/TraderCategoryPnlV3Event"
+        "traderCategoryPnlV3BatchEvent": {
+          "$ref": "#/components/messages/TraderCategoryPnlV3BatchEvent"
+        },
+        "traderGlobalTickV3BatchEvent": {
+          "$ref": "#/components/messages/TraderGlobalTickV3BatchEvent"
+        },
+        "traderMarketTickV3BatchEvent": {
+          "$ref": "#/components/messages/TraderMarketTickV3BatchEvent"
+        },
+        "traderEventTickV3BatchEvent": {
+          "$ref": "#/components/messages/TraderEventTickV3BatchEvent"
+        },
+        "traderCategoryTickV3BatchEvent": {
+          "$ref": "#/components/messages/TraderCategoryTickV3BatchEvent"
+        },
+        "traderGlobalResolutionV3BatchEvent": {
+          "$ref": "#/components/messages/TraderGlobalResolutionV3BatchEvent"
+        },
+        "traderMarketResolutionV3BatchEvent": {
+          "$ref": "#/components/messages/TraderMarketResolutionV3BatchEvent"
+        },
+        "traderEventResolutionV3BatchEvent": {
+          "$ref": "#/components/messages/TraderEventResolutionV3BatchEvent"
+        },
+        "traderCategoryResolutionV3BatchEvent": {
+          "$ref": "#/components/messages/TraderCategoryResolutionV3BatchEvent"
         }
       }
     },
@@ -365,7 +389,7 @@
       "address": "polymarket_trader_positions_v3",
       "title": "Trader Positions v3",
       "summary": "Trader position updates (v3) — batched per-block fan-out covering trades, price ticks, window rollovers and resolutions",
-      "description": "Real-time position updates for tracked traders. Updates land in batches: the server sends one envelope per block, carrying every row from that block that matches the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` array names what triggered that row's update.\n\n**Envelope type:** `trader_position_v3_batch`. The envelope includes the `block` number the rows were computed at plus a `data` array of position rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `dirty_kinds` — subset of `[\"trade\", \"price\", \"window\", \"position_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Unknown values reject the subscription. The filter applies per-row inside the batch: a row is included only if its `dirty_kinds` intersects the filter.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time position updates for tracked traders. Updates land in batches: the server sends one envelope per block, carrying every row from that block that matches the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` array names what triggered that row's update.\n\n**Envelope types** (selected per-row via `dirty_kinds`):\n- `trader_position_v3_batch` — full rows, fired on trades (and window rollovers).\n- `trader_position_price_v3_batch` — compact price ticks, fired on mark-to-market moves (`dirty_kinds: [\"price\"]`).\n- `trader_position_resolution_v3_batch` — resolution ticks, fired when a position's market resolves (`dirty_kinds: [\"position_resolved\"]`).\n\nEvery envelope includes the `block` number plus a `data` array of rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `dirty_kinds` — subset of `[\"trade\", \"price\", \"window\", \"position_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Unknown values reject the subscription. The filter applies per-row: a row is included only if its `dirty_kinds` intersects the filter.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderPositionsV3Subscribe"
@@ -375,6 +399,12 @@
         },
         "traderPositionV3BatchEvent": {
           "$ref": "#/components/messages/TraderPositionV3BatchEvent"
+        },
+        "traderPositionPriceV3BatchEvent": {
+          "$ref": "#/components/messages/TraderPositionPriceV3BatchEvent"
+        },
+        "traderPositionResolutionV3BatchEvent": {
+          "$ref": "#/components/messages/TraderPositionResolutionV3BatchEvent"
         }
       }
     },
@@ -392,6 +422,26 @@
         },
         "traderExitMarkerBatchEvent": {
           "$ref": "#/components/messages/TraderExitMarkerBatchEvent"
+        }
+      }
+    },
+    "polymarket_holder_metrics_v3": {
+      "address": "polymarket_holder_metrics_v3",
+      "title": "Holder Metrics (v3)",
+      "summary": "Position, condition, and event holder metrics updates",
+      "description": "Real-time holder metrics updates, batched per block. The server sends separate envelopes for position, condition, and event rows. Filters are optional; omit all filters to receive all holder metrics updates.\n\n**Envelope types:** `holder_metrics_position_v3_batch`, `holder_metrics_condition_v3_batch`, `holder_metrics_event_v3_batch`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/HolderMetricsV3Subscribe"
+        },
+        "holderMetricsPositionV3BatchEvent": {
+          "$ref": "#/components/messages/HolderMetricsPositionV3BatchEvent"
+        },
+        "holderMetricsConditionV3BatchEvent": {
+          "$ref": "#/components/messages/HolderMetricsConditionV3BatchEvent"
+        },
+        "holderMetricsEventV3BatchEvent": {
+          "$ref": "#/components/messages/HolderMetricsEventV3BatchEvent"
         }
       }
     },
@@ -1364,16 +1414,40 @@
           "$ref": "#/channels/polymarket_trader_pnl_v3/messages/subscribeResponse"
         },
         {
-          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderGlobalPnlV3Event"
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderGlobalPnlV3BatchEvent"
         },
         {
-          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderMarketPnlV3Event"
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderMarketPnlV3BatchEvent"
         },
         {
-          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderEventPnlV3Event"
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderEventPnlV3BatchEvent"
         },
         {
-          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderCategoryPnlV3Event"
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderCategoryPnlV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderGlobalTickV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderMarketTickV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderEventTickV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderCategoryTickV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderGlobalResolutionV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderMarketResolutionV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderEventResolutionV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_pnl_v3/messages/traderCategoryResolutionV3BatchEvent"
         }
       ]
     },
@@ -1428,6 +1502,12 @@
         },
         {
           "$ref": "#/channels/polymarket_trader_positions_v3/messages/traderPositionV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_positions_v3/messages/traderPositionPriceV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_trader_positions_v3/messages/traderPositionResolutionV3BatchEvent"
         }
       ]
     },
@@ -1455,6 +1535,36 @@
         },
         {
           "$ref": "#/channels/polymarket_trader_pnl_v3_exits/messages/traderExitMarkerBatchEvent"
+        }
+      ]
+    },
+    "subscribePolymarketHolderMetricsV3": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/polymarket_holder_metrics_v3"
+      },
+      "summary": "Subscribe to position, condition, and event holder metrics updates",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_holder_metrics_v3/messages/subscribe"
+        }
+      ]
+    },
+    "receivePolymarketHolderMetricsV3": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/polymarket_holder_metrics_v3"
+      },
+      "summary": "Receive position, condition, and event holder metrics updates events",
+      "messages": [
+        {
+          "$ref": "#/channels/polymarket_holder_metrics_v3/messages/holderMetricsPositionV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_holder_metrics_v3/messages/holderMetricsConditionV3BatchEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_holder_metrics_v3/messages/holderMetricsEventV3BatchEvent"
         }
       ]
     },
@@ -2975,28 +3085,76 @@
           }
         ]
       },
-      "TraderGlobalPnlV3Event": {
-        "summary": "global (portfolio-level) PnL update for a trader",
+      "TraderGlobalPnlV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
         "payload": {
-          "$ref": "#/components/schemas/TraderGlobalPnlV3Event"
+          "$ref": "#/components/schemas/TraderGlobalPnlV3BatchEvent"
         }
       },
-      "TraderMarketPnlV3Event": {
-        "summary": "per-market PnL update for a trader",
+      "TraderMarketPnlV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
         "payload": {
-          "$ref": "#/components/schemas/TraderMarketPnlV3Event"
+          "$ref": "#/components/schemas/TraderMarketPnlV3BatchEvent"
         }
       },
-      "TraderEventPnlV3Event": {
-        "summary": "per-event PnL update for a trader",
+      "TraderEventPnlV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
         "payload": {
-          "$ref": "#/components/schemas/TraderEventPnlV3Event"
+          "$ref": "#/components/schemas/TraderEventPnlV3BatchEvent"
         }
       },
-      "TraderCategoryPnlV3Event": {
-        "summary": "per-category PnL update for a trader",
+      "TraderCategoryPnlV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
         "payload": {
-          "$ref": "#/components/schemas/TraderCategoryPnlV3Event"
+          "$ref": "#/components/schemas/TraderCategoryPnlV3BatchEvent"
+        }
+      },
+      "TraderGlobalTickV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
+        "payload": {
+          "$ref": "#/components/schemas/TraderGlobalTickV3BatchEvent"
+        }
+      },
+      "TraderMarketTickV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
+        "payload": {
+          "$ref": "#/components/schemas/TraderMarketTickV3BatchEvent"
+        }
+      },
+      "TraderEventTickV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
+        "payload": {
+          "$ref": "#/components/schemas/TraderEventTickV3BatchEvent"
+        }
+      },
+      "TraderCategoryTickV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
+        "payload": {
+          "$ref": "#/components/schemas/TraderCategoryTickV3BatchEvent"
+        }
+      },
+      "TraderGlobalResolutionV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
+        "payload": {
+          "$ref": "#/components/schemas/TraderGlobalResolutionV3BatchEvent"
+        }
+      },
+      "TraderMarketResolutionV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
+        "payload": {
+          "$ref": "#/components/schemas/TraderMarketResolutionV3BatchEvent"
+        }
+      },
+      "TraderEventResolutionV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
+        "payload": {
+          "$ref": "#/components/schemas/TraderEventResolutionV3BatchEvent"
+        }
+      },
+      "TraderCategoryResolutionV3BatchEvent": {
+        "summary": "Server-pushed per-block batch",
+        "payload": {
+          "$ref": "#/components/schemas/TraderCategoryResolutionV3BatchEvent"
         }
       },
       "TraderPnlV3SubscribeResponse": {
@@ -3093,6 +3251,18 @@
           "$ref": "#/components/schemas/TraderPositionV3BatchEvent"
         }
       },
+      "TraderPositionPriceV3BatchEvent": {
+        "summary": "Server-pushed per-block batch of position price ticks (mark-to-market refreshes)",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionPriceV3BatchEvent"
+        }
+      },
+      "TraderPositionResolutionV3BatchEvent": {
+        "summary": "Server-pushed per-block batch of position resolutions",
+        "payload": {
+          "$ref": "#/components/schemas/TraderPositionResolutionV3BatchEvent"
+        }
+      },
       "TraderPositionsV3SubscribeResponse": {
         "summary": "Subscription acknowledgement for trader position updates (v3) — batched per-block fan-out covering trades, price ticks, window rollovers and resolutions",
         "payload": {
@@ -3122,6 +3292,37 @@
         "summary": "Subscription acknowledgement for position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason",
         "payload": {
           "$ref": "#/components/schemas/TraderExitMarkersSubscribeResponse"
+        }
+      },
+      "HolderMetricsV3Subscribe": {
+        "summary": "Subscribe to position, condition, and event holder metrics updates",
+        "payload": {
+          "$ref": "#/components/schemas/HolderMetricsV3SubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "action": "subscribe"
+            }
+          }
+        ]
+      },
+      "HolderMetricsPositionV3BatchEvent": {
+        "summary": "HolderMetricsPositionV3BatchEvent",
+        "payload": {
+          "$ref": "#/components/schemas/HolderMetricsPositionV3BatchEvent"
+        }
+      },
+      "HolderMetricsConditionV3BatchEvent": {
+        "summary": "HolderMetricsConditionV3BatchEvent",
+        "payload": {
+          "$ref": "#/components/schemas/HolderMetricsConditionV3BatchEvent"
+        }
+      },
+      "HolderMetricsEventV3BatchEvent": {
+        "summary": "HolderMetricsEventV3BatchEvent",
+        "payload": {
+          "$ref": "#/components/schemas/HolderMetricsEventV3BatchEvent"
         }
       },
       "AccountsSubscribe": {
@@ -4574,6 +4775,45 @@
           }
         }
       },
+      "ConditionHolderMetricsV3Filters": {
+        "type": "object",
+        "description": "Condition holder metrics webhook filter.",
+        "properties": {
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ConditionHolderMetricsV3Payload": {
+        "type": "object",
+        "required": [
+          "ts",
+          "block",
+          "condition_id",
+          "holder_count"
+        ],
+        "properties": {
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "ConditionMetricsPayload": {
         "type": "object",
         "description": "Payload delivered when a market's volume or transaction metrics cross a configured threshold",
@@ -4604,7 +4844,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -4986,6 +5227,45 @@
           }
         }
       },
+      "EventHolderMetricsV3Filters": {
+        "type": "object",
+        "description": "Event holder metrics webhook filter.",
+        "properties": {
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "EventHolderMetricsV3Payload": {
+        "type": "object",
+        "required": [
+          "ts",
+          "block",
+          "event_slug",
+          "holder_count"
+        ],
+        "properties": {
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "EventMetricsFilters": {
         "type": "object",
         "description": "Subscription filters for the `event_metrics` event. All fields are optional.",
@@ -5087,7 +5367,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -7368,6 +7649,9 @@
           "trader_category_pnl_v3",
           "trader_position_resolved_v3",
           "trader_exit_markers_v3",
+          "position_holder_metrics_v3",
+          "condition_holder_metrics_v3",
+          "event_holder_metrics_v3",
           "condition_metrics",
           "event_metrics",
           "tag_metrics",
@@ -7663,6 +7947,69 @@
           }
         }
       },
+      "PositionHolderMetricsV3Filters": {
+        "type": "object",
+        "description": "Position holder metrics webhook filter.",
+        "properties": {
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PositionHolderMetricsV3Payload": {
+        "type": "object",
+        "required": [
+          "ts",
+          "block",
+          "position_id",
+          "holder_count",
+          "total_balance",
+          "total_cost_basis"
+        ],
+        "properties": {
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "position_id": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total_balance": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_cost_basis": {
+            "type": "number",
+            "format": "double"
+          },
+          "condition_holder_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "event_holder_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "PositionMetricsFilters": {
         "type": "object",
         "description": "Subscription filters for the `position_metrics` event. All fields are optional.",
@@ -7824,7 +8171,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -8797,16 +9145,16 @@
           "previous_probability": {
             "type": "number",
             "format": "double",
-            "description": "Probability at the start of the observation window (the baseline snapshot)"
+            "description": "YES probability at the start of the observation window (the baseline snapshot)"
           },
           "current_probability": {
             "type": "number",
             "format": "double",
-            "description": "Current probability that triggered the spike"
+            "description": "Current YES probability that triggered the spike"
           },
           "spike_direction": {
             "type": "string",
-            "description": "Direction of the spike: `\"up\"` (probability rising) or `\"down\"` (probability falling)"
+            "description": "Direction of the spike: `\"up\"` (YES probability rising) or `\"down\"` (YES probability falling)"
           },
           "spike_pct": {
             "type": "number",
@@ -10055,7 +10403,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -11490,7 +11839,8 @@
           "1d",
           "24h",
           "7d",
-          "30d"
+          "30d",
+          "lifetime"
         ]
       },
       "WhaleTradePayload": {
@@ -12005,7 +12355,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ],
             "description": "Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`."
           }
@@ -13510,6 +13861,23 @@
             },
             "description": "64-char hex condition IDs (with or without 0x prefix)",
             "minItems": 1
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1m",
+                "5m",
+                "30m",
+                "1h",
+                "6h",
+                "24h",
+                "7d",
+                "30d",
+                "lifetime"
+              ]
+            }
           }
         }
       },
@@ -13518,6 +13886,12 @@
         "description": "Server acknowledgement for a market metrics subscription",
         "properties": {
           "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeframes": {
             "type": "array",
             "items": {
               "type": "string"
@@ -13573,7 +13947,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ]
           },
           "timestamp": {
@@ -13658,6 +14033,23 @@
             },
             "description": "Event slugs (lowercase)",
             "minItems": 1
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1m",
+                "5m",
+                "30m",
+                "1h",
+                "6h",
+                "24h",
+                "7d",
+                "30d",
+                "lifetime"
+              ]
+            }
           }
         }
       },
@@ -13666,6 +14058,12 @@
         "description": "Server acknowledgement for an event metrics subscription",
         "properties": {
           "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeframes": {
             "type": "array",
             "items": {
               "type": "string"
@@ -13718,7 +14116,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ]
           },
           "timestamp": {
@@ -13799,6 +14198,23 @@
             },
             "description": "Tag labels or slugs, matched case-insensitively",
             "minItems": 1
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1m",
+                "5m",
+                "30m",
+                "1h",
+                "6h",
+                "24h",
+                "7d",
+                "30d",
+                "lifetime"
+              ]
+            }
           }
         }
       },
@@ -13807,6 +14223,12 @@
         "description": "Server acknowledgement for a tag metrics subscription",
         "properties": {
           "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeframes": {
             "type": "array",
             "items": {
               "type": "string"
@@ -13859,7 +14281,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ]
           },
           "timestamp": {
@@ -13940,6 +14363,23 @@
             },
             "description": "ERC-1155 outcome token IDs (decimal or hex strings)",
             "minItems": 1
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1m",
+                "5m",
+                "30m",
+                "1h",
+                "6h",
+                "24h",
+                "7d",
+                "30d",
+                "lifetime"
+              ]
+            }
           }
         }
       },
@@ -13948,6 +14388,12 @@
         "description": "Server acknowledgement for a position metrics subscription",
         "properties": {
           "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeframes": {
             "type": "array",
             "items": {
               "type": "string"
@@ -14042,7 +14488,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ]
           },
           "timestamp": {
@@ -14980,7 +15427,22 @@
                 "lifetime"
               ]
             },
-            "description": "Restrict pushed updates to these aggregation timeframes. Empty/omitted = all four. Unknown values reject the subscription.",
+            "description": "Restrict pushed updates to these aggregation timeframes. Empty/omitted = all four. Unknown values reject the subscription. Ignored by window-agnostic tick / resolution events.",
+            "uniqueItems": true
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "trade",
+                "price",
+                "window",
+                "market_resolved",
+                "all"
+              ]
+            },
+            "description": "Restrict pushed updates to events whose `dirty_kinds` intersects this set. Empty/omitted or `[\"all\"]` = every kind. Unknown values reject the subscription.",
             "uniqueItems": true
           }
         }
@@ -15037,17 +15499,29 @@
           }
         }
       },
-      "TraderGlobalPnlV3Event": {
+      "TraderGlobalPnlV3Row": {
         "type": "object",
-        "description": "Server-pushed event: global (portfolio-level) PnL update for a trader. Envelope type: \"trader_global_pnl_update_v3\".",
+        "description": "One global (portfolio-level) PnL row inside a `trader_global_pnl_v3_batch` envelope's `data` array.",
         "required": [
           "trader",
-          "current_pnl"
+          "realized_pnl_usd"
         ],
         "properties": {
           "trader": {
             "type": "string",
             "description": "Trader EVM wallet address"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "trade",
+                "price",
+                "window",
+                "market_resolved"
+              ]
+            }
           },
           "timeframe": {
             "type": [
@@ -15056,26 +15530,9 @@
             ],
             "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
           },
-          "current_pnl": {
-            "type": "number"
-          },
-          "pnl_1d": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "pnl_7d": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "pnl_30d": {
-            "type": [
-              "number",
-              "null"
-            ]
+          "realized_pnl_usd": {
+            "type": "number",
+            "description": "Realized PnL for the timeframe"
           },
           "events_traded": {
             "type": "integer",
@@ -15234,9 +15691,9 @@
           }
         }
       },
-      "TraderMarketPnlV3Event": {
+      "TraderMarketPnlV3Row": {
         "type": "object",
-        "description": "Server-pushed event: per-market PnL update for a trader. Envelope type: \"trader_market_pnl_update_v3\".",
+        "description": "One per-market PnL row inside a `trader_market_pnl_v3_batch` envelope's `data` array.",
         "required": [
           "trader",
           "condition_id"
@@ -15244,6 +15701,18 @@
         "properties": {
           "trader": {
             "type": "string"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "trade",
+                "price",
+                "window",
+                "market_resolved"
+              ]
+            }
           },
           "timeframe": {
             "type": [
@@ -15340,9 +15809,9 @@
           }
         }
       },
-      "TraderEventPnlV3Event": {
+      "TraderEventPnlV3Row": {
         "type": "object",
-        "description": "Server-pushed event: per-event PnL update for a trader. Envelope type: \"trader_event_pnl_update_v3\".",
+        "description": "One per-event PnL row inside a `trader_event_pnl_v3_batch` envelope's `data` array.",
         "required": [
           "trader",
           "event_slug"
@@ -15350,6 +15819,18 @@
         "properties": {
           "trader": {
             "type": "string"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "trade",
+                "price",
+                "window",
+                "market_resolved"
+              ]
+            }
           },
           "timeframe": {
             "type": [
@@ -15499,9 +15980,9 @@
           }
         }
       },
-      "TraderCategoryPnlV3Event": {
+      "TraderCategoryPnlV3Row": {
         "type": "object",
-        "description": "Server-pushed event: per-category PnL update for a trader. Envelope type: \"trader_category_pnl_update_v3\".",
+        "description": "One per-category PnL row inside a `trader_category_pnl_v3_batch` envelope's `data` array.",
         "required": [
           "trader",
           "category"
@@ -15509,6 +15990,18 @@
         "properties": {
           "trader": {
             "type": "string"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "trade",
+                "price",
+                "window",
+                "market_resolved"
+              ]
+            }
           },
           "timeframe": {
             "type": [
@@ -15662,6 +16155,848 @@
             ],
             "format": "int64",
             "description": "Unix seconds"
+          }
+        }
+      },
+      "TraderGlobalTickV3Row": {
+        "type": "object",
+        "description": "Row carried by `trader_global_tick_v3_batch` (price-only trader aggregate).",
+        "required": [
+          "trader"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "open_positions_value": {
+            "type": "number"
+          },
+          "pnl_now": {
+            "type": "number"
+          },
+          "pnl_1d_ago": {
+            "type": "number"
+          },
+          "pnl_7d_ago": {
+            "type": "number"
+          },
+          "pnl_30d_ago": {
+            "type": "number"
+          },
+          "last_block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "price"
+              ]
+            }
+          }
+        }
+      },
+      "TraderMarketTickV3Row": {
+        "type": "object",
+        "description": "Row carried by `trader_market_tick_v3_batch` (price-only per-market).",
+        "required": [
+          "trader",
+          "condition_id"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "market_pnl_1d_ago": {
+            "type": "number"
+          },
+          "market_pnl_7d_ago": {
+            "type": "number"
+          },
+          "market_pnl_30d_ago": {
+            "type": "number"
+          },
+          "last_block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "price"
+              ]
+            }
+          }
+        }
+      },
+      "TraderEventTickV3Row": {
+        "type": "object",
+        "description": "Row carried by `trader_event_tick_v3_batch` (price-only per-event).",
+        "required": [
+          "trader",
+          "event_slug"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "last_block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "price"
+              ]
+            }
+          }
+        }
+      },
+      "TraderCategoryTickV3Row": {
+        "type": "object",
+        "description": "Row carried by `trader_category_tick_v3_batch` (price-only per-category).",
+        "required": [
+          "trader",
+          "category"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "last_block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "price"
+              ]
+            }
+          }
+        }
+      },
+      "TraderGlobalResolutionV3Row": {
+        "type": "object",
+        "description": "Row carried by `trader_global_resolution_v3_batch` (trader-aggregate resolution).",
+        "required": [
+          "trader"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "pnl_now": {
+            "type": "number"
+          },
+          "markets_won": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "markets_lost": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "markets_resolved": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_wins_usd_lifetime": {
+            "type": "number"
+          },
+          "total_losses_usd_lifetime": {
+            "type": "number"
+          },
+          "last_block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "market_resolved"
+              ]
+            }
+          }
+        }
+      },
+      "TraderMarketResolutionV3Row": {
+        "type": "object",
+        "description": "Row carried by `trader_market_resolution_v3_batch` (per-market resolution).",
+        "required": [
+          "trader",
+          "condition_id"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "resolved": {
+            "type": "boolean"
+          },
+          "won": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "last_block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "market_resolved"
+              ]
+            }
+          }
+        }
+      },
+      "TraderEventResolutionV3Row": {
+        "type": "object",
+        "description": "Row carried by `trader_event_resolution_v3_batch` (per-event resolution).",
+        "required": [
+          "trader",
+          "event_slug"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "markets_won": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "markets_lost": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_wins_usd_lifetime": {
+            "type": "number"
+          },
+          "total_losses_usd_lifetime": {
+            "type": "number"
+          },
+          "last_block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "market_resolved"
+              ]
+            }
+          }
+        }
+      },
+      "TraderCategoryResolutionV3Row": {
+        "type": "object",
+        "description": "Row carried by `trader_category_resolution_v3_batch` (per-category resolution).",
+        "required": [
+          "trader",
+          "category"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "realized_pnl_usd": {
+            "type": "number"
+          },
+          "markets_won": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "markets_lost": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_wins_usd_lifetime": {
+            "type": "number"
+          },
+          "total_losses_usd_lifetime": {
+            "type": "number"
+          },
+          "last_block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix seconds"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "market_resolved"
+              ]
+            }
+          }
+        }
+      },
+      "TraderGlobalPnlV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_global_pnl_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_global_pnl_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderGlobalPnlV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderMarketPnlV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_market_pnl_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_market_pnl_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderMarketPnlV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderEventPnlV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_event_pnl_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_event_pnl_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderEventPnlV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderCategoryPnlV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_category_pnl_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_category_pnl_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "timeframe": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "\"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderCategoryPnlV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderGlobalTickV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_global_tick_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_global_tick_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderGlobalTickV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderMarketTickV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_market_tick_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_market_tick_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderMarketTickV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderEventTickV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_event_tick_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_event_tick_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderEventTickV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderCategoryTickV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_category_tick_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_category_tick_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderCategoryTickV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderGlobalResolutionV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_global_resolution_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_global_resolution_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderGlobalResolutionV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderMarketResolutionV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_market_resolution_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_market_resolution_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderMarketResolutionV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderEventResolutionV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_event_resolution_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_event_resolution_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderEventResolutionV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderCategoryResolutionV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch. Envelope type: `trader_category_resolution_v3_batch`. `data` carries every matching row from the block.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_category_resolution_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_pnl_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderCategoryResolutionV3Row"
+            },
+            "minItems": 1
           }
         }
       },
@@ -16044,6 +17379,223 @@
           }
         }
       },
+      "TraderPositionPriceV3Row": {
+        "type": "object",
+        "description": "One price-tick row inside a `trader_position_price_v3_batch` envelope's `data` array.",
+        "properties": {
+          "trader": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ERC-1155 token ID (decimal string)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "current_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Latest on-chain mark for the outcome token"
+          },
+          "current_value": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "realized_pnl_pct": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "last_block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix milliseconds"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "price"
+              ]
+            }
+          }
+        }
+      },
+      "TraderPositionPriceV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch of position price ticks (mark-to-market refreshes). Envelope type: `trader_position_price_v3_batch`.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_position_price_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_positions_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderPositionPriceV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "TraderPositionResolutionV3Row": {
+        "type": "object",
+        "description": "One resolution row inside a `trader_position_resolution_v3_batch` envelope's `data` array.",
+        "properties": {
+          "trader": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ERC-1155 token ID (decimal string)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "resolved": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "won": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "realized_pnl_pct": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "last_block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Unix milliseconds"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "position_resolved"
+              ]
+            }
+          }
+        }
+      },
+      "TraderPositionResolutionV3BatchEvent": {
+        "type": "object",
+        "description": "Server-pushed per-block batch of position resolutions. Envelope type: `trader_position_resolution_v3_batch`.",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trader_position_resolution_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_trader_positions_v3"
+            ]
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TraderPositionResolutionV3Row"
+            },
+            "minItems": 1
+          }
+        }
+      },
       "TraderExitMarkersSubscribeMessage": {
         "type": "object",
         "description": "Subscribe to the trader exit markers stream. `traders` is required and must be non-empty. `reasons` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every exit reason.",
@@ -16228,6 +17780,204 @@
               "$ref": "#/components/schemas/TraderExitMarkerRow"
             },
             "minItems": 1
+          }
+        }
+      },
+      "HolderMetricsV3SubscribeMessage": {
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "subscribe",
+              "unsubscribe_all"
+            ]
+          },
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PositionHolderMetricsV3Row": {
+        "type": "object",
+        "properties": {
+          "ts": {
+            "type": "integer"
+          },
+          "block": {
+            "type": "integer"
+          },
+          "position_id": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer"
+          },
+          "total_balance": {
+            "type": "number"
+          },
+          "total_cost_basis": {
+            "type": "number"
+          },
+          "condition_holder_count": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "event_holder_count": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      },
+      "ConditionHolderMetricsV3Row": {
+        "type": "object",
+        "properties": {
+          "ts": {
+            "type": "integer"
+          },
+          "block": {
+            "type": "integer"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer"
+          }
+        }
+      },
+      "EventHolderMetricsV3Row": {
+        "type": "object",
+        "properties": {
+          "ts": {
+            "type": "integer"
+          },
+          "block": {
+            "type": "integer"
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer"
+          }
+        }
+      },
+      "HolderMetricsPositionV3BatchEvent": {
+        "type": "object",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "holder_metrics_position_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_holder_metrics_v3"
+            ]
+          },
+          "block": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PositionHolderMetricsV3Row"
+            }
+          }
+        }
+      },
+      "HolderMetricsConditionV3BatchEvent": {
+        "type": "object",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "holder_metrics_condition_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_holder_metrics_v3"
+            ]
+          },
+          "block": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConditionHolderMetricsV3Row"
+            }
+          }
+        }
+      },
+      "HolderMetricsEventV3BatchEvent": {
+        "type": "object",
+        "required": [
+          "type",
+          "room_id",
+          "block",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "holder_metrics_event_v3_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_holder_metrics_v3"
+            ]
+          },
+          "block": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventHolderMetricsV3Row"
+            }
           }
         }
       },
@@ -16892,7 +18642,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ],
             "description": "Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`."
           }

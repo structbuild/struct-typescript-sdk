@@ -31,6 +31,7 @@ export type WsRoomId =
 	| "polymarket_trader_positions"
 	| "polymarket_trader_positions_v3"
 	| "polymarket_trader_pnl_v3_exits"
+	| "polymarket_holder_metrics_v3"
 	| "polymarket_accounts"
 	| "polymarket_order_book"
 	| "polymarket_clob_rewards"
@@ -44,7 +45,8 @@ export type WsFiltersOptionalRoom =
 	| "polymarket_clob_rewards"
 	| "polymarket_events_stream"
 	| "polymarket_markets_stream"
-	| "polymarket_oracle_events";
+	| "polymarket_oracle_events"
+	| "polymarket_holder_metrics_v3";
 export type WsFiltersRequiredRoom = Exclude<WsRoomId, WsFiltersOptionalRoom>;
 
 export type TradesSubscribeFilters = Omit<WsSchemas["TradesStreamSubscribeMessage"], "action">;
@@ -61,6 +63,7 @@ export type OrderBookSubscribeFilters = Omit<WsSchemas["OrderBookSubscribeMessag
 export type TraderPositionsSubscribeFilters = Omit<WsSchemas["TraderPositionsSubscribeMessage"], "action">;
 export type TraderPositionsV3SubscribeFilters = Omit<WsSchemas["TraderPositionsV3SubscribeMessage"], "action">;
 export type TraderExitMarkersSubscribeFilters = Omit<WsSchemas["TraderExitMarkersSubscribeMessage"], "action">;
+export type HolderMetricsV3SubscribeFilters = Omit<WsSchemas["HolderMetricsV3SubscribeMessage"], "action">;
 export type ClobRewardsSubscribeFilters = Omit<WsSchemas["ClobRewardsSubscribeMessage"], "action">;
 export type EventsStreamSubscribeFilters = Omit<WsSchemas["EventsStreamSubscribeMessage"], "action">;
 export type MarketsStreamSubscribeFilters = Omit<WsSchemas["MarketsStreamSubscribeMessage"], "action">;
@@ -81,14 +84,32 @@ export type TagMetricsEvent = WsSchemas["TagMetricsEvent"];
 export type TraderGlobalPnlEvent = WsSchemas["TraderGlobalPnlEvent"];
 export type TraderMarketPnlEvent = WsSchemas["TraderMarketPnlEvent"];
 export type TraderEventPnlEvent = WsSchemas["TraderEventPnlEvent"];
-export type TraderGlobalPnlV3Event = WsSchemas["TraderGlobalPnlV3Event"];
-export type TraderMarketPnlV3Event = WsSchemas["TraderMarketPnlV3Event"];
-export type TraderEventPnlV3Event = WsSchemas["TraderEventPnlV3Event"];
-export type TraderCategoryPnlV3Event = WsSchemas["TraderCategoryPnlV3Event"];
+export type TraderGlobalPnlV3BatchEvent = WsSchemas["TraderGlobalPnlV3BatchEvent"];
+export type TraderMarketPnlV3BatchEvent = WsSchemas["TraderMarketPnlV3BatchEvent"];
+export type TraderEventPnlV3BatchEvent = WsSchemas["TraderEventPnlV3BatchEvent"];
+export type TraderCategoryPnlV3BatchEvent = WsSchemas["TraderCategoryPnlV3BatchEvent"];
+export type TraderGlobalTickV3BatchEvent = WsSchemas["TraderGlobalTickV3BatchEvent"];
+export type TraderMarketTickV3BatchEvent = WsSchemas["TraderMarketTickV3BatchEvent"];
+export type TraderEventTickV3BatchEvent = WsSchemas["TraderEventTickV3BatchEvent"];
+export type TraderCategoryTickV3BatchEvent = WsSchemas["TraderCategoryTickV3BatchEvent"];
+export type TraderGlobalResolutionV3BatchEvent = WsSchemas["TraderGlobalResolutionV3BatchEvent"];
+export type TraderMarketResolutionV3BatchEvent = WsSchemas["TraderMarketResolutionV3BatchEvent"];
+export type TraderEventResolutionV3BatchEvent = WsSchemas["TraderEventResolutionV3BatchEvent"];
+export type TraderCategoryResolutionV3BatchEvent = WsSchemas["TraderCategoryResolutionV3BatchEvent"];
 export type TraderPositionV3Row = WsSchemas["TraderPositionV3Row"];
 export type TraderPositionV3BatchEvent = WsSchemas["TraderPositionV3BatchEvent"];
+export type TraderPositionPriceV3Row = WsSchemas["TraderPositionPriceV3Row"];
+export type TraderPositionPriceV3BatchEvent = WsSchemas["TraderPositionPriceV3BatchEvent"];
+export type TraderPositionResolutionV3Row = WsSchemas["TraderPositionResolutionV3Row"];
+export type TraderPositionResolutionV3BatchEvent = WsSchemas["TraderPositionResolutionV3BatchEvent"];
 export type TraderExitMarkerRow = WsSchemas["TraderExitMarkerRow"];
 export type TraderExitMarkerBatchEvent = WsSchemas["TraderExitMarkerBatchEvent"];
+export type PositionHolderMetricsV3Row = WsSchemas["PositionHolderMetricsV3Row"];
+export type ConditionHolderMetricsV3Row = WsSchemas["ConditionHolderMetricsV3Row"];
+export type EventHolderMetricsV3Row = WsSchemas["EventHolderMetricsV3Row"];
+export type HolderMetricsPositionV3BatchEvent = WsSchemas["HolderMetricsPositionV3BatchEvent"];
+export type HolderMetricsConditionV3BatchEvent = WsSchemas["HolderMetricsConditionV3BatchEvent"];
+export type HolderMetricsEventV3BatchEvent = WsSchemas["HolderMetricsEventV3BatchEvent"];
 export type AccountsUpdateEvent = WsSchemas["AccountsUpdateEvent"];
 export type UsdceUpdateEvent = WsSchemas["UsdceUpdateEvent"];
 export type MaticUpdateEvent = WsSchemas["MaticUpdateEvent"];
@@ -133,6 +154,13 @@ export type TraderPnlSubscribeResponse = WsSchemas["TraderPnlSubscribeResponse"]
 export type TraderPnlV3SubscribeResponse = WsSchemas["TraderPnlV3SubscribeResponse"];
 export type TraderPositionsV3SubscribeResponse = WsSchemas["TraderPositionsV3SubscribeResponse"];
 export type TraderExitMarkersSubscribeResponse = WsSchemas["TraderExitMarkersSubscribeResponse"];
+export interface HolderMetricsV3SubscribeResponse {
+	position_ids?: string[];
+	condition_ids?: string[];
+	event_slugs?: string[];
+	rejected?: string[];
+	error?: string | null;
+}
 export type AccountsSubscribeResponse = WsSchemas["AccountsSubscribeResponse"];
 export type OrderBookSubscribeResponse = WsSchemas["OrderBookSubscribeResponse"];
 
@@ -148,12 +176,25 @@ export interface WebSocketEventMap {
 	trader_global_pnl_update: TraderGlobalPnlEvent;
 	trader_market_pnl_update: TraderMarketPnlEvent;
 	trader_event_pnl_update: TraderEventPnlEvent;
-	trader_global_pnl_update_v3: TraderGlobalPnlV3Event;
-	trader_market_pnl_update_v3: TraderMarketPnlV3Event;
-	trader_event_pnl_update_v3: TraderEventPnlV3Event;
-	trader_category_pnl_update_v3: TraderCategoryPnlV3Event;
+	trader_global_pnl_v3_batch: TraderGlobalPnlV3BatchEvent;
+	trader_market_pnl_v3_batch: TraderMarketPnlV3BatchEvent;
+	trader_event_pnl_v3_batch: TraderEventPnlV3BatchEvent;
+	trader_category_pnl_v3_batch: TraderCategoryPnlV3BatchEvent;
+	trader_global_tick_v3_batch: TraderGlobalTickV3BatchEvent;
+	trader_market_tick_v3_batch: TraderMarketTickV3BatchEvent;
+	trader_event_tick_v3_batch: TraderEventTickV3BatchEvent;
+	trader_category_tick_v3_batch: TraderCategoryTickV3BatchEvent;
+	trader_global_resolution_v3_batch: TraderGlobalResolutionV3BatchEvent;
+	trader_market_resolution_v3_batch: TraderMarketResolutionV3BatchEvent;
+	trader_event_resolution_v3_batch: TraderEventResolutionV3BatchEvent;
+	trader_category_resolution_v3_batch: TraderCategoryResolutionV3BatchEvent;
 	trader_position_v3_batch: TraderPositionV3BatchEvent;
+	trader_position_price_v3_batch: TraderPositionPriceV3BatchEvent;
+	trader_position_resolution_v3_batch: TraderPositionResolutionV3BatchEvent;
 	trader_exit_marker_batch: TraderExitMarkerBatchEvent;
+	holder_metrics_position_v3_batch: HolderMetricsPositionV3BatchEvent;
+	holder_metrics_condition_v3_batch: HolderMetricsConditionV3BatchEvent;
+	holder_metrics_event_v3_batch: HolderMetricsEventV3BatchEvent;
 	accounts_update: AccountsUpdateEvent;
 	usdce_update: UsdceUpdateEvent;
 	matic_update: MaticUpdateEvent;
@@ -186,6 +227,7 @@ export interface WsSubscriptionMap {
 	polymarket_trader_positions: TraderPositionsSubscribeFilters;
 	polymarket_trader_positions_v3: TraderPositionsV3SubscribeFilters;
 	polymarket_trader_pnl_v3_exits: TraderExitMarkersSubscribeFilters;
+	polymarket_holder_metrics_v3: HolderMetricsV3SubscribeFilters;
 	polymarket_accounts: AccountsSubscribeFilters;
 	polymarket_order_book: OrderBookSubscribeFilters;
 	polymarket_clob_rewards: ClobRewardsSubscribeFilters;
@@ -207,6 +249,7 @@ export interface WsSubscribeResponseMap {
 	polymarket_trader_positions: TraderPositionsSubscribeResponse;
 	polymarket_trader_positions_v3: TraderPositionsV3SubscribeResponse;
 	polymarket_trader_pnl_v3_exits: TraderExitMarkersSubscribeResponse;
+	polymarket_holder_metrics_v3: HolderMetricsV3SubscribeResponse;
 	polymarket_accounts: AccountsSubscribeResponse;
 	polymarket_order_book: OrderBookSubscribeResponse;
 	polymarket_clob_rewards: ClobRewardsSubscribeResponse;
