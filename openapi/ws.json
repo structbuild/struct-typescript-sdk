@@ -7611,6 +7611,26 @@
           }
         }
       },
+      "PaginationMeta": {
+        "type": "object",
+        "description": "Pagination metadata to include in API responses",
+        "required": [
+          "has_more"
+        ],
+        "properties": {
+          "has_more": {
+            "type": "boolean",
+            "description": "Whether there are more results available"
+          },
+          "pagination_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Pagination key for the next page (if has_more is true)"
+          }
+        }
+      },
       "PnlFilterTimeframe": {
         "type": "string",
         "description": "PnL aggregation windows accepted by `*_pnl.timeframes`.",
@@ -11717,6 +11737,100 @@
             "type": "integer",
             "description": "Total count",
             "minimum": 0
+          }
+        }
+      },
+      "WebhookLogEntry": {
+        "type": "object",
+        "description": "A single webhook delivery log entry (GET /v1/webhooks/{id}/logs)",
+        "required": [
+          "sent_at",
+          "payload",
+          "event",
+          "delivery_id",
+          "attempt",
+          "success",
+          "status_code",
+          "latency_ms",
+          "url"
+        ],
+        "properties": {
+          "sent_at": {
+            "type": "string",
+            "description": "When the payload was sent (RFC3339, millisecond precision)"
+          },
+          "payload": {
+            "description": "The full payload we delivered, parsed back to JSON"
+          },
+          "event": {
+            "type": "string",
+            "description": "Event type (e.g. \"trader_first_trade\")"
+          },
+          "delivery_id": {
+            "type": "string",
+            "description": "Unique delivery id"
+          },
+          "attempt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Final attempt number for this dispatch",
+            "minimum": 0
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether delivery ultimately succeeded"
+          },
+          "status_code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "HTTP status code from the endpoint (0 = no response / transport error)",
+            "minimum": 0
+          },
+          "latency_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Total dispatch time in milliseconds (including retries)",
+            "minimum": 0
+          },
+          "url": {
+            "type": "string",
+            "description": "Destination URL the payload was POSTed to"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message when delivery failed (omitted when empty)"
+          }
+        }
+      },
+      "WebhookLogsResponseBody": {
+        "type": "object",
+        "description": "Response for GET /v1/webhooks/{id}/logs",
+        "required": [
+          "webhook_id",
+          "total",
+          "logs",
+          "pagination"
+        ],
+        "properties": {
+          "webhook_id": {
+            "type": "string",
+            "description": "The webhook these logs belong to"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Number of log entries returned",
+            "minimum": 0
+          },
+          "logs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookLogEntry"
+            },
+            "description": "Delivery log entries, newest first"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationMeta",
+            "description": "Cursor pagination metadata"
           }
         }
       },

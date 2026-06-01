@@ -603,6 +603,7 @@ export type CategoryPnlV3SortBy = Schemas["CategoryPnlV3SortBy"];
 export type EventPnlV3SortBy = Schemas["EventPnlV3SortBy"];
 export type MarketPnlV3SortBy = Schemas["MarketPnlV3SortBy"];
 export type PositionPnlV3SortBy = Schemas["PositionPnlV3SortBy"];
+export type PositionExitPnlV3SortBy = Schemas["PositionExitPnlV3SortBy"];
 export type TraderPnlV3SortBy = Schemas["TraderPnlV3SortBy"];
 
 export type PnlV3AnalyticsTimeframe = Schemas["PnlV3AnalyticsTimeframe"];
@@ -674,6 +675,8 @@ export interface GetCategoryTopTradersV3Params extends OperationQuery<"get_categ
 export type WebhookResponse = WebhookSchemas["WebhookResponse"];
 export type WebhookListResponseBody = WebhookSchemas["WebhookListResponseBody"];
 export type WebhookTestResponseBody = WebhookSchemas["WebhookTestResponseBody"];
+export type WebhookLogEntry = WebhookSchemas["WebhookLogEntry"];
+export type WebhookLogsResponseBody = WebhookSchemas["WebhookLogsResponseBody"];
 export type CreateWebhookRequestBody = WebhookSchemas["CreateWebhookRequestBody"];
 export type UpdateWebhookRequestBody = WebhookSchemas["UpdateWebhookRequestBody"];
 export type WebhookFiltersBody = WebhookSchemas["WebhookFiltersBody"];
@@ -803,6 +806,10 @@ export interface TestWebhookParams {
 }
 
 export interface RotateSecretParams {
+	webhookId: string;
+}
+
+export interface GetWebhookLogsParams extends WebhookOperationQuery<"get_webhook_logs"> {
 	webhookId: string;
 }
 

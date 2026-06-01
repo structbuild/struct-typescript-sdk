@@ -76,6 +76,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/webhooks/{webhook_id}/logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get webhook delivery logs
+         * @description Returns delivery logs for a webhook (newest first), including the send time and the payload we delivered (large payloads and error messages may be truncated). Retained for 7 days. Keyset-paginated via `pagination_key`.
+         */
+        get: operations["get_webhook_logs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/webhooks/{webhook_id}/rotate-secret": {
         parameters: {
             query?: never;
@@ -1879,6 +1899,13 @@ export interface components {
             /** @description Restrict to events for these condition IDs. */
             condition_ids?: string[] | null;
         };
+        /** @description Pagination metadata to include in API responses */
+        PaginationMeta: {
+            /** @description Whether there are more results available */
+            has_more: boolean;
+            /** @description Pagination key for the next page (if has_more is true) */
+            pagination_key?: string | null;
+        };
         /**
          * @description PnL aggregation windows accepted by `*_pnl.timeframes`.
          * @enum {string}
@@ -3410,6 +3437,49 @@ export interface components {
             /** @description Total count */
             total: number;
         };
+        /** @description A single webhook delivery log entry (GET /v1/webhooks/{id}/logs) */
+        WebhookLogEntry: {
+            /** @description When the payload was sent (RFC3339, millisecond precision) */
+            sent_at: string;
+            /** @description The full payload we delivered, parsed back to JSON */
+            payload: unknown;
+            /** @description Event type (e.g. "trader_first_trade") */
+            event: string;
+            /** @description Unique delivery id */
+            delivery_id: string;
+            /**
+             * Format: int32
+             * @description Final attempt number for this dispatch
+             */
+            attempt: number;
+            /** @description Whether delivery ultimately succeeded */
+            success: boolean;
+            /**
+             * Format: int32
+             * @description HTTP status code from the endpoint (0 = no response / transport error)
+             */
+            status_code: number;
+            /**
+             * Format: int32
+             * @description Total dispatch time in milliseconds (including retries)
+             */
+            latency_ms: number;
+            /** @description Destination URL the payload was POSTed to */
+            url: string;
+            /** @description Error message when delivery failed (omitted when empty) */
+            error?: string;
+        };
+        /** @description Response for GET /v1/webhooks/{id}/logs */
+        WebhookLogsResponseBody: {
+            /** @description The webhook these logs belong to */
+            webhook_id: string;
+            /** @description Number of log entries returned */
+            total: number;
+            /** @description Delivery log entries, newest first */
+            logs: components["schemas"]["WebhookLogEntry"][];
+            /** @description Cursor pagination metadata */
+            pagination: components["schemas"]["PaginationMeta"];
+        };
         /** @description Webhook response (returned from API) */
         WebhookResponse: {
             /** @description Unique webhook ID */
@@ -4311,6 +4381,52 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DeleteWebhookResponse"];
+                };
+            };
+            /** @description Missing or invalid API key */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Webhook not found or not owned by user */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_webhook_logs: {
+        parameters: {
+            query?: {
+                /** @description Results per page (default 10, max 250) */
+                limit?: number;
+                /** @description Start time, Unix milliseconds (inclusive) */
+                from?: number;
+                /** @description End time, Unix milliseconds (inclusive) */
+                to?: number;
+                /** @description Cursor from a previous response */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Webhook UUID */
+                webhook_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Delivery logs */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookLogsResponseBody"];
                 };
             };
             /** @description Missing or invalid API key */

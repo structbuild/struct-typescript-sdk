@@ -1200,6 +1200,13 @@ export interface components {
             /** @description Restrict to events for these condition IDs. */
             condition_ids?: string[] | null;
         };
+        /** @description Pagination metadata to include in API responses */
+        PaginationMeta: {
+            /** @description Whether there are more results available */
+            has_more: boolean;
+            /** @description Pagination key for the next page (if has_more is true) */
+            pagination_key?: string | null;
+        };
         /**
          * @description PnL aggregation windows accepted by `*_pnl.timeframes`.
          * @enum {string}
@@ -2727,6 +2734,49 @@ export interface components {
             webhooks: components["schemas"]["WebhookResponse"][];
             /** @description Total count */
             total: number;
+        };
+        /** @description A single webhook delivery log entry (GET /v1/webhooks/{id}/logs) */
+        WebhookLogEntry: {
+            /** @description When the payload was sent (RFC3339, millisecond precision) */
+            sent_at: string;
+            /** @description The full payload we delivered, parsed back to JSON */
+            payload: unknown;
+            /** @description Event type (e.g. "trader_first_trade") */
+            event: string;
+            /** @description Unique delivery id */
+            delivery_id: string;
+            /**
+             * Format: int32
+             * @description Final attempt number for this dispatch
+             */
+            attempt: number;
+            /** @description Whether delivery ultimately succeeded */
+            success: boolean;
+            /**
+             * Format: int32
+             * @description HTTP status code from the endpoint (0 = no response / transport error)
+             */
+            status_code: number;
+            /**
+             * Format: int32
+             * @description Total dispatch time in milliseconds (including retries)
+             */
+            latency_ms: number;
+            /** @description Destination URL the payload was POSTed to */
+            url: string;
+            /** @description Error message when delivery failed (omitted when empty) */
+            error?: string;
+        };
+        /** @description Response for GET /v1/webhooks/{id}/logs */
+        WebhookLogsResponseBody: {
+            /** @description The webhook these logs belong to */
+            webhook_id: string;
+            /** @description Number of log entries returned */
+            total: number;
+            /** @description Delivery log entries, newest first */
+            logs: components["schemas"]["WebhookLogEntry"][];
+            /** @description Cursor pagination metadata */
+            pagination: components["schemas"]["PaginationMeta"];
         };
         /** @description Webhook response (returned from API) */
         WebhookResponse: {

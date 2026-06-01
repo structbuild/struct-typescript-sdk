@@ -3429,6 +3429,10 @@ export interface components {
             /** Format: double */
             realized_pnl_usd: number;
             /** Format: double */
+            total_pnl_usd?: number;
+            /** Format: double */
+            unrealized_pnl_usd?: number;
+            /** Format: double */
             realized_pnl_pct?: number | null;
             /** Format: double */
             open_positions_value: number;
@@ -3951,6 +3955,10 @@ export interface components {
             /** Format: double */
             realized_pnl_usd: number;
             /** Format: double */
+            total_pnl_usd?: number;
+            /** Format: double */
+            unrealized_pnl_usd?: number;
+            /** Format: double */
             realized_pnl_pct?: number | null;
             /** Format: double */
             open_positions_value: number;
@@ -4342,6 +4350,16 @@ export interface components {
             trader: components["schemas"]["TraderProfile"];
             /** Format: double */
             realized_pnl_usd: number;
+            /** Format: double */
+            total_pnl_usd?: number;
+            /** Format: double */
+            unrealized_pnl_usd?: number;
+            /**
+             * Format: double
+             * @description Wallet cash held in pUSD + USDC at the snapshot moment.
+             *     Trader-grain only; stable per block.
+             */
+            usd_balance?: number;
             /** Format: double */
             realized_pnl_pct?: number | null;
             /** Format: double */
@@ -4774,6 +4792,10 @@ export interface components {
             trader?: null | components["schemas"]["TraderProfile"];
             /** Format: double */
             realized_pnl_usd: number;
+            /** Format: double */
+            total_pnl_usd?: number;
+            /** Format: double */
+            unrealized_pnl_usd?: number;
             /** Format: double */
             realized_pnl_pct?: number | null;
             /** Format: double */
@@ -5527,26 +5549,6 @@ export interface components {
         PnlV3AnalyticsTimeframe: "1d" | "24h" | "7d" | "30d" | "lifetime";
         PnlV3CandlestickBar: {
             /**
-             * Format: double
-             * @description Total PnL low value for the candle.
-             */
-            l?: number | null;
-            /**
-             * Format: double
-             * @description Total PnL high value for the candle.
-             */
-            h?: number | null;
-            /**
-             * Format: double
-             * @description Total PnL open value for the candle.
-             */
-            o?: number | null;
-            /**
-             * Format: double
-             * @description Total PnL close/latest value for the candle.
-             */
-            c?: number | null;
-            /**
              * Format: int64
              * @description Timestamp in epoch seconds at the start of the candle bucket.
              */
@@ -5563,16 +5565,6 @@ export interface components {
             cb: number;
             /**
              * Format: double
-             * @description Latest realized PnL at candle close.
-             */
-            rp: number;
-            /**
-             * Format: double
-             * @description Latest unrealized/open-position value at candle close.
-             */
-            up: number;
-            /**
-             * Format: double
              * @description Latest USDC balance at candle close.
              */
             ub: number;
@@ -5582,30 +5574,45 @@ export interface components {
              */
             pb: number;
             /**
-             * Format: double
-             * @description Portfolio value low value for the candle.
-             */
-            pl?: number | null;
-            /**
-             * Format: double
-             * @description Portfolio value high value for the candle.
-             */
-            ph?: number | null;
-            /**
-             * Format: double
-             * @description Portfolio value open value for the candle.
-             */
-            po?: number | null;
-            /**
-             * Format: double
-             * @description Portfolio value close/latest value for the candle.
-             */
-            pc?: number | null;
-            /**
              * Format: int32
              * @description Latest open position count at candle close.
              */
             nop: number;
+            /**
+             * Format: double
+             * @description Total PnL low value for the candle (= realized + unrealized).
+             */
+            l?: number | null;
+            /** Format: double */
+            h?: number | null;
+            /** Format: double */
+            o?: number | null;
+            /** Format: double */
+            c?: number | null;
+            /** Format: double */
+            rl?: number | null;
+            /** Format: double */
+            rh?: number | null;
+            /** Format: double */
+            ro?: number | null;
+            /** Format: double */
+            rc?: number | null;
+            /** Format: double */
+            ul?: number | null;
+            /** Format: double */
+            uh?: number | null;
+            /** Format: double */
+            uo?: number | null;
+            /** Format: double */
+            uc?: number | null;
+            /** Format: double */
+            pl?: number | null;
+            /** Format: double */
+            ph?: number | null;
+            /** Format: double */
+            po?: number | null;
+            /** Format: double */
+            pc?: number | null;
         };
         PnlV3ChangeWindow: {
             timeframe: string;
@@ -6025,6 +6032,12 @@ export interface components {
             condition_id?: string | null;
             market_slug?: string | null;
             event_slug?: string | null;
+            /**
+             * @description Market category slug — mirror of `PositionRollup.category_id`
+             *     resolved server-side. Enables `?category=<slug>` filtering on
+             *     the positions endpoint.
+             */
+            category?: string | null;
             title?: string | null;
             question?: string | null;
             image_url?: string | null;
@@ -6093,6 +6106,11 @@ export interface components {
             redeemable?: boolean | null;
             mergeable?: boolean | null;
         };
+        /**
+         * @description Sort field for v3 trader position exits.
+         * @enum {string}
+         */
+        PositionExitPnlV3SortBy: "exit_time" | "pnl_usd" | "pnl_pct" | "cost_basis_usd";
         /** @description Position holder history candle. */
         PositionHolderHistoryV3Candle: {
             /**
@@ -10928,8 +10946,8 @@ export interface operations {
                 count_back?: number;
                 /** @description Alias for count_back. Default 500, max 2500. */
                 limit?: number;
-                /** @description Sort field: exit_time, pnl_usd, pnl_pct, cost_basis_usd. Default exit_time. */
-                sort_by?: string;
+                /** @description Sort field. Default exit_time. */
+                sort_by?: components["schemas"]["PositionExitPnlV3SortBy"];
                 /** @description Sort direction for sort_by. Default desc. */
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Shortcut: highest or lowest. Sorts by pnl_pct desc/asc. */
@@ -11067,6 +11085,8 @@ export interface operations {
                 position_id?: string;
                 /** @description Minimum shares balance to include */
                 min_shares?: number;
+                /** @description Filter positions to a single market category. Combinable with `sort_by`. */
+                category?: components["schemas"]["PolymarketCategory"];
             };
             header?: never;
             path: {
