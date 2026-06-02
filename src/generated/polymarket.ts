@@ -564,7 +564,7 @@ export interface paths {
         };
         /**
          * Get event chart
-         * @description Retrieve price data over time for up to 4 markets with highest YES outcome (outcome_index 0) prices in an event. Perfect for rendering multi-line charts showing price movement across top markets. TradingView-style: resolution parameter determines both candle size and implicit lookback period.
+         * @description Retrieve price data over time for up to 4 highest-volume markets in an event. Perfect for rendering multi-line charts showing price movement across top markets. TradingView-style: resolution parameter determines both candle size and implicit lookback period.
          */
         get: operations["get_event_chart"];
         put?: never;
@@ -2000,7 +2000,7 @@ export interface components {
          *     active in the selected timeframe.
          * @enum {string}
          */
-        TagSortBy: "volume" | "shares_volume" | "txns" | "unique_traders" | "unique_makers" | "unique_takers" | "fees";
+        TagSortBy: "volume" | "builder_volume" | "shares_volume" | "builder_shares_volume" | "txns" | "builder_txns" | "unique_traders" | "unique_builder_traders" | "unique_makers" | "unique_takers" | "fees" | "builder_fees";
         BondMarket: {
             condition_id: string;
             title?: string | null;
@@ -4227,7 +4227,7 @@ export interface components {
          * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
          * @enum {string}
          */
-        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d";
+        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime";
         /**
          * @description Sort metric for the trader → builders list.
          * @enum {string}
@@ -6371,7 +6371,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Price data over time for up to 4 markets with highest YES odds */
+            /** @description Price data over time for up to 4 highest-volume markets */
             200: {
                 headers: {
                     [name: string]: unknown;

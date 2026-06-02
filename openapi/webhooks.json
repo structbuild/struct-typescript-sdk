@@ -302,6 +302,89 @@
         ]
       }
     },
+    "/webhooks/{webhook_id}/logs": {
+      "get": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Get webhook delivery logs",
+        "description": "Returns delivery logs for a webhook (newest first), including the send time and the payload we delivered (large payloads and error messages may be truncated). Retained for 7 days. Keyset-paginated via `pagination_key`.",
+        "operationId": "get_webhook_logs",
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "description": "Webhook UUID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Results per page (default 10, max 250)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Start time, Unix milliseconds (inclusive)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "End time, Unix milliseconds (inclusive)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "pagination_key",
+            "in": "query",
+            "description": "Cursor from a previous response",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookLogsResponseBody"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "description": "Webhook not found or not owned by user"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
     "/webhooks/{webhook_id}/rotate-secret": {
       "post": {
         "tags": [
@@ -1154,7 +1237,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -1637,7 +1721,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -3450,6 +3535,21 @@
               }
             ],
             "description": "Trade type (webhook events only fire on order fills)"
+          },
+          "builder_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1\ntrades; may be `0x0000…` for V2 trades placed without a builder code."
+          },
+          "builder_fee": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder fee in USDC. Absent when no builder code is attached."
           }
         }
       },
@@ -3882,6 +3982,26 @@
             },
             "description": "Restrict to events for these condition IDs.",
             "maxItems": 500
+          }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "description": "Pagination metadata to include in API responses",
+        "required": [
+          "has_more"
+        ],
+        "properties": {
+          "has_more": {
+            "type": "boolean",
+            "description": "Whether there are more results available"
+          },
+          "pagination_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Pagination key for the next page (if has_more is true)"
           }
         }
       },
@@ -4373,7 +4493,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -5346,16 +5467,16 @@
           "previous_probability": {
             "type": "number",
             "format": "double",
-            "description": "Probability at the start of the observation window (the baseline snapshot)"
+            "description": "YES probability at the start of the observation window (the baseline snapshot)"
           },
           "current_probability": {
             "type": "number",
             "format": "double",
-            "description": "Current probability that triggered the spike"
+            "description": "Current YES probability that triggered the spike"
           },
           "spike_direction": {
             "type": "string",
-            "description": "Direction of the spike: `\"up\"` (probability rising) or `\"down\"` (probability falling)"
+            "description": "Direction of the spike: `\"up\"` (YES probability rising) or `\"down\"` (YES probability falling)"
           },
           "spike_pct": {
             "type": "number",
@@ -6604,7 +6725,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -6713,12 +6835,15 @@
         "description": "Trade-event types accepted by `trader_trade_event.trade_types`. Covers the\nfull set of typed prediction-trade variants.",
         "enum": [
           "OrderFilled",
+          "OrdersMatched",
+          "MakerRebate",
+          "Reward",
+          "Yield",
           "Redemption",
           "Merge",
           "Split",
           "Cancelled",
           "PositionsConverted",
-          "OrdersMatched",
           "Initialization",
           "Proposal",
           "Dispute",
@@ -6732,8 +6857,7 @@
           "Unpause",
           "ManualResolution",
           "NegRiskOutcomeReported",
-          "RegisterToken",
-          "Approval"
+          "RegisterToken"
         ]
       },
       "TraderEventPnlFilters": {
@@ -7349,12 +7473,15 @@
               "description": "Trade-event types accepted by `trader_trade_event.trade_types`. Covers the\nfull set of typed prediction-trade variants.",
               "enum": [
                 "OrderFilled",
+                "OrdersMatched",
+                "MakerRebate",
+                "Reward",
+                "Yield",
                 "Redemption",
                 "Merge",
                 "Split",
                 "Cancelled",
                 "PositionsConverted",
-                "OrdersMatched",
                 "Initialization",
                 "Proposal",
                 "Dispute",
@@ -7368,8 +7495,7 @@
                 "Unpause",
                 "ManualResolution",
                 "NegRiskOutcomeReported",
-                "RegisterToken",
-                "Approval"
+                "RegisterToken"
               ]
             },
             "description": "Only fire for these trade types. Empty = all supported trade-event variants.",
@@ -7925,6 +8051,100 @@
           }
         }
       },
+      "WebhookLogEntry": {
+        "type": "object",
+        "description": "A single webhook delivery log entry (GET /v1/webhooks/{id}/logs)",
+        "required": [
+          "sent_at",
+          "payload",
+          "event",
+          "delivery_id",
+          "attempt",
+          "success",
+          "status_code",
+          "latency_ms",
+          "url"
+        ],
+        "properties": {
+          "sent_at": {
+            "type": "string",
+            "description": "When the payload was sent (RFC3339, millisecond precision)"
+          },
+          "payload": {
+            "description": "The full payload we delivered, parsed back to JSON"
+          },
+          "event": {
+            "type": "string",
+            "description": "Event type (e.g. \"trader_first_trade\")"
+          },
+          "delivery_id": {
+            "type": "string",
+            "description": "Unique delivery id"
+          },
+          "attempt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Final attempt number for this dispatch",
+            "minimum": 0
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether delivery ultimately succeeded"
+          },
+          "status_code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "HTTP status code from the endpoint (0 = no response / transport error)",
+            "minimum": 0
+          },
+          "latency_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Total dispatch time in milliseconds (including retries)",
+            "minimum": 0
+          },
+          "url": {
+            "type": "string",
+            "description": "Destination URL the payload was POSTed to"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message when delivery failed (omitted when empty)"
+          }
+        }
+      },
+      "WebhookLogsResponseBody": {
+        "type": "object",
+        "description": "Response for GET /v1/webhooks/{id}/logs",
+        "required": [
+          "webhook_id",
+          "total",
+          "logs",
+          "pagination"
+        ],
+        "properties": {
+          "webhook_id": {
+            "type": "string",
+            "description": "The webhook these logs belong to"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Number of log entries returned",
+            "minimum": 0
+          },
+          "logs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookLogEntry"
+            },
+            "description": "Delivery log entries, newest first"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationMeta",
+            "description": "Cursor pagination metadata"
+          }
+        }
+      },
       "WebhookResponse": {
         "type": "object",
         "description": "Webhook response (returned from API)",
@@ -8050,7 +8270,8 @@
           "1d",
           "24h",
           "7d",
-          "30d"
+          "30d",
+          "lifetime"
         ]
       },
       "WhaleTradePayload": {
@@ -8231,6 +8452,21 @@
               }
             ],
             "description": "Trade type (webhook events only fire on order fills)"
+          },
+          "builder_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1\ntrades; may be `0x0000…` for V2 trades placed without a builder code."
+          },
+          "builder_fee": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder fee in USDC. Absent when no builder code is attached."
           }
         }
       },
@@ -8448,6 +8684,14 @@
                 ],
                 "description": "Exchange contract that processed the event"
               },
+              "builder_code": {
+                "type": "string",
+                "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code."
+              },
+              "builder_fee": {
+                "type": "number",
+                "description": "Builder fee in USDC. Absent when no builder code is attached."
+              },
               "trade_type": {
                 "type": "string",
                 "enum": [
@@ -8615,6 +8859,14 @@
                   "Unknown"
                 ],
                 "description": "Exchange contract that processed the event"
+              },
+              "builder_code": {
+                "type": "string",
+                "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code."
+              },
+              "builder_fee": {
+                "type": "number",
+                "description": "Builder fee in USDC. Absent when no builder code is attached."
               },
               "trade_type": {
                 "type": "string",
@@ -9186,6 +9438,39 @@
               },
               "shares_amount": {
                 "type": "number"
+              },
+              "fee": {
+                "type": "number"
+              },
+              "fee_pct": {
+                "type": "number"
+              },
+              "position_details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "position_id",
+                    "outcome_index",
+                    "amount"
+                  ],
+                  "properties": {
+                    "position_id": {
+                      "type": "string"
+                    },
+                    "outcome_index": {
+                      "type": "integer"
+                    },
+                    "outcome": {
+                      "type": "string"
+                    },
+                    "amount": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "description": "Per-position conversion amounts."
               },
               "exchange": {
                 "type": "string",
@@ -10848,7 +11133,7 @@
     "market-metrics": {
       "post": {
         "summary": "Market metrics callback",
-        "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).",
+        "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).",
         "operationId": "market-metrics",
         "tags": [
           "Webhook Callbacks"
@@ -10943,7 +11228,7 @@
     "event-metrics": {
       "post": {
         "summary": "Event metrics callback",
-        "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).",
+        "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).",
         "operationId": "event-metrics",
         "tags": [
           "Webhook Callbacks"
@@ -11038,7 +11323,7 @@
     "tag-metrics": {
       "post": {
         "summary": "Tag metrics callback",
-        "description": "Fired when a tag's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).",
+        "description": "Fired when a tag's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).",
         "operationId": "tag-metrics",
         "tags": [
           "Webhook Callbacks"
@@ -11133,7 +11418,7 @@
     "position-metrics": {
       "post": {
         "summary": "Position metrics callback",
-        "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`).",
+        "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).",
         "operationId": "position-metrics",
         "tags": [
           "Webhook Callbacks"
@@ -11228,7 +11513,7 @@
     "market-volume-milestone": {
       "post": {
         "summary": "Market volume milestone callback",
-        "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.",
+        "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.",
         "operationId": "market-volume-milestone",
         "tags": [
           "Webhook Callbacks"
@@ -11323,7 +11608,7 @@
     "event-volume-milestone": {
       "post": {
         "summary": "Event volume milestone callback",
-        "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.",
+        "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.",
         "operationId": "event-volume-milestone",
         "tags": [
           "Webhook Callbacks"
@@ -11418,7 +11703,7 @@
     "position-volume-milestone": {
       "post": {
         "summary": "Position volume milestone callback",
-        "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.",
+        "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.",
         "operationId": "position-volume-milestone",
         "tags": [
           "Webhook Callbacks"
@@ -11513,7 +11798,7 @@
     "probability-spike": {
       "post": {
         "summary": "Probability spike callback",
-        "description": "Fired when a position's probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
+        "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
         "operationId": "probability-spike",
         "tags": [
           "Webhook Callbacks"
@@ -11703,7 +11988,7 @@
     "market-volume-spike": {
       "post": {
         "summary": "Market volume spike callback",
-        "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`. Optional `condition_ids` restricts to specific markets.",
+        "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`, `lifetime`. Optional `condition_ids` restricts to specific markets.",
         "operationId": "market-volume-spike",
         "tags": [
           "Webhook Callbacks"

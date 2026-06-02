@@ -262,7 +262,7 @@ export interface components {
             /** @description Market condition ID */
             condition_id?: string | null;
             /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
+            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime");
             /**
              * Format: double
              * @description Total trading volume in USD for this timeframe
@@ -420,7 +420,7 @@ export interface components {
             /** @description Event slug */
             event_slug?: string | null;
             /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
+            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime");
             /**
              * Format: double
              * @description Total aggregated volume across all markets in the event (USD)
@@ -1095,6 +1095,16 @@ export interface components {
             exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
             trade_type: "OrderFilled" | "OrdersMatched";
+            /**
+             * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
+             *     trades; may be `0x0000…` for V2 trades placed without a builder code.
+             */
+            builder_code?: string | null;
+            /**
+             * Format: double
+             * @description Builder fee in USDC. Absent when no builder code is attached.
+             */
+            builder_fee?: number | null;
         };
         /**
          * @description Oracle event variants accepted by `oracle_events.oracle_event_types`.
@@ -1164,6 +1174,13 @@ export interface components {
             /** @description Restrict to events for these condition IDs. */
             condition_ids?: string[] | null;
         };
+        /** @description Pagination metadata to include in API responses */
+        PaginationMeta: {
+            /** @description Whether there are more results available */
+            has_more: boolean;
+            /** @description Pagination key for the next page (if has_more is true) */
+            pagination_key?: string | null;
+        };
         /**
          * @description PnL aggregation windows accepted by `*_pnl.timeframes`.
          * @enum {string}
@@ -1178,7 +1195,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "trader_exit_markers_v3" | "position_holder_metrics_v3" | "condition_holder_metrics_v3" | "event_holder_metrics_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -1417,7 +1434,7 @@ export interface components {
              */
             outcome_index?: number | null;
             /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
+            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime");
             /**
              * Format: double
              * @description Total trading volume in USD
@@ -1787,15 +1804,15 @@ export interface components {
             outcome_index?: number | null;
             /**
              * Format: double
-             * @description Probability at the start of the observation window (the baseline snapshot)
+             * @description YES probability at the start of the observation window (the baseline snapshot)
              */
             previous_probability: number;
             /**
              * Format: double
-             * @description Current probability that triggered the spike
+             * @description Current YES probability that triggered the spike
              */
             current_probability: number;
-            /** @description Direction of the spike: `"up"` (probability rising) or `"down"` (probability falling) */
+            /** @description Direction of the spike: `"up"` (YES probability rising) or `"down"` (YES probability falling) */
             spike_direction: string;
             /**
              * Format: double
@@ -2117,7 +2134,7 @@ export interface components {
             /** @description Tag label or slug */
             tag?: string | null;
             /** @description Aggregation window */
-            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d");
+            timeframe?: null | ("1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime");
             /**
              * Format: double
              * @description Total aggregated volume for the tag (USD)
@@ -2184,7 +2201,7 @@ export interface components {
          *     full set of typed prediction-trade variants.
          * @enum {string}
          */
-        TradeEventFilterType: "OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval";
+        TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
         /** @description Subscription filters for the `trader_event_pnl` event. All fields are optional. */
         TraderEventPnlFilters: {
             /** @description Track only these trader wallet addresses. */
@@ -2430,7 +2447,7 @@ export interface components {
              */
             max_probability?: number | null;
             /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
-            trade_types?: ("OrderFilled" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "OrdersMatched" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "Approval")[] | null;
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -2671,6 +2688,49 @@ export interface components {
             /** @description Total count */
             total: number;
         };
+        /** @description A single webhook delivery log entry (GET /v1/webhooks/{id}/logs) */
+        WebhookLogEntry: {
+            /** @description When the payload was sent (RFC3339, millisecond precision) */
+            sent_at: string;
+            /** @description The full payload we delivered, parsed back to JSON */
+            payload: unknown;
+            /** @description Event type (e.g. "trader_first_trade") */
+            event: string;
+            /** @description Unique delivery id */
+            delivery_id: string;
+            /**
+             * Format: int32
+             * @description Final attempt number for this dispatch
+             */
+            attempt: number;
+            /** @description Whether delivery ultimately succeeded */
+            success: boolean;
+            /**
+             * Format: int32
+             * @description HTTP status code from the endpoint (0 = no response / transport error)
+             */
+            status_code: number;
+            /**
+             * Format: int32
+             * @description Total dispatch time in milliseconds (including retries)
+             */
+            latency_ms: number;
+            /** @description Destination URL the payload was POSTed to */
+            url: string;
+            /** @description Error message when delivery failed (omitted when empty) */
+            error?: string;
+        };
+        /** @description Response for GET /v1/webhooks/{id}/logs */
+        WebhookLogsResponseBody: {
+            /** @description The webhook these logs belong to */
+            webhook_id: string;
+            /** @description Number of log entries returned */
+            total: number;
+            /** @description Delivery log entries, newest first */
+            logs: components["schemas"]["WebhookLogEntry"][];
+            /** @description Cursor pagination metadata */
+            pagination: components["schemas"]["PaginationMeta"];
+        };
         /** @description Webhook response (returned from API) */
         WebhookResponse: {
             /** @description Unique webhook ID */
@@ -2732,7 +2792,7 @@ export interface components {
          * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
          * @enum {string}
          */
-        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d";
+        WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime";
         /** @description Payload delivered when a trade exceeds the configured size and probability thresholds */
         WhaleTradePayload: {
             /** @description Limit-order maker wallet address (lowercase) */
@@ -2803,6 +2863,16 @@ export interface components {
             exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
             trade_type: "OrderFilled" | "OrdersMatched";
+            /**
+             * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
+             *     trades; may be `0x0000…` for V2 trades placed without a builder code.
+             */
+            builder_code?: string | null;
+            /**
+             * Format: double
+             * @description Builder fee in USDC. Absent when no builder code is attached.
+             */
+            builder_fee?: number | null;
         };
         /** @description Outer envelope for every webhook HTTP POST delivery. The `data` field contains the event-specific payload. Delivery headers sent with every POST: `X-Webhook-ID` (subscription UUID), `X-Delivery-ID` (this attempt's UUID), `X-Event-Type` (event name string, e.g. `trader_first_trade`), `X-Attempt` (attempt number, 1-indexed). When the webhook has a secret configured, `X-Webhook-Signature: sha256=<hmac-hex>` is also included — compute HMAC-SHA256 over the raw request body using your secret to verify. */
         WebhookDeliveryEnvelope: {
@@ -2872,6 +2942,10 @@ export interface components {
              * @enum {string}
              */
             exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code. */
+            builder_code?: string;
+            /** @description Builder fee in USDC. Absent when no builder code is attached. */
+            builder_fee?: number;
             /** @enum {string} */
             trade_type: "OrderFilled" | "OrdersMatched";
         } | {
@@ -2917,6 +2991,10 @@ export interface components {
              * @enum {string}
              */
             exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "Unknown";
+            /** @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code. */
+            builder_code?: string;
+            /** @description Builder fee in USDC. Absent when no builder code is attached. */
+            builder_fee?: number;
             /** @enum {string} */
             trade_type: "MakerRebate" | "Reward" | "Yield";
         } | {
@@ -3058,6 +3136,15 @@ export interface components {
             market_id: string;
             index_set: string;
             shares_amount: number;
+            fee?: number;
+            fee_pct?: number;
+            /** @description Per-position conversion amounts. */
+            position_details?: {
+                position_id: string;
+                outcome_index: number;
+                outcome?: string;
+                amount: string;
+            }[];
             /**
              * @description Exchange contract that processed the event
              * @enum {string}
@@ -3526,7 +3613,9 @@ export interface components {
          *         "price": 0.5,
          *         "probability": 0.5,
          *         "exchange": "CTFExchange",
-         *         "trade_type": "OrderFilled"
+         *         "trade_type": "OrderFilled",
+         *         "builder_code": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "builder_fee": 0.25
          *       }
          *     }
          */
@@ -3594,7 +3683,9 @@ export interface components {
          *         "price": 0.5,
          *         "probability": 0.5,
          *         "exchange": "CTFExchange",
-         *         "trade_type": "OrderFilled"
+         *         "trade_type": "OrderFilled",
+         *         "builder_code": "0x0000000000000000000000000000000000000000000000000000000000000000",
+         *         "builder_fee": 0.05
          *       }
          *     }
          */

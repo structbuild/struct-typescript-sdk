@@ -231,7 +231,7 @@
       "address": "polymarket_market_metrics",
       "title": "Market Metrics",
       "summary": "Market (condition) metrics stream",
-      "description": "Real-time volume and transaction-count metrics per market condition, aggregated across multiple timeframes (`1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`). One event is pushed per timeframe window on each update.\n\n**Filter (required):** `condition_ids` — 64-char hex condition IDs. Invalid or malformed IDs are returned in `rejected`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time volume and transaction-count metrics per market condition, aggregated across multiple timeframes (`1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`). One event is pushed per timeframe window on each update.\n\n**Filter (required):** `condition_ids` — 64-char hex condition IDs. Invalid or malformed IDs are returned in `rejected`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/MarketMetricsSubscribe"
@@ -4361,7 +4361,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -4844,7 +4845,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -6657,6 +6659,21 @@
               }
             ],
             "description": "Trade type (webhook events only fire on order fills)"
+          },
+          "builder_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1\ntrades; may be `0x0000…` for V2 trades placed without a builder code."
+          },
+          "builder_fee": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder fee in USDC. Absent when no builder code is attached."
           }
         }
       },
@@ -7072,6 +7089,26 @@
           }
         }
       },
+      "PaginationMeta": {
+        "type": "object",
+        "description": "Pagination metadata to include in API responses",
+        "required": [
+          "has_more"
+        ],
+        "properties": {
+          "has_more": {
+            "type": "boolean",
+            "description": "Whether there are more results available"
+          },
+          "pagination_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Pagination key for the next page (if has_more is true)"
+          }
+        }
+      },
       "PnlFilterTimeframe": {
         "type": "string",
         "description": "PnL aggregation windows accepted by `*_pnl.timeframes`.",
@@ -7109,6 +7146,10 @@
           "trader_event_pnl_v3",
           "trader_category_pnl_v3",
           "trader_position_resolved_v3",
+          "trader_exit_markers_v3",
+          "position_holder_metrics_v3",
+          "condition_holder_metrics_v3",
+          "event_holder_metrics_v3",
           "condition_metrics",
           "event_metrics",
           "tag_metrics",
@@ -7565,7 +7606,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -8538,16 +8580,16 @@
           "previous_probability": {
             "type": "number",
             "format": "double",
-            "description": "Probability at the start of the observation window (the baseline snapshot)"
+            "description": "YES probability at the start of the observation window (the baseline snapshot)"
           },
           "current_probability": {
             "type": "number",
             "format": "double",
-            "description": "Current probability that triggered the spike"
+            "description": "Current YES probability that triggered the spike"
           },
           "spike_direction": {
             "type": "string",
-            "description": "Direction of the spike: `\"up\"` (probability rising) or `\"down\"` (probability falling)"
+            "description": "Direction of the spike: `\"up\"` (YES probability rising) or `\"down\"` (YES probability falling)"
           },
           "spike_pct": {
             "type": "number",
@@ -9796,7 +9838,8 @@
                   "1d",
                   "24h",
                   "7d",
-                  "30d"
+                  "30d",
+                  "lifetime"
                 ]
               }
             ],
@@ -9905,12 +9948,15 @@
         "description": "Trade-event types accepted by `trader_trade_event.trade_types`. Covers the\nfull set of typed prediction-trade variants.",
         "enum": [
           "OrderFilled",
+          "OrdersMatched",
+          "MakerRebate",
+          "Reward",
+          "Yield",
           "Redemption",
           "Merge",
           "Split",
           "Cancelled",
           "PositionsConverted",
-          "OrdersMatched",
           "Initialization",
           "Proposal",
           "Dispute",
@@ -9924,8 +9970,7 @@
           "Unpause",
           "ManualResolution",
           "NegRiskOutcomeReported",
-          "RegisterToken",
-          "Approval"
+          "RegisterToken"
         ]
       },
       "TraderEventPnlFilters": {
@@ -10541,12 +10586,15 @@
               "description": "Trade-event types accepted by `trader_trade_event.trade_types`. Covers the\nfull set of typed prediction-trade variants.",
               "enum": [
                 "OrderFilled",
+                "OrdersMatched",
+                "MakerRebate",
+                "Reward",
+                "Yield",
                 "Redemption",
                 "Merge",
                 "Split",
                 "Cancelled",
                 "PositionsConverted",
-                "OrdersMatched",
                 "Initialization",
                 "Proposal",
                 "Dispute",
@@ -10560,8 +10608,7 @@
                 "Unpause",
                 "ManualResolution",
                 "NegRiskOutcomeReported",
-                "RegisterToken",
-                "Approval"
+                "RegisterToken"
               ]
             },
             "description": "Only fire for these trade types. Empty = all supported trade-event variants.",
@@ -11108,6 +11155,100 @@
           }
         }
       },
+      "WebhookLogEntry": {
+        "type": "object",
+        "description": "A single webhook delivery log entry (GET /v1/webhooks/{id}/logs)",
+        "required": [
+          "sent_at",
+          "payload",
+          "event",
+          "delivery_id",
+          "attempt",
+          "success",
+          "status_code",
+          "latency_ms",
+          "url"
+        ],
+        "properties": {
+          "sent_at": {
+            "type": "string",
+            "description": "When the payload was sent (RFC3339, millisecond precision)"
+          },
+          "payload": {
+            "description": "The full payload we delivered, parsed back to JSON"
+          },
+          "event": {
+            "type": "string",
+            "description": "Event type (e.g. \"trader_first_trade\")"
+          },
+          "delivery_id": {
+            "type": "string",
+            "description": "Unique delivery id"
+          },
+          "attempt": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Final attempt number for this dispatch",
+            "minimum": 0
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Whether delivery ultimately succeeded"
+          },
+          "status_code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "HTTP status code from the endpoint (0 = no response / transport error)",
+            "minimum": 0
+          },
+          "latency_ms": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Total dispatch time in milliseconds (including retries)",
+            "minimum": 0
+          },
+          "url": {
+            "type": "string",
+            "description": "Destination URL the payload was POSTed to"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message when delivery failed (omitted when empty)"
+          }
+        }
+      },
+      "WebhookLogsResponseBody": {
+        "type": "object",
+        "description": "Response for GET /v1/webhooks/{id}/logs",
+        "required": [
+          "webhook_id",
+          "total",
+          "logs",
+          "pagination"
+        ],
+        "properties": {
+          "webhook_id": {
+            "type": "string",
+            "description": "The webhook these logs belong to"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Number of log entries returned",
+            "minimum": 0
+          },
+          "logs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookLogEntry"
+            },
+            "description": "Delivery log entries, newest first"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationMeta",
+            "description": "Cursor pagination metadata"
+          }
+        }
+      },
       "WebhookResponse": {
         "type": "object",
         "description": "Webhook response (returned from API)",
@@ -11227,7 +11368,8 @@
           "1d",
           "24h",
           "7d",
-          "30d"
+          "30d",
+          "lifetime"
         ]
       },
       "WhaleTradePayload": {
@@ -11408,6 +11550,21 @@
               }
             ],
             "description": "Trade type (webhook events only fire on order fills)"
+          },
+          "builder_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1\ntrades; may be `0x0000…` for V2 trades placed without a builder code."
+          },
+          "builder_fee": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Builder fee in USDC. Absent when no builder code is attached."
           }
         }
       },
@@ -11727,7 +11884,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ],
             "description": "Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`."
           }
@@ -12064,6 +12222,14 @@
               },
               "exchange": {
                 "type": "integer"
+              },
+              "builder_code": {
+                "type": "string",
+                "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code."
+              },
+              "builder_fee": {
+                "type": "number",
+                "description": "Builder fee in USDC. Absent when no builder code is attached."
               }
             }
           },
@@ -12664,6 +12830,30 @@
               "shares_amount": {
                 "type": "number"
               },
+              "fee": {
+                "type": "number"
+              },
+              "fee_pct": {
+                "type": "number"
+              },
+              "position_details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "position_id": {
+                      "type": "string"
+                    },
+                    "outcome_index": {
+                      "type": "integer"
+                    },
+                    "amount": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "description": "Per-position conversion amounts"
+              },
               "exchange": {
                 "type": "integer"
               }
@@ -13200,6 +13390,23 @@
             },
             "description": "64-char hex condition IDs (with or without 0x prefix)",
             "minItems": 1
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1m",
+                "5m",
+                "30m",
+                "1h",
+                "6h",
+                "24h",
+                "7d",
+                "30d",
+                "lifetime"
+              ]
+            }
           }
         }
       },
@@ -13208,6 +13415,12 @@
         "description": "Server acknowledgement for a market metrics subscription",
         "properties": {
           "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeframes": {
             "type": "array",
             "items": {
               "type": "string"
@@ -13263,7 +13476,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ]
           },
           "timestamp": {
@@ -13348,6 +13562,23 @@
             },
             "description": "Event slugs (lowercase)",
             "minItems": 1
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1m",
+                "5m",
+                "30m",
+                "1h",
+                "6h",
+                "24h",
+                "7d",
+                "30d",
+                "lifetime"
+              ]
+            }
           }
         }
       },
@@ -13356,6 +13587,12 @@
         "description": "Server acknowledgement for an event metrics subscription",
         "properties": {
           "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeframes": {
             "type": "array",
             "items": {
               "type": "string"
@@ -13408,7 +13645,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ]
           },
           "timestamp": {
@@ -13489,6 +13727,23 @@
             },
             "description": "Tag labels or slugs, matched case-insensitively",
             "minItems": 1
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1m",
+                "5m",
+                "30m",
+                "1h",
+                "6h",
+                "24h",
+                "7d",
+                "30d",
+                "lifetime"
+              ]
+            }
           }
         }
       },
@@ -13497,6 +13752,12 @@
         "description": "Server acknowledgement for a tag metrics subscription",
         "properties": {
           "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeframes": {
             "type": "array",
             "items": {
               "type": "string"
@@ -13549,7 +13810,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ]
           },
           "timestamp": {
@@ -13630,6 +13892,23 @@
             },
             "description": "ERC-1155 outcome token IDs (decimal or hex strings)",
             "minItems": 1
+          },
+          "timeframes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1m",
+                "5m",
+                "30m",
+                "1h",
+                "6h",
+                "24h",
+                "7d",
+                "30d",
+                "lifetime"
+              ]
+            }
           }
         }
       },
@@ -13638,6 +13917,12 @@
         "description": "Server acknowledgement for a position metrics subscription",
         "properties": {
           "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeframes": {
             "type": "array",
             "items": {
               "type": "string"
@@ -13732,7 +14017,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ]
           },
           "timestamp": {
@@ -15283,7 +15569,8 @@
               "6h",
               "24h",
               "7d",
-              "30d"
+              "30d",
+              "lifetime"
             ],
             "description": "Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`."
           }
@@ -15605,6 +15892,14 @@
           },
           "exchange": {
             "type": "integer"
+          },
+          "builder_code": {
+            "type": "string",
+            "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code."
+          },
+          "builder_fee": {
+            "type": "number",
+            "description": "Builder fee in USDC. Absent when no builder code is attached."
           }
         }
       },
@@ -16204,6 +16499,30 @@
           },
           "shares_amount": {
             "type": "number"
+          },
+          "fee": {
+            "type": "number"
+          },
+          "fee_pct": {
+            "type": "number"
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string"
+                },
+                "outcome_index": {
+                  "type": "integer"
+                },
+                "amount": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Per-position conversion amounts"
           },
           "exchange": {
             "type": "integer"

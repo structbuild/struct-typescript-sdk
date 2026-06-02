@@ -14,6 +14,8 @@ import type {
 	DeleteWebhookResponse,
 	TestWebhookParams,
 	RotateSecretParams,
+	GetWebhookLogsParams,
+	WebhookLogsResponseBody,
 } from "../types/index.js";
 
 export class WebhooksNamespace extends PlatformNamespace {
@@ -48,5 +50,10 @@ export class WebhooksNamespace extends PlatformNamespace {
 
 	async listEvents(): Promise<HttpResponse<ListEventsResponse>> {
 		return this.http.get<ListEventsResponse>("/webhooks/events");
+	}
+
+	async getLogs(params: GetWebhookLogsParams): Promise<HttpResponse<WebhookLogsResponseBody>> {
+		const { webhookId, ...query } = params;
+		return this.http.get<WebhookLogsResponseBody>(`/webhooks/${encodeURIComponent(webhookId)}/logs`, { params: query });
 	}
 }

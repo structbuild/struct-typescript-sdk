@@ -588,6 +588,8 @@ export type RotateSecretResponse = WebhookSchemas["RotateSecretResponse"];
 export type DeleteWebhookResponse = WebhookSchemas["DeleteWebhookResponse"];
 export type ListEventsResponse = WebhookSchemas["ListEventsResponse"];
 export type WebhookEventInfo = WebhookSchemas["WebhookEventInfo"];
+export type WebhookLogEntry = WebhookSchemas["WebhookLogEntry"];
+export type WebhookLogsResponseBody = WebhookSchemas["WebhookLogsResponseBody"];
 export type CloseToBondPayload = WebhookSchemas["CloseToBondPayload"];
 export type MarketCreatedOutcome = WebhookSchemas["MarketCreatedOutcome"];
 export type MarketCreatedPayload = WebhookSchemas["MarketCreatedPayload"];
@@ -691,6 +693,10 @@ export interface TestWebhookParams {
 }
 
 export interface RotateSecretParams {
+	webhookId: string;
+}
+
+export interface GetWebhookLogsParams extends WebhookOperationQuery<"get_webhook_logs"> {
 	webhookId: string;
 }
 
