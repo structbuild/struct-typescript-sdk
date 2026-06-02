@@ -644,7 +644,7 @@ export interface paths {
         };
         /**
          * Get event chart
-         * @description Retrieve price data over time for up to 4 markets with highest YES outcome (outcome_index 0) prices in an event. Perfect for rendering multi-line charts showing price movement across top markets. TradingView-style: resolution parameter determines both candle size and implicit lookback period.
+         * @description Retrieve price data over time for up to 4 highest-volume markets in an event. Perfect for rendering multi-line charts showing price movement across top markets. TradingView-style: resolution parameter determines both candle size and implicit lookback period.
          */
         get: operations["get_event_chart"];
         put?: never;
@@ -3435,6 +3435,8 @@ export interface components {
             /** Format: double */
             realized_pnl_pct?: number | null;
             /** Format: double */
+            total_pnl_pct?: number | null;
+            /** Format: double */
             open_positions_value: number;
             /** Format: double */
             current_shares_balance: number;
@@ -3534,7 +3536,7 @@ export interface components {
          *     PnL, volume, trade counts, fees, rewards, positions, and trade timing.
          * @enum {string}
          */
-        CategoryPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_converts" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at";
+        CategoryPnlV3SortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_converts" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at";
         /**
          * @description Lookback window for `/analytics/changes` endpoints.
          * @enum {string}
@@ -3961,6 +3963,8 @@ export interface components {
             /** Format: double */
             realized_pnl_pct?: number | null;
             /** Format: double */
+            total_pnl_pct?: number | null;
+            /** Format: double */
             open_positions_value: number;
             /** Format: double */
             current_shares_balance: number;
@@ -4173,7 +4177,7 @@ export interface components {
          *     total volume, shares bought, and first or last trade time.
          * @enum {string}
          */
-        EventPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "total_shares_bought" | "first_trade_at" | "last_trade_at";
+        EventPnlV3SortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "total_volume_usd" | "total_shares_bought" | "first_trade_at" | "last_trade_at";
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
         /** @enum {string} */
@@ -4362,6 +4366,8 @@ export interface components {
             usd_balance?: number;
             /** Format: double */
             realized_pnl_pct?: number | null;
+            /** Format: double */
+            total_pnl_pct?: number | null;
             /** Format: double */
             open_positions_value: number;
             /** Format: int64 */
@@ -4799,6 +4805,8 @@ export interface components {
             /** Format: double */
             realized_pnl_pct?: number | null;
             /** Format: double */
+            total_pnl_pct?: number | null;
+            /** Format: double */
             open_positions_value: number;
             /** Format: double */
             current_shares_balance: number;
@@ -4953,7 +4961,7 @@ export interface components {
          * @description Sort field for v3 per-trader market PnL results.
          * @enum {string}
          */
-        MarketPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "total_shares_sold" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block";
+        MarketPnlV3SortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "total_shares_sold" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block";
         /** @description Formatted market response with structured metrics, tags, outcomes, and event */
         MarketResponse: {
             condition_id: string;
@@ -5685,6 +5693,11 @@ export interface components {
              */
             outcome_index?: number | null;
             /**
+             * @description Polymarket top-level category (e.g. "Politics"). Empty when the
+             *     market's tags hadn't resolved to a category at exit time.
+             */
+            category: string;
+            /**
              * Format: double
              * @description Realized PnL in USD for the position at exit.
              */
@@ -6003,7 +6016,7 @@ export interface components {
          *     closed those values are no longer meaningful.
          * @enum {string}
          */
-        PositionClosedPnlV3SortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "realized_pnl_pct" | "title" | "merge_count" | "split_count" | "end_date" | "is_neg_risk";
+        PositionClosedPnlV3SortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "realized_pnl_pct" | "total_pnl_pct" | "title" | "merge_count" | "split_count" | "end_date" | "is_neg_risk";
         /** @description Per-position detail for Split/Merge/Redemption trades. */
         PositionDetail: {
             /** @description Market condition ID for this ERC1155 position. */
@@ -6100,6 +6113,8 @@ export interface components {
             current_value?: number | null;
             /** Format: double */
             realized_pnl_pct?: number | null;
+            /** Format: double */
+            total_pnl_pct?: number | null;
             /** Format: int64 */
             end_date?: number | null;
             is_neg_risk?: boolean | null;
@@ -6282,7 +6297,7 @@ export interface components {
          *     (`redeemable`, `mergeable`) are exclusive to open positions.
          * @enum {string}
          */
-        PositionOpenPnlV3SortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "title" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
+        PositionOpenPnlV3SortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "total_pnl_pct" | "title" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
         /** @enum {string} */
         PositionPnlSortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "title";
         /**
@@ -6295,7 +6310,7 @@ export interface components {
          *     `PositionClosedPnlV3SortBy` for the exact per-status whitelists.
          * @enum {string}
          */
-        PositionPnlV3SortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "title" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
+        PositionPnlV3SortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "total_pnl_pct" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "title" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
         /**
          * @description Position status filter for open/closed positions.
          * @enum {string}
@@ -7136,7 +7151,7 @@ export interface components {
             has_more: boolean;
         };
         /** @enum {string} */
-        TraderPnlV3SortBy: "realized_pnl_usd" | "total_volume_usd" | "markets_traded" | "events_traded" | "categories_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_splits" | "total_converts" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "last_block" | "open_positions_value" | "open_position_count";
+        TraderPnlV3SortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "realized_pnl_pct" | "total_pnl_pct" | "usd_balance" | "total_volume_usd" | "markets_traded" | "events_traded" | "categories_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_splits" | "total_converts" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "open_positions_value" | "open_position_count";
         TraderProfile: {
             address: string;
             name?: string | null;
@@ -8257,7 +8272,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Price data over time for up to 4 markets with highest YES odds */
+            /** @description Price data over time for up to 4 highest-volume markets */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -10942,6 +10957,8 @@ export interface operations {
                 to?: number;
                 /** @description Return only exits with this reason */
                 reason?: components["schemas"]["PnlV3ExitReason"];
+                /** @description Return only exits in this market category */
+                category?: components["schemas"]["PolymarketCategory"];
                 /** @description Maximum exits to return. Default 500, max 2500. */
                 count_back?: number;
                 /** @description Alias for count_back. Default 500, max 2500. */
