@@ -2543,7 +2543,7 @@ export interface components {
             exchange: components["schemas"]["PolymarketExchange"];
         };
         /** @enum {string} */
-        CandlestickResolution: "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D";
+        CandlestickResolution: "1S" | "5S" | "10S" | "30S" | "1" | "5" | "15" | "30" | "60" | "240" | "D" | "1D";
         /**
          * @description Lookback window for `/analytics/changes` endpoints.
          * @enum {string}
@@ -6957,7 +6957,7 @@ export interface operations {
             query: {
                 /** @description Market condition ID (required) */
                 condition_id: string;
-                /** @description Candle interval: 1, 5, 15, 30, 60, 240, D, 1D */
+                /** @description Candle interval: 1S, 5S, 10S, 30S, 1, 5, 15, 30, 60, 240, D, 1D */
                 resolution: components["schemas"]["CandlestickResolution"];
                 /** @description Number of candles (max: 2500) */
                 count_back?: number;
@@ -7088,7 +7088,7 @@ export interface operations {
             query: {
                 /** @description Position/token ID (required) */
                 position_id: string;
-                /** @description Candle interval: 1, 5, 15, 30, 60, 240, D, 1D */
+                /** @description Candle interval: 1S, 5S, 10S, 30S, 1, 5, 15, 30, 60, 240, D, 1D */
                 resolution: components["schemas"]["CandlestickResolution"];
                 /** @description Number of candles (max: 2500) */
                 count_back?: number;
