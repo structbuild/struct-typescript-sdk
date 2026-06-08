@@ -1,6 +1,6 @@
 {
   "name": "@structbuild/sdk",
-  "version": "0.5.10",
+  "version": "0.5.11",
   "type": "module",
   "repository": {
     "type": "git",
