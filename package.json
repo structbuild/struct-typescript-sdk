@@ -1,6 +1,6 @@
 {
   "name": "@structbuild/sdk",
-  "version": "0.5.12-staging.0",
+  "version": "0.6.0-staging.17",
   "type": "module",
   "repository": {
     "type": "git",
@@ -43,7 +43,8 @@
     "generate:webhooks": "openapi-typescript openapi/webhooks.json -o src/generated/webhooks.ts",
     "generate:ws": "bun run scripts/generate-ws-types.ts",
     "link": "bun link",
-    "pack": "bun run build && bun pm pack"
+    "pack": "bun run build && bun pm pack",
+    "prepare": "bun run build"
   },
   "devDependencies": {
     "@types/bun": "latest",
