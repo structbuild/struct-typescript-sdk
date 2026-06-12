@@ -99,11 +99,6 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { event_slug: "$eventSlug", limit: 2 },
 		operationId: "get_event_outcomes",
 	},
-	"events.getEventTopTraders": {
-		params: { event_slug: "$eventSlug", limit: 2 },
-		operationId: "get_event_top_traders",
-	},
-
 	"holders.getMarketHolders": {
 		params: { condition_id: "$conditionId", limit: 2 },
 		operationId: "get_market_holders",
@@ -177,10 +172,6 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { address: "$address", limit: 2 },
 		operationId: "get_trader_market_pnl",
 	},
-	"trader.getTraderEventPnl": {
-		params: { address: "$address", limit: 2 },
-		operationId: "get_trader_event_pnl",
-	},
 	"trader.getTraderPnlCalendar": {
 		params: { address: "$address" },
 		operationId: "get_trader_pnl_calendar",
@@ -200,13 +191,32 @@ export const methodMeta: Record<string, MethodConfig> = {
 		operationId: "get_global_pnl",
 		paginate: true,
 	},
-	"trader.getTraderPnlV3Exits": {
-		params: { address: "$address", limit: 2 },
-		operationId: "get_trader_pnl_v3_exits",
+	"trader.getTraderPnlChanges": {
+		params: { address: "$address" },
+		operationId: "get_trader_pnl_changes",
+		shape: "object",
 	},
-	"trader.getLeaderboard": {
+	"trader.getTraderPnlPeriods": {
+		params: { address: "$address" },
+		operationId: "get_trader_pnl_periods",
+		shape: "object",
+	},
+	"trader.getTraderPnlRisk": {
+		params: { address: "$address" },
+		operationId: "get_trader_pnl_risk",
+		shape: "object",
+	},
+	"trader.getTraderCategoryPnl": {
+		params: { address: "$address", limit: 2 },
+		operationId: "get_trader_category_pnl",
+	},
+	"trader.getTraderPnlExits": {
+		params: { address: "$address", limit: 2 },
+		operationId: "get_trader_pnl_exits",
+	},
+	"trader.getTopTradesMarkets": {
 		params: { limit: 2 },
-		operationId: "get_polymarket_leaderboard",
+		operationId: "get_top_trades_markets",
 	},
 
 	"search.search": {
@@ -252,22 +262,6 @@ export const methodMeta: Record<string, MethodConfig> = {
 	},
 	"analytics.getTimeseries": {
 		operationId: "get_global_analytics_timeseries",
-	},
-	"analytics.getCountsV3": {
-		operationId: "get_analytics_v3_counts",
-		shape: "object",
-		noArgs: true,
-	},
-	"analytics.getDeltasV3": {
-		operationId: "get_global_analytics_v3_deltas",
-	},
-	"analytics.getChangesV3": {
-		params: { timeframe: "24h" },
-		operationId: "get_global_analytics_v3_changes",
-		shape: "object",
-	},
-	"analytics.getTimeseriesV3": {
-		operationId: "get_global_analytics_v3_timeseries",
 	},
 	"analytics.getEventDeltas": {
 		params: { event_slug: "$eventSlug" },

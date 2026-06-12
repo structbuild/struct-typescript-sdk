@@ -14,6 +14,10 @@ const inlineSchemas: Record<string, object> = {
     type: "string" as const,
     enum: ["open", "closed"],
   },
+  "#/components/schemas/ChangeTimeframe": {
+    type: "string" as const,
+    enum: ["1h", "24h", "7d", "30d", "1mo", "1y"],
+  },
 };
 
 let polymarketFixed = 0;

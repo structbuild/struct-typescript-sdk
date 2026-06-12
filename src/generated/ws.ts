@@ -157,6 +157,77 @@ export interface components {
          * @enum {string}
          */
         AssetWindowFilterTimeframe: "5m" | "15m" | "1h" | "4h" | "1d" | "24h";
+        /** @description Category PnL webhook payload. */
+        CategoryPnlPayload: {
+            trader?: string | null;
+            category?: string | null;
+            /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
+            timeframe: string;
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: int64 */
+            markets_in_category?: number | null;
+            /** Format: int64 */
+            markets_traded?: number | null;
+            /** Format: int64 */
+            outcomes_traded?: number | null;
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: int64 */
+            total_redemptions?: number | null;
+            /** Format: int64 */
+            total_merges?: number | null;
+            /** Format: int64 */
+            total_splits?: number | null;
+            /** Format: double */
+            total_volume_usd?: number | null;
+            /** Format: double */
+            buy_usd?: number | null;
+            /** Format: double */
+            sell_usd?: number | null;
+            /** Format: double */
+            redemption_usd?: number | null;
+            /** Format: double */
+            merge_usd?: number | null;
+            /** Format: double */
+            convert_collateral_usd?: number | null;
+            /** Format: double */
+            split_volume_usd?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: double */
+            total_shares_bought?: number | null;
+            /** Format: int64 */
+            markets_won?: number | null;
+            /** Format: int64 */
+            markets_lost?: number | null;
+            /** Format: double */
+            market_win_rate_pct?: number | null;
+            /** Format: double */
+            avg_hold_time_seconds?: number | null;
+            /** Format: double */
+            best_trade_pnl_usd?: number | null;
+            best_trade_condition_id?: string | null;
+            /** Format: double */
+            worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
+            /** Format: double */
+            total_wins_usd?: number | null;
+            /** Format: double */
+            total_losses_usd?: number | null;
+            /** Format: double */
+            avg_win_usd?: number | null;
+            /** Format: double */
+            avg_loss_usd?: number | null;
+            /** Format: double */
+            profit_factor?: number | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+        };
         /**
          * @description Subscription filters for the `close_to_bond` event. At least one of
          *     `min_probability` or `max_probability` is required (enforced at runtime).
@@ -257,11 +328,10 @@ export interface components {
              */
             threshold: number;
         };
-        /** @description Condition holder metrics webhook filter. */
-        ConditionHolderMetricsV3Filters: {
+        ConditionHolderMetricsFilters: {
             condition_ids?: string[];
         };
-        ConditionHolderMetricsV3Payload: {
+        ConditionHolderMetricsPayload: {
             /** Format: int32 */
             ts: number;
             /** Format: int64 */
@@ -376,6 +446,25 @@ export interface components {
         DeleteWebhookResponse: {
             deleted: boolean;
         };
+        /**
+         * @description What triggered a position update. Each value is serialised as a
+         *     lowercase string in the `dirty_kinds` array on every payload, and
+         *     the same values are accepted as a subscribe-time filter on rooms
+         *     that expose one.
+         *
+         *     * `trade` — a buy, sell, merge, split, redemption, or NegRisk
+         *       convert landed for the position
+         *     * `price` — the outcome price moved (mark-to-market refresh)
+         *     * `window` — a 1d / 7d / 30d rolling window boundary was crossed
+         *     * `position_resolved` — the market that owns this position resolved
+         *       on this update
+         *     * `market_resolved` — the market itself resolved (stamped on
+         *       `MarketRollup` rows for lifetime holders who never redeemed).
+         *       Carried on the resolution tick stream and on any full-row update
+         *       that bundles a resolution with a trade.
+         * @enum {string}
+         */
+        DirtyKind: "trade" | "price" | "window" | "position_resolved" | "market_resolved";
         /** @description V2 UMA OOv2: a proposed price was disputed. */
         DisputePriceEvent: {
             id: string;
@@ -406,11 +495,10 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
-        /** @description Event holder metrics webhook filter. */
-        EventHolderMetricsV3Filters: {
+        EventHolderMetricsFilters: {
             event_slugs?: string[];
         };
-        EventHolderMetricsV3Payload: {
+        EventHolderMetricsPayload: {
             /** Format: int32 */
             ts: number;
             /** Format: int64 */
@@ -508,47 +596,6 @@ export interface components {
              */
             unique_builder_traders?: number | null;
         };
-        /** @description Event PnL webhook payload. */
-        EventPnlPayload: {
-            trader?: string | null;
-            event_slug?: string | null;
-            /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
-            timeframe: string;
-            /** Format: int64 */
-            markets_traded?: number | null;
-            /** Format: int64 */
-            outcomes_traded?: number | null;
-            /** Format: int64 */
-            total_buys?: number | null;
-            /** Format: int64 */
-            total_sells?: number | null;
-            /** Format: int64 */
-            total_redemptions?: number | null;
-            /** Format: int64 */
-            total_merges?: number | null;
-            /** Format: double */
-            total_volume_usd?: number | null;
-            /** Format: double */
-            buy_usd?: number | null;
-            /** Format: double */
-            sell_usd?: number | null;
-            /** Format: double */
-            redemption_usd?: number | null;
-            /** Format: double */
-            merge_usd?: number | null;
-            /** Format: double */
-            realized_pnl_usd?: number | null;
-            /** Format: int64 */
-            winning_markets?: number | null;
-            /** Format: int64 */
-            losing_markets?: number | null;
-            /** Format: double */
-            total_fees?: number | null;
-            /** Format: int64 */
-            first_trade_at?: number | null;
-            /** Format: int64 */
-            last_trade_at?: number | null;
-        };
         /** @description Subscription filters for the `event_volume_milestone` event. */
         EventVolumeMilestoneFilters: {
             /** @description **Required.** Aggregation windows to monitor. */
@@ -641,6 +688,35 @@ export interface components {
              */
             fees: number;
         };
+        /** @description Exit Markers webhook payload — one position open->closed transition. */
+        ExitMarkersPayload: {
+            trader: string;
+            position_id: string;
+            condition_id: string;
+            event_slug: string;
+            market_slug: string;
+            title: string;
+            question: string;
+            image_url: string;
+            outcome: string;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            /** Format: double */
+            pnl_usd: number;
+            /** Format: double */
+            pnl_pct: number;
+            /** Format: double */
+            cost_basis_usd: number;
+            /** @description resolved_win | resolved_loss | sold_win | sold_loss */
+            reason: string;
+            /** Format: int64 */
+            block: number;
+            /**
+             * Format: int32
+             * @description Exit time, unix seconds.
+             */
+            ts: number;
+        };
         /** @description Payload delivered when a tracked trader executes their first-ever trade on Polymarket */
         FirstTradePayload: {
             /** @description Limit-order maker wallet address (lowercase) */
@@ -712,7 +788,10 @@ export interface components {
             trader?: string | null;
             /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
             timeframe: string;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Realized PnL for the timeframe (matches REST `/pnl/global`).
+             */
             realized_pnl_usd?: number | null;
             /** Format: int64 */
             events_traded?: number | null;
@@ -726,6 +805,8 @@ export interface components {
             total_redemptions?: number | null;
             /** Format: int64 */
             total_merges?: number | null;
+            /** Format: int64 */
+            total_splits?: number | null;
             /** Format: double */
             total_volume_usd?: number | null;
             /** Format: double */
@@ -736,6 +817,26 @@ export interface components {
             redemption_volume_usd?: number | null;
             /** Format: double */
             merge_volume_usd?: number | null;
+            /** Format: double */
+            convert_collateral_usd?: number | null;
+            /** Format: double */
+            split_volume_usd?: number | null;
+            /** Format: int64 */
+            maker_rebate_count?: number | null;
+            /** Format: double */
+            maker_rebate_usd?: number | null;
+            /** Format: int64 */
+            reward_count?: number | null;
+            /** Format: double */
+            reward_usd?: number | null;
+            /** Format: int64 */
+            yield_count?: number | null;
+            /** Format: double */
+            yield_usd?: number | null;
+            /** Format: int64 */
+            total_credit_count?: number | null;
+            /** Format: double */
+            total_credit_usd?: number | null;
             /** Format: int64 */
             markets_won?: number | null;
             /** Format: int64 */
@@ -743,9 +844,15 @@ export interface components {
             /** Format: double */
             market_win_rate_pct?: number | null;
             /** Format: double */
-            avg_pnl_per_market?: number | null;
+            total_wins_usd?: number | null;
             /** Format: double */
-            avg_pnl_per_trade?: number | null;
+            total_losses_usd?: number | null;
+            /** Format: double */
+            avg_win_usd?: number | null;
+            /** Format: double */
+            avg_loss_usd?: number | null;
+            /** Format: double */
+            profit_factor?: number | null;
             /** Format: double */
             avg_hold_time_seconds?: number | null;
             /** Format: double */
@@ -753,6 +860,9 @@ export interface components {
             /** Format: double */
             best_trade_pnl_usd?: number | null;
             best_trade_condition_id?: string | null;
+            /** Format: double */
+            worst_trade_pnl_usd?: number | null;
+            worst_trade_condition_id?: string | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -851,8 +961,13 @@ export interface components {
             trader?: string | null;
             condition_id?: string | null;
             event_slug?: string | null;
+            category?: string | null;
             /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
             timeframe: string;
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: double */
+            current_shares_balance?: number | null;
             /** Format: int64 */
             outcomes_traded?: number | null;
             /** Format: int64 */
@@ -863,6 +978,8 @@ export interface components {
             total_redemptions?: number | null;
             /** Format: int64 */
             total_merges?: number | null;
+            /** Format: int64 */
+            total_splits?: number | null;
             /** Format: double */
             buy_usd?: number | null;
             /** Format: double */
@@ -872,11 +989,13 @@ export interface components {
             /** Format: double */
             merge_usd?: number | null;
             /** Format: double */
-            realized_pnl_usd?: number | null;
-            /** Format: int64 */
-            winning_outcomes?: number | null;
+            convert_collateral_usd?: number | null;
+            /** Format: double */
+            split_volume_usd?: number | null;
             /** Format: double */
             total_fees?: number | null;
+            /** Format: double */
+            total_shares_bought?: number | null;
             /** Format: int64 */
             first_trade_at?: number | null;
             /** Format: int64 */
@@ -1213,7 +1332,7 @@ export interface components {
          */
         PnlFilterTimeframe: "1d" | "7d" | "30d" | "lifetime";
         /**
-         * @description PnL timeframe enum for webhook filtering
+         * @description PnL timeframe enum for webhook filtering.
          * @enum {string}
          */
         PnlTimeframeFilter: "1d" | "7d" | "30d" | "lifetime";
@@ -1221,7 +1340,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_event_pnl" | "trader_global_pnl_v3" | "trader_market_pnl_v3" | "trader_event_pnl_v3" | "trader_category_pnl_v3" | "trader_position_resolved_v3" | "trader_exit_markers_v3" | "position_holder_metrics_v3" | "condition_holder_metrics_v3" | "event_holder_metrics_v3" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_category_pnl" | "trader_position_resolved" | "trader_exit_markers" | "position_holder_metrics" | "condition_holder_metrics" | "event_holder_metrics" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -1410,11 +1529,10 @@ export interface components {
              */
             oracle_event_types?: string[];
         };
-        /** @description Position holder metrics webhook filter. */
-        PositionHolderMetricsV3Filters: {
+        PositionHolderMetricsFilters: {
             position_ids?: string[];
         };
-        PositionHolderMetricsV3Payload: {
+        PositionHolderMetricsPayload: {
             /** Format: int32 */
             ts: number;
             /** Format: int64 */
@@ -1594,6 +1712,141 @@ export interface components {
             avg_buy_shares?: number | null;
             /** Format: double */
             avg_sell_shares?: number | null;
+        };
+        PositionResolvedPayload: {
+            trader?: string;
+            position_id?: string;
+            condition_id?: string | null;
+            event_slug?: string | null;
+            /**
+             * @description Market category slug (e.g. "politics", "sports") — mirror of
+             *     `PositionRollup.category_id` resolved against the rollup
+             *     interner. Surfaces on the `/trader/{addr}/positions` API and
+             *     enables direct category-filtered + sorted position lookups
+             *     without a cross-grain join.
+             */
+            category?: string | null;
+            outcome?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            /** Format: int64 */
+            total_buys?: number;
+            /** Format: int64 */
+            total_sells?: number;
+            /** Format: int64 */
+            total_merges?: number;
+            /** Format: int64 */
+            total_splits?: number;
+            /** Format: int32 */
+            winning_outcome_index?: number | null;
+            /** Format: double */
+            total_shares_bought?: number;
+            /** Format: double */
+            total_shares_sold?: number;
+            /** Format: double */
+            buy_usd?: number;
+            /** Format: double */
+            sell_usd?: number;
+            /** Format: double */
+            avg_entry_price?: number;
+            /** Format: double */
+            total_fees?: number;
+            /** Format: double */
+            realized_pnl_usd?: number;
+            /** Format: double */
+            total_pnl_usd?: number;
+            /** Format: double */
+            redemption_usd?: number;
+            open?: boolean;
+            won?: boolean | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+            /**
+             * @description What kind of activity triggered this update. One or more of
+             *     `"trade"`, `"price"`, `"window"`, `"position_resolved"`.
+             *     Subscribers that only care about one kind filter on
+             *     `data.dirty_kinds` containing the value.
+             */
+            dirty_kinds?: components["schemas"]["DirtyKind"][];
+            /**
+             * Format: double
+             * @description `realized_pnl_usd / (buy_usd + total_fees) * 100` for the
+             *     window. `0.0` when the trader has no cost basis on this row yet.
+             */
+            realized_pnl_pct?: number;
+            /** @description Market slug for the parent market of this outcome. */
+            market_slug?: string | null;
+            /** @description Market title. */
+            title?: string | null;
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Market image URL. */
+            image_url?: string | null;
+            /**
+             * Format: int32
+             * @description NegRisk conversion count + share deltas for this position.
+             */
+            converted_count?: number;
+            /** Format: double */
+            converted_shares_gained?: number;
+            /** Format: double */
+            converted_shares_lost?: number;
+            /**
+             * Format: double
+             * @description Aggregate buy/sell USD totals for this position across its
+             *     lifetime.
+             */
+            total_buy_usd?: number;
+            /** Format: double */
+            total_sell_usd?: number;
+            /**
+             * Format: double
+             * @description Merge proceeds (Y+N → collateral).
+             */
+            merge_usd?: number;
+            /**
+             * Format: double
+             * @description Sell-side average price.
+             */
+            avg_exit_price?: number | null;
+            /**
+             * Format: double
+             * @description Volume-weighted average trade price across buys + sells.
+             */
+            avg_price?: number | null;
+            /**
+             * Format: double
+             * @description Mark-to-market values from the latest price tick.
+             */
+            current_price?: number | null;
+            /** Format: double */
+            current_shares_balance?: number | null;
+            /** Format: double */
+            current_value?: number | null;
+            /**
+             * Format: double
+             * @description Last on-chain trade price for the outcome token.
+             */
+            last_traded_price?: number | null;
+            /**
+             * Format: int64
+             * @description Market resolution deadline as Unix seconds.
+             */
+            end_date?: number | null;
+            /** @description NegRisk multi-outcome flag. */
+            is_neg_risk?: boolean | null;
+            /**
+             * @description `true` when the market is resolved AND the trader still holds
+             *     shares (redeem available).
+             */
+            redeemable?: boolean | null;
+            /**
+             * @description `true` when the market is NegRisk, unresolved, and the trader
+             *     holds shares (NegRisk-adapter merge available).
+             */
+            mergeable?: boolean | null;
         };
         /** @description Subscription filters for the `position_volume_milestone` event. */
         PositionVolumeMilestoneFilters: {
@@ -2249,51 +2502,63 @@ export interface components {
          * @enum {string}
          */
         TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
-        /** @description Subscription filters for the `trader_event_pnl` event. All fields are optional. */
-        TraderEventPnlFilters: {
-            /** @description Track only these trader wallet addresses. */
+        /** @description Subscription filters for the `trader_category_pnl` event. All fields are optional. */
+        TraderCategoryPnlFilters: {
+            /** @description Track only these trader wallet addresses. Empty = all traders. */
             traders?: string[] | null;
-            /** @description Restrict to these events. */
-            event_slugs?: string[] | null;
+            /** @description Restrict to these market categories (e.g. `politics`, `sports`). */
+            categories?: string[] | null;
             /**
              * Format: double
-             * @description Only fire when per-event realized PnL ≥ this value (USD).
+             * @description Only fire when per-category realized PnL ≥ this value (USD). Use negative values for loss thresholds.
              */
             min_realized_pnl_usd?: number | null;
             /**
              * Format: double
-             * @description Only fire when per-event realized PnL ≤ this value (USD).
+             * @description Only fire when per-category realized PnL ≤ this value (USD).
              */
             max_realized_pnl_usd?: number | null;
             /**
              * Format: double
-             * @description Only fire when total event volume ≥ this value (USD).
+             * @description Only fire when total category volume ≥ this value (USD).
              */
             min_volume_usd?: number | null;
             /**
              * Format: double
-             * @description Only fire when total event volume ≤ this value (USD).
+             * @description Only fire when total category volume ≤ this value (USD).
              */
             max_volume_usd?: number | null;
             /**
              * Format: double
-             * @description Only fire when buy volume within the event ≥ this value (USD).
+             * @description Only fire when buy volume within the category ≥ this value (USD).
              */
             min_buy_usd?: number | null;
             /**
              * Format: double
-             * @description Only fire when sell volume within the event ≥ this value (USD).
+             * @description Only fire when sell volume within the category ≥ this value (USD).
              */
             min_sell_volume_usd?: number | null;
             /**
+             * Format: double
+             * @description Only fire when market win rate ≥ this percentage (0.0–100.0).
+             */
+            min_win_rate?: number | null;
+            /**
              * Format: int64
-             * @description Only fire when the trader has traded in ≥ this many markets within the event.
+             * @description Only fire when the trader has traded in ≥ this many markets within the category.
              */
             min_markets_traded?: number | null;
-            /** @description Restrict to these PnL windows. */
+            /** @description Restrict to these PnL windows. Empty = all windows. */
             timeframes?: components["schemas"]["PnlFilterTimeframe"][] | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
+        };
+        /** @description Subscription filters for the `trader_pnl_exits` event. All fields are optional. */
+        TraderExitMarkersFilters: {
+            /** @description Track only these trader wallet addresses. Empty = all traders. */
+            traders?: string[] | null;
+            /** @description Restrict to these markets. */
+            condition_ids?: string[] | null;
+            /** @description Restrict to positions in these events. */
+            event_slugs?: string[] | null;
         };
         /** @description Subscription filters for the `trader_first_trade` event. All fields are optional. */
         TraderFirstTradeFilters: {
@@ -2464,6 +2729,19 @@ export interface components {
             trade_types?: ("OrderFilled" | "OrdersMatched")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
+        };
+        /** @description Subscription filters for the `trader_position_resolved` event. All fields are optional. */
+        TraderPositionResolvedFilters: {
+            /** @description Track only these trader wallet addresses. Empty = all traders. */
+            traders?: string[] | null;
+            /** @description Restrict to these markets. */
+            condition_ids?: string[] | null;
+            /** @description Restrict to positions in these events. */
+            event_slugs?: string[] | null;
+            /** @description Restrict to these outcome indexes within the resolved market. */
+            outcome_indexes?: number[] | null;
+            /** @description Only fire for won (`true`) or lost (`false`) positions. Omit to receive both. */
+            won_only?: boolean | null;
         };
         /**
          * @description Subscription filters for the `trader_trade_event` event. All fields are optional.
@@ -2974,7 +3252,7 @@ export interface components {
             /** @description Non-null when the subscribe was rejected. */
             error?: string | null;
         };
-        /** @description List-API-shaped filter evaluated in-memory against changed rows. `status` is NOT accepted — the cache only holds open markets. */
+        /** @description List-API-shaped filter applied to changed rows. `status` is NOT accepted — only open markets are streamed. */
         MarketsStreamFilter: {
             /** @description Case-insensitive substring match on `title`. 3–100 chars. */
             search?: string;
@@ -3666,239 +3944,18 @@ export interface components {
             action: "subscribe" | "unsubscribe_all";
             /** @description EVM wallet addresses */
             traders: string[];
-            /** @description Restrict pushed updates to this subset of PnL granularities. Empty/omitted = all three. Unknown values reject the subscription. */
-            update_types?: ("global" | "market" | "event")[];
-            /** @description Restrict pushed updates to these aggregation timeframes. Empty/omitted = all four. Unknown values reject the subscription. */
-            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
-        };
-        /** @description Server acknowledgement for a trader PnL subscription. Echoes the accepted (normalized) filter sets so clients can confirm the active subscription. */
-        TraderPnlSubscribeResponse: {
-            traders?: string[];
-            /** @description Accepted update types. Empty = all. */
-            update_types?: ("global" | "market" | "event")[];
-            /** @description Accepted timeframes. Empty = all. */
-            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
-            /** @description Trader addresses that were rejected (invalid EVM format). */
-            rejected?: string[];
-            /** @description Set if the entire subscription was rejected (e.g. empty traders, or an invalid update_type / timeframe value). */
-            error?: string | null;
-        };
-        /** @description Server-pushed event: global (portfolio-level) PnL update for a trader. Envelope type: "trader_global_pnl_update". */
-        TraderGlobalPnlEvent: {
-            /** @description Trader EVM wallet address */
-            trader: string;
-            /** @description Total realized PnL in USD (decimal string) */
-            realized_pnl_usd: string;
-            /** Format: int64 */
-            events_traded?: number | null;
-            /** Format: int64 */
-            markets_traded?: number | null;
-            /** Format: int64 */
-            total_buys?: number | null;
-            /** Format: int64 */
-            total_sells?: number | null;
-            /** Format: int64 */
-            total_redemptions?: number | null;
-            /** Format: int64 */
-            total_merges?: number | null;
-            /** @description Total USD volume (decimal string) */
-            total_volume_usd: string;
-            buy_volume_usd: string;
-            sell_volume_usd: string;
-            redemption_volume_usd: string;
-            merge_volume_usd: string;
-            /** Format: int64 */
-            markets_won?: number | null;
-            /** Format: int64 */
-            markets_lost?: number | null;
-            /** @description Win rate percentage (decimal string) */
-            market_win_rate_pct: string;
-            avg_pnl_per_market: string;
-            avg_pnl_per_trade: string;
-            avg_hold_time_seconds: string;
-            total_fees: string;
-            best_trade_pnl_usd: string;
-            best_trade_condition_id?: string | null;
-            worst_trade_pnl_usd: string;
-            worst_trade_condition_id?: string | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            /** Format: int64 */
-            timestamp?: number | null;
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-        };
-        /** @description Server-pushed event: per-market PnL update for a trader. Envelope type: "trader_market_pnl_update". */
-        TraderMarketPnlEvent: {
-            trader: string;
-            /** @description 64-char hex condition ID */
-            condition_id: string;
-            event_slug?: string | null;
-            /** Format: int64 */
-            outcomes_traded?: number | null;
-            /** Format: int64 */
-            total_buys?: number | null;
-            /** Format: int64 */
-            total_sells?: number | null;
-            /** Format: int64 */
-            total_redemptions?: number | null;
-            /** Format: int64 */
-            total_merges?: number | null;
-            /** @description Total buy volume in USD (decimal string) */
-            buy_usd: string;
-            sell_usd: string;
-            redemption_usd: string;
-            merge_usd: string;
-            /** @description Realized PnL in USD (decimal string) */
-            realized_pnl_usd: string;
-            /** Format: int64 */
-            winning_outcomes?: number | null;
-            total_fees: string;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            /** Format: int64 */
-            timestamp?: number | null;
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-        };
-        /** @description Server-pushed event: per-event PnL update for a trader. Envelope type: "trader_event_pnl_update". */
-        TraderEventPnlEvent: {
-            trader: string;
-            event_slug: string;
-            /** Format: int64 */
-            markets_traded?: number | null;
-            /** Format: int64 */
-            outcomes_traded?: number | null;
-            /** Format: int64 */
-            total_buys?: number | null;
-            /** Format: int64 */
-            total_sells?: number | null;
-            /** Format: int64 */
-            total_redemptions?: number | null;
-            /** Format: int64 */
-            total_merges?: number | null;
-            /** @description Total USD volume (decimal string) */
-            total_volume_usd: string;
-            buy_usd: string;
-            sell_usd: string;
-            redemption_usd: string;
-            merge_usd: string;
-            /** @description Realized PnL in USD (decimal string) */
-            realized_pnl_usd: string;
-            /** Format: int64 */
-            winning_markets?: number | null;
-            /** Format: int64 */
-            losing_markets?: number | null;
-            total_fees: string;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            /** Format: int64 */
-            timestamp?: number | null;
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-        };
-        /** @description Subscribe to the trader positions stream. traders is required and must be non-empty. */
-        TraderPositionsSubscribeMessage: {
-            /** @enum {string} */
-            action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses */
-            traders: string[];
-        };
-        /** @description Server acknowledgement for a trader positions subscription */
-        TraderPositionsSubscribeResponse: {
-            traders?: string[];
-            rejected?: string[];
-            error?: string | null;
-        };
-        /** @description Server-pushed event: full position snapshot for a tracked trader. Envelope type: "trader_position_update". Pushed whenever a position's PnL changes. */
-        TraderPositionUpdateEvent: {
-            /** @description Trader EVM wallet address */
-            trader: string;
-            /** @description ERC-1155 token ID (decimal string) */
-            position_id?: string | null;
-            condition_id?: string | null;
-            market_slug?: string | null;
-            event_slug?: string | null;
-            /** @description Market title / question */
-            title?: string | null;
-            image_url?: string | null;
-            /** @description Outcome name (e.g. "Yes") */
-            outcome?: string | null;
-            outcome_index?: number | null;
-            /** @description True if this outcome resolved as winner */
-            won?: boolean | null;
-            /** Format: int64 */
-            total_buys?: number | null;
-            /** Format: int64 */
-            total_sells?: number | null;
-            total_shares_bought?: number | null;
-            total_shares_sold?: number | null;
-            total_buy_usd?: number | null;
-            total_sell_usd?: number | null;
-            redemption_usd?: number | null;
-            /** @description Average entry price (0–1) */
-            avg_entry_price?: number | null;
-            /** @description Average exit price (0–1) */
-            avg_exit_price?: number | null;
-            realized_pnl_usd?: number | null;
-            total_fees?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            /** @description Current ERC-1155 token balance */
-            current_shares_balance?: number | null;
-            /** @description Realized PnL as a percentage of cost basis */
-            realized_pnl_pct?: number | null;
-        };
-        /** @description Subscribe to the trader PnL v3 stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. */
-        TraderPnlV3SubscribeMessage: {
-            /** @enum {string} */
-            action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses */
-            traders: string[];
             /** @description Restrict pushed updates to this subset of PnL granularities. Empty/omitted = all four. Unknown values reject the subscription. */
-            update_types?: ("global" | "market" | "event" | "category")[];
+            update_types?: ("global" | "market" | "category")[];
             /** @description Restrict pushed updates to these aggregation timeframes. Empty/omitted = all four. Unknown values reject the subscription. Ignored by window-agnostic tick / resolution events. */
             timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
             /** @description Restrict pushed updates to events whose `dirty_kinds` intersects this set. Empty/omitted or `["all"]` = every kind. Unknown values reject the subscription. */
             dirty_kinds?: ("trade" | "price" | "window" | "market_resolved" | "all")[];
         };
-        /** @description Server acknowledgement for a trader PnL v3 subscription. Echoes the accepted (normalized) filter sets so clients can confirm the active subscription. */
-        TraderPnlV3SubscribeResponse: {
+        /** @description Server acknowledgement for a trader PnL subscription. Echoes the accepted (normalized) filter sets so clients can confirm the active subscription. */
+        TraderPnlSubscribeResponse: {
             traders?: string[];
             /** @description Accepted update types. Empty = all. */
-            update_types?: ("global" | "market" | "event" | "category")[];
+            update_types?: ("global" | "market" | "category")[];
             /** @description Accepted timeframes. Empty = all. */
             timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
             /** @description Trader addresses that were rejected (invalid EVM format). */
@@ -3906,8 +3963,8 @@ export interface components {
             /** @description Set if the entire subscription was rejected (e.g. empty traders, or an invalid update_type / timeframe value). */
             error?: string | null;
         };
-        /** @description One global (portfolio-level) PnL row inside a `trader_global_pnl_v3_batch` envelope's `data` array. */
-        TraderGlobalPnlV3Row: {
+        /** @description One global (portfolio-level) PnL row inside a `trader_global_pnl_batch` envelope's `data` array. */
+        TraderGlobalPnlRow: {
             /** @description Trader EVM wallet address */
             trader: string;
             dirty_kinds?: ("trade" | "price" | "window" | "market_resolved")[];
@@ -3974,8 +4031,8 @@ export interface components {
              */
             last_trade_at?: number | null;
         };
-        /** @description One per-market PnL row inside a `trader_market_pnl_v3_batch` envelope's `data` array. */
-        TraderMarketPnlV3Row: {
+        /** @description One per-market PnL row inside a `trader_market_pnl_batch` envelope's `data` array. */
+        TraderMarketPnlRow: {
             trader: string;
             dirty_kinds?: ("trade" | "price" | "window" | "market_resolved")[];
             /** @description "1d", "7d", "30d", or "lifetime" */
@@ -3983,7 +4040,6 @@ export interface components {
             /** @description 64-char hex condition ID */
             condition_id: string;
             realized_pnl_usd?: number;
-            open_positions_value?: number;
             current_shares_balance?: number;
             category?: string | null;
             event_slug?: string | null;
@@ -4017,73 +4073,14 @@ export interface components {
              */
             last_trade_at?: number | null;
         };
-        /** @description One per-event PnL row inside a `trader_event_pnl_v3_batch` envelope's `data` array. */
-        TraderEventPnlV3Row: {
-            trader: string;
-            dirty_kinds?: ("trade" | "price" | "window" | "market_resolved")[];
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-            event_slug: string;
-            /** Format: int64 */
-            markets_traded?: number;
-            /** Format: int64 */
-            outcomes_traded?: number;
-            /** Format: int64 */
-            total_buys?: number;
-            /** Format: int64 */
-            total_sells?: number;
-            /** Format: int64 */
-            total_redemptions?: number;
-            /** Format: int64 */
-            total_merges?: number;
-            /** Format: int64 */
-            total_splits?: number;
-            total_volume_usd?: number;
-            buy_usd?: number;
-            sell_usd?: number;
-            redemption_usd?: number;
-            merge_usd?: number;
-            split_volume_usd?: number;
-            total_fees?: number;
-            realized_pnl_usd?: number;
-            open_positions_value?: number;
-            current_shares_balance?: number;
-            /** Format: int64 */
-            markets_won?: number;
-            /** Format: int64 */
-            markets_lost?: number;
-            market_win_rate_pct?: number;
-            total_wins_usd?: number;
-            total_losses_usd?: number;
-            avg_win_usd?: number | null;
-            avg_loss_usd?: number | null;
-            profit_factor?: number | null;
-            avg_hold_time_seconds?: number;
-            best_trade_pnl_usd?: number | null;
-            best_trade_condition_id?: string | null;
-            worst_trade_pnl_usd?: number | null;
-            worst_trade_condition_id?: string | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-        };
-        /** @description One per-category PnL row inside a `trader_category_pnl_v3_batch` envelope's `data` array. */
-        TraderCategoryPnlV3Row: {
+        /** @description One per-category PnL row inside a `trader_category_pnl_batch` envelope's `data` array. */
+        TraderCategoryPnlRow: {
             trader: string;
             dirty_kinds?: ("trade" | "price" | "window" | "market_resolved")[];
             /** @description "1d", "7d", "30d", or "lifetime" */
             timeframe?: string | null;
             category: string;
             realized_pnl_usd?: number;
-            open_positions_value?: number;
-            current_shares_balance?: number;
             /** Format: int64 */
             markets_in_category?: number;
             /** Format: int64 */
@@ -4134,15 +4131,11 @@ export interface components {
              */
             last_trade_at?: number | null;
         };
-        /** @description Row carried by `trader_global_tick_v3_batch` (price-only trader aggregate). */
-        TraderGlobalTickV3Row: {
+        /** @description Row carried by `trader_global_tick_batch` (price-only trader aggregate). */
+        TraderGlobalTickRow: {
             trader: string;
             realized_pnl_usd?: number;
             open_positions_value?: number;
-            pnl_now?: number;
-            pnl_1d_ago?: number;
-            pnl_7d_ago?: number;
-            pnl_30d_ago?: number;
             /** Format: int64 */
             last_block?: number;
             /**
@@ -4152,14 +4145,11 @@ export interface components {
             last_trade_at?: number | null;
             dirty_kinds?: "price"[];
         };
-        /** @description Row carried by `trader_market_tick_v3_batch` (price-only per-market). */
-        TraderMarketTickV3Row: {
+        /** @description Row carried by `trader_market_tick_batch` (price-only per-market). */
+        TraderMarketTickRow: {
             trader: string;
             condition_id: string;
             realized_pnl_usd?: number;
-            market_pnl_1d_ago?: number;
-            market_pnl_7d_ago?: number;
-            market_pnl_30d_ago?: number;
             /** Format: int64 */
             last_block?: number;
             /**
@@ -4169,22 +4159,8 @@ export interface components {
             last_trade_at?: number | null;
             dirty_kinds?: "price"[];
         };
-        /** @description Row carried by `trader_event_tick_v3_batch` (price-only per-event). */
-        TraderEventTickV3Row: {
-            trader: string;
-            event_slug: string;
-            realized_pnl_usd?: number;
-            /** Format: int64 */
-            last_block?: number;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            dirty_kinds?: "price"[];
-        };
-        /** @description Row carried by `trader_category_tick_v3_batch` (price-only per-category). */
-        TraderCategoryTickV3Row: {
+        /** @description Row carried by `trader_category_tick_batch` (price-only per-category). */
+        TraderCategoryTickRow: {
             trader: string;
             category: string;
             realized_pnl_usd?: number;
@@ -4197,11 +4173,10 @@ export interface components {
             last_trade_at?: number | null;
             dirty_kinds?: "price"[];
         };
-        /** @description Row carried by `trader_global_resolution_v3_batch` (trader-aggregate resolution). */
-        TraderGlobalResolutionV3Row: {
+        /** @description Row carried by `trader_global_resolution_batch` (trader-aggregate resolution). */
+        TraderGlobalResolutionRow: {
             trader: string;
             realized_pnl_usd?: number;
-            pnl_now?: number;
             /** Format: int64 */
             markets_won?: number;
             /** Format: int64 */
@@ -4219,8 +4194,8 @@ export interface components {
             last_trade_at?: number | null;
             dirty_kinds?: "market_resolved"[];
         };
-        /** @description Row carried by `trader_market_resolution_v3_batch` (per-market resolution). */
-        TraderMarketResolutionV3Row: {
+        /** @description Row carried by `trader_market_resolution_batch` (per-market resolution). */
+        TraderMarketResolutionRow: {
             trader: string;
             condition_id: string;
             resolved?: boolean;
@@ -4235,28 +4210,8 @@ export interface components {
             last_trade_at?: number | null;
             dirty_kinds?: "market_resolved"[];
         };
-        /** @description Row carried by `trader_event_resolution_v3_batch` (per-event resolution). */
-        TraderEventResolutionV3Row: {
-            trader: string;
-            event_slug: string;
-            realized_pnl_usd?: number;
-            /** Format: int64 */
-            markets_won?: number;
-            /** Format: int64 */
-            markets_lost?: number;
-            total_wins_usd_lifetime?: number;
-            total_losses_usd_lifetime?: number;
-            /** Format: int64 */
-            last_block?: number;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            dirty_kinds?: "market_resolved"[];
-        };
-        /** @description Row carried by `trader_category_resolution_v3_batch` (per-category resolution). */
-        TraderCategoryResolutionV3Row: {
+        /** @description Row carried by `trader_category_resolution_batch` (per-category resolution). */
+        TraderCategoryResolutionRow: {
             trader: string;
             category: string;
             realized_pnl_usd?: number;
@@ -4275,153 +4230,121 @@ export interface components {
             last_trade_at?: number | null;
             dirty_kinds?: "market_resolved"[];
         };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_global_pnl_v3_batch`. `data` carries every matching row from the block. */
-        TraderGlobalPnlV3BatchEvent: {
+        /** @description Server-pushed per-block batch. Envelope type: `trader_global_pnl_batch`. `data` carries every matching row from the block. */
+        TraderGlobalPnlBatchEvent: {
             /** @enum {string} */
-            type: "trader_global_pnl_v3_batch";
+            type: "trader_global_pnl_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
+            room_id: "polymarket_trader_pnl";
             /** Format: int64 */
             block: number;
             /** @description "1d", "7d", "30d", or "lifetime" */
             timeframe?: string | null;
-            data: components["schemas"]["TraderGlobalPnlV3Row"][];
+            data: components["schemas"]["TraderGlobalPnlRow"][];
         };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_market_pnl_v3_batch`. `data` carries every matching row from the block. */
-        TraderMarketPnlV3BatchEvent: {
+        /** @description Server-pushed per-block batch. Envelope type: `trader_market_pnl_batch`. `data` carries every matching row from the block. */
+        TraderMarketPnlBatchEvent: {
             /** @enum {string} */
-            type: "trader_market_pnl_v3_batch";
+            type: "trader_market_pnl_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
+            room_id: "polymarket_trader_pnl";
             /** Format: int64 */
             block: number;
             /** @description "1d", "7d", "30d", or "lifetime" */
             timeframe?: string | null;
-            data: components["schemas"]["TraderMarketPnlV3Row"][];
+            data: components["schemas"]["TraderMarketPnlRow"][];
         };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_event_pnl_v3_batch`. `data` carries every matching row from the block. */
-        TraderEventPnlV3BatchEvent: {
+        /** @description Server-pushed per-block batch. Envelope type: `trader_category_pnl_batch`. `data` carries every matching row from the block. */
+        TraderCategoryPnlBatchEvent: {
             /** @enum {string} */
-            type: "trader_event_pnl_v3_batch";
+            type: "trader_category_pnl_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
+            room_id: "polymarket_trader_pnl";
             /** Format: int64 */
             block: number;
             /** @description "1d", "7d", "30d", or "lifetime" */
             timeframe?: string | null;
-            data: components["schemas"]["TraderEventPnlV3Row"][];
+            data: components["schemas"]["TraderCategoryPnlRow"][];
         };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_category_pnl_v3_batch`. `data` carries every matching row from the block. */
-        TraderCategoryPnlV3BatchEvent: {
+        /** @description Server-pushed per-block batch. Envelope type: `trader_global_tick_batch`. `data` carries every matching row from the block. */
+        TraderGlobalTickBatchEvent: {
             /** @enum {string} */
-            type: "trader_category_pnl_v3_batch";
+            type: "trader_global_tick_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
+            room_id: "polymarket_trader_pnl";
             /** Format: int64 */
             block: number;
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-            data: components["schemas"]["TraderCategoryPnlV3Row"][];
+            data: components["schemas"]["TraderGlobalTickRow"][];
         };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_global_tick_v3_batch`. `data` carries every matching row from the block. */
-        TraderGlobalTickV3BatchEvent: {
+        /** @description Server-pushed per-block batch. Envelope type: `trader_market_tick_batch`. `data` carries every matching row from the block. */
+        TraderMarketTickBatchEvent: {
             /** @enum {string} */
-            type: "trader_global_tick_v3_batch";
+            type: "trader_market_tick_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
+            room_id: "polymarket_trader_pnl";
             /** Format: int64 */
             block: number;
-            data: components["schemas"]["TraderGlobalTickV3Row"][];
+            data: components["schemas"]["TraderMarketTickRow"][];
         };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_market_tick_v3_batch`. `data` carries every matching row from the block. */
-        TraderMarketTickV3BatchEvent: {
+        /** @description Server-pushed per-block batch. Envelope type: `trader_category_tick_batch`. `data` carries every matching row from the block. */
+        TraderCategoryTickBatchEvent: {
             /** @enum {string} */
-            type: "trader_market_tick_v3_batch";
+            type: "trader_category_tick_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
+            room_id: "polymarket_trader_pnl";
             /** Format: int64 */
             block: number;
-            data: components["schemas"]["TraderMarketTickV3Row"][];
+            data: components["schemas"]["TraderCategoryTickRow"][];
         };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_event_tick_v3_batch`. `data` carries every matching row from the block. */
-        TraderEventTickV3BatchEvent: {
+        /** @description Server-pushed per-block batch. Envelope type: `trader_global_resolution_batch`. `data` carries every matching row from the block. */
+        TraderGlobalResolutionBatchEvent: {
             /** @enum {string} */
-            type: "trader_event_tick_v3_batch";
+            type: "trader_global_resolution_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
+            room_id: "polymarket_trader_pnl";
             /** Format: int64 */
             block: number;
-            data: components["schemas"]["TraderEventTickV3Row"][];
+            data: components["schemas"]["TraderGlobalResolutionRow"][];
         };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_category_tick_v3_batch`. `data` carries every matching row from the block. */
-        TraderCategoryTickV3BatchEvent: {
+        /** @description Server-pushed per-block batch. Envelope type: `trader_market_resolution_batch`. `data` carries every matching row from the block. */
+        TraderMarketResolutionBatchEvent: {
             /** @enum {string} */
-            type: "trader_category_tick_v3_batch";
+            type: "trader_market_resolution_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
+            room_id: "polymarket_trader_pnl";
             /** Format: int64 */
             block: number;
-            data: components["schemas"]["TraderCategoryTickV3Row"][];
+            data: components["schemas"]["TraderMarketResolutionRow"][];
         };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_global_resolution_v3_batch`. `data` carries every matching row from the block. */
-        TraderGlobalResolutionV3BatchEvent: {
+        /** @description Server-pushed per-block batch. Envelope type: `trader_category_resolution_batch`. `data` carries every matching row from the block. */
+        TraderCategoryResolutionBatchEvent: {
             /** @enum {string} */
-            type: "trader_global_resolution_v3_batch";
+            type: "trader_category_resolution_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
+            room_id: "polymarket_trader_pnl";
             /** Format: int64 */
             block: number;
-            data: components["schemas"]["TraderGlobalResolutionV3Row"][];
+            data: components["schemas"]["TraderCategoryResolutionRow"][];
         };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_market_resolution_v3_batch`. `data` carries every matching row from the block. */
-        TraderMarketResolutionV3BatchEvent: {
-            /** @enum {string} */
-            type: "trader_market_resolution_v3_batch";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
-            /** Format: int64 */
-            block: number;
-            data: components["schemas"]["TraderMarketResolutionV3Row"][];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_event_resolution_v3_batch`. `data` carries every matching row from the block. */
-        TraderEventResolutionV3BatchEvent: {
-            /** @enum {string} */
-            type: "trader_event_resolution_v3_batch";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
-            /** Format: int64 */
-            block: number;
-            data: components["schemas"]["TraderEventResolutionV3Row"][];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_category_resolution_v3_batch`. `data` carries every matching row from the block. */
-        TraderCategoryResolutionV3BatchEvent: {
-            /** @enum {string} */
-            type: "trader_category_resolution_v3_batch";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3";
-            /** Format: int64 */
-            block: number;
-            data: components["schemas"]["TraderCategoryResolutionV3Row"][];
-        };
-        /** @description Subscribe to the trader positions v3 stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `["all"]` = receive every kind of update. */
-        TraderPositionsV3SubscribeMessage: {
+        /** @description Subscribe to the trader positions stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `["all"]` = receive every kind of update. */
+        TraderPositionsSubscribeMessage: {
             /** @enum {string} */
             action: "subscribe" | "unsubscribe_all";
             /** @description EVM wallet addresses */
             traders: string[];
             /** @description Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `["all"]` to accept every kind (the default). Unknown values reject the subscription. */
-            dirty_kinds?: ("trade" | "price" | "window" | "position_resolved" | "all")[];
+            dirty_kinds?: ("trade" | "price" | "position_resolved" | "all")[];
         };
-        /** @description Server acknowledgement for a trader positions v3 subscription. */
-        TraderPositionsV3SubscribeResponse: {
+        /** @description Server acknowledgement for a trader positions subscription. */
+        TraderPositionsSubscribeResponse: {
             traders?: string[];
             /** @description Echoed accepted dirty_kinds filter. Empty = all. */
-            dirty_kinds?: ("trade" | "price" | "window" | "position_resolved")[];
+            dirty_kinds?: ("trade" | "price" | "position_resolved")[];
             rejected?: string[];
             error?: string | null;
         };
-        /** @description One position-update row inside a `trader_position_v3_batch` envelope's `data` array. */
-        TraderPositionV3Row: {
+        /** @description One position-update row inside a `trader_position_batch` envelope's `data` array. */
+        TraderPositionRow: {
             /** @description ERC-1155 token ID (decimal string) */
             position_id?: string | null;
             condition_id?: string | null;
@@ -4485,24 +4408,24 @@ export interface components {
             redeemable?: boolean | null;
             /** @description NegRisk market, unresolved, trader holds shares */
             mergeable?: boolean | null;
-            /** @description What kind of activity triggered this update. One or more of: `trade` (a buy, sell, merge, split, redemption, or NegRisk convert landed), `price` (outcome price moved), `window` (a rolling-window boundary crossed), `position_resolved` (the position's market resolved on this update). */
-            dirty_kinds?: ("trade" | "price" | "window" | "position_resolved")[];
+            /** @description What kind of activity triggered this update. One or more of: `trade` (a buy, sell, merge, split, redemption, or NegRisk convert landed), `price` (outcome price moved), `position_resolved` (the position's market resolved on this update). */
+            dirty_kinds?: ("trade" | "price" | "position_resolved")[];
         };
-        /** @description Server-pushed per-block batch of position updates. Envelope type: `trader_position_v3_batch`. Carries every row from the named block that matched the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` field describes what triggered that row's update — including resolutions (`position_resolved`). */
-        TraderPositionV3BatchEvent: {
+        /** @description Server-pushed per-block batch of position updates. Envelope type: `trader_position_batch`. Carries every row from the named block that matched the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` field describes what triggered that row's update — including resolutions (`position_resolved`). */
+        TraderPositionBatchEvent: {
             /** @enum {string} */
-            type: "trader_position_v3_batch";
+            type: "trader_position_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_positions_v3";
+            room_id: "polymarket_trader_positions";
             /**
              * Format: int64
              * @description Block number these rows were computed at.
              */
             block: number;
-            data: components["schemas"]["TraderPositionV3Row"][];
+            data: components["schemas"]["TraderPositionRow"][];
         };
-        /** @description One price-tick row inside a `trader_position_price_v3_batch` envelope's `data` array. */
-        TraderPositionPriceV3Row: {
+        /** @description One price-tick row inside a `trader_position_price_batch` envelope's `data` array. */
+        TraderPositionPriceRow: {
             trader?: string | null;
             /** @description ERC-1155 token ID (decimal string) */
             position_id?: string | null;
@@ -4521,18 +4444,18 @@ export interface components {
             last_trade_at?: number | null;
             dirty_kinds?: "price"[];
         };
-        /** @description Server-pushed per-block batch of position price ticks (mark-to-market refreshes). Envelope type: `trader_position_price_v3_batch`. */
-        TraderPositionPriceV3BatchEvent: {
+        /** @description Server-pushed per-block batch of position price ticks (mark-to-market refreshes). Envelope type: `trader_position_price_batch`. */
+        TraderPositionPriceBatchEvent: {
             /** @enum {string} */
-            type: "trader_position_price_v3_batch";
+            type: "trader_position_price_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_positions_v3";
+            room_id: "polymarket_trader_positions";
             /** Format: int64 */
             block: number;
-            data: components["schemas"]["TraderPositionPriceV3Row"][];
+            data: components["schemas"]["TraderPositionPriceRow"][];
         };
-        /** @description One resolution row inside a `trader_position_resolution_v3_batch` envelope's `data` array. */
-        TraderPositionResolutionV3Row: {
+        /** @description One resolution row inside a `trader_position_resolution_batch` envelope's `data` array. */
+        TraderPositionResolutionRow: {
             trader?: string | null;
             /** @description ERC-1155 token ID (decimal string) */
             position_id?: string | null;
@@ -4550,15 +4473,15 @@ export interface components {
             last_trade_at?: number | null;
             dirty_kinds?: "position_resolved"[];
         };
-        /** @description Server-pushed per-block batch of position resolutions. Envelope type: `trader_position_resolution_v3_batch`. */
-        TraderPositionResolutionV3BatchEvent: {
+        /** @description Server-pushed per-block batch of position resolutions. Envelope type: `trader_position_resolution_batch`. */
+        TraderPositionResolutionBatchEvent: {
             /** @enum {string} */
-            type: "trader_position_resolution_v3_batch";
+            type: "trader_position_resolution_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_positions_v3";
+            room_id: "polymarket_trader_positions";
             /** Format: int64 */
             block: number;
-            data: components["schemas"]["TraderPositionResolutionV3Row"][];
+            data: components["schemas"]["TraderPositionResolutionRow"][];
         };
         /** @description Subscribe to the trader exit markers stream. `traders` is required and must be non-empty. `reasons` is an optional narrowing filter — empty/omitted or `["all"]` = receive every exit reason. */
         TraderExitMarkersSubscribeMessage: {
@@ -4619,7 +4542,7 @@ export interface components {
             /** @enum {string} */
             type: "trader_exit_marker_batch";
             /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3_exits";
+            room_id: "polymarket_trader_pnl_exits";
             /**
              * Format: int64
              * @description Block number these exits were recorded at.
@@ -4627,14 +4550,18 @@ export interface components {
             block: number;
             data: components["schemas"]["TraderExitMarkerRow"][];
         };
-        HolderMetricsV3SubscribeMessage: {
+        /** @description Subscribe to holder metrics for explicit positions, conditions, or events. At least one identifier array must be non-empty. Omitted arrays receive no updates for that metric family. Up to 500 total identifiers are accepted. */
+        HolderMetricsSubscribeMessage: {
             /** @enum {string} */
             action: "subscribe" | "unsubscribe_all";
+            /** @description Position token IDs to receive position holder metrics for. */
             position_ids?: string[];
+            /** @description Condition IDs to receive condition holder metrics for. */
             condition_ids?: string[];
+            /** @description Event slugs to receive event holder metrics for. */
             event_slugs?: string[];
         };
-        PositionHolderMetricsV3Row: {
+        PositionHolderMetricsRow: {
             ts?: number;
             block?: number;
             position_id?: string;
@@ -4644,41 +4571,41 @@ export interface components {
             condition_holder_count?: number | null;
             event_holder_count?: number | null;
         };
-        ConditionHolderMetricsV3Row: {
+        ConditionHolderMetricsRow: {
             ts?: number;
             block?: number;
             condition_id?: string;
             holder_count?: number;
         };
-        EventHolderMetricsV3Row: {
+        EventHolderMetricsRow: {
             ts?: number;
             block?: number;
             event_slug?: string;
             holder_count?: number;
         };
-        HolderMetricsPositionV3BatchEvent: {
+        HolderMetricsPositionBatchEvent: {
             /** @enum {string} */
-            type: "holder_metrics_position_v3_batch";
+            type: "holder_metrics_position_batch";
             /** @enum {string} */
-            room_id: "polymarket_holder_metrics_v3";
+            room_id: "polymarket_holder_metrics";
             block: number;
-            data: components["schemas"]["PositionHolderMetricsV3Row"][];
+            data: components["schemas"]["PositionHolderMetricsRow"][];
         };
-        HolderMetricsConditionV3BatchEvent: {
+        HolderMetricsConditionBatchEvent: {
             /** @enum {string} */
-            type: "holder_metrics_condition_v3_batch";
+            type: "holder_metrics_condition_batch";
             /** @enum {string} */
-            room_id: "polymarket_holder_metrics_v3";
+            room_id: "polymarket_holder_metrics";
             block: number;
-            data: components["schemas"]["ConditionHolderMetricsV3Row"][];
+            data: components["schemas"]["ConditionHolderMetricsRow"][];
         };
-        HolderMetricsEventV3BatchEvent: {
+        HolderMetricsEventBatchEvent: {
             /** @enum {string} */
-            type: "holder_metrics_event_v3_batch";
+            type: "holder_metrics_event_batch";
             /** @enum {string} */
-            room_id: "polymarket_holder_metrics_v3";
+            room_id: "polymarket_holder_metrics";
             block: number;
-            data: components["schemas"]["EventHolderMetricsV3Row"][];
+            data: components["schemas"]["EventHolderMetricsRow"][];
         };
         /** @description Subscribe to the accounts stream. `wallets` is required. Share balance updates (`accounts_update`) are always delivered. Set `include_usdce`, `include_pusd`, or `include_matic` to also receive those balance streams. */
         AccountsSubscribeMessage: {
@@ -4908,7 +4835,7 @@ export interface components {
             /** @description Ids mode: event ids to watch. Combined with `event_slugs` up to 500 total. */
             event_ids?: string[];
         };
-        /** @description List-API-shaped filter evaluated in-memory against changed rows. `status` is NOT an accepted field — the cache only holds open events. */
+        /** @description List-API-shaped filter applied to changed rows. `status` is NOT an accepted field — only open events are streamed. */
         EventsStreamFilter: {
             /** @description Case-insensitive substring match on `title`. 3–100 chars. */
             search?: string;

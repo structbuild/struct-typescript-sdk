@@ -3,7 +3,7 @@ import {
 	StructClient,
 	StructWebSocket,
 	type Event as StructEvent,
-	type GlobalPnlTrader,
+	type GlobalEntry,
 	type MarketResponse,
 	type WsRoomId,
 } from "../src/index.js";
@@ -164,7 +164,7 @@ function getEventSlug(event: StructEvent | undefined): string | null {
 	return isNonEmptyString(event?.event_slug) ? event.event_slug : null;
 }
 
-function getLeaderboardTraderAddress(entry: GlobalPnlTrader | undefined): string | null {
+function getLeaderboardTraderAddress(entry: GlobalEntry | undefined): string | null {
 	return isNonEmptyString(entry?.trader?.address) ? entry.trader.address : null;
 }
 
@@ -391,22 +391,21 @@ function assertObservedEventSample(eventType: string, sample: EventSample | null
 			expectStringField(sample, "position_id");
 			expectStringField(sample, "timeframe");
 			return;
-		case "trader_global_pnl_update":
+		case "trader_global_pnl_batch":
 			expectStringField(sample, "trader");
 			expectOptionalStringField(sample, "timeframe");
 			return;
-		case "trader_market_pnl_update":
+		case "trader_market_pnl_batch":
 			expectStringField(sample, "trader");
 			expectStringField(sample, "condition_id");
 			expectOptionalStringField(sample, "timeframe");
 			return;
-		case "trader_event_pnl_update":
+		case "trader_category_pnl_batch":
 			expectStringField(sample, "trader");
-			expectStringField(sample, "event_slug");
+			expectStringField(sample, "category");
 			expectOptionalStringField(sample, "timeframe");
 			return;
-		case "trader_position_update":
-			expectStringField(sample, "trader");
+		case "trader_position_batch":
 			expectOptionalStringField(sample, "position_id");
 			expectOptionalStringField(sample, "condition_id");
 			return;
@@ -600,32 +599,35 @@ describe.skipIf(!API_KEY || !RUN_WS_LIVE_TESTS)("StructWebSocket live websocket"
 					timeframe: event.timeframe,
 				});
 			}),
-			ws.on("trader_global_pnl_update", (event) => {
-				recordEvent(diagnostics, "trader_global_pnl_update", {
-					trader: event.trader,
-					timeframe: event.timeframe ?? null,
-				});
+			ws.on("trader_global_pnl_batch", (event) => {
+				const row = event.data[0];
+				recordEvent(diagnostics, "trader_global_pnl_batch", row ? {
+					trader: row.trader,
+					timeframe: row.timeframe ?? event.timeframe ?? null,
+				} : null);
 			}),
-			ws.on("trader_market_pnl_update", (event) => {
-				recordEvent(diagnostics, "trader_market_pnl_update", {
-					trader: event.trader,
-					condition_id: event.condition_id,
-					timeframe: event.timeframe ?? null,
-				});
+			ws.on("trader_market_pnl_batch", (event) => {
+				const row = event.data[0];
+				recordEvent(diagnostics, "trader_market_pnl_batch", row ? {
+					trader: row.trader,
+					condition_id: row.condition_id,
+					timeframe: row.timeframe ?? event.timeframe ?? null,
+				} : null);
 			}),
-			ws.on("trader_event_pnl_update", (event) => {
-				recordEvent(diagnostics, "trader_event_pnl_update", {
-					trader: event.trader,
-					event_slug: event.event_slug,
-					timeframe: event.timeframe ?? null,
-				});
+			ws.on("trader_category_pnl_batch", (event) => {
+				const row = event.data[0];
+				recordEvent(diagnostics, "trader_category_pnl_batch", row ? {
+					trader: row.trader,
+					category: row.category,
+					timeframe: row.timeframe ?? event.timeframe ?? null,
+				} : null);
 			}),
-			ws.on("trader_position_update", (event) => {
-				recordEvent(diagnostics, "trader_position_update", {
-					trader: event.trader,
-					position_id: event.position_id ?? null,
-					condition_id: event.condition_id ?? null,
-				});
+			ws.on("trader_position_batch", (event) => {
+				const row = event.data[0];
+				recordEvent(diagnostics, "trader_position_batch", row ? {
+					position_id: row.position_id ?? null,
+					condition_id: row.condition_id ?? null,
+				} : null);
 			}),
 			ws.on("accounts_update", (event) => {
 				recordEvent(diagnostics, "accounts_update", {

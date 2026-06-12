@@ -67,13 +67,6 @@ describe("TraderNamespace", () => {
 		expect(getPath(http)).toBe(`/polymarket/trader/pnl/${ADDR}/markets`);
 	});
 
-	test("getTraderEventPnl", async () => {
-		const http = mockHttp();
-		const ns = new TraderNamespace(http, "polymarket");
-		await ns.getTraderEventPnl({ address: ADDR } as any);
-		expect(getPath(http)).toBe(`/polymarket/trader/pnl/${ADDR}/events`);
-	});
-
 	test("getTraderPnlCalendar", async () => {
 		const http = mockHttp();
 		const ns = new TraderNamespace(http, "polymarket");
@@ -100,6 +93,20 @@ describe("TraderNamespace", () => {
 		const ns = new TraderNamespace(http, "polymarket");
 		await ns.getGlobalPnl();
 		expect(getPath(http)).toBe("/polymarket/trader/global_pnl");
+	});
+
+	test("getTraderPnlChanges", async () => {
+		const http = mockHttp();
+		const ns = new TraderNamespace(http, "polymarket");
+		await ns.getTraderPnlChanges({ address: ADDR });
+		expect(getPath(http)).toBe(`/polymarket/trader/pnl/${ADDR}/changes`);
+	});
+
+	test("getTraderCategoryPnl", async () => {
+		const http = mockHttp();
+		const ns = new TraderNamespace(http, "polymarket");
+		await ns.getTraderCategoryPnl({ address: ADDR });
+		expect(getPath(http)).toBe(`/polymarket/trader/pnl/${ADDR}/categories`);
 	});
 
 	test("address with special chars is URI-encoded", async () => {
