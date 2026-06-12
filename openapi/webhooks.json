@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://api.struct.to/v1"
+      "url": "https://staging-api.struct.to/v1"
     }
   ],
   "paths": {
@@ -978,6 +978,260 @@
           "24h"
         ]
       },
+      "CategoryPnlPayload": {
+        "type": "object",
+        "description": "Category PnL webhook payload.",
+        "required": [
+          "timeframe"
+        ],
+        "properties": {
+          "trader": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Aggregation timeframe: \"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "markets_in_category": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "outcomes_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_splits": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "sell_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "redemption_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "merge_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "convert_collateral_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "split_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_shares_bought": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "markets_won": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "markets_lost": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "market_win_rate_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_hold_time_seconds": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "best_trade_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "best_trade_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worst_trade_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "worst_trade_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "total_wins_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_losses_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_win_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_loss_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "profit_factor": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          }
+        }
+      },
       "CloseToBondFilters": {
         "type": "object",
         "description": "Subscription filters for the `close_to_bond` event. At least one of\n`min_probability` or `max_probability` is required (enforced at runtime).",
@@ -1204,6 +1458,44 @@
             "type": "number",
             "format": "double",
             "description": "The probability threshold from the subscriber's filter that was breached"
+          }
+        }
+      },
+      "ConditionHolderMetricsFilters": {
+        "type": "object",
+        "properties": {
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ConditionHolderMetricsPayload": {
+        "type": "object",
+        "required": [
+          "ts",
+          "block",
+          "condition_id",
+          "holder_count"
+        ],
+        "properties": {
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -1495,6 +1787,17 @@
           }
         }
       },
+      "DirtyKind": {
+        "type": "string",
+        "description": "What triggered a position update. Each value is serialised as a\nlowercase string in the `dirty_kinds` array on every payload, and\nthe same values are accepted as a subscribe-time filter on rooms\nthat expose one.\n\n* `trade` — a buy, sell, merge, split, redemption, or NegRisk\n  convert landed for the position\n* `price` — the outcome price moved (mark-to-market refresh)\n* `window` — a 1d / 7d / 30d rolling window boundary was crossed\n* `position_resolved` — the market that owns this position resolved\n  on this update\n* `market_resolved` — the market itself resolved (stamped on\n  `MarketRollup` rows for lifetime holders who never redeemed).\n  Carried on the resolution tick stream and on any full-row update\n  that bundles a resolution with a trade.",
+        "enum": [
+          "trade",
+          "price",
+          "window",
+          "position_resolved",
+          "market_resolved"
+        ]
+      },
       "DisputePriceEvent": {
         "type": "object",
         "description": "V2 UMA OOv2: a proposed price was disputed.",
@@ -1617,6 +1920,44 @@
               "string",
               "null"
             ]
+          }
+        }
+      },
+      "EventHolderMetricsFilters": {
+        "type": "object",
+        "properties": {
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "EventHolderMetricsPayload": {
+        "type": "object",
+        "required": [
+          "ts",
+          "block",
+          "event_slug",
+          "holder_count"
+        ],
+        "properties": {
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -1826,150 +2167,6 @@
           }
         }
       },
-      "EventPnlPayload": {
-        "type": "object",
-        "description": "Event PnL webhook payload.",
-        "required": [
-          "timeframe"
-        ],
-        "properties": {
-          "trader": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "timeframe": {
-            "type": "string",
-            "description": "Aggregation timeframe: \"1d\", \"7d\", \"30d\", or \"lifetime\""
-          },
-          "markets_traded": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "outcomes_traded": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_buys": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_sells": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_redemptions": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_merges": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_volume_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "buy_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "sell_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "redemption_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "merge_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "realized_pnl_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "winning_markets": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "losing_markets": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_fees": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "first_trade_at": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "last_trade_at": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          }
-        }
-      },
       "EventVolumeMilestoneFilters": {
         "type": "object",
         "description": "Subscription filters for the `event_volume_milestone` event.",
@@ -2176,6 +2373,90 @@
           }
         }
       },
+      "ExitMarkersPayload": {
+        "type": "object",
+        "description": "Exit Markers webhook payload — one position open->closed transition.",
+        "required": [
+          "trader",
+          "position_id",
+          "condition_id",
+          "event_slug",
+          "market_slug",
+          "title",
+          "question",
+          "image_url",
+          "outcome",
+          "pnl_usd",
+          "pnl_pct",
+          "cost_basis_usd",
+          "reason",
+          "block",
+          "ts"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "position_id": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "market_slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "pnl_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "pnl_pct": {
+            "type": "number",
+            "format": "double"
+          },
+          "cost_basis_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "reason": {
+            "type": "string",
+            "description": "resolved_win | resolved_loss | sold_win | sold_loss"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Exit time, unix seconds.",
+            "minimum": 0
+          }
+        }
+      },
       "FirstTradePayload": {
         "type": "object",
         "description": "Payload delivered when a tracked trader executes their first-ever trade on Polymarket",
@@ -2318,7 +2599,7 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "description": "Polymarket exchange contract types.",
                 "enum": [
                   "CTFExchange",
                   "NegRiskExchange",
@@ -2369,7 +2650,8 @@
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Realized PnL for the timeframe (matches REST `/pnl/global`)."
           },
           "events_traded": {
             "type": [
@@ -2413,6 +2695,13 @@
             ],
             "format": "int64"
           },
+          "total_splits": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
           "total_volume_usd": {
             "type": [
               "number",
@@ -2448,6 +2737,76 @@
             ],
             "format": "double"
           },
+          "convert_collateral_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "split_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "maker_rebate_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "maker_rebate_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "reward_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "reward_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "yield_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "yield_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_credit_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_credit_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
           "markets_won": {
             "type": [
               "integer",
@@ -2469,14 +2828,35 @@
             ],
             "format": "double"
           },
-          "avg_pnl_per_market": {
+          "total_wins_usd": {
             "type": [
               "number",
               "null"
             ],
             "format": "double"
           },
-          "avg_pnl_per_trade": {
+          "total_losses_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_win_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_loss_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "profit_factor": {
             "type": [
               "number",
               "null"
@@ -2505,6 +2885,19 @@
             "format": "double"
           },
           "best_trade_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worst_trade_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "worst_trade_condition_id": {
             "type": [
               "string",
               "null"
@@ -2792,9 +3185,29 @@
               "null"
             ]
           },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "timeframe": {
             "type": "string",
             "description": "Aggregation timeframe: \"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "current_shares_balance": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
           },
           "outcomes_traded": {
             "type": [
@@ -2831,6 +3244,13 @@
             ],
             "format": "int64"
           },
+          "total_splits": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
           "buy_usd": {
             "type": [
               "number",
@@ -2859,21 +3279,28 @@
             ],
             "format": "double"
           },
-          "realized_pnl_usd": {
+          "convert_collateral_usd": {
             "type": [
               "number",
               "null"
             ],
             "format": "double"
           },
-          "winning_outcomes": {
+          "split_volume_usd": {
             "type": [
-              "integer",
+              "number",
               "null"
             ],
-            "format": "int64"
+            "format": "double"
           },
           "total_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_shares_bought": {
             "type": [
               "number",
               "null"
@@ -3320,7 +3747,7 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "description": "Polymarket exchange contract types.",
                 "enum": [
                   "CTFExchange",
                   "NegRiskExchange",
@@ -3509,7 +3936,7 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "description": "Polymarket exchange contract types.",
                 "enum": [
                   "CTFExchange",
                   "NegRiskExchange",
@@ -4017,7 +4444,7 @@
       },
       "PnlTimeframeFilter": {
         "type": "string",
-        "description": "PnL timeframe enum for webhook filtering",
+        "description": "PnL timeframe enum for webhook filtering.",
         "enum": [
           "1d",
           "7d",
@@ -4036,7 +4463,12 @@
           "trader_trade_event",
           "trader_global_pnl",
           "trader_market_pnl",
-          "trader_event_pnl",
+          "trader_category_pnl",
+          "trader_position_resolved",
+          "trader_exit_markers",
+          "position_holder_metrics",
+          "condition_holder_metrics",
+          "event_holder_metrics",
           "condition_metrics",
           "event_metrics",
           "tag_metrics",
@@ -4329,6 +4761,68 @@
               "type": "string"
             },
             "description": "Filter for `oracle_events` by event name (case-insensitive).\nValid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`,\n`RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`,\n`QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`,\n`QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`,\n`QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`,\n`NegRiskOutcomeReported`. Empty = all types."
+          }
+        }
+      },
+      "PositionHolderMetricsFilters": {
+        "type": "object",
+        "properties": {
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PositionHolderMetricsPayload": {
+        "type": "object",
+        "required": [
+          "ts",
+          "block",
+          "position_id",
+          "holder_count",
+          "total_balance",
+          "total_cost_basis"
+        ],
+        "properties": {
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "position_id": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total_balance": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_cost_basis": {
+            "type": "number",
+            "format": "double"
+          },
+          "condition_holder_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "event_holder_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -4774,6 +5268,274 @@
               "null"
             ],
             "format": "double"
+          }
+        }
+      },
+      "PositionResolvedPayload": {
+        "type": "object",
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "position_id": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market category slug (e.g. \"politics\", \"sports\") — mirror of\n`PositionRollup.category_id` resolved against the rollup\ninterner. Surfaces on the `/trader/{addr}/positions` API and\nenables direct category-filtered + sorted position lookups\nwithout a cross-grain join."
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "total_buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_splits": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "winning_outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "total_shares_bought": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_shares_sold": {
+            "type": "number",
+            "format": "double"
+          },
+          "buy_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "sell_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "avg_entry_price": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_fees": {
+            "type": "number",
+            "format": "double"
+          },
+          "realized_pnl_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_pnl_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "redemption_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "open": {
+            "type": "boolean"
+          },
+          "won": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DirtyKind"
+            },
+            "description": "What kind of activity triggered this update. One or more of\n`\"trade\"`, `\"price\"`, `\"window\"`, `\"position_resolved\"`.\nSubscribers that only care about one kind filter on\n`data.dirty_kinds` containing the value."
+          },
+          "realized_pnl_pct": {
+            "type": "number",
+            "format": "double",
+            "description": "`realized_pnl_usd / (buy_usd + total_fees) * 100` for the\nwindow. `0.0` when the trader has no cost basis on this row yet."
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug for the parent market of this outcome."
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market title."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market image URL."
+          },
+          "converted_count": {
+            "type": "integer",
+            "format": "int32",
+            "description": "NegRisk conversion count + share deltas for this position.",
+            "minimum": 0
+          },
+          "converted_shares_gained": {
+            "type": "number",
+            "format": "double"
+          },
+          "converted_shares_lost": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_buy_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Aggregate buy/sell USD totals for this position across its\nlifetime."
+          },
+          "total_sell_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "merge_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Merge proceeds (Y+N → collateral)."
+          },
+          "avg_exit_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Sell-side average price."
+          },
+          "avg_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Volume-weighted average trade price across buys + sells."
+          },
+          "current_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Mark-to-market values from the latest price tick."
+          },
+          "current_shares_balance": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "current_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "last_traded_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Last on-chain trade price for the outcome token."
+          },
+          "end_date": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Market resolution deadline as Unix seconds."
+          },
+          "is_neg_risk": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "NegRisk multi-outcome flag."
+          },
+          "redeemable": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "`true` when the market is resolved AND the trader still holds\nshares (redeem available)."
+          },
+          "mergeable": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "`true` when the market is NegRisk, unresolved, and the trader\nholds shares (NegRisk-adapter merge available)."
           }
         }
       },
@@ -6860,9 +7622,9 @@
           "RegisterToken"
         ]
       },
-      "TraderEventPnlFilters": {
+      "TraderCategoryPnlFilters": {
         "type": "object",
-        "description": "Subscription filters for the `trader_event_pnl` event. All fields are optional.",
+        "description": "Subscription filters for the `trader_category_pnl` event. All fields are optional.",
         "properties": {
           "traders": {
             "type": [
@@ -6872,7 +7634,122 @@
             "items": {
               "type": "string"
             },
-            "description": "Track only these trader wallet addresses.",
+            "description": "Track only these trader wallet addresses. Empty = all traders.",
+            "maxItems": 500
+          },
+          "categories": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these market categories (e.g. `politics`, `sports`).",
+            "maxItems": 500
+          },
+          "min_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when per-category realized PnL ≥ this value (USD). Use negative values for loss thresholds."
+          },
+          "max_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when per-category realized PnL ≤ this value (USD)."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total category volume ≥ this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total category volume ≤ this value (USD)."
+          },
+          "min_buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when buy volume within the category ≥ this value (USD)."
+          },
+          "min_sell_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when sell volume within the category ≥ this value (USD)."
+          },
+          "min_win_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when market win rate ≥ this percentage (0.0–100.0).",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "min_markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Only fire when the trader has traded in ≥ this many markets within the category."
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/PnlFilterTimeframe"
+            },
+            "description": "Restrict to these PnL windows. Empty = all windows."
+          }
+        }
+      },
+      "TraderExitMarkersFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_pnl_exits` event. All fields are optional.",
+        "properties": {
+          "traders": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Track only these trader wallet addresses. Empty = all traders.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
             "maxItems": 500
           },
           "event_slugs": {
@@ -6883,81 +7760,8 @@
             "items": {
               "type": "string"
             },
-            "description": "Restrict to these events.",
+            "description": "Restrict to positions in these events.",
             "maxItems": 500
-          },
-          "min_realized_pnl_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when per-event realized PnL ≥ this value (USD)."
-          },
-          "max_realized_pnl_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when per-event realized PnL ≤ this value (USD)."
-          },
-          "min_volume_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when total event volume ≥ this value (USD)."
-          },
-          "max_volume_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when total event volume ≤ this value (USD)."
-          },
-          "min_buy_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when buy volume within the event ≥ this value (USD)."
-          },
-          "min_sell_volume_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when sell volume within the event ≥ this value (USD)."
-          },
-          "min_markets_traded": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64",
-            "description": "Only fire when the trader has traded in ≥ this many markets within the event."
-          },
-          "timeframes": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/PnlFilterTimeframe"
-            },
-            "description": "Restrict to these PnL windows."
-          },
-          "exclude_shortterm_markets": {
-            "type": [
-              "boolean",
-              "null"
-            ],
-            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -7394,6 +8198,64 @@
               "null"
             ],
             "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "TraderPositionResolvedFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_position_resolved` event. All fields are optional.",
+        "properties": {
+          "traders": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Track only these trader wallet addresses. Empty = all traders.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to positions in these events.",
+            "maxItems": 500
+          },
+          "outcome_indexes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Restrict to these outcome indexes within the resolved market.",
+            "maxItems": 500
+          },
+          "won_only": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Only fire for won (`true`) or lost (`false`) positions. Omit to receive both."
           }
         }
       },
@@ -8426,7 +9288,7 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "description": "Polymarket exchange contract types.",
                 "enum": [
                   "CTFExchange",
                   "NegRiskExchange",
@@ -10848,7 +11710,7 @@
     "trader-global-pnl": {
       "post": {
         "summary": "Global PnL callback",
-        "description": "Fired when a trader's global PnL crosses a configured threshold",
+        "description": "Fired when a trader's global PnL  crosses a configured threshold",
         "operationId": "trader-global-pnl",
         "tags": [
           "Webhook Callbacks"
@@ -10943,7 +11805,7 @@
     "trader-market-pnl": {
       "post": {
         "summary": "Market PnL callback",
-        "description": "Fired when a trader's market-level PnL crosses a configured threshold",
+        "description": "Fired when a trader's market-level PnL  crosses a configured threshold",
         "operationId": "trader-market-pnl",
         "tags": [
           "Webhook Callbacks"
@@ -11035,17 +11897,17 @@
         }
       }
     },
-    "trader-event-pnl": {
+    "trader-category-pnl": {
       "post": {
-        "summary": "Event PnL callback",
-        "description": "Fired when a trader's event-level PnL crosses a configured threshold",
-        "operationId": "trader-event-pnl",
+        "summary": "Category PnL callback",
+        "description": "Fired when a trader's category-level PnL  crosses a configured threshold",
+        "operationId": "trader-category-pnl",
         "tags": [
           "Webhook Callbacks"
         ],
         "x-credits-cost": 100,
         "x-filters-schema": {
-          "$ref": "#/components/schemas/TraderEventPnlFilters"
+          "$ref": "#/components/schemas/TraderCategoryPnlFilters"
         },
         "parameters": [
           {
@@ -11111,7 +11973,482 @@
                   {
                     "properties": {
                       "data": {
-                        "$ref": "#/components/schemas/EventPnlPayload"
+                        "$ref": "#/components/schemas/CategoryPnlPayload"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "trader-position-resolved": {
+      "post": {
+        "summary": "Position Resolved callback",
+        "description": "Fired once when a trader's position is resolved (won or lost)",
+        "operationId": "trader-position-resolved",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "x-credits-cost": 100,
+        "x-filters-schema": {
+          "$ref": "#/components/schemas/TraderPositionResolvedFilters"
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/PositionResolvedPayload"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "trader-pnl-exits": {
+      "post": {
+        "summary": "Exit Markers callback",
+        "description": "Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).",
+        "operationId": "trader-pnl-exits",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "x-credits-cost": 25,
+        "x-filters-schema": {
+          "$ref": "#/components/schemas/TraderExitMarkersFilters"
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/ExitMarkersPayload"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "position-holder-metrics": {
+      "post": {
+        "summary": "Position holder metrics callback",
+        "description": "Fired when holder metrics change for a position.",
+        "operationId": "position-holder-metrics",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "x-credits-cost": 25,
+        "x-filters-schema": {
+          "$ref": "#/components/schemas/PositionHolderMetricsFilters"
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/PositionHolderMetricsPayload"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "condition-holder-metrics": {
+      "post": {
+        "summary": "Condition holder metrics callback",
+        "description": "Fired when holder metrics change for a condition.",
+        "operationId": "condition-holder-metrics",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "x-credits-cost": 25,
+        "x-filters-schema": {
+          "$ref": "#/components/schemas/ConditionHolderMetricsFilters"
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/ConditionHolderMetricsPayload"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook delivery acknowledged"
+          },
+          "500": {
+            "description": "Server error (will retry)"
+          }
+        }
+      }
+    },
+    "event-holder-metrics": {
+      "post": {
+        "summary": "Event holder metrics callback",
+        "description": "Fired when holder metrics change for an event.",
+        "operationId": "event-holder-metrics",
+        "tags": [
+          "Webhook Callbacks"
+        ],
+        "x-credits-cost": 25,
+        "x-filters-schema": {
+          "$ref": "#/components/schemas/EventHolderMetricsFilters"
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Webhook-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the webhook subscription that fired"
+          },
+          {
+            "in": "header",
+            "name": "X-Delivery-ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of this specific delivery attempt (matches envelope `id` field)"
+          },
+          {
+            "in": "header",
+            "name": "X-Event-Type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Event name string (e.g. `trader_first_trade`)"
+          },
+          {
+            "in": "header",
+            "name": "X-Attempt",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Delivery attempt number (1 = first attempt)"
+          },
+          {
+            "in": "header",
+            "name": "X-Webhook-Signature",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^sha256=[0-9a-f]{64}$"
+            },
+            "description": "HMAC-SHA256 of the raw request body: `sha256=<hex>`. Present only when the webhook has a secret configured. Verify with: HMAC-SHA256(secret, raw_body_bytes) == hex_part."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Webhook delivery envelope. The `data` field contains the event-specific payload.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/WebhookDeliveryEnvelope"
+                  },
+                  {
+                    "properties": {
+                      "data": {
+                        "$ref": "#/components/schemas/EventHolderMetricsPayload"
                       }
                     }
                   }

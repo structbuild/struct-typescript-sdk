@@ -3,8 +3,10 @@ import type { HttpResponse } from "../types/http.js";
 import type { Venue } from "../types/common.js";
 import type {
 	Tag,
+	CategoryEntry,
 	GetTagsParams,
 	GetTagParams,
+	GetCategoryTopTradersParams,
 } from "../types/index.js";
 
 export class TagsNamespace extends Namespace {
@@ -14,5 +16,9 @@ export class TagsNamespace extends Namespace {
 
 	async getTag(params: GetTagParams, venue?: Venue): Promise<HttpResponse<Tag>> {
 		return this.get<Tag>(venue, `/tags/${encodePathParam(params.identifier)}`);
+	}
+
+	async getCategoryTopTraders(params?: GetCategoryTopTradersParams, venue?: Venue): Promise<HttpResponse<CategoryEntry[]>> {
+		return this.get<CategoryEntry[]>(venue, "/tags/top-traders", { params: { ...params } });
 	}
 }

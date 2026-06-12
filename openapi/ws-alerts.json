@@ -198,7 +198,7 @@
       "address": "/ws/alerts",
       "title": "Global PnL",
       "summary": "Real-time `trader_global_pnl` alert subscription",
-      "description": "Fired when a trader's global PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a trader's global PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -234,7 +234,7 @@
       "address": "/ws/alerts",
       "title": "Market PnL",
       "summary": "Real-time `trader_market_pnl` alert subscription",
-      "description": "Fired when a trader's market-level PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `timeframes`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a trader's market-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `timeframes`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -266,11 +266,11 @@
         }
       }
     },
-    "ws_alerts.trader_event_pnl": {
+    "ws_alerts.trader_category_pnl": {
       "address": "/ws/alerts",
-      "title": "Event PnL",
-      "summary": "Real-time `trader_event_pnl` alert subscription",
-      "description": "Fired when a trader's event-level PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_markets_traded`, `timeframes`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "title": "Category PnL",
+      "summary": "Real-time `trader_category_pnl` alert subscription",
+      "description": "Fired when a trader's category-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `categories`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -283,13 +283,193 @@
       ],
       "messages": {
         "subscribe": {
-          "$ref": "#/components/messages/WsAlertTraderEventPnlSubscribe"
+          "$ref": "#/components/messages/WsAlertTraderCategoryPnlSubscribe"
         },
         "unsubscribe": {
-          "$ref": "#/components/messages/WsAlertTraderEventPnlUnsubscribe"
+          "$ref": "#/components/messages/WsAlertTraderCategoryPnlUnsubscribe"
         },
         "event": {
-          "$ref": "#/components/messages/WsAlertTraderEventPnlEvent"
+          "$ref": "#/components/messages/WsAlertTraderCategoryPnlEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
+    "ws_alerts.trader_position_resolved": {
+      "address": "/ws/alerts",
+      "title": "Position Resolved",
+      "summary": "Real-time `trader_position_resolved` alert subscription",
+      "description": "Fired once when a trader's position is resolved (won or lost)\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `outcome_indexes`, `won_only`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Trader"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertTraderPositionResolvedSubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertTraderPositionResolvedUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertTraderPositionResolvedEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
+    "ws_alerts.trader_pnl_exits": {
+      "address": "/ws/alerts",
+      "title": "Exit Markers",
+      "summary": "Real-time `trader_pnl_exits` alert subscription",
+      "description": "Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Trader"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertTraderPnlExitsSubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertTraderPnlExitsUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertTraderPnlExitsEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
+    "ws_alerts.position_holder_metrics": {
+      "address": "/ws/alerts",
+      "title": "Position Holder Metrics",
+      "summary": "Real-time `position_holder_metrics` alert subscription",
+      "description": "Fired when holder metrics change for a position.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `position_ids`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertPositionHolderMetricsSubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertPositionHolderMetricsUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertPositionHolderMetricsEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
+    "ws_alerts.condition_holder_metrics": {
+      "address": "/ws/alerts",
+      "title": "Condition Holder Metrics",
+      "summary": "Real-time `condition_holder_metrics` alert subscription",
+      "description": "Fired when holder metrics change for a condition.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `condition_ids`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertConditionHolderMetricsSubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertConditionHolderMetricsUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertConditionHolderMetricsEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
+    "ws_alerts.event_holder_metrics": {
+      "address": "/ws/alerts",
+      "title": "Event Holder Metrics",
+      "summary": "Real-time `event_holder_metrics` alert subscription",
+      "description": "Fired when holder metrics change for an event.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `event_slugs`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertEventHolderMetricsSubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertEventHolderMetricsUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertEventHolderMetricsEvent"
         },
         "subscribed": {
           "$ref": "#/components/messages/WsAlertSubscribed"
@@ -1208,7 +1388,7 @@
       },
       "title": "Subscribe — Global PnL",
       "summary": "Subscribe to `trader_global_pnl` alerts",
-      "description": "Fired when a trader's global PnL crosses a configured threshold",
+      "description": "Fired when a trader's global PnL  crosses a configured threshold",
       "tags": [
         {
           "name": "Trader"
@@ -1246,7 +1426,7 @@
       },
       "title": "Event — Global PnL",
       "summary": "Receive `trader_global_pnl` alerts",
-      "description": "Fired when a trader's global PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.",
+      "description": "Fired when a trader's global PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.",
       "tags": [
         {
           "name": "Trader"
@@ -1265,7 +1445,7 @@
       },
       "title": "Subscribe — Market PnL",
       "summary": "Subscribe to `trader_market_pnl` alerts",
-      "description": "Fired when a trader's market-level PnL crosses a configured threshold",
+      "description": "Fired when a trader's market-level PnL  crosses a configured threshold",
       "tags": [
         {
           "name": "Trader"
@@ -1303,7 +1483,7 @@
       },
       "title": "Event — Market PnL",
       "summary": "Receive `trader_market_pnl` alerts",
-      "description": "Fired when a trader's market-level PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.",
+      "description": "Fired when a trader's market-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.",
       "tags": [
         {
           "name": "Trader"
@@ -1315,14 +1495,14 @@
         }
       ]
     },
-    "subscribeTraderEventPnl": {
+    "subscribeTraderCategoryPnl": {
       "action": "send",
       "channel": {
-        "$ref": "#/channels/ws_alerts.trader_event_pnl"
+        "$ref": "#/channels/ws_alerts.trader_category_pnl"
       },
-      "title": "Subscribe — Event PnL",
-      "summary": "Subscribe to `trader_event_pnl` alerts",
-      "description": "Fired when a trader's event-level PnL crosses a configured threshold",
+      "title": "Subscribe — Category PnL",
+      "summary": "Subscribe to `trader_category_pnl` alerts",
+      "description": "Fired when a trader's category-level PnL  crosses a configured threshold",
       "tags": [
         {
           "name": "Trader"
@@ -1330,18 +1510,18 @@
       ],
       "messages": [
         {
-          "$ref": "#/channels/ws_alerts.trader_event_pnl/messages/subscribe"
+          "$ref": "#/channels/ws_alerts.trader_category_pnl/messages/subscribe"
         }
       ]
     },
-    "unsubscribeTraderEventPnl": {
+    "unsubscribeTraderCategoryPnl": {
       "action": "send",
       "channel": {
-        "$ref": "#/channels/ws_alerts.trader_event_pnl"
+        "$ref": "#/channels/ws_alerts.trader_category_pnl"
       },
-      "title": "Unsubscribe — Event PnL",
-      "summary": "Unsubscribe from `trader_event_pnl` alerts",
-      "description": "Stop receiving `trader_event_pnl` alerts. Filter fields must match the original subscription exactly.",
+      "title": "Unsubscribe — Category PnL",
+      "summary": "Unsubscribe from `trader_category_pnl` alerts",
+      "description": "Stop receiving `trader_category_pnl` alerts. Filter fields must match the original subscription exactly.",
       "tags": [
         {
           "name": "Trader"
@@ -1349,18 +1529,18 @@
       ],
       "messages": [
         {
-          "$ref": "#/channels/ws_alerts.trader_event_pnl/messages/unsubscribe"
+          "$ref": "#/channels/ws_alerts.trader_category_pnl/messages/unsubscribe"
         }
       ]
     },
-    "receiveTraderEventPnl": {
+    "receiveTraderCategoryPnl": {
       "action": "receive",
       "channel": {
-        "$ref": "#/channels/ws_alerts.trader_event_pnl"
+        "$ref": "#/channels/ws_alerts.trader_category_pnl"
       },
-      "title": "Event — Event PnL",
-      "summary": "Receive `trader_event_pnl` alerts",
-      "description": "Fired when a trader's event-level PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.",
+      "title": "Event — Category PnL",
+      "summary": "Receive `trader_category_pnl` alerts",
+      "description": "Fired when a trader's category-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.",
       "tags": [
         {
           "name": "Trader"
@@ -1368,7 +1548,292 @@
       ],
       "messages": [
         {
-          "$ref": "#/channels/ws_alerts.trader_event_pnl/messages/event"
+          "$ref": "#/channels/ws_alerts.trader_category_pnl/messages/event"
+        }
+      ]
+    },
+    "subscribeTraderPositionResolved": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.trader_position_resolved"
+      },
+      "title": "Subscribe — Position Resolved",
+      "summary": "Subscribe to `trader_position_resolved` alerts",
+      "description": "Fired once when a trader's position is resolved (won or lost)",
+      "tags": [
+        {
+          "name": "Trader"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.trader_position_resolved/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribeTraderPositionResolved": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.trader_position_resolved"
+      },
+      "title": "Unsubscribe — Position Resolved",
+      "summary": "Unsubscribe from `trader_position_resolved` alerts",
+      "description": "Stop receiving `trader_position_resolved` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Trader"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.trader_position_resolved/messages/unsubscribe"
+        }
+      ]
+    },
+    "receiveTraderPositionResolved": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.trader_position_resolved"
+      },
+      "title": "Event — Position Resolved",
+      "summary": "Receive `trader_position_resolved` alerts",
+      "description": "Fired once when a trader's position is resolved (won or lost)\n\n**Credits cost:** 100 per delivered alert.",
+      "tags": [
+        {
+          "name": "Trader"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.trader_position_resolved/messages/event"
+        }
+      ]
+    },
+    "subscribeTraderPnlExits": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.trader_pnl_exits"
+      },
+      "title": "Subscribe — Exit Markers",
+      "summary": "Subscribe to `trader_pnl_exits` alerts",
+      "description": "Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).",
+      "tags": [
+        {
+          "name": "Trader"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.trader_pnl_exits/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribeTraderPnlExits": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.trader_pnl_exits"
+      },
+      "title": "Unsubscribe — Exit Markers",
+      "summary": "Unsubscribe from `trader_pnl_exits` alerts",
+      "description": "Stop receiving `trader_pnl_exits` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Trader"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.trader_pnl_exits/messages/unsubscribe"
+        }
+      ]
+    },
+    "receiveTraderPnlExits": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.trader_pnl_exits"
+      },
+      "title": "Event — Exit Markers",
+      "summary": "Receive `trader_pnl_exits` alerts",
+      "description": "Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).\n\n**Credits cost:** 25 per delivered alert.",
+      "tags": [
+        {
+          "name": "Trader"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.trader_pnl_exits/messages/event"
+        }
+      ]
+    },
+    "subscribePositionHolderMetrics": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.position_holder_metrics"
+      },
+      "title": "Subscribe — Position Holder Metrics",
+      "summary": "Subscribe to `position_holder_metrics` alerts",
+      "description": "Fired when holder metrics change for a position.",
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.position_holder_metrics/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribePositionHolderMetrics": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.position_holder_metrics"
+      },
+      "title": "Unsubscribe — Position Holder Metrics",
+      "summary": "Unsubscribe from `position_holder_metrics` alerts",
+      "description": "Stop receiving `position_holder_metrics` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.position_holder_metrics/messages/unsubscribe"
+        }
+      ]
+    },
+    "receivePositionHolderMetrics": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.position_holder_metrics"
+      },
+      "title": "Event — Position Holder Metrics",
+      "summary": "Receive `position_holder_metrics` alerts",
+      "description": "Fired when holder metrics change for a position.\n\n**Credits cost:** 25 per delivered alert.",
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.position_holder_metrics/messages/event"
+        }
+      ]
+    },
+    "subscribeConditionHolderMetrics": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.condition_holder_metrics"
+      },
+      "title": "Subscribe — Condition Holder Metrics",
+      "summary": "Subscribe to `condition_holder_metrics` alerts",
+      "description": "Fired when holder metrics change for a condition.",
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.condition_holder_metrics/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribeConditionHolderMetrics": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.condition_holder_metrics"
+      },
+      "title": "Unsubscribe — Condition Holder Metrics",
+      "summary": "Unsubscribe from `condition_holder_metrics` alerts",
+      "description": "Stop receiving `condition_holder_metrics` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.condition_holder_metrics/messages/unsubscribe"
+        }
+      ]
+    },
+    "receiveConditionHolderMetrics": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.condition_holder_metrics"
+      },
+      "title": "Event — Condition Holder Metrics",
+      "summary": "Receive `condition_holder_metrics` alerts",
+      "description": "Fired when holder metrics change for a condition.\n\n**Credits cost:** 25 per delivered alert.",
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.condition_holder_metrics/messages/event"
+        }
+      ]
+    },
+    "subscribeEventHolderMetrics": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.event_holder_metrics"
+      },
+      "title": "Subscribe — Event Holder Metrics",
+      "summary": "Subscribe to `event_holder_metrics` alerts",
+      "description": "Fired when holder metrics change for an event.",
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.event_holder_metrics/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribeEventHolderMetrics": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.event_holder_metrics"
+      },
+      "title": "Unsubscribe — Event Holder Metrics",
+      "summary": "Unsubscribe from `event_holder_metrics` alerts",
+      "description": "Stop receiving `event_holder_metrics` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.event_holder_metrics/messages/unsubscribe"
+        }
+      ]
+    },
+    "receiveEventHolderMetrics": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.event_holder_metrics"
+      },
+      "title": "Event — Event Holder Metrics",
+      "summary": "Receive `event_holder_metrics` alerts",
+      "description": "Fired when holder metrics change for an event.\n\n**Credits cost:** 25 per delivered alert.",
+      "tags": [
+        {
+          "name": "Holders"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.event_holder_metrics/messages/event"
         }
       ]
     },
@@ -2937,7 +3402,7 @@
         "name": "WsAlertTraderGlobalPnlSubscribe",
         "title": "Global PnL — Subscribe",
         "summary": "Subscribe to `trader_global_pnl` alerts",
-        "description": "Fired when a trader's global PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`",
+        "description": "Fired when a trader's global PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`",
         "tags": [
           {
             "name": "Trader"
@@ -3009,7 +3474,7 @@
         "name": "WsAlertTraderGlobalPnlEvent",
         "title": "Global PnL — Event",
         "summary": "`trader_global_pnl` alert pushed from server",
-        "description": "Fired when a trader's global PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "description": "Fired when a trader's global PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
             "name": "Trader"
@@ -3033,20 +3498,36 @@
                 "total_sells": 8,
                 "total_redemptions": 1,
                 "total_merges": 0,
+                "total_splits": 0,
                 "total_volume_usd": 1500.0,
                 "buy_volume_usd": 900.0,
                 "sell_volume_usd": 600.0,
                 "redemption_volume_usd": 50.0,
                 "merge_volume_usd": 0.0,
+                "convert_collateral_usd": 0.0,
+                "split_volume_usd": 0.0,
+                "maker_rebate_count": 0,
+                "maker_rebate_usd": 0.0,
+                "reward_count": 0,
+                "reward_usd": 0.0,
+                "yield_count": 0,
+                "yield_usd": 0.0,
+                "total_credit_count": 0,
+                "total_credit_usd": 0.0,
                 "markets_won": 3,
                 "markets_lost": 2,
                 "market_win_rate_pct": 60.0,
-                "avg_pnl_per_market": 50.0,
-                "avg_pnl_per_trade": 12.5,
+                "total_wins_usd": 400.0,
+                "total_losses_usd": 150.0,
+                "avg_win_usd": 133.3,
+                "avg_loss_usd": 75.0,
+                "profit_factor": 2.67,
                 "avg_hold_time_seconds": 86400.0,
                 "total_fees": 7.5,
                 "best_trade_pnl_usd": 180.0,
                 "best_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "worst_trade_pnl_usd": -50.0,
+                "worst_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000001",
                 "first_trade_at": 1700000000,
                 "last_trade_at": 1700000000
               }
@@ -3058,7 +3539,7 @@
         "name": "WsAlertTraderMarketPnlSubscribe",
         "title": "Market PnL — Subscribe",
         "summary": "Subscribe to `trader_market_pnl` alerts",
-        "description": "Fired when a trader's market-level PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `timeframes`, `exclude_shortterm_markets`",
+        "description": "Fired when a trader's market-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `timeframes`, `exclude_shortterm_markets`",
         "tags": [
           {
             "name": "Trader"
@@ -3140,7 +3621,7 @@
         "name": "WsAlertTraderMarketPnlEvent",
         "title": "Market PnL — Event",
         "summary": "`trader_market_pnl` alert pushed from server",
-        "description": "Fired when a trader's market-level PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "description": "Fired when a trader's market-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
             "name": "Trader"
@@ -3158,19 +3639,24 @@
                 "trader": "0x0000000000000000000000000000000000000000",
                 "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
                 "event_slug": "test-event-0000000000",
+                "category": "crypto",
                 "timeframe": "7d",
+                "realized_pnl_usd": 100.0,
+                "current_shares_balance": 150.0,
                 "outcomes_traded": 2,
                 "total_buys": 4,
                 "total_sells": 3,
                 "total_redemptions": 1,
                 "total_merges": 0,
+                "total_splits": 0,
                 "buy_usd": 300.0,
                 "sell_usd": 200.0,
                 "redemption_usd": 50.0,
                 "merge_usd": 0.0,
-                "realized_pnl_usd": 100.0,
-                "winning_outcomes": 1,
+                "convert_collateral_usd": 0.0,
+                "split_volume_usd": 0.0,
                 "total_fees": 2.5,
+                "total_shares_bought": 500.0,
                 "first_trade_at": 1700000000,
                 "last_trade_at": 1700000000
               }
@@ -3178,29 +3664,26 @@
           }
         ]
       },
-      "WsAlertTraderEventPnlSubscribe": {
-        "name": "WsAlertTraderEventPnlSubscribe",
-        "title": "Event PnL — Subscribe",
-        "summary": "Subscribe to `trader_event_pnl` alerts",
-        "description": "Fired when a trader's event-level PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_markets_traded`, `timeframes`, `exclude_shortterm_markets`",
+      "WsAlertTraderCategoryPnlSubscribe": {
+        "name": "WsAlertTraderCategoryPnlSubscribe",
+        "title": "Category PnL — Subscribe",
+        "summary": "Subscribe to `trader_category_pnl` alerts",
+        "description": "Fired when a trader's category-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `categories`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`",
         "tags": [
           {
             "name": "Trader"
           }
         ],
         "payload": {
-          "$ref": "#/components/schemas/WsAlertTraderEventPnlSubscribeMessage"
+          "$ref": "#/components/schemas/WsAlertTraderCategoryPnlSubscribeMessage"
         },
         "examples": [
           {
             "payload": {
               "op": "subscribe",
-              "event": "trader_event_pnl",
+              "event": "trader_category_pnl",
               "traders": [
                 "0x0000000000000000000000000000000000000000"
-              ],
-              "event_slugs": [
-                "example-event"
               ],
               "min_realized_pnl_usd": 1000.0,
               "max_realized_pnl_usd": 5000.0,
@@ -3208,38 +3691,35 @@
               "max_volume_usd": 100000.0,
               "min_buy_usd": 5000.0,
               "min_sell_volume_usd": 2500.0,
+              "min_win_rate": 60.0,
               "min_markets_traded": 5,
               "timeframes": [
                 "1h"
-              ],
-              "exclude_shortterm_markets": true
+              ]
             }
           }
         ]
       },
-      "WsAlertTraderEventPnlUnsubscribe": {
-        "name": "WsAlertTraderEventPnlUnsubscribe",
-        "title": "Event PnL — Unsubscribe",
-        "summary": "Unsubscribe from `trader_event_pnl` alerts",
-        "description": "Unsubscribe from `trader_event_pnl` alerts. The filter fields must match the original subscription exactly.",
+      "WsAlertTraderCategoryPnlUnsubscribe": {
+        "name": "WsAlertTraderCategoryPnlUnsubscribe",
+        "title": "Category PnL — Unsubscribe",
+        "summary": "Unsubscribe from `trader_category_pnl` alerts",
+        "description": "Unsubscribe from `trader_category_pnl` alerts. The filter fields must match the original subscription exactly.",
         "tags": [
           {
             "name": "Trader"
           }
         ],
         "payload": {
-          "$ref": "#/components/schemas/WsAlertTraderEventPnlUnsubscribeMessage"
+          "$ref": "#/components/schemas/WsAlertTraderCategoryPnlUnsubscribeMessage"
         },
         "examples": [
           {
             "payload": {
               "op": "unsubscribe",
-              "event": "trader_event_pnl",
+              "event": "trader_category_pnl",
               "traders": [
                 "0x0000000000000000000000000000000000000000"
-              ],
-              "event_slugs": [
-                "example-event"
               ],
               "min_realized_pnl_usd": 1000.0,
               "max_realized_pnl_usd": 5000.0,
@@ -3247,54 +3727,531 @@
               "max_volume_usd": 100000.0,
               "min_buy_usd": 5000.0,
               "min_sell_volume_usd": 2500.0,
+              "min_win_rate": 60.0,
               "min_markets_traded": 5,
               "timeframes": [
                 "1h"
-              ],
-              "exclude_shortterm_markets": true
+              ]
             }
           }
         ]
       },
-      "WsAlertTraderEventPnlEvent": {
-        "name": "WsAlertTraderEventPnlEvent",
-        "title": "Event PnL — Event",
-        "summary": "`trader_event_pnl` alert pushed from server",
-        "description": "Fired when a trader's event-level PnL crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+      "WsAlertTraderCategoryPnlEvent": {
+        "name": "WsAlertTraderCategoryPnlEvent",
+        "title": "Category PnL — Event",
+        "summary": "`trader_category_pnl` alert pushed from server",
+        "description": "Fired when a trader's category-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
             "name": "Trader"
           }
         ],
         "payload": {
-          "$ref": "#/components/schemas/WsAlertTraderEventPnlEvent"
+          "$ref": "#/components/schemas/WsAlertTraderCategoryPnlEvent"
         },
         "examples": [
           {
             "payload": {
-              "event": "trader_event_pnl",
+              "event": "trader_category_pnl",
               "timestamp": 1743500000000,
               "data": {
                 "trader": "0x0000000000000000000000000000000000000000",
-                "event_slug": "test-event-0000000000",
+                "category": "crypto",
                 "timeframe": "7d",
-                "markets_traded": 2,
-                "outcomes_traded": 3,
-                "total_buys": 6,
-                "total_sells": 4,
+                "realized_pnl_usd": 250.0,
+                "markets_in_category": 15,
+                "markets_traded": 5,
+                "outcomes_traded": 8,
+                "total_buys": 12,
+                "total_sells": 8,
                 "total_redemptions": 1,
                 "total_merges": 0,
-                "total_volume_usd": 800.0,
-                "buy_usd": 480.0,
-                "sell_usd": 320.0,
+                "total_splits": 0,
+                "total_volume_usd": 1500.0,
+                "buy_usd": 900.0,
+                "sell_usd": 600.0,
                 "redemption_usd": 50.0,
                 "merge_usd": 0.0,
-                "realized_pnl_usd": 150.0,
-                "winning_markets": 1,
-                "losing_markets": 1,
-                "total_fees": 4.0,
+                "convert_collateral_usd": 0.0,
+                "split_volume_usd": 0.0,
+                "total_fees": 7.5,
+                "total_shares_bought": 500.0,
+                "markets_won": 3,
+                "markets_lost": 2,
+                "market_win_rate_pct": 60.0,
+                "avg_hold_time_seconds": 86400.0,
+                "best_trade_pnl_usd": 180.0,
+                "best_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "worst_trade_pnl_usd": -50.0,
+                "worst_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000001",
+                "total_wins_usd": 400.0,
+                "total_losses_usd": 150.0,
+                "avg_win_usd": 133.3,
+                "avg_loss_usd": 75.0,
+                "profit_factor": 2.67,
                 "first_trade_at": 1700000000,
                 "last_trade_at": 1700000000
+              }
+            }
+          }
+        ]
+      },
+      "WsAlertTraderPositionResolvedSubscribe": {
+        "name": "WsAlertTraderPositionResolvedSubscribe",
+        "title": "Position Resolved — Subscribe",
+        "summary": "Subscribe to `trader_position_resolved` alerts",
+        "description": "Fired once when a trader's position is resolved (won or lost)\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `outcome_indexes`, `won_only`",
+        "tags": [
+          {
+            "name": "Trader"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertTraderPositionResolvedSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "trader_position_resolved",
+              "traders": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertTraderPositionResolvedUnsubscribe": {
+        "name": "WsAlertTraderPositionResolvedUnsubscribe",
+        "title": "Position Resolved — Unsubscribe",
+        "summary": "Unsubscribe from `trader_position_resolved` alerts",
+        "description": "Unsubscribe from `trader_position_resolved` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Trader"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertTraderPositionResolvedUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "trader_position_resolved",
+              "traders": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertTraderPositionResolvedEvent": {
+        "name": "WsAlertTraderPositionResolvedEvent",
+        "title": "Position Resolved — Event",
+        "summary": "`trader_position_resolved` alert pushed from server",
+        "description": "Fired once when a trader's position is resolved (won or lost)\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Trader"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertTraderPositionResolvedEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "trader_position_resolved",
+              "timestamp": 1743500000000,
+              "data": {
+                "trader": "0x0000000000000000000000000000000000000000",
+                "position_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "event_slug": "test-event-0000000000",
+                "category": "politics",
+                "outcome": "Yes",
+                "outcome_index": 0,
+                "total_buys": 4,
+                "total_sells": 2,
+                "total_merges": 0,
+                "total_splits": 0,
+                "winning_outcome_index": 0,
+                "total_shares_bought": 500.0,
+                "total_shares_sold": 200.0,
+                "buy_usd": 300.0,
+                "sell_usd": 150.0,
+                "avg_entry_price": 0.6,
+                "total_fees": 2.5,
+                "realized_pnl_usd": 100.0,
+                "total_pnl_usd": 100.0,
+                "redemption_usd": 50.0,
+                "open": false,
+                "won": true,
+                "first_trade_at": 1700000000,
+                "last_trade_at": 1700000000,
+                "dirty_kinds": [
+                  "position_resolved"
+                ],
+                "realized_pnl_pct": 0.0,
+                "converted_count": 0,
+                "converted_shares_gained": 0.0,
+                "converted_shares_lost": 0.0,
+                "total_buy_usd": 0.0,
+                "total_sell_usd": 0.0,
+                "merge_usd": 0.0
+              }
+            }
+          }
+        ]
+      },
+      "WsAlertTraderPnlExitsSubscribe": {
+        "name": "WsAlertTraderPnlExitsSubscribe",
+        "title": "Exit Markers — Subscribe",
+        "summary": "Subscribe to `trader_pnl_exits` alerts",
+        "description": "Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`",
+        "tags": [
+          {
+            "name": "Trader"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertTraderPnlExitsSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "trader_pnl_exits",
+              "traders": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertTraderPnlExitsUnsubscribe": {
+        "name": "WsAlertTraderPnlExitsUnsubscribe",
+        "title": "Exit Markers — Unsubscribe",
+        "summary": "Unsubscribe from `trader_pnl_exits` alerts",
+        "description": "Unsubscribe from `trader_pnl_exits` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Trader"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertTraderPnlExitsUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "trader_pnl_exits",
+              "traders": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertTraderPnlExitsEvent": {
+        "name": "WsAlertTraderPnlExitsEvent",
+        "title": "Exit Markers — Event",
+        "summary": "`trader_pnl_exits` alert pushed from server",
+        "description": "Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).\n\n**Credits cost:** 25 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Trader"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertTraderPnlExitsEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "trader_pnl_exits",
+              "timestamp": 1743500000000,
+              "data": {
+                "trader": "0x0000000000000000000000000000000000000000",
+                "position_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "event_slug": "test-event-0000000000",
+                "market_slug": "test-market",
+                "title": "Test Market",
+                "question": "Will this test market resolve YES?",
+                "image_url": "",
+                "outcome": "Yes",
+                "outcome_index": 0,
+                "pnl_usd": 100.0,
+                "pnl_pct": 33.3,
+                "cost_basis_usd": 300.0,
+                "reason": "resolved_win",
+                "block": 1,
+                "ts": 1700000000
+              }
+            }
+          }
+        ]
+      },
+      "WsAlertPositionHolderMetricsSubscribe": {
+        "name": "WsAlertPositionHolderMetricsSubscribe",
+        "title": "Position Holder Metrics — Subscribe",
+        "summary": "Subscribe to `position_holder_metrics` alerts",
+        "description": "Fired when holder metrics change for a position.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `position_ids`",
+        "tags": [
+          {
+            "name": "Holders"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertPositionHolderMetricsSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "position_holder_metrics",
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertPositionHolderMetricsUnsubscribe": {
+        "name": "WsAlertPositionHolderMetricsUnsubscribe",
+        "title": "Position Holder Metrics — Unsubscribe",
+        "summary": "Unsubscribe from `position_holder_metrics` alerts",
+        "description": "Unsubscribe from `position_holder_metrics` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Holders"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertPositionHolderMetricsUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "position_holder_metrics",
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertPositionHolderMetricsEvent": {
+        "name": "WsAlertPositionHolderMetricsEvent",
+        "title": "Position Holder Metrics — Event",
+        "summary": "`position_holder_metrics` alert pushed from server",
+        "description": "Fired when holder metrics change for a position.\n\n**Credits cost:** 25 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Holders"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertPositionHolderMetricsEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "position_holder_metrics",
+              "timestamp": 1743500000000,
+              "data": {
+                "ts": 1700000000,
+                "block": 1,
+                "position_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "holder_count": 10,
+                "total_balance": 1000.0,
+                "total_cost_basis": 500.0,
+                "condition_holder_count": 15,
+                "event_holder_count": 25
+              }
+            }
+          }
+        ]
+      },
+      "WsAlertConditionHolderMetricsSubscribe": {
+        "name": "WsAlertConditionHolderMetricsSubscribe",
+        "title": "Condition Holder Metrics — Subscribe",
+        "summary": "Subscribe to `condition_holder_metrics` alerts",
+        "description": "Fired when holder metrics change for a condition.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `condition_ids`",
+        "tags": [
+          {
+            "name": "Holders"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertConditionHolderMetricsSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "condition_holder_metrics",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertConditionHolderMetricsUnsubscribe": {
+        "name": "WsAlertConditionHolderMetricsUnsubscribe",
+        "title": "Condition Holder Metrics — Unsubscribe",
+        "summary": "Unsubscribe from `condition_holder_metrics` alerts",
+        "description": "Unsubscribe from `condition_holder_metrics` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Holders"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertConditionHolderMetricsUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "condition_holder_metrics",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertConditionHolderMetricsEvent": {
+        "name": "WsAlertConditionHolderMetricsEvent",
+        "title": "Condition Holder Metrics — Event",
+        "summary": "`condition_holder_metrics` alert pushed from server",
+        "description": "Fired when holder metrics change for a condition.\n\n**Credits cost:** 25 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Holders"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertConditionHolderMetricsEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "condition_holder_metrics",
+              "timestamp": 1743500000000,
+              "data": {
+                "ts": 1700000000,
+                "block": 1,
+                "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "holder_count": 15
+              }
+            }
+          }
+        ]
+      },
+      "WsAlertEventHolderMetricsSubscribe": {
+        "name": "WsAlertEventHolderMetricsSubscribe",
+        "title": "Event Holder Metrics — Subscribe",
+        "summary": "Subscribe to `event_holder_metrics` alerts",
+        "description": "Fired when holder metrics change for an event.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `event_slugs`",
+        "tags": [
+          {
+            "name": "Holders"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertEventHolderMetricsSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "event_holder_metrics",
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertEventHolderMetricsUnsubscribe": {
+        "name": "WsAlertEventHolderMetricsUnsubscribe",
+        "title": "Event Holder Metrics — Unsubscribe",
+        "summary": "Unsubscribe from `event_holder_metrics` alerts",
+        "description": "Unsubscribe from `event_holder_metrics` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Holders"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertEventHolderMetricsUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "event_holder_metrics",
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertEventHolderMetricsEvent": {
+        "name": "WsAlertEventHolderMetricsEvent",
+        "title": "Event Holder Metrics — Event",
+        "summary": "`event_holder_metrics` alert pushed from server",
+        "description": "Fired when holder metrics change for an event.\n\n**Credits cost:** 25 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Holders"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertEventHolderMetricsEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "event_holder_metrics",
+              "timestamp": 1743500000000,
+              "data": {
+                "ts": 1700000000,
+                "block": 1,
+                "event_slug": "test-event-0000000000",
+                "holder_count": 25
               }
             }
           }
@@ -5609,6 +6566,260 @@
           "24h"
         ]
       },
+      "CategoryPnlPayload": {
+        "type": "object",
+        "description": "Category PnL webhook payload.",
+        "required": [
+          "timeframe"
+        ],
+        "properties": {
+          "trader": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "timeframe": {
+            "type": "string",
+            "description": "Aggregation timeframe: \"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "markets_in_category": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "outcomes_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_buys": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_redemptions": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_splits": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "sell_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "redemption_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "merge_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "convert_collateral_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "split_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_shares_bought": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "markets_won": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "markets_lost": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "market_win_rate_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_hold_time_seconds": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "best_trade_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "best_trade_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worst_trade_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "worst_trade_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "total_wins_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_losses_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_win_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_loss_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "profit_factor": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          }
+        }
+      },
       "CloseToBondFilters": {
         "type": "object",
         "description": "Subscription filters for the `close_to_bond` event. At least one of\n`min_probability` or `max_probability` is required (enforced at runtime).",
@@ -5835,6 +7046,44 @@
             "type": "number",
             "format": "double",
             "description": "The probability threshold from the subscriber's filter that was breached"
+          }
+        }
+      },
+      "ConditionHolderMetricsFilters": {
+        "type": "object",
+        "properties": {
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ConditionHolderMetricsPayload": {
+        "type": "object",
+        "required": [
+          "ts",
+          "block",
+          "condition_id",
+          "holder_count"
+        ],
+        "properties": {
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -6126,6 +7375,17 @@
           }
         }
       },
+      "DirtyKind": {
+        "type": "string",
+        "description": "What triggered a position update. Each value is serialised as a\nlowercase string in the `dirty_kinds` array on every payload, and\nthe same values are accepted as a subscribe-time filter on rooms\nthat expose one.\n\n* `trade` — a buy, sell, merge, split, redemption, or NegRisk\n  convert landed for the position\n* `price` — the outcome price moved (mark-to-market refresh)\n* `window` — a 1d / 7d / 30d rolling window boundary was crossed\n* `position_resolved` — the market that owns this position resolved\n  on this update\n* `market_resolved` — the market itself resolved (stamped on\n  `MarketRollup` rows for lifetime holders who never redeemed).\n  Carried on the resolution tick stream and on any full-row update\n  that bundles a resolution with a trade.",
+        "enum": [
+          "trade",
+          "price",
+          "window",
+          "position_resolved",
+          "market_resolved"
+        ]
+      },
       "DisputePriceEvent": {
         "type": "object",
         "description": "V2 UMA OOv2: a proposed price was disputed.",
@@ -6248,6 +7508,44 @@
               "string",
               "null"
             ]
+          }
+        }
+      },
+      "EventHolderMetricsFilters": {
+        "type": "object",
+        "properties": {
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "EventHolderMetricsPayload": {
+        "type": "object",
+        "required": [
+          "ts",
+          "block",
+          "event_slug",
+          "holder_count"
+        ],
+        "properties": {
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -6457,150 +7755,6 @@
           }
         }
       },
-      "EventPnlPayload": {
-        "type": "object",
-        "description": "Event PnL webhook payload.",
-        "required": [
-          "timeframe"
-        ],
-        "properties": {
-          "trader": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "timeframe": {
-            "type": "string",
-            "description": "Aggregation timeframe: \"1d\", \"7d\", \"30d\", or \"lifetime\""
-          },
-          "markets_traded": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "outcomes_traded": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_buys": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_sells": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_redemptions": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_merges": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_volume_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "buy_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "sell_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "redemption_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "merge_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "realized_pnl_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "winning_markets": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "losing_markets": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "total_fees": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double"
-          },
-          "first_trade_at": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          },
-          "last_trade_at": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64"
-          }
-        }
-      },
       "EventVolumeMilestoneFilters": {
         "type": "object",
         "description": "Subscription filters for the `event_volume_milestone` event.",
@@ -6807,6 +7961,90 @@
           }
         }
       },
+      "ExitMarkersPayload": {
+        "type": "object",
+        "description": "Exit Markers webhook payload — one position open->closed transition.",
+        "required": [
+          "trader",
+          "position_id",
+          "condition_id",
+          "event_slug",
+          "market_slug",
+          "title",
+          "question",
+          "image_url",
+          "outcome",
+          "pnl_usd",
+          "pnl_pct",
+          "cost_basis_usd",
+          "reason",
+          "block",
+          "ts"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "position_id": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": "string"
+          },
+          "event_slug": {
+            "type": "string"
+          },
+          "market_slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "pnl_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "pnl_pct": {
+            "type": "number",
+            "format": "double"
+          },
+          "cost_basis_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "reason": {
+            "type": "string",
+            "description": "resolved_win | resolved_loss | sold_win | sold_loss"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Exit time, unix seconds.",
+            "minimum": 0
+          }
+        }
+      },
       "FirstTradePayload": {
         "type": "object",
         "description": "Payload delivered when a tracked trader executes their first-ever trade on Polymarket",
@@ -6949,7 +8187,7 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "description": "Polymarket exchange contract types.",
                 "enum": [
                   "CTFExchange",
                   "NegRiskExchange",
@@ -7000,7 +8238,8 @@
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Realized PnL for the timeframe (matches REST `/pnl/global`)."
           },
           "events_traded": {
             "type": [
@@ -7044,6 +8283,13 @@
             ],
             "format": "int64"
           },
+          "total_splits": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
           "total_volume_usd": {
             "type": [
               "number",
@@ -7079,6 +8325,76 @@
             ],
             "format": "double"
           },
+          "convert_collateral_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "split_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "maker_rebate_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "maker_rebate_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "reward_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "reward_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "yield_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "yield_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_credit_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "total_credit_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
           "markets_won": {
             "type": [
               "integer",
@@ -7100,14 +8416,35 @@
             ],
             "format": "double"
           },
-          "avg_pnl_per_market": {
+          "total_wins_usd": {
             "type": [
               "number",
               "null"
             ],
             "format": "double"
           },
-          "avg_pnl_per_trade": {
+          "total_losses_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_win_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "avg_loss_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "profit_factor": {
             "type": [
               "number",
               "null"
@@ -7136,6 +8473,19 @@
             "format": "double"
           },
           "best_trade_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worst_trade_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "worst_trade_condition_id": {
             "type": [
               "string",
               "null"
@@ -7423,9 +8773,29 @@
               "null"
             ]
           },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "timeframe": {
             "type": "string",
             "description": "Aggregation timeframe: \"1d\", \"7d\", \"30d\", or \"lifetime\""
+          },
+          "realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "current_shares_balance": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
           },
           "outcomes_traded": {
             "type": [
@@ -7462,6 +8832,13 @@
             ],
             "format": "int64"
           },
+          "total_splits": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
           "buy_usd": {
             "type": [
               "number",
@@ -7490,21 +8867,28 @@
             ],
             "format": "double"
           },
-          "realized_pnl_usd": {
+          "convert_collateral_usd": {
             "type": [
               "number",
               "null"
             ],
             "format": "double"
           },
-          "winning_outcomes": {
+          "split_volume_usd": {
             "type": [
-              "integer",
+              "number",
               "null"
             ],
-            "format": "int64"
+            "format": "double"
           },
           "total_fees": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "total_shares_bought": {
             "type": [
               "number",
               "null"
@@ -7951,7 +9335,7 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "description": "Polymarket exchange contract types.",
                 "enum": [
                   "CTFExchange",
                   "NegRiskExchange",
@@ -8140,7 +9524,7 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "description": "Polymarket exchange contract types.",
                 "enum": [
                   "CTFExchange",
                   "NegRiskExchange",
@@ -8648,7 +10032,7 @@
       },
       "PnlTimeframeFilter": {
         "type": "string",
-        "description": "PnL timeframe enum for webhook filtering",
+        "description": "PnL timeframe enum for webhook filtering.",
         "enum": [
           "1d",
           "7d",
@@ -8667,16 +10051,12 @@
           "trader_trade_event",
           "trader_global_pnl",
           "trader_market_pnl",
-          "trader_event_pnl",
-          "trader_global_pnl_v3",
-          "trader_market_pnl_v3",
-          "trader_event_pnl_v3",
-          "trader_category_pnl_v3",
-          "trader_position_resolved_v3",
-          "trader_exit_markers_v3",
-          "position_holder_metrics_v3",
-          "condition_holder_metrics_v3",
-          "event_holder_metrics_v3",
+          "trader_category_pnl",
+          "trader_position_resolved",
+          "trader_exit_markers",
+          "position_holder_metrics",
+          "condition_holder_metrics",
+          "event_holder_metrics",
           "condition_metrics",
           "event_metrics",
           "tag_metrics",
@@ -8969,6 +10349,68 @@
               "type": "string"
             },
             "description": "Filter for `oracle_events` by event name (case-insensitive).\nValid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`,\n`RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`,\n`QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`,\n`QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`,\n`QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`,\n`NegRiskOutcomeReported`. Empty = all types."
+          }
+        }
+      },
+      "PositionHolderMetricsFilters": {
+        "type": "object",
+        "properties": {
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PositionHolderMetricsPayload": {
+        "type": "object",
+        "required": [
+          "ts",
+          "block",
+          "position_id",
+          "holder_count",
+          "total_balance",
+          "total_cost_basis"
+        ],
+        "properties": {
+          "ts": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "position_id": {
+            "type": "string"
+          },
+          "holder_count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total_balance": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_cost_basis": {
+            "type": "number",
+            "format": "double"
+          },
+          "condition_holder_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "event_holder_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -9414,6 +10856,274 @@
               "null"
             ],
             "format": "double"
+          }
+        }
+      },
+      "PositionResolvedPayload": {
+        "type": "object",
+        "properties": {
+          "trader": {
+            "type": "string"
+          },
+          "position_id": {
+            "type": "string"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market category slug (e.g. \"politics\", \"sports\") — mirror of\n`PositionRollup.category_id` resolved against the rollup\ninterner. Surfaces on the `/trader/{addr}/positions` API and\nenables direct category-filtered + sorted position lookups\nwithout a cross-grain join."
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "total_buys": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_sells": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_merges": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "total_splits": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "winning_outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32"
+          },
+          "total_shares_bought": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_shares_sold": {
+            "type": "number",
+            "format": "double"
+          },
+          "buy_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "sell_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "avg_entry_price": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_fees": {
+            "type": "number",
+            "format": "double"
+          },
+          "realized_pnl_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_pnl_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "redemption_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "open": {
+            "type": "boolean"
+          },
+          "won": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "first_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "last_trade_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "dirty_kinds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DirtyKind"
+            },
+            "description": "What kind of activity triggered this update. One or more of\n`\"trade\"`, `\"price\"`, `\"window\"`, `\"position_resolved\"`.\nSubscribers that only care about one kind filter on\n`data.dirty_kinds` containing the value."
+          },
+          "realized_pnl_pct": {
+            "type": "number",
+            "format": "double",
+            "description": "`realized_pnl_usd / (buy_usd + total_fees) * 100` for the\nwindow. `0.0` when the trader has no cost basis on this row yet."
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug for the parent market of this outcome."
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market title."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market image URL."
+          },
+          "converted_count": {
+            "type": "integer",
+            "format": "int32",
+            "description": "NegRisk conversion count + share deltas for this position.",
+            "minimum": 0
+          },
+          "converted_shares_gained": {
+            "type": "number",
+            "format": "double"
+          },
+          "converted_shares_lost": {
+            "type": "number",
+            "format": "double"
+          },
+          "total_buy_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Aggregate buy/sell USD totals for this position across its\nlifetime."
+          },
+          "total_sell_usd": {
+            "type": "number",
+            "format": "double"
+          },
+          "merge_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Merge proceeds (Y+N → collateral)."
+          },
+          "avg_exit_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Sell-side average price."
+          },
+          "avg_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Volume-weighted average trade price across buys + sells."
+          },
+          "current_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Mark-to-market values from the latest price tick."
+          },
+          "current_shares_balance": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "current_value": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "last_traded_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Last on-chain trade price for the outcome token."
+          },
+          "end_date": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Market resolution deadline as Unix seconds."
+          },
+          "is_neg_risk": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "NegRisk multi-outcome flag."
+          },
+          "redeemable": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "`true` when the market is resolved AND the trader still holds\nshares (redeem available)."
+          },
+          "mergeable": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "`true` when the market is NegRisk, unresolved, and the trader\nholds shares (NegRisk-adapter merge available)."
           }
         }
       },
@@ -11500,9 +13210,9 @@
           "RegisterToken"
         ]
       },
-      "TraderEventPnlFilters": {
+      "TraderCategoryPnlFilters": {
         "type": "object",
-        "description": "Subscription filters for the `trader_event_pnl` event. All fields are optional.",
+        "description": "Subscription filters for the `trader_category_pnl` event. All fields are optional.",
         "properties": {
           "traders": {
             "type": [
@@ -11512,7 +13222,122 @@
             "items": {
               "type": "string"
             },
-            "description": "Track only these trader wallet addresses.",
+            "description": "Track only these trader wallet addresses. Empty = all traders.",
+            "maxItems": 500
+          },
+          "categories": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these market categories (e.g. `politics`, `sports`).",
+            "maxItems": 500
+          },
+          "min_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when per-category realized PnL ≥ this value (USD). Use negative values for loss thresholds."
+          },
+          "max_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when per-category realized PnL ≤ this value (USD)."
+          },
+          "min_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total category volume ≥ this value (USD)."
+          },
+          "max_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when total category volume ≤ this value (USD)."
+          },
+          "min_buy_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when buy volume within the category ≥ this value (USD)."
+          },
+          "min_sell_volume_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when sell volume within the category ≥ this value (USD)."
+          },
+          "min_win_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Only fire when market win rate ≥ this percentage (0.0–100.0).",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "min_markets_traded": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Only fire when the trader has traded in ≥ this many markets within the category."
+          },
+          "timeframes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/PnlFilterTimeframe"
+            },
+            "description": "Restrict to these PnL windows. Empty = all windows."
+          }
+        }
+      },
+      "TraderExitMarkersFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_pnl_exits` event. All fields are optional.",
+        "properties": {
+          "traders": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Track only these trader wallet addresses. Empty = all traders.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
             "maxItems": 500
           },
           "event_slugs": {
@@ -11523,81 +13348,8 @@
             "items": {
               "type": "string"
             },
-            "description": "Restrict to these events.",
+            "description": "Restrict to positions in these events.",
             "maxItems": 500
-          },
-          "min_realized_pnl_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when per-event realized PnL ≥ this value (USD)."
-          },
-          "max_realized_pnl_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when per-event realized PnL ≤ this value (USD)."
-          },
-          "min_volume_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when total event volume ≥ this value (USD)."
-          },
-          "max_volume_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when total event volume ≤ this value (USD)."
-          },
-          "min_buy_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when buy volume within the event ≥ this value (USD)."
-          },
-          "min_sell_volume_usd": {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "description": "Only fire when sell volume within the event ≥ this value (USD)."
-          },
-          "min_markets_traded": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "format": "int64",
-            "description": "Only fire when the trader has traded in ≥ this many markets within the event."
-          },
-          "timeframes": {
-            "type": [
-              "array",
-              "null"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/PnlFilterTimeframe"
-            },
-            "description": "Restrict to these PnL windows."
-          },
-          "exclude_shortterm_markets": {
-            "type": [
-              "boolean",
-              "null"
-            ],
-            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
           }
         }
       },
@@ -12034,6 +13786,64 @@
               "null"
             ],
             "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "TraderPositionResolvedFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `trader_position_resolved` event. All fields are optional.",
+        "properties": {
+          "traders": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Track only these trader wallet addresses. Empty = all traders.",
+            "maxItems": 500
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to positions in these events.",
+            "maxItems": 500
+          },
+          "outcome_indexes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Restrict to these outcome indexes within the resolved market.",
+            "maxItems": 500
+          },
+          "won_only": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Only fire for won (`true`) or lost (`false`) positions. Omit to receive both."
           }
         }
       },
@@ -13066,7 +14876,7 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Polymarket exchange contract types.\n`repr(u8)` discriminants double as the database column value — DO NOT renumber\nexisting variants. New variants get fresh numbers.",
+                "description": "Polymarket exchange contract types.",
                 "enum": [
                   "CTFExchange",
                   "NegRiskExchange",
@@ -15008,7 +16818,12 @@
           "trader_trade_event",
           "trader_global_pnl",
           "trader_market_pnl",
-          "trader_event_pnl",
+          "trader_category_pnl",
+          "trader_position_resolved",
+          "trader_pnl_exits",
+          "position_holder_metrics",
+          "condition_holder_metrics",
+          "event_holder_metrics",
           "condition_metrics",
           "event_metrics",
           "tag_metrics",
@@ -15821,7 +17636,7 @@
         "allOf": [
           {
             "type": "object",
-            "description": "Subscribe to `trader_global_pnl` alerts. Fired when a trader's global PnL crosses a configured threshold",
+            "description": "Subscribe to `trader_global_pnl` alerts. Fired when a trader's global PnL  crosses a configured threshold",
             "required": [
               "op",
               "event"
@@ -15948,20 +17763,36 @@
             "total_sells": 8,
             "total_redemptions": 1,
             "total_merges": 0,
+            "total_splits": 0,
             "total_volume_usd": 1500.0,
             "buy_volume_usd": 900.0,
             "sell_volume_usd": 600.0,
             "redemption_volume_usd": 50.0,
             "merge_volume_usd": 0.0,
+            "convert_collateral_usd": 0.0,
+            "split_volume_usd": 0.0,
+            "maker_rebate_count": 0,
+            "maker_rebate_usd": 0.0,
+            "reward_count": 0,
+            "reward_usd": 0.0,
+            "yield_count": 0,
+            "yield_usd": 0.0,
+            "total_credit_count": 0,
+            "total_credit_usd": 0.0,
             "markets_won": 3,
             "markets_lost": 2,
             "market_win_rate_pct": 60.0,
-            "avg_pnl_per_market": 50.0,
-            "avg_pnl_per_trade": 12.5,
+            "total_wins_usd": 400.0,
+            "total_losses_usd": 150.0,
+            "avg_win_usd": 133.3,
+            "avg_loss_usd": 75.0,
+            "profit_factor": 2.67,
             "avg_hold_time_seconds": 86400.0,
             "total_fees": 7.5,
             "best_trade_pnl_usd": 180.0,
             "best_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "worst_trade_pnl_usd": -50.0,
+            "worst_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000001",
             "first_trade_at": 1700000000,
             "last_trade_at": 1700000000
           }
@@ -15971,7 +17802,7 @@
         "allOf": [
           {
             "type": "object",
-            "description": "Subscribe to `trader_market_pnl` alerts. Fired when a trader's market-level PnL crosses a configured threshold",
+            "description": "Subscribe to `trader_market_pnl` alerts. Fired when a trader's market-level PnL  crosses a configured threshold",
             "required": [
               "op",
               "event"
@@ -16102,29 +17933,34 @@
             "trader": "0x0000000000000000000000000000000000000000",
             "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
             "event_slug": "test-event-0000000000",
+            "category": "crypto",
             "timeframe": "7d",
+            "realized_pnl_usd": 100.0,
+            "current_shares_balance": 150.0,
             "outcomes_traded": 2,
             "total_buys": 4,
             "total_sells": 3,
             "total_redemptions": 1,
             "total_merges": 0,
+            "total_splits": 0,
             "buy_usd": 300.0,
             "sell_usd": 200.0,
             "redemption_usd": 50.0,
             "merge_usd": 0.0,
-            "realized_pnl_usd": 100.0,
-            "winning_outcomes": 1,
+            "convert_collateral_usd": 0.0,
+            "split_volume_usd": 0.0,
             "total_fees": 2.5,
+            "total_shares_bought": 500.0,
             "first_trade_at": 1700000000,
             "last_trade_at": 1700000000
           }
         }
       },
-      "WsAlertTraderEventPnlSubscribeMessage": {
+      "WsAlertTraderCategoryPnlSubscribeMessage": {
         "allOf": [
           {
             "type": "object",
-            "description": "Subscribe to `trader_event_pnl` alerts. Fired when a trader's event-level PnL crosses a configured threshold",
+            "description": "Subscribe to `trader_category_pnl` alerts. Fired when a trader's category-level PnL  crosses a configured threshold",
             "required": [
               "op",
               "event"
@@ -16139,18 +17975,15 @@
               "event": {
                 "type": "string",
                 "enum": [
-                  "trader_event_pnl"
+                  "trader_category_pnl"
                 ]
               }
             },
             "example": {
               "op": "subscribe",
-              "event": "trader_event_pnl",
+              "event": "trader_category_pnl",
               "traders": [
                 "0x0000000000000000000000000000000000000000"
-              ],
-              "event_slugs": [
-                "example-event"
               ],
               "min_realized_pnl_usd": 1000.0,
               "max_realized_pnl_usd": 5000.0,
@@ -16158,23 +17991,23 @@
               "max_volume_usd": 100000.0,
               "min_buy_usd": 5000.0,
               "min_sell_volume_usd": 2500.0,
+              "min_win_rate": 60.0,
               "min_markets_traded": 5,
               "timeframes": [
                 "1h"
-              ],
-              "exclude_shortterm_markets": true
+              ]
             }
           },
           {
-            "$ref": "#/components/schemas/TraderEventPnlFilters"
+            "$ref": "#/components/schemas/TraderCategoryPnlFilters"
           }
         ]
       },
-      "WsAlertTraderEventPnlUnsubscribeMessage": {
+      "WsAlertTraderCategoryPnlUnsubscribeMessage": {
         "allOf": [
           {
             "type": "object",
-            "description": "Unsubscribe from `trader_event_pnl` alerts. The filter fields must match the original subscription exactly.",
+            "description": "Unsubscribe from `trader_category_pnl` alerts. The filter fields must match the original subscription exactly.",
             "required": [
               "op",
               "event"
@@ -16189,18 +18022,15 @@
               "event": {
                 "type": "string",
                 "enum": [
-                  "trader_event_pnl"
+                  "trader_category_pnl"
                 ]
               }
             },
             "example": {
               "op": "unsubscribe",
-              "event": "trader_event_pnl",
+              "event": "trader_category_pnl",
               "traders": [
                 "0x0000000000000000000000000000000000000000"
-              ],
-              "event_slugs": [
-                "example-event"
               ],
               "min_realized_pnl_usd": 1000.0,
               "max_realized_pnl_usd": 5000.0,
@@ -16208,31 +18038,31 @@
               "max_volume_usd": 100000.0,
               "min_buy_usd": 5000.0,
               "min_sell_volume_usd": 2500.0,
+              "min_win_rate": 60.0,
               "min_markets_traded": 5,
               "timeframes": [
                 "1h"
-              ],
-              "exclude_shortterm_markets": true
+              ]
             }
           },
           {
-            "$ref": "#/components/schemas/TraderEventPnlFilters"
+            "$ref": "#/components/schemas/TraderCategoryPnlFilters"
           }
         ]
       },
-      "WsAlertTraderEventPnlEvent": {
+      "WsAlertTraderCategoryPnlEvent": {
         "type": "object",
         "required": [
           "event",
           "timestamp",
           "data"
         ],
-        "description": "Pushed `trader_event_pnl` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "description": "Pushed `trader_category_pnl` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "properties": {
           "event": {
             "type": "string",
             "enum": [
-              "trader_event_pnl"
+              "trader_category_pnl"
             ]
           },
           "timestamp": {
@@ -16241,33 +18071,697 @@
             "description": "Unix timestamp in milliseconds"
           },
           "data": {
-            "$ref": "#/components/schemas/EventPnlPayload"
+            "$ref": "#/components/schemas/CategoryPnlPayload"
           }
         },
         "example": {
-          "event": "trader_event_pnl",
+          "event": "trader_category_pnl",
           "timestamp": 1743500000000,
           "data": {
             "trader": "0x0000000000000000000000000000000000000000",
-            "event_slug": "test-event-0000000000",
+            "category": "crypto",
             "timeframe": "7d",
-            "markets_traded": 2,
-            "outcomes_traded": 3,
-            "total_buys": 6,
-            "total_sells": 4,
+            "realized_pnl_usd": 250.0,
+            "markets_in_category": 15,
+            "markets_traded": 5,
+            "outcomes_traded": 8,
+            "total_buys": 12,
+            "total_sells": 8,
             "total_redemptions": 1,
             "total_merges": 0,
-            "total_volume_usd": 800.0,
-            "buy_usd": 480.0,
-            "sell_usd": 320.0,
+            "total_splits": 0,
+            "total_volume_usd": 1500.0,
+            "buy_usd": 900.0,
+            "sell_usd": 600.0,
             "redemption_usd": 50.0,
             "merge_usd": 0.0,
-            "realized_pnl_usd": 150.0,
-            "winning_markets": 1,
-            "losing_markets": 1,
-            "total_fees": 4.0,
+            "convert_collateral_usd": 0.0,
+            "split_volume_usd": 0.0,
+            "total_fees": 7.5,
+            "total_shares_bought": 500.0,
+            "markets_won": 3,
+            "markets_lost": 2,
+            "market_win_rate_pct": 60.0,
+            "avg_hold_time_seconds": 86400.0,
+            "best_trade_pnl_usd": 180.0,
+            "best_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "worst_trade_pnl_usd": -50.0,
+            "worst_trade_condition_id": "0x0000000000000000000000000000000000000000000000000000000000000001",
+            "total_wins_usd": 400.0,
+            "total_losses_usd": 150.0,
+            "avg_win_usd": 133.3,
+            "avg_loss_usd": 75.0,
+            "profit_factor": 2.67,
             "first_trade_at": 1700000000,
             "last_trade_at": 1700000000
+          }
+        }
+      },
+      "WsAlertTraderPositionResolvedSubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `trader_position_resolved` alerts. Fired once when a trader's position is resolved (won or lost)",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "trader_position_resolved"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "trader_position_resolved",
+              "traders": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/TraderPositionResolvedFilters"
+          }
+        ]
+      },
+      "WsAlertTraderPositionResolvedUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `trader_position_resolved` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "trader_position_resolved"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "trader_position_resolved",
+              "traders": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/TraderPositionResolvedFilters"
+          }
+        ]
+      },
+      "WsAlertTraderPositionResolvedEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `trader_position_resolved` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "trader_position_resolved"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PositionResolvedPayload"
+          }
+        },
+        "example": {
+          "event": "trader_position_resolved",
+          "timestamp": 1743500000000,
+          "data": {
+            "trader": "0x0000000000000000000000000000000000000000",
+            "position_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "event_slug": "test-event-0000000000",
+            "category": "politics",
+            "outcome": "Yes",
+            "outcome_index": 0,
+            "total_buys": 4,
+            "total_sells": 2,
+            "total_merges": 0,
+            "total_splits": 0,
+            "winning_outcome_index": 0,
+            "total_shares_bought": 500.0,
+            "total_shares_sold": 200.0,
+            "buy_usd": 300.0,
+            "sell_usd": 150.0,
+            "avg_entry_price": 0.6,
+            "total_fees": 2.5,
+            "realized_pnl_usd": 100.0,
+            "total_pnl_usd": 100.0,
+            "redemption_usd": 50.0,
+            "open": false,
+            "won": true,
+            "first_trade_at": 1700000000,
+            "last_trade_at": 1700000000,
+            "dirty_kinds": [
+              "position_resolved"
+            ],
+            "realized_pnl_pct": 0.0,
+            "converted_count": 0,
+            "converted_shares_gained": 0.0,
+            "converted_shares_lost": 0.0,
+            "total_buy_usd": 0.0,
+            "total_sell_usd": 0.0,
+            "merge_usd": 0.0
+          }
+        }
+      },
+      "WsAlertTraderPnlExitsSubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `trader_pnl_exits` alerts. Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "trader_pnl_exits"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "trader_pnl_exits",
+              "traders": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/TraderExitMarkersFilters"
+          }
+        ]
+      },
+      "WsAlertTraderPnlExitsUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `trader_pnl_exits` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "trader_pnl_exits"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "trader_pnl_exits",
+              "traders": [
+                "0x0000000000000000000000000000000000000000"
+              ],
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/TraderExitMarkersFilters"
+          }
+        ]
+      },
+      "WsAlertTraderPnlExitsEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `trader_pnl_exits` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "trader_pnl_exits"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ExitMarkersPayload"
+          }
+        },
+        "example": {
+          "event": "trader_pnl_exits",
+          "timestamp": 1743500000000,
+          "data": {
+            "trader": "0x0000000000000000000000000000000000000000",
+            "position_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "event_slug": "test-event-0000000000",
+            "market_slug": "test-market",
+            "title": "Test Market",
+            "question": "Will this test market resolve YES?",
+            "image_url": "",
+            "outcome": "Yes",
+            "outcome_index": 0,
+            "pnl_usd": 100.0,
+            "pnl_pct": 33.3,
+            "cost_basis_usd": 300.0,
+            "reason": "resolved_win",
+            "block": 1,
+            "ts": 1700000000
+          }
+        }
+      },
+      "WsAlertPositionHolderMetricsSubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `position_holder_metrics` alerts. Fired when holder metrics change for a position.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "position_holder_metrics"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "position_holder_metrics",
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/PositionHolderMetricsFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "position_ids"
+            ]
+          }
+        ]
+      },
+      "WsAlertPositionHolderMetricsUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `position_holder_metrics` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "position_holder_metrics"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "position_holder_metrics",
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/PositionHolderMetricsFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "position_ids"
+            ]
+          }
+        ]
+      },
+      "WsAlertPositionHolderMetricsEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `position_holder_metrics` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "position_holder_metrics"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PositionHolderMetricsPayload"
+          }
+        },
+        "example": {
+          "event": "position_holder_metrics",
+          "timestamp": 1743500000000,
+          "data": {
+            "ts": 1700000000,
+            "block": 1,
+            "position_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "holder_count": 10,
+            "total_balance": 1000.0,
+            "total_cost_basis": 500.0,
+            "condition_holder_count": 15,
+            "event_holder_count": 25
+          }
+        }
+      },
+      "WsAlertConditionHolderMetricsSubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `condition_holder_metrics` alerts. Fired when holder metrics change for a condition.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "condition_holder_metrics"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "condition_holder_metrics",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/ConditionHolderMetricsFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "condition_ids"
+            ]
+          }
+        ]
+      },
+      "WsAlertConditionHolderMetricsUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `condition_holder_metrics` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "condition_holder_metrics"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "condition_holder_metrics",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/ConditionHolderMetricsFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "condition_ids"
+            ]
+          }
+        ]
+      },
+      "WsAlertConditionHolderMetricsEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `condition_holder_metrics` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "condition_holder_metrics"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ConditionHolderMetricsPayload"
+          }
+        },
+        "example": {
+          "event": "condition_holder_metrics",
+          "timestamp": 1743500000000,
+          "data": {
+            "ts": 1700000000,
+            "block": 1,
+            "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "holder_count": 15
+          }
+        }
+      },
+      "WsAlertEventHolderMetricsSubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `event_holder_metrics` alerts. Fired when holder metrics change for an event.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "event_holder_metrics"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "event_holder_metrics",
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/EventHolderMetricsFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "event_slugs"
+            ]
+          }
+        ]
+      },
+      "WsAlertEventHolderMetricsUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `event_holder_metrics` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "event_holder_metrics"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "event_holder_metrics",
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/EventHolderMetricsFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "event_slugs"
+            ]
+          }
+        ]
+      },
+      "WsAlertEventHolderMetricsEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `event_holder_metrics` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "event_holder_metrics"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EventHolderMetricsPayload"
+          }
+        },
+        "example": {
+          "event": "event_holder_metrics",
+          "timestamp": 1743500000000,
+          "data": {
+            "ts": 1700000000,
+            "block": 1,
+            "event_slug": "test-event-0000000000",
+            "holder_count": 25
           }
         }
       },
@@ -18600,7 +21094,22 @@
             "$ref": "#/components/schemas/WsAlertTraderMarketPnlSubscribeMessage"
           },
           {
-            "$ref": "#/components/schemas/WsAlertTraderEventPnlSubscribeMessage"
+            "$ref": "#/components/schemas/WsAlertTraderCategoryPnlSubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertTraderPositionResolvedSubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertTraderPnlExitsSubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertPositionHolderMetricsSubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertConditionHolderMetricsSubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertEventHolderMetricsSubscribeMessage"
           },
           {
             "$ref": "#/components/schemas/WsAlertConditionMetricsSubscribeMessage"
@@ -18681,7 +21190,22 @@
             "$ref": "#/components/schemas/WsAlertTraderMarketPnlUnsubscribeMessage"
           },
           {
-            "$ref": "#/components/schemas/WsAlertTraderEventPnlUnsubscribeMessage"
+            "$ref": "#/components/schemas/WsAlertTraderCategoryPnlUnsubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertTraderPositionResolvedUnsubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertTraderPnlExitsUnsubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertPositionHolderMetricsUnsubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertConditionHolderMetricsUnsubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertEventHolderMetricsUnsubscribeMessage"
           },
           {
             "$ref": "#/components/schemas/WsAlertConditionMetricsUnsubscribeMessage"
@@ -18762,7 +21286,22 @@
             "$ref": "#/components/schemas/WsAlertTraderMarketPnlEvent"
           },
           {
-            "$ref": "#/components/schemas/WsAlertTraderEventPnlEvent"
+            "$ref": "#/components/schemas/WsAlertTraderCategoryPnlEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertTraderPositionResolvedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertTraderPnlExitsEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertPositionHolderMetricsEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertConditionHolderMetricsEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertEventHolderMetricsEvent"
           },
           {
             "$ref": "#/components/schemas/WsAlertConditionMetricsEvent"

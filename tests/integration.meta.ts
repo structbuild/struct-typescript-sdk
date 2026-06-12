@@ -128,6 +128,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { identifier: "$tagId" },
 		operationId: "get_tag_by_id",
 	},
+	"tags.getCategoryTopTraders": {
+		params: { category: "Politics", limit: 2 },
+		operationId: "get_category_top_traders",
+	},
 
 	"series.getSeriesList": {
 		params: { limit: 2 },
@@ -173,9 +177,29 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { address: "$address", limit: 2 },
 		operationId: "get_trader_market_pnl",
 	},
-	"trader.getTraderEventPnl": {
+	"trader.getTraderCategoryPnl": {
 		params: { address: "$address", limit: 2 },
-		operationId: "get_trader_event_pnl",
+		operationId: "get_trader_category_pnl",
+	},
+	"trader.getTraderPnlChanges": {
+		params: { address: "$address" },
+		operationId: "get_trader_pnl_changes",
+	},
+	"trader.getTraderPnlExits": {
+		params: { address: "$address", limit: 2 },
+		operationId: "get_trader_pnl_exits",
+	},
+	"trader.getTraderPnlPeriods": {
+		params: { address: "$address" },
+		operationId: "get_trader_pnl_periods",
+	},
+	"trader.getTraderPnlRisk": {
+		params: { address: "$address" },
+		operationId: "get_trader_pnl_risk",
+	},
+	"trader.getTopTradesMarkets": {
+		params: { limit: 2 },
+		operationId: "get_top_trades_markets",
 	},
 	"trader.getTraderPnlCalendar": {
 		params: { address: "$address" },
@@ -195,10 +219,6 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { limit: 2 },
 		operationId: "get_global_pnl",
 		paginate: true,
-	},
-	"trader.getLeaderboard": {
-		params: { limit: 2 },
-		operationId: "get_polymarket_leaderboard",
 	},
 
 	"search.search": {

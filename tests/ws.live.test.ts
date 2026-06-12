@@ -600,31 +600,31 @@ describe.skipIf(!API_KEY || !RUN_WS_LIVE_TESTS)("StructWebSocket live websocket"
 					timeframe: event.timeframe,
 				});
 			}),
-			ws.on("trader_global_pnl_update", (event) => {
-				recordEvent(diagnostics, "trader_global_pnl_update", {
-					trader: event.trader,
+			ws.on("trader_global_pnl_batch", (event) => {
+				recordEvent(diagnostics, "trader_global_pnl_batch", {
+					block: event.block,
+					count: event.data.length,
 					timeframe: event.timeframe ?? null,
 				});
 			}),
-			ws.on("trader_market_pnl_update", (event) => {
-				recordEvent(diagnostics, "trader_market_pnl_update", {
-					trader: event.trader,
-					condition_id: event.condition_id,
+			ws.on("trader_market_pnl_batch", (event) => {
+				recordEvent(diagnostics, "trader_market_pnl_batch", {
+					block: event.block,
+					count: event.data.length,
 					timeframe: event.timeframe ?? null,
 				});
 			}),
-			ws.on("trader_event_pnl_update", (event) => {
-				recordEvent(diagnostics, "trader_event_pnl_update", {
-					trader: event.trader,
-					event_slug: event.event_slug,
+			ws.on("trader_category_pnl_batch", (event) => {
+				recordEvent(diagnostics, "trader_category_pnl_batch", {
+					block: event.block,
+					count: event.data.length,
 					timeframe: event.timeframe ?? null,
 				});
 			}),
-			ws.on("trader_position_update", (event) => {
-				recordEvent(diagnostics, "trader_position_update", {
-					trader: event.trader,
-					position_id: event.position_id ?? null,
-					condition_id: event.condition_id ?? null,
+			ws.on("trader_position_batch", (event) => {
+				recordEvent(diagnostics, "trader_position_batch", {
+					block: event.block,
+					count: event.data.length,
 				});
 			}),
 			ws.on("accounts_update", (event) => {
