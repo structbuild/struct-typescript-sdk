@@ -1,6 +1,6 @@
 {
   "name": "@structbuild/sdk",
-  "version": "0.5.12-staging.0",
+  "version": "0.6.0",
   "type": "module",
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
   ],
   "scripts": {
     "build": "rm -rf dist && bun build ./src/index.ts --target browser --format esm --sourcemap --outdir ./dist && bun build ./src/index.ts --target browser --format cjs --sourcemap --outdir ./dist-cjs && mv ./dist-cjs/index.js ./dist/index.cjs && mv ./dist-cjs/index.js.map ./dist/index.cjs.map && rm -rf dist-cjs && tsc --emitDeclarationOnly",
+    "prepare": "bun run build",
     "check-routes": "bun run scripts/check-routes.ts",
     "fix-spec": "bun run scripts/fix-spec.ts",
     "fetch-specs": "bun run scripts/fetch-specs.ts",

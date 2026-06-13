@@ -2,10 +2,10 @@ import { Namespace } from "./base.js";
 import type { HttpResponse } from "../types/http.js";
 import type { Venue } from "../types/common.js";
 import type {
-	AssetCandlestickBar,
 	AssetPriceHistoryRow,
-	GetAssetCandlestickParams,
+	AssetCandlestickBar,
 	GetAssetHistoryParams,
+	GetAssetCandlestickParams,
 } from "../types/index.js";
 
 export class AssetsNamespace extends Namespace {

@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://staging-api.struct.to/v1"
+      "url": "https://api.struct.to/v1"
     }
   ],
   "paths": {

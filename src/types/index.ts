@@ -27,6 +27,11 @@ type TimeframeKey = Schemas["MetricsTimeframe"];
 type TimeframeRecord<V> = Partial<Record<TimeframeKey, V>>;
 
 export type AnalyticsResolution = Schemas["AnalyticsResolution"];
+export type AnalyticsChangeTimeframe = Schemas["AnalyticsChangeTimeframe"];
+export type ChangeTimeframe = Schemas["ChangeTimeframe"];
+export type AnalyticsGlobalCountsResponse = Schemas["AnalyticsGlobalCountsResponse"];
+export type AnalyticsMetricPctChange = Schemas["AnalyticsMetricPctChange"];
+export type AnalyticsTimeBucketRow = Schemas["AnalyticsTimeBucketRow"];
 export type BondMarket = Schemas["BondMarket"];
 export type BondOutcome = Schemas["BondOutcome"];
 export type BondsSortBy = Schemas["BondsSortBy"];
@@ -58,7 +63,6 @@ export type TopTraderRow = Schemas["TopTraderRow"];
 export type TopTradersSortBy = Schemas["TopTradersSortBy"];
 export type TraderBuilderSortBy = Schemas["TraderBuilderSortBy"];
 export type CandlestickResolution = Schemas["CandlestickResolution"];
-export type ChangeTimeframe = Schemas["AnalyticsChangeTimeframe"];
 export type ChartResolution = Schemas["ChartResolution"];
 export type ClobReward = Schemas["ClobReward"];
 export type ConditionMetricsResponse = Schemas["ConditionMetricsResponse"];
@@ -69,11 +73,13 @@ export type EventPnlSortBy = Schemas["EventPnlSortBy"];
 export type EventSortBy = Schemas["EventSortBy"];
 export type GlobalPnlSortBy = Schemas["GlobalPnlSortBy"];
 export type GlobalPnlTrader = Schemas["GlobalPnlTrader"];
-export type Holder = Schemas["Holder"];
-export type HolderHistoryCandle = Schemas["HolderHistoryCandle"];
-export type GlobalCountsResponse = Schemas["AnalyticsGlobalCountsResponse"];
-export type HolderPnl = Schemas["HolderPnl"];
+export type HolderCountHistoryCandle = Schemas["HolderCountHistoryCandle"];
+export type MarketHolder = Schemas["MarketHolder"];
+export type MarketHolderPnl = Schemas["MarketHolderPnl"];
 export type MarketHoldersResponse = Schemas["MarketHoldersResponse"];
+export type PositionHolder = Schemas["PositionHolder"];
+export type PositionHolderHistoryCandle = Schemas["PositionHolderHistoryCandle"];
+export type PositionHolderPnl = Schemas["PositionHolderPnl"];
 export type MarketMetadataOutcome = Omit<Schemas["MarketMetadataOutcome"], "metrics"> & {
 	metrics?: TimeframeRecord<OutcomeTimeframeMetrics>;
 };
@@ -81,7 +87,6 @@ export type MarketOutcome = Schemas["MarketOutcome"];
 export type MarketPnlSortBy = Schemas["MarketPnlSortBy"];
 export type MarketVolumeChartResponse = Schemas["MarketVolumeChartResponse"];
 export type MarketVolumeDataPoint = Schemas["MarketVolumeDataPoint"];
-export type MetricPctChange = Schemas["AnalyticsMetricPctChange"];
 export type MetricsTimeframe = Schemas["MetricsTimeframe"];
 export type OutcomeHolders = Schemas["OutcomeHolders"];
 export type OutcomeTimeframeMetrics = Schemas["OutcomeTimeframeMetrics"];
@@ -94,7 +99,6 @@ export type Event = Omit<Schemas["PolymarketEvent"], "metrics"> & {
 };
 export type PolymarketSeries = Schemas["PolymarketSeries"];
 export type Tag = Schemas["PolymarketTag"];
-export type TagChangeTimeframe = Schemas["AnalyticsChangeTimeframe"];
 export type TagSortBy = Schemas["TagSortBy"];
 export type TagSortTimeframe = Schemas["TagSortTimeframe"];
 export type UserProfile = Schemas["PolymarketUserProfile"];
@@ -110,22 +114,25 @@ export type SearchSortBy = Schemas["SearchSortBy"];
 export type SimpleTimeframeMetrics = Schemas["SimpleTimeframeMetrics"];
 export type SortDirection = Schemas["SortDirection"];
 export type SpikeDirection = Schemas["SpikeDirection"];
-export type TimeBucketRow = Schemas["AnalyticsTimeBucketRow"];
 export type TokenOutcome = Schemas["TokenOutcome"];
 export type Trader = Schemas["Trader"];
 export type TraderInfo = Schemas["TraderInfo"];
-export type TraderMetricPctChange = Schemas["TraderAnalyticsMetricPctChange"];
-export type TraderTimeBucketRow = Schemas["TraderAnalyticsTimeBucketRow"];
+export type TraderAnalyticsDeltaTimeBucketRow = Schemas["TraderAnalyticsDeltaTimeBucketRow"];
+export type TraderAnalyticsMetricPctChange = Schemas["TraderAnalyticsMetricPctChange"];
+export type TraderAnalyticsTimeBucketRow = Schemas["TraderAnalyticsTimeBucketRow"];
 export type TraderVolumeChartResponse = Schemas["TraderVolumeChartResponse"];
 export type TraderVolumeDataPoint = Schemas["TraderVolumeDataPoint"];
 export type TraderWithPnl = Schemas["TraderWithPnl"];
 export type PositionPnlSortBy = Schemas["PositionPnlSortBy"];
+export type PositionClosedPnlSortBy = Schemas["PositionClosedPnlSortBy"];
+export type PositionExitPnlSortBy = Schemas["PositionExitPnlSortBy"];
+export type PositionOpenPnlSortBy = Schemas["PositionOpenPnlSortBy"];
 export type EventMarketChartOutcome = Schemas["EventMarketChartOutcome"];
 export type PositionChartOutcome = Schemas["PositionChartOutcome"];
 export type AssetPriceHistoryRow = Schemas["AssetPriceHistoryRow"];
+export type AssetSymbol = Schemas["AssetSymbol"];
 export type AssetCandlestickBar = Schemas["AssetCandlestickBar"];
 export type AssetCandlestickResolution = Schemas["AssetCandlestickResolution"];
-export type AssetSymbol = Schemas["AssetSymbol"];
 export type AssetVariant = Schemas["AssetVariant"];
 export type PriceJump = Schemas["PriceJump"];
 export type EventMarketChartDataPoint = Schemas["EventMarketChartDataPoint"];
@@ -137,6 +144,12 @@ export type MarketStatus = Schemas["MarketStatus"];
 export type OutcomeIndex = Schemas["OutcomeIndex"];
 export type PositionChartDataPoint = Schemas["PositionChartDataPoint"];
 export type TradeType = Schemas["TradeType"];
+export type TradeSide = Schemas["TradeSide"];
+export type OracleEventTyped = Schemas["OracleEventTyped"];
+export type DisputePriceEvent = Schemas["DisputePriceEvent"];
+export type ProposePriceEvent = Schemas["ProposePriceEvent"];
+export type RequestPriceEvent = Schemas["RequestPriceEvent"];
+export type SettleEvent = Schemas["SettleEvent"];
 export type WebhookAssetSymbol = Schemas["WebhookAssetSymbol"];
 export type WebhookTimeframe = Schemas["WebhookTimeframe"];
 export type ConditionOrderbookRow = Schemas["ConditionOrderbookRow"];
@@ -147,10 +160,6 @@ export type SpreadRow = Schemas["SpreadRow"];
 export type AssertionDisputedEvent = Schemas["AssertionDisputedEvent"];
 export type AssertionMadeEvent = Schemas["AssertionMadeEvent"];
 export type AssertionSettledEvent = Schemas["AssertionSettledEvent"];
-export type DisputePriceEvent = Schemas["DisputePriceEvent"];
-export type ProposePriceEvent = Schemas["ProposePriceEvent"];
-export type RequestPriceEvent = Schemas["RequestPriceEvent"];
-export type SettleEvent = Schemas["SettleEvent"];
 export type CancelledTrade = Schemas["CancelledTrade"];
 export type ConditionResolutionEvent = Schemas["ConditionResolutionEvent"];
 export type MergeTrade = Schemas["MergeTrade"];
@@ -171,40 +180,6 @@ export type RedemptionTrade = Schemas["RedemptionTrade"];
 export type RegisterTokenTrade = Schemas["RegisterTokenTrade"];
 export type SplitTrade = Schemas["SplitTrade"];
 export type TradeEvent = Schemas["TradeEvent"];
-
-export type AnalyticsChangeTimeframe = Schemas["AnalyticsChangeTimeframe"];
-export type AnalyticsGlobalCountsResponse = Schemas["AnalyticsGlobalCountsResponse"];
-export type AnalyticsMetricPctChange = Schemas["AnalyticsMetricPctChange"];
-export type AnalyticsTimeBucketRow = Schemas["AnalyticsTimeBucketRow"];
-export type TraderAnalyticsTimeBucketRow = Schemas["TraderAnalyticsTimeBucketRow"];
-export type TraderAnalyticsDeltaTimeBucketRow = Schemas["TraderAnalyticsDeltaTimeBucketRow"];
-export type TraderAnalyticsMetricPctChange = Schemas["TraderAnalyticsMetricPctChange"];
-export type HolderCountHistoryV3Candle = Schemas["HolderCountHistoryV3Candle"];
-export type PositionHolderHistoryV3Candle = Schemas["PositionHolderHistoryV3Candle"];
-export type GlobalEntry = Schemas["GlobalEntry"];
-export type EventEntry = Schemas["EventEntry"];
-export type MarketEntry = Schemas["MarketEntry"];
-export type CategoryEntry = Schemas["CategoryEntry"];
-export type PositionEntry = Schemas["PositionEntry"];
-export type TraderProfile = Schemas["TraderProfile"];
-export type TraderPnlSortBy = Schemas["TraderPnlSortBy"];
-export type CategoryPnlSortBy = Schemas["CategoryPnlSortBy"];
-export type PositionOpenPnlSortBy = Schemas["PositionOpenPnlSortBy"];
-export type PositionClosedPnlSortBy = Schemas["PositionClosedPnlSortBy"];
-export type PositionExitPnlSortBy = Schemas["PositionExitPnlSortBy"];
-export type PnlAnalyticsTimeframe = Schemas["PnlAnalyticsTimeframe"];
-export type PnlCandlestickBar = Schemas["PnlCandlestickBar"];
-export type PnlChangeWindow = Schemas["PnlChangeWindow"];
-export type PnlChangesResponse = Schemas["PnlChangesResponse"];
-export type PnlExitMarker = Schemas["PnlExitMarker"];
-export type PnlExitReason = Schemas["PnlExitReason"];
-export type PnlLatestSnapshot = Schemas["PnlLatestSnapshot"];
-export type PnlPeriodExtremes = Schemas["PnlPeriodExtremes"];
-export type PnlPeriodMetric = Schemas["PnlPeriodMetric"];
-export type PnlPeriodsResponse = Schemas["PnlPeriodsResponse"];
-export type PnlRiskMarketMetadata = Schemas["PnlRiskMarketMetadata"];
-export type PnlRiskMetric = Schemas["PnlRiskMetric"];
-export type PnlRiskResponse = Schemas["PnlRiskResponse"];
 
 export type Series = Schemas["PolymarketSeries"];
 export type Trade = Schemas["TradeEvent"];
@@ -257,7 +232,6 @@ export type OracleEvent =
 	| ExtractTradeEvent<"ManualResolution">
 	| ExtractTradeEvent<"NegRiskOutcomeReported">;
 
-export type TradeSide = "Buy" | "Sell";
 export type EventStatus = "active" | "resolved" | "ended" | "archived";
 export type HolderSortBy = "shares_held" | "total_cost_usd" | "unrealized_pnl_usd";
 
@@ -359,9 +333,12 @@ export interface GetPositionHoldersParams extends OperationQuery<"get_position_h
 	positionId: string;
 }
 
-export interface GetPositionHoldersHistoryParams {
+export interface GetPositionHoldersHistoryParams extends OperationQuery<"get_position_holders_history"> {
 	positionId: string;
-	hours?: number;
+}
+
+export interface GetEventHoldersHistoryParams extends OperationQuery<"get_event_holders_history"> {
+	event_slug: string;
 }
 
 export interface GetMarketsParams extends OperationQuery<"list_markets"> {}
@@ -410,38 +387,13 @@ export interface GetPriceJumpsParams extends OperationQuery<"get_price_jumps"> {
 
 export interface GetGlobalPnlParams extends OperationQuery<"get_global_pnl"> {}
 
-export interface GetTraderPnlParams {
+export interface GetTraderPnlParams extends OperationQuery<"get_trader_pnl"> {
 	address: string;
-	timeframe?: PnlTimeframe;
 }
 
 export interface GetTraderPnlBreakdownParams extends OperationQuery<"get_trader_market_pnl"> {
 	address: string;
 }
-
-export interface GetTraderCategoryPnlParams extends OperationQuery<"get_trader_category_pnl"> {
-	address: string;
-}
-
-export interface GetTraderPnlChangesParams {
-	address: string;
-}
-
-export interface GetTraderPnlExitsParams extends OperationQuery<"get_trader_pnl_exits"> {
-	address: string;
-}
-
-export interface GetTraderPnlPeriodsParams extends OperationQuery<"get_trader_pnl_periods"> {
-	address: string;
-}
-
-export interface GetTraderPnlRiskParams extends OperationQuery<"get_trader_pnl_risk"> {
-	address: string;
-}
-
-export interface GetTopTradesMarketsParams extends OperationQuery<"get_top_trades_markets"> {}
-
-export interface GetCategoryTopTradersParams extends OperationQuery<"get_category_top_traders"> {}
 
 export interface GetTraderPositionPnlParams extends OperationQuery<"get_trader_position_pnl"> {
 	address: string;
@@ -591,23 +543,66 @@ export interface GetTagBuildersParams extends OperationQuery<"list_tag_builders"
 	tag: string;
 }
 
-export type TopTraderEventEntry = Schemas["EventEntry"];
-export type TopTraderMarketEntry = Schemas["MarketEntry"];
-export type TopTraderPositionEntry = Schemas["PositionEntry"];
-export type TradeMarketRef = Schemas["TradeMarketRef"];
-export type PolymarketCategory = Schemas["PolymarketCategory"];
-
-export interface GetEventTopTradersParams extends OperationQuery<"get_event_top_traders"> {}
-
 export interface GetMarketTopTradersParams extends OperationQuery<"get_market_top_traders"> {}
 
 export interface GetPositionTopTradersParams extends OperationQuery<"get_position_top_traders"> {}
 
 export interface GetOracleEventsParams extends OperationQuery<"get_oracle_events"> {}
 
+export type TraderProfile = Schemas["TraderProfile"];
+export type TradeMarketRef = Schemas["TradeMarketRef"];
+export type CategoryEntry = Schemas["CategoryEntry"];
+export type EventEntry = Schemas["EventEntry"];
+export type GlobalEntry = Schemas["GlobalEntry"];
+export type MarketEntry = Schemas["MarketEntry"];
+export type PositionEntry = Schemas["PositionEntry"];
+export type PolymarketCategory = Schemas["PolymarketCategory"];
+
+export type CategoryPnlSortBy = Schemas["CategoryPnlSortBy"];
+export type TraderPnlSortBy = Schemas["TraderPnlSortBy"];
+export type PnlAnalyticsTimeframe = Schemas["PnlAnalyticsTimeframe"];
+export type PnlCandlestickBar = Schemas["PnlCandlestickBar"];
+export type PnlExitMarker = Schemas["PnlExitMarker"];
+export type PnlExitReason = Schemas["PnlExitReason"];
+export type PnlChangeWindow = Schemas["PnlChangeWindow"];
+export type PnlChangesResponse = Schemas["PnlChangesResponse"];
+export type PnlLatestSnapshot = Schemas["PnlLatestSnapshot"];
+export type PnlPeriodExtremes = Schemas["PnlPeriodExtremes"];
+export type PnlPeriodMetric = Schemas["PnlPeriodMetric"];
+export type PnlPeriodsResponse = Schemas["PnlPeriodsResponse"];
+export type PnlRiskMarketMetadata = Schemas["PnlRiskMarketMetadata"];
+export type PnlRiskMetric = Schemas["PnlRiskMetric"];
+export type PnlRiskResponse = Schemas["PnlRiskResponse"];
+
+export interface GetTraderPnlChangesParams {
+	address: string;
+}
+
+export interface GetTraderPnlPeriodsParams extends OperationQuery<"get_trader_pnl_periods"> {
+	address: string;
+}
+
+export interface GetTraderPnlRiskParams extends OperationQuery<"get_trader_pnl_risk"> {
+	address: string;
+}
+
+export interface GetTraderCategoryPnlParams extends OperationQuery<"get_trader_category_pnl"> {
+	address: string;
+}
+
+export interface GetTraderPnlExitsParams extends OperationQuery<"get_trader_pnl_exits"> {
+	address: string;
+}
+
+export interface GetTopTradesMarketsParams extends OperationQuery<"get_top_trades_markets"> {}
+
+export interface GetCategoryTopTradersParams extends OperationQuery<"get_category_top_traders"> {}
+
 export type WebhookResponse = WebhookSchemas["WebhookResponse"];
 export type WebhookListResponseBody = WebhookSchemas["WebhookListResponseBody"];
 export type WebhookTestResponseBody = WebhookSchemas["WebhookTestResponseBody"];
+export type WebhookLogEntry = WebhookSchemas["WebhookLogEntry"];
+export type WebhookLogsResponseBody = WebhookSchemas["WebhookLogsResponseBody"];
 export type CreateWebhookRequestBody = WebhookSchemas["CreateWebhookRequestBody"];
 export type UpdateWebhookRequestBody = WebhookSchemas["UpdateWebhookRequestBody"];
 export type WebhookFiltersBody = WebhookSchemas["WebhookFiltersBody"];
@@ -620,11 +615,6 @@ export type FirstTradePayload = WebhookSchemas["FirstTradePayload"];
 export type GlobalPnlPayload = WebhookSchemas["GlobalPnlPayload"];
 export type MarketPnlPayload = WebhookSchemas["MarketPnlPayload"];
 export type CategoryPnlPayload = WebhookSchemas["CategoryPnlPayload"];
-export type PositionResolvedPayload = WebhookSchemas["PositionResolvedPayload"];
-export type ExitMarkersPayload = WebhookSchemas["ExitMarkersPayload"];
-export type PositionHolderMetricsPayload = WebhookSchemas["PositionHolderMetricsPayload"];
-export type ConditionHolderMetricsPayload = WebhookSchemas["ConditionHolderMetricsPayload"];
-export type EventHolderMetricsPayload = WebhookSchemas["EventHolderMetricsPayload"];
 export type ConditionMetricsPayload = WebhookSchemas["ConditionMetricsPayload"];
 export type EventMetricsPayload = WebhookSchemas["EventMetricsPayload"];
 export type PositionMetricsPayload = WebhookSchemas["PositionMetricsPayload"];
@@ -637,8 +627,6 @@ export type RotateSecretResponse = WebhookSchemas["RotateSecretResponse"];
 export type DeleteWebhookResponse = WebhookSchemas["DeleteWebhookResponse"];
 export type ListEventsResponse = WebhookSchemas["ListEventsResponse"];
 export type WebhookEventInfo = WebhookSchemas["WebhookEventInfo"];
-export type WebhookLogEntry = WebhookSchemas["WebhookLogEntry"];
-export type WebhookLogsResponseBody = WebhookSchemas["WebhookLogsResponseBody"];
 export type CloseToBondPayload = WebhookSchemas["CloseToBondPayload"];
 export type MarketCreatedOutcome = WebhookSchemas["MarketCreatedOutcome"];
 export type MarketCreatedPayload = WebhookSchemas["MarketCreatedPayload"];
@@ -654,6 +642,7 @@ export type TraderNewMarketFilters = WebhookSchemas["TraderNewMarketFilters"];
 export type TraderWhaleTradeFilters = WebhookSchemas["TraderWhaleTradeFilters"];
 export type TraderGlobalPnlFilters = WebhookSchemas["TraderGlobalPnlFilters"];
 export type TraderMarketPnlFilters = WebhookSchemas["TraderMarketPnlFilters"];
+export type TraderCategoryPnlFilters = WebhookSchemas["TraderCategoryPnlFilters"];
 export type MarketMetricsFilters = WebhookSchemas["MarketMetricsFilters"];
 export type EventMetricsFilters = WebhookSchemas["EventMetricsFilters"];
 export type PositionMetricsFilters = WebhookSchemas["PositionMetricsFilters"];
@@ -694,15 +683,10 @@ export interface WebhookEventPayloadMap {
 	trader_global_pnl: GlobalPnlPayload;
 	trader_market_pnl: MarketPnlPayload;
 	trader_category_pnl: CategoryPnlPayload;
-	trader_position_resolved: PositionResolvedPayload;
-	trader_exit_markers: ExitMarkersPayload;
 	condition_metrics: ConditionMetricsPayload;
 	event_metrics: EventMetricsPayload;
 	position_metrics: PositionMetricsPayload;
 	tag_metrics: TagMetricsPayload;
-	position_holder_metrics: PositionHolderMetricsPayload;
-	condition_holder_metrics: ConditionHolderMetricsPayload;
-	event_holder_metrics: EventHolderMetricsPayload;
 	market_volume_milestone: VolumeMilestonePayload;
 	event_volume_milestone: EventVolumeMilestonePayload;
 	position_volume_milestone: PositionVolumeMilestonePayload;
@@ -718,12 +702,14 @@ export interface WebhookEventPayloadMap {
 	oracle_events: OracleEventsPayload;
 }
 
+export type WebhookEventName = PolymarketWebhookEvent & keyof WebhookEventPayloadMap;
+
 export type WebhookEvent = {
-	[E in PolymarketWebhookEvent]: Omit<WebhookDeliveryEnvelope, "data" | "event"> & {
+	[E in WebhookEventName]: Omit<WebhookDeliveryEnvelope, "data" | "event"> & {
 		event: E;
 		data: WebhookEventPayloadMap[E];
 	};
-}[PolymarketWebhookEvent];
+}[WebhookEventName];
 
 export interface ListWebhooksParams extends WebhookOperationQuery<"list_webhooks"> {}
 
@@ -779,7 +765,25 @@ export type {
 	AccountsSubscribeFilters,
 	OrderBookSubscribeFilters,
 	TraderPositionsSubscribeFilters,
+	TraderExitMarkersSubscribeFilters,
+	HolderMetricsSubscribeFilters,
 	TraderPositionsSubscribeResponse,
+	TraderExitMarkersSubscribeResponse,
+	HolderMetricsSubscribeResponse,
+	TraderPositionRow,
+	TraderPositionBatchEvent,
+	TraderPositionPriceRow,
+	TraderPositionPriceBatchEvent,
+	TraderPositionResolutionRow,
+	TraderPositionResolutionBatchEvent,
+	TraderExitMarkerRow,
+	TraderExitMarkerBatchEvent,
+	PositionHolderMetricsRow,
+	ConditionHolderMetricsRow,
+	EventHolderMetricsRow,
+	HolderMetricsPositionBatchEvent,
+	HolderMetricsConditionBatchEvent,
+	HolderMetricsEventBatchEvent,
 	ClobRewardsSubscribeFilters,
 	ClobRewardsUpdateEvent,
 	ClobRewardsSubscribeResponse,
@@ -810,6 +814,15 @@ export type {
 	EventMetricsEvent,
 	PositionMetricsEvent,
 	TagMetricsEvent,
+	TraderGlobalPnlBatchEvent,
+	TraderMarketPnlBatchEvent,
+	TraderCategoryPnlBatchEvent,
+	TraderGlobalTickBatchEvent,
+	TraderMarketTickBatchEvent,
+	TraderCategoryTickBatchEvent,
+	TraderGlobalResolutionBatchEvent,
+	TraderMarketResolutionBatchEvent,
+	TraderCategoryResolutionBatchEvent,
 	AccountsUpdateEvent,
 	UsdceUpdateEvent,
 	MaticUpdateEvent,

@@ -1,18 +1,16 @@
 ---
 name: release
-description: Commit, bump version, and push. CI publishes to npm via OIDC on tag push. Run after changes are ready to release.
+description: Commit, bump version, publish (npm for prod, git-tag-only for staging), and push. Run after changes are ready to release.
 disable-model-invocation: false
 allowed-tools: Bash, Read, Grep, Glob
 ---
 
-# Release — Commit, Version, Push (CI Publishes)
-
-Publishing happens in `.github/workflows/publish.yml` when a `v*` tag arrives. It uses OIDC trusted publishing, so `npm publish` from a local machine will 404 — do not attempt it.
+# Release — Commit, Version, Publish, Push
 
 ## Modes
 
-- **Default (prod):** CI publishes to the `latest` dist-tag. Users on `@structbuild/sdk` get this. CI also creates a GitHub Release.
-- **Staging:** user passes `staging` as the argument. CI **skips npm publish** for `*-staging.*` tags and only creates a GitHub prerelease. Consumers cannot `npm install @structbuild/sdk@staging` — staging is GitHub-ref-only.
+- **Default (prod):** publishes to npm under the `latest` dist-tag. Users on `@structbuild/sdk` get this.
+- **Staging:** user passes `staging` as the argument. **Does NOT publish to npm.** Ships via a git tag (`vX.Y.Z-staging.N`) on the `staging` branch; consumers install with a GitHub ref. This keeps the npm `latest` tag pinned to the last prod release and avoids polluting npm with staging prereleases.
 
 ## Step 1: Check for changes
 
@@ -23,44 +21,48 @@ Run `git status` and `git diff --stat` to see what needs to be committed. If the
 1. Run `git log --oneline -5` to match the commit message style
 2. Stage all changed files by name (not `git add -A`)
 3. Write a concise commit message summarizing the changes
-4. Commit with the current model's `Co-Authored-By:` trailer
+4. Commit with `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>` trailer
 
 ## Step 3: Version bump
 
-- **Staging mode:** `npm version prerelease --preid=staging` (produces e.g. `0.5.10-staging.0`, bumpable repeatedly).
-- **Prod mode:** if the user specifies a version type (e.g. `minor`, `major`, `prepatch`, `preminor`, `premajor`, `prerelease`), use that: `npm version <type>`. Otherwise default to `npm version patch`.
+- **Staging mode:** edit `package.json` directly to bump the `-staging.N` suffix (e.g. `0.6.0-staging.3` → `0.6.0-staging.4`). Do **not** use `npm version` — it auto-creates a tag that we want to create explicitly in Step 4 after the version-bump commit is in place. Stage and commit `package.json` together with the spec/code changes from Step 2 (one combined commit is fine).
+- **Prod mode:** if the user specifies a version type (e.g. `minor`, `major`, `prepatch`, `preminor`, `premajor`, `prerelease`), use that: `npm version <type>`. Otherwise default to `npm version patch`. `npm version` auto-commits the bump and creates a git tag.
 
-`npm version` auto-commits the version bump and creates a `v<version>` tag.
+## Step 4: Publish / Tag
 
-## Step 4: Push commits and tag
+- **Staging mode (git tag only, NO npm publish):**
+  1. `git push origin staging` — push the version-bump commit.
+  2. `git tag vX.Y.Z-staging.N` at HEAD (lightweight tag is fine; annotate if you want a message).
+  3. `git push origin vX.Y.Z-staging.N` — push the tag.
+  4. **Never** run `npm publish` in staging mode. Staging releases are consumed via GitHub refs only.
 
-Push commits first, then the tag — the tag push is what triggers the publish workflow:
+- **Prod mode:** `npm publish`. Then `git push` and `git push --tags` (the version tag was created by `npm version`).
 
-```
-git push
-git push --tags
-```
+## Step 5: Update consumer repos (staging mode only)
 
-Never run `npm publish` locally. The npm registry rejects non-OIDC tokens for this package.
+For staging releases, consumer repos pinning `@structbuild/sdk` via a GitHub ref need their `package.json` bumped manually:
 
-## Step 5: Verify the workflow
-
-Watch the publish workflow for the tag you just pushed:
-
-```
-gh run list --workflow=publish.yml --limit 1
-gh run watch <run-id>
+```json
+"@structbuild/sdk": "github:structbuild/struct-typescript-sdk#vX.Y.Z-staging.N"
 ```
 
-For prod tags: confirm both the `publish` and `github-release` jobs succeed.
-For staging tags: the `publish` job is skipped by design; only `github-release` runs (as prerelease).
+Then reinstall **with the consumer's package manager** — check the consumer's `packageManager` field (or its lockfile) and use that. Don't assume bun; explorer-style repos may use pnpm/npm/yarn and running the wrong installer will create a stray lockfile.
 
-If the publish job fails, do not retry by re-tagging the same version — bump again (Step 3) and re-push.
+This step is skipped for prod mode (consumers pull from npm).
 
 ## Step 6: Report
 
-Print:
-- The new version number and the tag name
-- Whether it was published to npm (prod) or GitHub-only (staging)
-- For prod: install command `npm install @structbuild/sdk`
-- For staging: the GitHub release URL (`https://github.com/structbuild/struct-typescript-sdk/releases/tag/<tag>`)
+Print the new version number, how it was published (npm dist-tag for prod; git tag + branch for staging), and the install instructions:
+
+- **Prod:** `bun add @structbuild/sdk` / `pnpm add @structbuild/sdk` (resolves to npm `latest`).
+- **Staging:** `"@structbuild/sdk": "github:structbuild/struct-typescript-sdk#vX.Y.Z-staging.N"` in the consumer's `package.json`, then install with their package manager.
+
+## Why staging avoids npm
+
+We previously published staging prereleases to npm under a `staging` dist-tag. We stopped because:
+
+1. Staging spec churn meant frequent breaking renames — every one polluted npm with a version that can never be unpublished.
+2. Consumer repos already pinned via GitHub refs for other reasons (private branches, fast iteration), so npm wasn't doing useful work.
+3. A git tag is reversible (we can re-point or delete); a published npm version is not.
+
+If you find yourself wanting to `npm publish --tag staging` again, push back on the user and confirm — the answer is almost always "no, use a git tag."

@@ -40,11 +40,11 @@ export type WsRoomId =
 export type WsFiltersOptionalRoom =
 	| "polymarket_trades"
 	| "polymarket_asset_prices"
-	| "polymarket_holder_metrics"
 	| "polymarket_clob_rewards"
 	| "polymarket_events_stream"
 	| "polymarket_markets_stream"
-	| "polymarket_oracle_events";
+	| "polymarket_oracle_events"
+	| "polymarket_holder_metrics";
 export type WsFiltersRequiredRoom = Exclude<WsRoomId, WsFiltersOptionalRoom>;
 
 export type TradesSubscribeFilters = Omit<WsSchemas["TradesStreamSubscribeMessage"], "action">;
@@ -58,12 +58,12 @@ export type TraderPnlSubscribeFilters = Omit<WsSchemas["TraderPnlSubscribeMessag
 export type AccountsSubscribeFilters = Omit<WsSchemas["AccountsSubscribeMessage"], "action">;
 export type OrderBookSubscribeFilters = Omit<WsSchemas["OrderBookSubscribeMessage"], "action">;
 export type TraderPositionsSubscribeFilters = Omit<WsSchemas["TraderPositionsSubscribeMessage"], "action">;
+export type TraderExitMarkersSubscribeFilters = Omit<WsSchemas["TraderExitMarkersSubscribeMessage"], "action">;
+export type HolderMetricsSubscribeFilters = Omit<WsSchemas["HolderMetricsSubscribeMessage"], "action">;
 export type ClobRewardsSubscribeFilters = Omit<WsSchemas["ClobRewardsSubscribeMessage"], "action">;
 export type EventsStreamSubscribeFilters = Omit<WsSchemas["EventsStreamSubscribeMessage"], "action">;
 export type MarketsStreamSubscribeFilters = Omit<WsSchemas["MarketsStreamSubscribeMessage"], "action">;
 export type OracleEventsStreamSubscribeFilters = Omit<WsSchemas["OracleEventsStreamSubscribeMessage"], "action">;
-export type TraderExitMarkersSubscribeFilters = Omit<WsSchemas["TraderExitMarkersSubscribeMessage"], "action">;
-export type HolderMetricsSubscribeFilters = Omit<WsSchemas["HolderMetricsSubscribeMessage"], "action">;
 
 export type WsTradeType = NonNullable<TradesSubscribeFilters["trade_types"]>[number];
 export type WsTradeStatus = NonNullable<TradesSubscribeFilters["status"]>;
@@ -77,6 +77,29 @@ export type MarketMetricsEvent = WsSchemas["MarketMetricsEvent"];
 export type EventMetricsEvent = WsSchemas["EventMetricsEvent"];
 export type PositionMetricsEvent = WsSchemas["PositionMetricsEvent"];
 export type TagMetricsEvent = WsSchemas["TagMetricsEvent"];
+export type TraderGlobalPnlBatchEvent = WsSchemas["TraderGlobalPnlBatchEvent"];
+export type TraderMarketPnlBatchEvent = WsSchemas["TraderMarketPnlBatchEvent"];
+export type TraderCategoryPnlBatchEvent = WsSchemas["TraderCategoryPnlBatchEvent"];
+export type TraderGlobalTickBatchEvent = WsSchemas["TraderGlobalTickBatchEvent"];
+export type TraderMarketTickBatchEvent = WsSchemas["TraderMarketTickBatchEvent"];
+export type TraderCategoryTickBatchEvent = WsSchemas["TraderCategoryTickBatchEvent"];
+export type TraderGlobalResolutionBatchEvent = WsSchemas["TraderGlobalResolutionBatchEvent"];
+export type TraderMarketResolutionBatchEvent = WsSchemas["TraderMarketResolutionBatchEvent"];
+export type TraderCategoryResolutionBatchEvent = WsSchemas["TraderCategoryResolutionBatchEvent"];
+export type TraderPositionRow = WsSchemas["TraderPositionRow"];
+export type TraderPositionBatchEvent = WsSchemas["TraderPositionBatchEvent"];
+export type TraderPositionPriceRow = WsSchemas["TraderPositionPriceRow"];
+export type TraderPositionPriceBatchEvent = WsSchemas["TraderPositionPriceBatchEvent"];
+export type TraderPositionResolutionRow = WsSchemas["TraderPositionResolutionRow"];
+export type TraderPositionResolutionBatchEvent = WsSchemas["TraderPositionResolutionBatchEvent"];
+export type TraderExitMarkerRow = WsSchemas["TraderExitMarkerRow"];
+export type TraderExitMarkerBatchEvent = WsSchemas["TraderExitMarkerBatchEvent"];
+export type PositionHolderMetricsRow = WsSchemas["PositionHolderMetricsRow"];
+export type ConditionHolderMetricsRow = WsSchemas["ConditionHolderMetricsRow"];
+export type EventHolderMetricsRow = WsSchemas["EventHolderMetricsRow"];
+export type HolderMetricsPositionBatchEvent = WsSchemas["HolderMetricsPositionBatchEvent"];
+export type HolderMetricsConditionBatchEvent = WsSchemas["HolderMetricsConditionBatchEvent"];
+export type HolderMetricsEventBatchEvent = WsSchemas["HolderMetricsEventBatchEvent"];
 export type AccountsUpdateEvent = WsSchemas["AccountsUpdateEvent"];
 export type UsdceUpdateEvent = WsSchemas["UsdceUpdateEvent"];
 export type MaticUpdateEvent = WsSchemas["MaticUpdateEvent"];
@@ -100,23 +123,6 @@ export type TradePositionsConvertedEvent = WsSchemas["TradePositionsConvertedEve
 export type TradeCancelledEvent = WsSchemas["TradeCancelledEvent"];
 export type TradeOracleLifecycleEvent = WsSchemas["TradeOracleLifecycleEvent"];
 export type TradeRegisterTokenEvent = WsSchemas["TradeRegisterTokenEvent"];
-export type TraderGlobalPnlBatchEvent = WsSchemas["TraderGlobalPnlBatchEvent"];
-export type TraderMarketPnlBatchEvent = WsSchemas["TraderMarketPnlBatchEvent"];
-export type TraderCategoryPnlBatchEvent = WsSchemas["TraderCategoryPnlBatchEvent"];
-export type TraderGlobalTickBatchEvent = WsSchemas["TraderGlobalTickBatchEvent"];
-export type TraderMarketTickBatchEvent = WsSchemas["TraderMarketTickBatchEvent"];
-export type TraderCategoryTickBatchEvent = WsSchemas["TraderCategoryTickBatchEvent"];
-export type TraderGlobalResolutionBatchEvent = WsSchemas["TraderGlobalResolutionBatchEvent"];
-export type TraderMarketResolutionBatchEvent = WsSchemas["TraderMarketResolutionBatchEvent"];
-export type TraderCategoryResolutionBatchEvent = WsSchemas["TraderCategoryResolutionBatchEvent"];
-export type TraderPositionBatchEvent = WsSchemas["TraderPositionBatchEvent"];
-export type TraderPositionPriceBatchEvent = WsSchemas["TraderPositionPriceBatchEvent"];
-export type TraderPositionResolutionBatchEvent = WsSchemas["TraderPositionResolutionBatchEvent"];
-export type TraderExitMarkerBatchEvent = WsSchemas["TraderExitMarkerBatchEvent"];
-export type TraderExitMarkersSubscribeResponse = WsSchemas["TraderExitMarkersSubscribeResponse"];
-export type HolderMetricsPositionBatchEvent = WsSchemas["HolderMetricsPositionBatchEvent"];
-export type HolderMetricsConditionBatchEvent = WsSchemas["HolderMetricsConditionBatchEvent"];
-export type HolderMetricsEventBatchEvent = WsSchemas["HolderMetricsEventBatchEvent"];
 export type WsAlertSubscribeMessage = WsAlertSchemas["WsAlertSubscribeMessage"];
 export type WsAlertUnsubscribeMessage = WsAlertSchemas["WsAlertUnsubscribeMessage"];
 export type WsAlertEventPayload = WsAlertSchemas["WsAlertEventPayload"];
@@ -134,12 +140,16 @@ export type EventMetricsSubscribeResponse = WsSchemas["EventMetricsSubscribeResp
 export type PositionMetricsSubscribeResponse = WsSchemas["PositionMetricsSubscribeResponse"];
 export type TagMetricsSubscribeResponse = WsSchemas["TagMetricsSubscribeResponse"];
 export type TraderPnlSubscribeResponse = WsSchemas["TraderPnlSubscribeResponse"];
-export type AccountsSubscribeResponse = WsSchemas["AccountsSubscribeResponse"];
-export type OrderBookSubscribeResponse = WsSchemas["OrderBookSubscribeResponse"];
-
+export type TraderExitMarkersSubscribeResponse = WsSchemas["TraderExitMarkersSubscribeResponse"];
 export interface HolderMetricsSubscribeResponse {
+	position_ids?: string[];
+	condition_ids?: string[];
+	event_slugs?: string[];
+	rejected?: string[];
 	error?: string | null;
 }
+export type AccountsSubscribeResponse = WsSchemas["AccountsSubscribeResponse"];
+export type OrderBookSubscribeResponse = WsSchemas["OrderBookSubscribeResponse"];
 
 export interface WebSocketEventMap {
 	trade_stream_update: TradeStreamEvent;

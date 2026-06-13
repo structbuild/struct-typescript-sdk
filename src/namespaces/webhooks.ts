@@ -54,6 +54,6 @@ export class WebhooksNamespace extends PlatformNamespace {
 
 	async getLogs(params: GetWebhookLogsParams): Promise<HttpResponse<WebhookLogsResponseBody>> {
 		const { webhookId, ...query } = params;
-		return this.http.get<WebhookLogsResponseBody>(`/webhooks/${encodeURIComponent(webhookId)}/logs`, { params: query });
+		return this.http.get<WebhookLogsResponseBody>(`/webhooks/${encodeURIComponent(webhookId)}/logs`, { params: { ...query } });
 	}
 }

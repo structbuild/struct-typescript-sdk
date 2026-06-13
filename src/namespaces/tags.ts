@@ -3,10 +3,10 @@ import type { HttpResponse } from "../types/http.js";
 import type { Venue } from "../types/common.js";
 import type {
 	Tag,
-	CategoryEntry,
 	GetTagsParams,
 	GetTagParams,
 	GetCategoryTopTradersParams,
+	CategoryEntry,
 } from "../types/index.js";
 
 export class TagsNamespace extends Namespace {

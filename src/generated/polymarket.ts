@@ -635,26 +635,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/polymarket/events/top-traders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get top traders for an event
-         * @description Top traders for an event.
-         */
-        get: operations["get_event_top_traders"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/polymarket/events/{event_slug}/analytics/changes": {
         parameters: {
             query?: never;
@@ -735,6 +715,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/holders/events/{event_slug}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get event holders history
+         * @description Retrieve historical unique holder counts for an event over a time range.
+         */
+        get: operations["get_event_holders_history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/holders/markets": {
         parameters: {
             query?: never;
@@ -744,7 +744,7 @@ export interface paths {
         };
         /**
          * Get market holders
-         * @description Retrieve holders of a market grouped by outcome, sorted by shares held. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Set `include_pnl=true` to include a nested holder `pnl` object. Uses cursor-based pagination.
+         * @description Retrieve holders of a market grouped by outcome, sorted by shares held. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Set `include_pnl=true` to include a per-holder `pnl` object. Uses cursor-based pagination.
          */
         get: operations["get_market_holders"];
         put?: never;
@@ -764,7 +764,7 @@ export interface paths {
         };
         /**
          * Get market holders history
-         * @description Retrieve historical holder count snapshots for a market over a time range. Identify the market with either `condition_id` or `market_slug` — exactly one must be provided. Each candle includes timestamp `t`, holder count `h`, and the latest block represented by the candle.
+         * @description Retrieve historical unique holder counts for a market over a time range. Identify the market with either `condition_id` or `market_slug`.
          */
         get: operations["get_market_holders_history"];
         put?: never;
@@ -784,7 +784,7 @@ export interface paths {
         };
         /**
          * Get position holders
-         * @description Retrieve holders of a specific position (ERC1155 token), sorted by shares held. Set `include_pnl=true` to include nested holder PnL. Uses cursor-based pagination for efficient traversal.
+         * @description Retrieve holders of a specific position (ERC1155 token), sorted by shares held. Set `include_pnl=true` to include a per-holder `pnl` object. Uses cursor-based pagination.
          */
         get: operations["get_position_holders"];
         put?: never;
@@ -804,7 +804,7 @@ export interface paths {
         };
         /**
          * Get position holders history
-         * @description Retrieve historical holder snapshots for a position over a time range. Each candle includes timestamp `t`, holder count `h`, latest block, total open share balance, total holder cost basis, and optional market/event holder counts when available.
+         * @description Retrieve historical holder snapshots for a position over a time range.
          */
         get: operations["get_position_holders_history"];
         put?: never;
@@ -3106,6 +3106,11 @@ export interface components {
          * @enum {string}
          */
         CategoryPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_converts" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at";
+        /**
+         * @description Lookback window for percentage-change endpoints.
+         * @enum {string}
+         */
+        ChangeTimeframe: "1h" | "24h" | "7d" | "30d" | "1mo" | "1y";
         /** @enum {string} */
         ChartResolution: "1H" | "6H" | "1D" | "1W" | "1M" | "ALL";
         /**
@@ -4008,20 +4013,8 @@ export interface components {
             /** Format: int64 */
             last_trade_at?: number | null;
         };
-        /** @description Individual holder data */
-        Holder: {
-            /** @description Trader profile information */
-            trader: components["schemas"]["Trader"];
-            /** @description Position shares held (raw balance as string for precision) */
-            shares: string;
-            /** @description USD value of shares (shares * latest price) */
-            shares_usd?: string | null;
-            /** @description USD balance of wallet (USDe on Polygon) */
-            usd_balance?: string | null;
-            pnl?: null | components["schemas"]["HolderPnl"];
-        };
         /** @description Holder count at a point in a history series. */
-        HolderCountHistoryV3Candle: {
+        HolderCountHistoryCandle: {
             /**
              * Format: int64
              * @description Bucket timestamp as Unix seconds.
@@ -4037,68 +4030,6 @@ export interface components {
              * @description Latest block represented by this bucket.
              */
             block?: number | null;
-        };
-        /** @description Holder statistics data point (single time bucket) */
-        HolderHistoryCandle: {
-            /**
-             * Format: int64
-             * @description Bucket timestamp (Unix seconds).
-             */
-            t: number;
-            /**
-             * Format: int64
-             * @description Holder count at the end of the bucket.
-             */
-            h?: number | null;
-            /**
-             * Format: int64
-             * @description Latest block represented by this bucket.
-             */
-            block?: number | null;
-            /**
-             * Format: double
-             * @description Total open share balance at the end of the bucket. Position history only.
-             */
-            total_balance?: number | null;
-            /**
-             * Format: double
-             * @description Total holder cost basis at the end of the bucket. Position history only.
-             */
-            total_cost_basis?: number | null;
-            /**
-             * Format: int64
-             * @description Unique holders across the market at the end of the bucket. Position history only.
-             */
-            condition_holder_count?: number | null;
-            /**
-             * Format: int64
-             * @description Unique holders across the event at the end of the bucket. Position history only.
-             */
-            event_holder_count?: number | null;
-        };
-        /** @description Holder-level PnL data, included when `include_pnl=true` */
-        HolderPnl: {
-            /** Format: double */
-            avg_entry_price?: number | null;
-            total_cost_usd?: string | null;
-            unrealized_pnl_usd?: string | null;
-            realized_sell_pnl_usd?: string | null;
-            /** Format: double */
-            avg_exit_price?: number | null;
-            /** Format: double */
-            buy_usd?: number | null;
-            /** Format: double */
-            sell_usd?: number | null;
-            /** Format: int64 */
-            total_buys?: number | null;
-            /** Format: int64 */
-            total_sells?: number | null;
-            /** Format: double */
-            total_fees?: number | null;
-            /** Format: int64 */
-            first_trade_at?: number | null;
-            /** Format: int64 */
-            last_trade_at?: number | null;
         };
         MarketEntry: {
             condition_id?: string | null;
@@ -4179,20 +4110,95 @@ export interface components {
             /** Format: int64 */
             last_block: number;
         };
-        /** @description Response for market (condition_id) holders endpoint */
+        /** @description Market outcome holder. */
+        MarketHolder: {
+            /** @description Trader profile. */
+            trader: components["schemas"]["Trader"];
+            /** @description Position shares held (raw balance as decimal string for precision). */
+            shares: string;
+            /** @description USD value of shares (shares × latest price). */
+            shares_usd?: string | null;
+            /** @description USD balance of the holder's wallet. */
+            usd_balance?: string | null;
+            pnl?: null | components["schemas"]["MarketHolderPnl"];
+        };
+        /** @description Market-level PnL for a holder, included when `include_pnl=true`. */
+        MarketHolderPnl: {
+            /** Format: double */
+            realized_pnl_usd: number;
+            /** Format: double */
+            total_pnl_usd: number;
+            /** Format: double */
+            unrealized_pnl_usd: number;
+            /** Format: double */
+            realized_pnl_pct?: number | null;
+            /** Format: double */
+            total_pnl_pct?: number | null;
+            /** Format: double */
+            total_volume_usd: number;
+            /** Format: double */
+            buy_volume_usd: number;
+            /** Format: double */
+            sell_volume_usd: number;
+            /** Format: double */
+            redemption_volume_usd: number;
+            /** Format: double */
+            merge_volume_usd: number;
+            /** Format: double */
+            convert_collateral_usd: number;
+            /** Format: double */
+            total_fees: number;
+            /** Format: int64 */
+            total_buys: number;
+            /** Format: int64 */
+            total_sells: number;
+            /** Format: int64 */
+            total_splits: number;
+            /** Format: double */
+            total_shares_bought: number;
+            /** Format: double */
+            total_shares_sold: number;
+            /** Format: int64 */
+            buy_count: number;
+            /** Format: int64 */
+            sell_count: number;
+            /** Format: int64 */
+            redeem_count: number;
+            /** Format: int64 */
+            merge_count: number;
+            /** Format: int64 */
+            split_count: number;
+            /** Format: double */
+            split_volume_usd: number;
+            /** Format: int64 */
+            converted_count: number;
+            /** Format: double */
+            converted_shares_gained: number;
+            /** Format: double */
+            converted_shares_lost: number;
+            /** Format: int64 */
+            outcomes_traded: number;
+            resolved: boolean;
+            won?: boolean | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+        };
+        /** @description Response for market (condition_id) holders endpoint. */
         MarketHoldersResponse: {
-            /** @description Market condition ID */
+            /** @description Market condition ID. */
             condition_id: string;
-            /** @description Market question/title */
+            /** @description Market question / title. */
             question?: string | null;
-            /** @description Market slug */
+            /** @description Market slug. */
             slug?: string | null;
             /**
              * Format: int64
              * @description Total unique holders across all outcomes of this market.
              */
             total_holders: number;
-            /** @description Holders grouped by outcome */
+            /** @description Holders grouped by outcome. */
             outcomes: components["schemas"]["OutcomeHolders"][];
         };
         /** @description Market outcome with timeframe metrics (websocket API format) */
@@ -4563,29 +4569,29 @@ export interface components {
             /** Format: int32 */
             ask_levels?: number | null;
         };
-        /** @description Holder data grouped by outcome for market-level queries */
+        /** @description Holders grouped by outcome. */
         OutcomeHolders: {
             /**
              * Format: int32
-             * @description Outcome index (0, 1, etc.)
+             * @description Outcome index (0, 1, etc.).
              */
             outcome_index: number;
-            /** @description Outcome name (Yes, No, etc.) */
+            /** @description Outcome name (Yes, No, etc.). */
             outcome_name: string;
-            /** @description Position ID for this outcome */
+            /** @description Position ID for this outcome. */
             position_id: string;
             /**
              * Format: double
-             * @description Current price/probability
+             * @description Current price / probability.
              */
             price?: number | null;
             /**
              * Format: int64
-             * @description Total holders count for this outcome.
+             * @description Total holders for this outcome.
              */
             total_holders: number;
-            /** @description Top holders for this outcome */
-            holders: components["schemas"]["Holder"][];
+            /** @description Top holders for this outcome. */
+            holders: components["schemas"]["MarketHolder"][];
         };
         /** @enum {string} */
         OutcomeIndex: "0" | "1";
@@ -5332,8 +5338,20 @@ export interface components {
          * @enum {string}
          */
         PositionExitPnlSortBy: "exit_time" | "pnl_usd" | "pnl_pct" | "cost_basis_usd";
+        /** @description Position holder. */
+        PositionHolder: {
+            /** @description Trader profile. */
+            trader: components["schemas"]["Trader"];
+            /** @description Position shares held (raw balance as decimal string for precision). */
+            shares: string;
+            /** @description USD value of shares (shares × latest price). */
+            shares_usd?: string | null;
+            /** @description USD balance of the holder's wallet. */
+            usd_balance?: string | null;
+            pnl?: null | components["schemas"]["PositionHolderPnl"];
+        };
         /** @description Position holder history candle. */
-        PositionHolderHistoryV3Candle: {
+        PositionHolderHistoryCandle: {
             /**
              * Format: int64
              * @description Unix seconds.
@@ -5370,22 +5388,79 @@ export interface components {
              */
             eh?: number | null;
         };
-        /** @description Response for position (position_id) holders endpoint */
+        /** @description Position-level PnL for a holder, included when `include_pnl=true`. */
+        PositionHolderPnl: {
+            /** Format: int64 */
+            total_buys?: number | null;
+            /** Format: int64 */
+            total_sells?: number | null;
+            /** Format: double */
+            total_shares_bought?: number | null;
+            /** Format: double */
+            total_shares_sold?: number | null;
+            /** Format: double */
+            total_buy_usd?: number | null;
+            /** Format: double */
+            total_sell_usd?: number | null;
+            /** Format: double */
+            redemption_usd?: number | null;
+            /**
+             * Format: double
+             * @description Merge proceeds (combining outcome tokens back to collateral).
+             *     Counted toward realized PnL alongside sells and redemptions.
+             */
+            merge_usd?: number | null;
+            /** Format: double */
+            convert_collateral_usd?: number | null;
+            /** Format: int64 */
+            converted_count?: number | null;
+            /** Format: double */
+            converted_shares_gained?: number | null;
+            /** Format: double */
+            converted_shares_lost?: number | null;
+            /** Format: double */
+            avg_entry_price?: number | null;
+            /** Format: double */
+            avg_exit_price?: number | null;
+            /**
+             * Format: double
+             * @description Volume-weighted average trade price across buys + sells.
+             */
+            avg_price?: number | null;
+            /** Format: double */
+            realized_pnl_usd?: number | null;
+            /** Format: double */
+            total_fees?: number | null;
+            /** Format: int64 */
+            first_trade_at?: number | null;
+            /** Format: int64 */
+            last_trade_at?: number | null;
+            /** Format: double */
+            last_traded_price?: number | null;
+            /** Format: double */
+            realized_pnl_pct?: number | null;
+            /** Format: double */
+            total_pnl_pct?: number | null;
+            won?: boolean | null;
+            redeemable?: boolean | null;
+            mergeable?: boolean | null;
+        };
+        /** @description Response for position (position_id) holders endpoint. */
         PositionHoldersResponse: {
-            /** @description Position ID (ERC1155 token ID) */
+            /** @description Position ID (ERC1155 token ID). */
             position_id: string;
-            /** @description Condition ID this position belongs to */
+            /** @description Condition ID this position belongs to. */
             condition_id?: string | null;
-            /** @description Outcome name */
+            /** @description Outcome name (Yes, No, etc.). */
             outcome_name?: string | null;
             /**
              * Format: int32
-             * @description Outcome index
+             * @description Outcome index.
              */
             outcome_index?: number | null;
             /**
              * Format: double
-             * @description Current price
+             * @description Current price / probability.
              */
             price?: number | null;
             /**
@@ -5393,8 +5468,8 @@ export interface components {
              * @description Total holders of this position.
              */
             total_holders: number;
-            /** @description Top holders */
-            holders: components["schemas"]["Holder"][];
+            /** @description Top holders. */
+            holders: components["schemas"]["PositionHolder"][];
         };
         /** @description Response type for position metrics query */
         PositionMetricsResponse: {
@@ -7338,44 +7413,6 @@ export interface operations {
             };
         };
     };
-    get_event_top_traders: {
-        parameters: {
-            query: {
-                /** @description Event slug */
-                event_slug: string;
-                /** @description Default: lifetime */
-                timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Default 50, max 200 */
-                limit?: number;
-                /** @description Max 2500. Takes precedence over pagination_key. */
-                offset?: number;
-                /** @description Cursor from a previous response */
-                pagination_key?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Top traders for the event */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["EventEntry"][];
-                };
-            };
-            /** @description Invalid params */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     get_event_analytics_changes: {
         parameters: {
             query?: {
@@ -7509,12 +7546,53 @@ export interface operations {
             };
         };
     };
+    get_event_holders_history: {
+        parameters: {
+            query?: {
+                /** @description Start timestamp (Unix seconds). If omitted, derived from `hours`. */
+                from?: number;
+                /** @description End timestamp (Unix seconds). Defaults to now. */
+                to?: number;
+                /** @description Number of candles to return (default: 500, max: 2500) */
+                count_back?: number;
+                /** @description Fallback time range in hours when `from`/`to` are not provided (default: 24, max: 336 = 14 days) */
+                hours?: number;
+                /** @description Cursor-based pagination key from previous response */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Event slug */
+                event_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Event holder count history. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HolderCountHistoryCandle"][];
+                };
+            };
+            /** @description Event not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_market_holders: {
         parameters: {
             query?: {
                 /** @description Market condition ID (0x-prefixed hex) */
                 condition_id?: string;
-                /** @description Market slug (e.g. `will-trump-win`) */
+                /** @description Market slug */
                 market_slug?: string;
                 /** @description Results limit per outcome (default: 10, max: 100) */
                 limit?: number;
@@ -7526,8 +7604,6 @@ export interface operations {
                 max_shares?: string;
                 /** @description Include nested holder PnL data (default: false, +1 credit) */
                 include_pnl?: boolean;
-                /** @description Return truncated response optimized for AI consumers (default: false) */
-                ai?: boolean;
             };
             header?: never;
             path?: never;
@@ -7535,7 +7611,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Market holders grouped by outcome (sorted by shares DESC). Holder `pnl` is included only when `include_pnl=true`. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
+            /** @description Market holders grouped by outcome (sorted by shares DESC). */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -7558,9 +7634,9 @@ export interface operations {
             query?: {
                 /** @description Market condition ID (0x-prefixed hex) */
                 condition_id?: string;
-                /** @description Market slug (e.g. `will-trump-win`) */
+                /** @description Market slug */
                 market_slug?: string;
-                /** @description Start timestamp (Unix seconds). If omitted, derived from `hours` param. */
+                /** @description Start timestamp (Unix seconds). If omitted, derived from `hours`. */
                 from?: number;
                 /** @description End timestamp (Unix seconds). Defaults to now. */
                 to?: number;
@@ -7577,13 +7653,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Market holder count history with automatic granularity (1m/5m/15m/1h/6h buckets) */
+            /** @description Market holder count history. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HolderHistoryCandle"][];
+                    "application/json": components["schemas"]["HolderCountHistoryCandle"][];
                 };
             };
             /** @description Market not found */
@@ -7608,8 +7684,6 @@ export interface operations {
                 max_shares?: string;
                 /** @description Include nested holder PnL data (default: false, +1 credit) */
                 include_pnl?: boolean;
-                /** @description Return truncated response optimized for AI consumers (default: false) */
-                ai?: boolean;
             };
             header?: never;
             path: {
@@ -7620,7 +7694,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Position holders (sorted by shares DESC). Holder `pnl` is included only when `include_pnl=true`. Response includes `pagination: { has_more, pagination_key }` for cursor-based pagination. */
+            /** @description Position holders (sorted by shares DESC). Holder `pnl` is included only when `include_pnl=true`. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -7641,7 +7715,7 @@ export interface operations {
     get_position_holders_history: {
         parameters: {
             query?: {
-                /** @description Start timestamp (Unix seconds). If omitted, derived from `hours` param. */
+                /** @description Start timestamp (Unix seconds). If omitted, derived from `hours`. */
                 from?: number;
                 /** @description End timestamp (Unix seconds). Defaults to now. */
                 to?: number;
@@ -7661,13 +7735,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Position holder count history with automatic granularity (1m/5m/15m/1h/6h buckets) */
+            /** @description Position holder history. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HolderHistoryCandle"][];
+                    "application/json": components["schemas"]["PositionHolderHistoryCandle"][];
                 };
             };
             /** @description Position not found */
@@ -8922,6 +8996,10 @@ export interface operations {
                 category: components["schemas"]["PolymarketCategory"];
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
+                /** @description Default: realized_pnl_usd */
+                sort_by?: components["schemas"]["CategoryPnlSortBy"];
+                /** @description Default: desc */
+                sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
                 limit?: number;
                 /** @description Max 2500. Takes precedence over pagination_key. */
