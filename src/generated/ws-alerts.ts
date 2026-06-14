@@ -1756,6 +1756,8 @@ export interface components {
             /** Format: double */
             total_pnl_usd?: number;
             /** Format: double */
+            unrealized_pnl_usd?: number;
+            /** Format: double */
             redemption_usd?: number;
             open?: boolean;
             won?: boolean | null;
@@ -1776,6 +1778,8 @@ export interface components {
              *     window. `0.0` when the trader has no cost basis on this row yet.
              */
             realized_pnl_pct?: number;
+            /** Format: double */
+            total_pnl_pct?: number;
             /** @description Market slug for the parent market of this outcome. */
             market_slug?: string | null;
             /** @description Market title. */
@@ -4389,6 +4393,7 @@ export interface components {
          *         "total_fees": 2.5,
          *         "realized_pnl_usd": 100,
          *         "total_pnl_usd": 100,
+         *         "unrealized_pnl_usd": 0,
          *         "redemption_usd": 50,
          *         "open": false,
          *         "won": true,
@@ -4398,6 +4403,7 @@ export interface components {
          *           "position_resolved"
          *         ],
          *         "realized_pnl_pct": 0,
+         *         "total_pnl_pct": 0,
          *         "converted_count": 0,
          *         "converted_shares_gained": 0,
          *         "converted_shares_lost": 0,

@@ -8694,6 +8694,10 @@
             "type": "number",
             "format": "double"
           },
+          "unrealized_pnl_usd": {
+            "type": "number",
+            "format": "double"
+          },
           "redemption_usd": {
             "type": "number",
             "format": "double"
@@ -8732,6 +8736,10 @@
             "type": "number",
             "format": "double",
             "description": "`realized_pnl_usd / (buy_usd + total_fees) * 100` for the\nwindow. `0.0` when the trader has no cost basis on this row yet."
+          },
+          "total_pnl_pct": {
+            "type": "number",
+            "format": "double"
           },
           "market_slug": {
             "type": [

@@ -1756,6 +1756,8 @@ export interface components {
             /** Format: double */
             total_pnl_usd?: number;
             /** Format: double */
+            unrealized_pnl_usd?: number;
+            /** Format: double */
             redemption_usd?: number;
             open?: boolean;
             won?: boolean | null;
@@ -1776,6 +1778,8 @@ export interface components {
              *     window. `0.0` when the trader has no cost basis on this row yet.
              */
             realized_pnl_pct?: number;
+            /** Format: double */
+            total_pnl_pct?: number;
             /** @description Market slug for the parent market of this outcome. */
             market_slug?: string | null;
             /** @description Market title. */

@@ -5228,7 +5228,7 @@ export interface components {
          *     closed those values are no longer meaningful.
          * @enum {string}
          */
-        PositionClosedPnlSortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "realized_pnl_pct" | "total_pnl_pct" | "title" | "merge_count" | "split_count" | "end_date" | "is_neg_risk";
+        PositionClosedPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "merge_usd" | "convert_collateral_usd" | "converted_count" | "converted_shares_gained" | "converted_shares_lost" | "last_traded_price" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "realized_pnl_pct" | "total_pnl_pct" | "title" | "merge_count" | "split_count" | "end_date" | "is_neg_risk";
         /** @description Per-position detail for Split/Merge/Redemption trades. */
         PositionDetail: {
             /** @description Market condition ID for this ERC1155 position. */
@@ -5257,11 +5257,6 @@ export interface components {
             condition_id?: string | null;
             market_slug?: string | null;
             event_slug?: string | null;
-            /**
-             * @description Market category slug — mirror of `PositionRollup.category_id`
-             *     resolved server-side. Enables `?category=<slug>` filtering on
-             *     the positions endpoint.
-             */
             category?: string | null;
             title?: string | null;
             question?: string | null;
@@ -5308,7 +5303,11 @@ export interface components {
              */
             avg_price?: number | null;
             /** Format: double */
-            realized_pnl_usd?: number | null;
+            realized_pnl_usd?: number;
+            /** Format: double */
+            total_pnl_usd?: number;
+            /** Format: double */
+            unrealized_pnl_usd?: number;
             /** Format: double */
             total_fees?: number | null;
             /** Format: int64 */
@@ -5428,7 +5427,11 @@ export interface components {
              */
             avg_price?: number | null;
             /** Format: double */
-            realized_pnl_usd?: number | null;
+            realized_pnl_usd?: number;
+            /** Format: double */
+            total_pnl_usd?: number;
+            /** Format: double */
+            unrealized_pnl_usd?: number;
             /** Format: double */
             total_fees?: number | null;
             /** Format: int64 */
@@ -5552,7 +5555,7 @@ export interface components {
          *     (`redeemable`, `mergeable`) are exclusive to open positions.
          * @enum {string}
          */
-        PositionOpenPnlSortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "total_pnl_pct" | "title" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
+        PositionOpenPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "merge_usd" | "convert_collateral_usd" | "converted_count" | "converted_shares_gained" | "converted_shares_lost" | "last_traded_price" | "total_buy_usd" | "total_sell_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "total_pnl_pct" | "title" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
         /**
          * @description Union of every sort_by value accepted by the positions endpoint
          *     across both `status=open` and `status=closed`. Note that some
@@ -5563,7 +5566,7 @@ export interface components {
          *     `PositionClosedPnlSortBy` for the exact per-status whitelists.
          * @enum {string}
          */
-        PositionPnlSortBy: "realized_pnl_usd" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "total_pnl_pct" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "title" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
+        PositionPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "merge_usd" | "convert_collateral_usd" | "converted_count" | "converted_shares_gained" | "converted_shares_lost" | "last_traded_price" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "total_pnl_pct" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "title" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
         /** @enum {string} */
         PositionStatus: "open" | "closed";
         PositionVolumeChartResponse: {
@@ -9503,7 +9506,7 @@ export interface operations {
                 won?: boolean;
                 /** @description Case-insensitive substring match on the market title. Scoped to the chosen `status` — results never cross the open/closed boundary. */
                 search?: string;
-                /** @description Sort field. Default: realized_pnl_usd. status=open accepts: realized_pnl_usd, total_buy_usd, total_sell_usd, total_buys, total_sells, total_shares_bought, total_shares_sold, avg_entry_price, avg_exit_price, avg_price, total_fees, first_trade_at, last_trade_at, current_value, realized_pnl_pct, title, current_price, current_shares_balance, merge_count, split_count, end_date, is_neg_risk, redeemable, mergeable. status=closed accepts: realized_pnl_usd, total_buy_usd, total_sell_usd, redemption_usd, total_buys, total_sells, total_shares_bought, total_shares_sold, avg_entry_price, avg_exit_price, avg_price, total_fees, first_trade_at, last_trade_at, realized_pnl_pct, title, merge_count, split_count, end_date, is_neg_risk. */
+                /** @description Sort field. Default: total_pnl_usd. status=open accepts: realized_pnl_usd, total_pnl_usd, unrealized_pnl_usd, merge_usd, convert_collateral_usd, converted_count, converted_shares_gained, converted_shares_lost, last_traded_price, total_buy_usd, total_sell_usd, total_buys, total_sells, total_shares_bought, total_shares_sold, avg_entry_price, avg_exit_price, avg_price, total_fees, first_trade_at, last_trade_at, current_value, realized_pnl_pct, total_pnl_pct, title, current_price, current_shares_balance, merge_count, split_count, end_date, is_neg_risk, redeemable, mergeable. status=closed accepts: realized_pnl_usd, total_pnl_usd, unrealized_pnl_usd, merge_usd, convert_collateral_usd, converted_count, converted_shares_gained, converted_shares_lost, last_traded_price, total_buy_usd, total_sell_usd, redemption_usd, total_buys, total_sells, total_shares_bought, total_shares_sold, avg_entry_price, avg_exit_price, avg_price, total_fees, first_trade_at, last_trade_at, realized_pnl_pct, total_pnl_pct, title, merge_count, split_count, end_date, is_neg_risk. */
                 sort_by?: components["schemas"]["PositionPnlSortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];

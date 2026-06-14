@@ -3897,6 +3897,7 @@
                 "total_fees": 2.5,
                 "realized_pnl_usd": 100.0,
                 "total_pnl_usd": 100.0,
+                "unrealized_pnl_usd": 0.0,
                 "redemption_usd": 50.0,
                 "open": false,
                 "won": true,
@@ -3906,6 +3907,7 @@
                   "position_resolved"
                 ],
                 "realized_pnl_pct": 0.0,
+                "total_pnl_pct": 0.0,
                 "converted_count": 0,
                 "converted_shares_gained": 0.0,
                 "converted_shares_lost": 0.0,
@@ -10955,6 +10957,10 @@
             "type": "number",
             "format": "double"
           },
+          "unrealized_pnl_usd": {
+            "type": "number",
+            "format": "double"
+          },
           "redemption_usd": {
             "type": "number",
             "format": "double"
@@ -10993,6 +10999,10 @@
             "type": "number",
             "format": "double",
             "description": "`realized_pnl_usd / (buy_usd + total_fees) * 100` for the\nwindow. `0.0` when the trader has no cost basis on this row yet."
+          },
+          "total_pnl_pct": {
+            "type": "number",
+            "format": "double"
           },
           "market_slug": {
             "type": [
@@ -18249,6 +18259,7 @@
             "total_fees": 2.5,
             "realized_pnl_usd": 100.0,
             "total_pnl_usd": 100.0,
+            "unrealized_pnl_usd": 0.0,
             "redemption_usd": 50.0,
             "open": false,
             "won": true,
@@ -18258,6 +18269,7 @@
               "position_resolved"
             ],
             "realized_pnl_pct": 0.0,
+            "total_pnl_pct": 0.0,
             "converted_count": 0,
             "converted_shares_gained": 0.0,
             "converted_shares_lost": 0.0,
