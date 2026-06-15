@@ -18,7 +18,7 @@
       "address": "/ws/alerts",
       "title": "First Trade",
       "summary": "Real-time `trader_first_trade` alert subscription",
-      "description": "Fired when a tracked trader executes their first trade on Polymarket\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a tracked trader executes their first trade on Polymarket\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -54,7 +54,7 @@
       "address": "/ws/alerts",
       "title": "New Market Entry",
       "summary": "Real-time `trader_new_market` alert subscription",
-      "description": "Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `condition_ids`, `event_slugs`, `min_usd_value`, `min_probability`, `max_probability`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `condition_ids`, `event_slugs`, `min_usd_value`, `min_probability`, `max_probability`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -90,7 +90,7 @@
       "address": "/ws/alerts",
       "title": "Whale Trade",
       "summary": "Real-time `trader_whale_trade` alert subscription",
-      "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -126,7 +126,7 @@
       "address": "/ws/alerts",
       "title": "New Trade",
       "summary": "Real-time `trader_new_trade` alert subscription",
-      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -162,7 +162,7 @@
       "address": "/ws/alerts",
       "title": "Typed Trade-event",
       "summary": "Real-time `trader_trade_event` alert subscription",
-      "description": "Fired on every confirmed prediction trade. Payload is a tagged union of trade-type variants.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired on every confirmed prediction trade. Payload is a tagged union of trade-type variants.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -198,7 +198,7 @@
       "address": "/ws/alerts",
       "title": "Global PnL",
       "summary": "Real-time `trader_global_pnl` alert subscription",
-      "description": "Fired when a trader's global PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a trader's global PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -234,7 +234,7 @@
       "address": "/ws/alerts",
       "title": "Market PnL",
       "summary": "Real-time `trader_market_pnl` alert subscription",
-      "description": "Fired when a trader's market-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `timeframes`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a trader's market-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `timeframes`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -270,7 +270,7 @@
       "address": "/ws/alerts",
       "title": "Category PnL",
       "summary": "Real-time `trader_category_pnl` alert subscription",
-      "description": "Fired when a trader's category-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `categories`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a trader's category-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `categories`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -306,7 +306,7 @@
       "address": "/ws/alerts",
       "title": "Position Resolved",
       "summary": "Real-time `trader_position_resolved` alert subscription",
-      "description": "Fired once when a trader's position is resolved (won or lost)\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `outcome_indexes`, `won_only`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired once when a trader's position is resolved (won or lost)\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `outcome_indexes`, `won_only`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -342,7 +342,7 @@
       "address": "/ws/alerts",
       "title": "Exit Markers",
       "summary": "Real-time `trader_pnl_exits` alert subscription",
-      "description": "Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -378,7 +378,7 @@
       "address": "/ws/alerts",
       "title": "Position Holder Metrics",
       "summary": "Real-time `position_holder_metrics` alert subscription",
-      "description": "Fired when holder metrics change for a position.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `position_ids`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when holder metrics change for a position.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `position_ids`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -414,7 +414,7 @@
       "address": "/ws/alerts",
       "title": "Condition Holder Metrics",
       "summary": "Real-time `condition_holder_metrics` alert subscription",
-      "description": "Fired when holder metrics change for a condition.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `condition_ids`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when holder metrics change for a condition.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -450,7 +450,7 @@
       "address": "/ws/alerts",
       "title": "Event Holder Metrics",
       "summary": "Real-time `event_holder_metrics` alert subscription",
-      "description": "Fired when holder metrics change for an event.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `event_slugs`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when holder metrics change for an event.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -486,7 +486,7 @@
       "address": "/ws/alerts",
       "title": "Market Metrics",
       "summary": "Real-time `condition_metrics` alert subscription",
-      "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -522,7 +522,7 @@
       "address": "/ws/alerts",
       "title": "Event Metrics",
       "summary": "Real-time `event_metrics` alert subscription",
-      "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -558,7 +558,7 @@
       "address": "/ws/alerts",
       "title": "Tag Metrics",
       "summary": "Real-time `tag_metrics` alert subscription",
-      "description": "Fired when a tag's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `tags`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a tag's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `tags`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -594,7 +594,7 @@
       "address": "/ws/alerts",
       "title": "Position Metrics",
       "summary": "Real-time `position_metrics` alert subscription",
-      "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `outcomes`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `min_price_change_pct`, `min_probability_change_pct`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `outcomes`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `min_price_change_pct`, `min_probability_change_pct`, `timeframes`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -630,7 +630,7 @@
       "address": "/ws/alerts",
       "title": "Market Volume Milestone",
       "summary": "Real-time `market_volume_milestone` alert subscription",
-      "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `timeframes`, `milestone_amounts`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `timeframes`, `milestone_amounts`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -666,7 +666,7 @@
       "address": "/ws/alerts",
       "title": "Event Volume Milestone",
       "summary": "Real-time `event_volume_milestone` alert subscription",
-      "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `timeframes`, `milestone_amounts`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `timeframes`, `milestone_amounts`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -702,7 +702,7 @@
       "address": "/ws/alerts",
       "title": "Position Volume Milestone",
       "summary": "Real-time `position_volume_milestone` alert subscription",
-      "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `outcomes`, `timeframes`, `milestone_amounts`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `outcomes`, `timeframes`, `milestone_amounts`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -738,7 +738,7 @@
       "address": "/ws/alerts",
       "title": "Probability Spike",
       "summary": "Real-time `probability_spike` alert subscription",
-      "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `event_slugs`, `outcomes`, `min_probability_change_pct`, `min_probability`, `max_probability`, `min_txns`, `min_volume_usd`, `spike_direction`, `window_secs`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `event_slugs`, `tags`, `series_slugs`, `outcomes`, `min_probability_change_pct`, `min_probability`, `max_probability`, `min_txns`, `min_volume_usd`, `spike_direction`, `window_secs`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -774,7 +774,7 @@
       "address": "/ws/alerts",
       "title": "Price Spike",
       "summary": "Real-time `price_spike` alert subscription",
-      "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `event_slugs`, `outcomes`, `min_price_change_pct`, `min_probability`, `max_probability`, `min_txns`, `min_volume_usd`, `spike_direction`, `window_secs`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `event_slugs`, `tags`, `series_slugs`, `outcomes`, `min_price_change_pct`, `min_probability`, `max_probability`, `min_txns`, `min_volume_usd`, `spike_direction`, `window_secs`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -810,7 +810,7 @@
       "address": "/ws/alerts",
       "title": "Market Volume Spike",
       "summary": "Real-time `market_volume_spike` alert subscription",
-      "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`, `lifetime`. Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `condition_ids`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`, `lifetime`. Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `condition_ids`, `timeframes`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -846,7 +846,7 @@
       "address": "/ws/alerts",
       "title": "Event Volume Spike",
       "summary": "Real-time `event_volume_spike` alert subscription",
-      "description": "Fired when an event's aggregated trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` and `event_slugs` to narrow scope.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `event_slugs`, `timeframes`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when an event's aggregated trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` and `event_slugs` to narrow scope.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `event_slugs`, `timeframes`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -882,7 +882,7 @@
       "address": "/ws/alerts",
       "title": "Position Volume Spike",
       "summary": "Real-time `position_volume_spike` alert subscription",
-      "description": "Fired when a position's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` to narrow scope.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `position_ids`, `condition_ids`, `outcomes`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a position's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` to narrow scope.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `position_ids`, `condition_ids`, `outcomes`, `timeframes`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -918,7 +918,7 @@
       "address": "/ws/alerts",
       "title": "Close To Bond",
       "summary": "Real-time `close_to_bond` alert subscription",
-      "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `min_probability`, `max_probability`, `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices`, `event_slugs`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series).\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `min_probability`, `max_probability`, `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices`, `event_slugs`, `exclude_shortterm_markets`, `tags`, `series_slugs`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -950,11 +950,119 @@
         }
       }
     },
+    "ws_alerts.price_threshold": {
+      "address": "/ws/alerts",
+      "title": "Price Threshold Crossing",
+      "summary": "Real-time `price_threshold` alert subscription",
+      "description": "Fired when an outcome's price/probability crosses a target level (edge-triggered, fires once per crossing). **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.75`) to fire when the price crosses *up* to ≥ that level; use `max_probability` (e.g. `0.25`) to fire when it crosses *down* to ≤ that level. Set `one_shot` to delete the subscription after the first delivery (requires `position_ids` or `condition_ids`). Set `fire_if_already_past` to fire immediately when the first observed price is already past the target. Optional scope filters: `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices` (`0` = Yes/Up, `1` = No), `event_slugs`, `tags` (a market's tags or category), `series_slugs` (parent series).\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `min_probability`, `max_probability`, `one_shot`, `fire_if_already_past`, `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices`, `event_slugs`, `tags`, `series_slugs`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertPriceThresholdSubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertPriceThresholdUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertPriceThresholdEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
+    "ws_alerts.market_resolved": {
+      "address": "/ws/alerts",
+      "title": "Market Resolved",
+      "summary": "Real-time `market_resolved` alert subscription",
+      "description": "Fired once when a market reaches a terminal resolution. Collapses the underlying oracle events (`QuestionResolved`, `QuestionEmergencyResolved`, `ConditionResolution`, `NegRiskOutcomeReported`) into a single notification carrying the winning outcome and, when available, the settled price. Optional filters: `condition_ids`, `event_slugs`, `outcomes` (only fire when the winning outcome matches, e.g. `\"Yes\"`), `exclude_shortterm_markets`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `event_slugs`, `outcomes`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertMarketResolvedSubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertMarketResolvedUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertMarketResolvedEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
+    "ws_alerts.market_disputed": {
+      "address": "/ws/alerts",
+      "title": "Market Disputed",
+      "summary": "Real-time `market_disputed` alert subscription",
+      "description": "Fired when a proposed market resolution is challenged on-chain (`DisputePrice` or `AssertionDisputed`) — the resolution is now contested and delayed. Carries the disputer, the proposer, and the disputed/proposed outcome when available. Optional filters: `condition_ids`, `event_slugs`, `exclude_shortterm_markets`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `event_slugs`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertMarketDisputedSubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertMarketDisputedUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertMarketDisputedEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
     "ws_alerts.market_created": {
       "address": "/ws/alerts",
       "title": "Market Created",
       "summary": "Real-time `market_created` alert subscription",
-      "description": "Fired when a new prediction market is created on Polymarket. Filterable by `tags` and `event_slugs`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `tags`, `exclude_shortterm_markets`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when a new prediction market is created on Polymarket. Filterable by `tags` and `event_slugs`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `tags`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -990,7 +1098,7 @@
       "address": "/ws/alerts",
       "title": "Oracle Events",
       "summary": "Real-time `oracle_events` alert subscription",
-      "description": "Fired on every on-chain oracle event. Use `oracle_event_types` to restrict to specific kinds — valid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`, `RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`, `QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`, `QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`, `QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`, `NegRiskOutcomeReported`. Optional `condition_ids` narrows by market.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `oracle_event_types`, `condition_ids`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired on every on-chain oracle event. Use `oracle_event_types` to restrict to specific kinds — valid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`, `RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`, `QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`, `QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`, `QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`, `NegRiskOutcomeReported`. Optional `condition_ids` narrows by market.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `oracle_event_types`, `condition_ids`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -1026,7 +1134,7 @@
       "address": "/ws/alerts",
       "title": "Asset Price Tick",
       "summary": "Real-time `asset_price_tick` alert subscription",
-      "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Use `asset_symbols` to restrict to specific assets (empty = all).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `asset_symbols`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Use `asset_symbols` to restrict to specific assets (empty = all).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `asset_symbols`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -1062,7 +1170,7 @@
       "address": "/ws/alerts",
       "title": "Asset Price Window Update",
       "summary": "Real-time `asset_price_window_update` alert subscription",
-      "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"`, `\"24h\"`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `asset_symbols`, `timeframes`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"`, `\"24h\"`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `asset_symbols`, `timeframes`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -2243,7 +2351,7 @@
       },
       "title": "Subscribe — Probability Spike",
       "summary": "Subscribe to `probability_spike` alerts",
-      "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
+      "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
       "tags": [
         {
           "name": "Position"
@@ -2281,7 +2389,7 @@
       },
       "title": "Event — Probability Spike",
       "summary": "Receive `probability_spike` alerts",
-      "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.",
+      "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.",
       "tags": [
         {
           "name": "Position"
@@ -2300,7 +2408,7 @@
       },
       "title": "Subscribe — Price Spike",
       "summary": "Subscribe to `price_spike` alerts",
-      "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
+      "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
       "tags": [
         {
           "name": "Position"
@@ -2338,7 +2446,7 @@
       },
       "title": "Event — Price Spike",
       "summary": "Receive `price_spike` alerts",
-      "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.",
+      "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.",
       "tags": [
         {
           "name": "Position"
@@ -2528,7 +2636,7 @@
       },
       "title": "Subscribe — Close To Bond",
       "summary": "Subscribe to `close_to_bond` alerts",
-      "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.",
+      "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series).",
       "tags": [
         {
           "name": "Market"
@@ -2566,7 +2674,7 @@
       },
       "title": "Event — Close To Bond",
       "summary": "Receive `close_to_bond` alerts",
-      "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.\n\n**Credits cost:** 200 per delivered alert.",
+      "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series).\n\n**Credits cost:** 200 per delivered alert.",
       "tags": [
         {
           "name": "Market"
@@ -2575,6 +2683,177 @@
       "messages": [
         {
           "$ref": "#/channels/ws_alerts.close_to_bond/messages/event"
+        }
+      ]
+    },
+    "subscribePriceThreshold": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.price_threshold"
+      },
+      "title": "Subscribe — Price Threshold Crossing",
+      "summary": "Subscribe to `price_threshold` alerts",
+      "description": "Fired when an outcome's price/probability crosses a target level (edge-triggered, fires once per crossing). **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.75`) to fire when the price crosses *up* to ≥ that level; use `max_probability` (e.g. `0.25`) to fire when it crosses *down* to ≤ that level. Set `one_shot` to delete the subscription after the first delivery (requires `position_ids` or `condition_ids`). Set `fire_if_already_past` to fire immediately when the first observed price is already past the target. Optional scope filters: `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices` (`0` = Yes/Up, `1` = No), `event_slugs`, `tags` (a market's tags or category), `series_slugs` (parent series).",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.price_threshold/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribePriceThreshold": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.price_threshold"
+      },
+      "title": "Unsubscribe — Price Threshold Crossing",
+      "summary": "Unsubscribe from `price_threshold` alerts",
+      "description": "Stop receiving `price_threshold` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.price_threshold/messages/unsubscribe"
+        }
+      ]
+    },
+    "receivePriceThreshold": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.price_threshold"
+      },
+      "title": "Event — Price Threshold Crossing",
+      "summary": "Receive `price_threshold` alerts",
+      "description": "Fired when an outcome's price/probability crosses a target level (edge-triggered, fires once per crossing). **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.75`) to fire when the price crosses *up* to ≥ that level; use `max_probability` (e.g. `0.25`) to fire when it crosses *down* to ≤ that level. Set `one_shot` to delete the subscription after the first delivery (requires `position_ids` or `condition_ids`). Set `fire_if_already_past` to fire immediately when the first observed price is already past the target. Optional scope filters: `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices` (`0` = Yes/Up, `1` = No), `event_slugs`, `tags` (a market's tags or category), `series_slugs` (parent series).\n\n**Credits cost:** 200 per delivered alert.",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.price_threshold/messages/event"
+        }
+      ]
+    },
+    "subscribeMarketResolved": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.market_resolved"
+      },
+      "title": "Subscribe — Market Resolved",
+      "summary": "Subscribe to `market_resolved` alerts",
+      "description": "Fired once when a market reaches a terminal resolution. Collapses the underlying oracle events (`QuestionResolved`, `QuestionEmergencyResolved`, `ConditionResolution`, `NegRiskOutcomeReported`) into a single notification carrying the winning outcome and, when available, the settled price. Optional filters: `condition_ids`, `event_slugs`, `outcomes` (only fire when the winning outcome matches, e.g. `\"Yes\"`), `exclude_shortterm_markets`.",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.market_resolved/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribeMarketResolved": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.market_resolved"
+      },
+      "title": "Unsubscribe — Market Resolved",
+      "summary": "Unsubscribe from `market_resolved` alerts",
+      "description": "Stop receiving `market_resolved` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.market_resolved/messages/unsubscribe"
+        }
+      ]
+    },
+    "receiveMarketResolved": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.market_resolved"
+      },
+      "title": "Event — Market Resolved",
+      "summary": "Receive `market_resolved` alerts",
+      "description": "Fired once when a market reaches a terminal resolution. Collapses the underlying oracle events (`QuestionResolved`, `QuestionEmergencyResolved`, `ConditionResolution`, `NegRiskOutcomeReported`) into a single notification carrying the winning outcome and, when available, the settled price. Optional filters: `condition_ids`, `event_slugs`, `outcomes` (only fire when the winning outcome matches, e.g. `\"Yes\"`), `exclude_shortterm_markets`.\n\n**Credits cost:** 100 per delivered alert.",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.market_resolved/messages/event"
+        }
+      ]
+    },
+    "subscribeMarketDisputed": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.market_disputed"
+      },
+      "title": "Subscribe — Market Disputed",
+      "summary": "Subscribe to `market_disputed` alerts",
+      "description": "Fired when a proposed market resolution is challenged on-chain (`DisputePrice` or `AssertionDisputed`) — the resolution is now contested and delayed. Carries the disputer, the proposer, and the disputed/proposed outcome when available. Optional filters: `condition_ids`, `event_slugs`, `exclude_shortterm_markets`.",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.market_disputed/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribeMarketDisputed": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.market_disputed"
+      },
+      "title": "Unsubscribe — Market Disputed",
+      "summary": "Unsubscribe from `market_disputed` alerts",
+      "description": "Stop receiving `market_disputed` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.market_disputed/messages/unsubscribe"
+        }
+      ]
+    },
+    "receiveMarketDisputed": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.market_disputed"
+      },
+      "title": "Event — Market Disputed",
+      "summary": "Receive `market_disputed` alerts",
+      "description": "Fired when a proposed market resolution is challenged on-chain (`DisputePrice` or `AssertionDisputed`) — the resolution is now contested and delayed. Carries the disputer, the proposer, and the disputed/proposed outcome when available. Optional filters: `condition_ids`, `event_slugs`, `exclude_shortterm_markets`.\n\n**Credits cost:** 100 per delivered alert.",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.market_disputed/messages/event"
         }
       ]
     },
@@ -2813,7 +3092,7 @@
         "name": "WsAlertTraderFirstTradeSubscribe",
         "title": "First Trade — Subscribe",
         "summary": "Subscribe to `trader_first_trade` alerts",
-        "description": "Fired when a tracked trader executes their first trade on Polymarket\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`",
+        "description": "Fired when a tracked trader executes their first trade on Polymarket\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -2928,7 +3207,7 @@
         "name": "WsAlertTraderNewMarketSubscribe",
         "title": "New Market Entry — Subscribe",
         "summary": "Subscribe to `trader_new_market` alerts",
-        "description": "Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `condition_ids`, `event_slugs`, `min_usd_value`, `min_probability`, `max_probability`, `exclude_shortterm_markets`",
+        "description": "Fired when a trader places their first trade in a specific market/condition (fires once per trader+market pair)\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `condition_ids`, `event_slugs`, `min_usd_value`, `min_probability`, `max_probability`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -3044,7 +3323,7 @@
         "name": "WsAlertTraderWhaleTradeSubscribe",
         "title": "Whale Trade — Subscribe",
         "summary": "Subscribe to `trader_whale_trade` alerts",
-        "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`",
+        "description": "Fired when a trade meets the configured criteria. Use `min_usd_value` to filter by minimum trade size (optional, defaults to 0 — matches all trades), and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -3162,7 +3441,7 @@
         "name": "WsAlertTraderNewTradeSubscribe",
         "title": "New Trade — Subscribe",
         "summary": "Subscribe to `trader_new_trade` alerts",
-        "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`",
+        "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_probability`/`max_probability` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -3280,7 +3559,7 @@
         "name": "WsAlertTraderTradeEventSubscribe",
         "title": "Typed Trade-event — Subscribe",
         "summary": "Subscribe to `trader_trade_event` alerts",
-        "description": "Fired on every confirmed prediction trade. Payload is a tagged union of trade-type variants.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`",
+        "description": "Fired on every confirmed prediction trade. Payload is a tagged union of trade-type variants.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_probability`, `max_probability`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -3402,7 +3681,7 @@
         "name": "WsAlertTraderGlobalPnlSubscribe",
         "title": "Global PnL — Subscribe",
         "summary": "Subscribe to `trader_global_pnl` alerts",
-        "description": "Fired when a trader's global PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`",
+        "description": "Fired when a trader's global PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -3539,7 +3818,7 @@
         "name": "WsAlertTraderMarketPnlSubscribe",
         "title": "Market PnL — Subscribe",
         "summary": "Subscribe to `trader_market_pnl` alerts",
-        "description": "Fired when a trader's market-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `timeframes`, `exclude_shortterm_markets`",
+        "description": "Fired when a trader's market-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `timeframes`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -3668,7 +3947,7 @@
         "name": "WsAlertTraderCategoryPnlSubscribe",
         "title": "Category PnL — Subscribe",
         "summary": "Subscribe to `trader_category_pnl` alerts",
-        "description": "Fired when a trader's category-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `categories`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`",
+        "description": "Fired when a trader's category-level PnL  crosses a configured threshold\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `categories`, `min_realized_pnl_usd`, `max_realized_pnl_usd`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_win_rate`, `min_markets_traded`, `timeframes`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -3800,7 +4079,7 @@
         "name": "WsAlertTraderPositionResolvedSubscribe",
         "title": "Position Resolved — Subscribe",
         "summary": "Subscribe to `trader_position_resolved` alerts",
-        "description": "Fired once when a trader's position is resolved (won or lost)\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `outcome_indexes`, `won_only`",
+        "description": "Fired once when a trader's position is resolved (won or lost)\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `outcome_indexes`, `won_only`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -3923,7 +4202,7 @@
         "name": "WsAlertTraderPnlExitsSubscribe",
         "title": "Exit Markers — Subscribe",
         "summary": "Subscribe to `trader_pnl_exits` alerts",
-        "description": "Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`",
+        "description": "Fired once per position close, labelled with the exit reason (resolved_win / resolved_loss / sold_win / sold_loss).\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `traders`, `condition_ids`, `event_slugs`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -4025,7 +4304,7 @@
         "name": "WsAlertPositionHolderMetricsSubscribe",
         "title": "Position Holder Metrics — Subscribe",
         "summary": "Subscribe to `position_holder_metrics` alerts",
-        "description": "Fired when holder metrics change for a position.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `position_ids`",
+        "description": "Fired when holder metrics change for a position.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `position_ids`, `one_shot`",
         "tags": [
           {
             "name": "Holders"
@@ -4107,7 +4386,7 @@
         "name": "WsAlertConditionHolderMetricsSubscribe",
         "title": "Condition Holder Metrics — Subscribe",
         "summary": "Subscribe to `condition_holder_metrics` alerts",
-        "description": "Fired when holder metrics change for a condition.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `condition_ids`",
+        "description": "Fired when holder metrics change for a condition.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `one_shot`",
         "tags": [
           {
             "name": "Holders"
@@ -4185,7 +4464,7 @@
         "name": "WsAlertEventHolderMetricsSubscribe",
         "title": "Event Holder Metrics — Subscribe",
         "summary": "Subscribe to `event_holder_metrics` alerts",
-        "description": "Fired when holder metrics change for an event.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `event_slugs`",
+        "description": "Fired when holder metrics change for an event.\n\n**Credits cost:** 25 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `one_shot`",
         "tags": [
           {
             "name": "Holders"
@@ -4263,7 +4542,7 @@
         "name": "WsAlertConditionMetricsSubscribe",
         "title": "Market Metrics — Subscribe",
         "summary": "Subscribe to `condition_metrics` alerts",
-        "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`",
+        "description": "Fired when a market's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`, `one_shot`",
         "tags": [
           {
             "name": "Market"
@@ -4367,7 +4646,7 @@
         "name": "WsAlertEventMetricsSubscribe",
         "title": "Event Metrics — Subscribe",
         "summary": "Subscribe to `event_metrics` alerts",
-        "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`, `exclude_shortterm_markets`",
+        "description": "Fired when an event's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Event"
@@ -4473,7 +4752,7 @@
         "name": "WsAlertTagMetricsSubscribe",
         "title": "Tag Metrics — Subscribe",
         "summary": "Subscribe to `tag_metrics` alerts",
-        "description": "Fired when a tag's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `tags`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`",
+        "description": "Fired when a tag's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `tags`, `min_volume_usd`, `max_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `timeframes`, `one_shot`",
         "tags": [
           {
             "name": "Tag"
@@ -4577,7 +4856,7 @@
         "name": "WsAlertPositionMetricsSubscribe",
         "title": "Position Metrics — Subscribe",
         "summary": "Subscribe to `position_metrics` alerts",
-        "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `outcomes`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `min_price_change_pct`, `min_probability_change_pct`, `timeframes`",
+        "description": "Fired when a position's volume or transaction metrics cross a configured threshold. Use `timeframes` to restrict to specific windows (valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `outcomes`, `min_volume_usd`, `max_volume_usd`, `min_buy_usd`, `min_sell_volume_usd`, `min_fees`, `min_txns`, `min_unique_traders`, `min_price_change_pct`, `min_probability_change_pct`, `timeframes`, `one_shot`",
         "tags": [
           {
             "name": "Position"
@@ -4726,7 +5005,7 @@
         "name": "WsAlertMarketVolumeMilestoneSubscribe",
         "title": "Market Volume Milestone — Subscribe",
         "summary": "Subscribe to `market_volume_milestone` alerts",
-        "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `timeframes`, `milestone_amounts`",
+        "description": "Fired when a market's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds (e.g. `[10000, 100000]`). Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `timeframes`, `milestone_amounts`, `one_shot`",
         "tags": [
           {
             "name": "Market"
@@ -4818,7 +5097,7 @@
         "name": "WsAlertEventVolumeMilestoneSubscribe",
         "title": "Event Volume Milestone — Subscribe",
         "summary": "Subscribe to `event_volume_milestone` alerts",
-        "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `timeframes`, `milestone_amounts`, `exclude_shortterm_markets`",
+        "description": "Fired when an event's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `event_slugs` restricts to specific events.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `timeframes`, `milestone_amounts`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Event"
@@ -4912,7 +5191,7 @@
         "name": "WsAlertPositionVolumeMilestoneSubscribe",
         "title": "Position Volume Milestone — Subscribe",
         "summary": "Subscribe to `position_volume_milestone` alerts",
-        "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `outcomes`, `timeframes`, `milestone_amounts`",
+        "description": "Fired when a position's trading volume crosses a milestone threshold in the specified timeframe. **`timeframes` is required** (e.g. `[\"1h\", \"24h\"]`) — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`. Optional `milestone_amounts` restricts to specific USD thresholds. Optional `position_ids` or `condition_ids` restrict to specific positions/markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `outcomes`, `timeframes`, `milestone_amounts`, `one_shot`",
         "tags": [
           {
             "name": "Position"
@@ -5023,7 +5302,7 @@
         "name": "WsAlertProbabilitySpikeSubscribe",
         "title": "Probability Spike — Subscribe",
         "summary": "Subscribe to `probability_spike` alerts",
-        "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `event_slugs`, `outcomes`, `min_probability_change_pct`, `min_probability`, `max_probability`, `min_txns`, `min_volume_usd`, `spike_direction`, `window_secs`, `exclude_shortterm_markets`",
+        "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `event_slugs`, `tags`, `series_slugs`, `outcomes`, `min_probability_change_pct`, `min_probability`, `max_probability`, `min_txns`, `min_volume_usd`, `spike_direction`, `window_secs`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Position"
@@ -5045,6 +5324,9 @@
               ],
               "event_slugs": [
                 "example-event"
+              ],
+              "tags": [
+                "Politics"
               ],
               "outcomes": [
                 "Yes"
@@ -5088,6 +5370,9 @@
               "event_slugs": [
                 "example-event"
               ],
+              "tags": [
+                "Politics"
+              ],
               "outcomes": [
                 "Yes"
               ],
@@ -5107,7 +5392,7 @@
         "name": "WsAlertProbabilitySpikeEvent",
         "title": "Probability Spike — Event",
         "summary": "`probability_spike` alert pushed from server",
-        "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "description": "Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
             "name": "Position"
@@ -5143,7 +5428,7 @@
         "name": "WsAlertPriceSpikeSubscribe",
         "title": "Price Spike — Subscribe",
         "summary": "Subscribe to `price_spike` alerts",
-        "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `event_slugs`, `outcomes`, `min_price_change_pct`, `min_probability`, `max_probability`, `min_txns`, `min_volume_usd`, `spike_direction`, `window_secs`, `exclude_shortterm_markets`",
+        "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `position_ids`, `condition_ids`, `event_slugs`, `tags`, `series_slugs`, `outcomes`, `min_price_change_pct`, `min_probability`, `max_probability`, `min_txns`, `min_volume_usd`, `spike_direction`, `window_secs`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Position"
@@ -5165,6 +5450,9 @@
               ],
               "event_slugs": [
                 "example-event"
+              ],
+              "tags": [
+                "Politics"
               ],
               "outcomes": [
                 "Yes"
@@ -5208,6 +5496,9 @@
               "event_slugs": [
                 "example-event"
               ],
+              "tags": [
+                "Politics"
+              ],
               "outcomes": [
                 "Yes"
               ],
@@ -5227,7 +5518,7 @@
         "name": "WsAlertPriceSpikeEvent",
         "title": "Price Spike — Event",
         "summary": "`price_spike` alert pushed from server",
-        "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "description": "Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
             "name": "Position"
@@ -5263,7 +5554,7 @@
         "name": "WsAlertMarketVolumeSpikeSubscribe",
         "title": "Market Volume Spike — Subscribe",
         "summary": "Subscribe to `market_volume_spike` alerts",
-        "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`, `lifetime`. Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `condition_ids`, `timeframes`",
+        "description": "Fired when a market's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` — valid values: `1m`, `5m`, `30m`, `1h`, `6h`, `1d`, `24h`, `7d`, `30d`, `lifetime`. Optional `condition_ids` restricts to specific markets.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `condition_ids`, `timeframes`, `one_shot`",
         "tags": [
           {
             "name": "Market"
@@ -5359,7 +5650,7 @@
         "name": "WsAlertEventVolumeSpikeSubscribe",
         "title": "Event Volume Spike — Subscribe",
         "summary": "Subscribe to `event_volume_spike` alerts",
-        "description": "Fired when an event's aggregated trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` and `event_slugs` to narrow scope.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `event_slugs`, `timeframes`, `exclude_shortterm_markets`",
+        "description": "Fired when an event's aggregated trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `timeframes` and `event_slugs` to narrow scope.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `event_slugs`, `timeframes`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Event"
@@ -5455,7 +5746,7 @@
         "name": "WsAlertPositionVolumeSpikeSubscribe",
         "title": "Position Volume Spike — Subscribe",
         "summary": "Subscribe to `position_volume_spike` alerts",
-        "description": "Fired when a position's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` to narrow scope.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `position_ids`, `condition_ids`, `outcomes`, `timeframes`",
+        "description": "Fired when a position's trading volume grows by a multiple of `spike_ratio` within a timeframe. Requires `spike_ratio` (> 1.0, e.g. `2.0` fires when volume doubles). Optional `window_secs` sets the observation window in seconds (max 600). Optional `position_ids`, `condition_ids`, `outcomes`, and `timeframes` to narrow scope.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `spike_ratio`, `window_secs`, `position_ids`, `condition_ids`, `outcomes`, `timeframes`, `one_shot`",
         "tags": [
           {
             "name": "Position"
@@ -5566,7 +5857,7 @@
         "name": "WsAlertCloseToBondSubscribe",
         "title": "Close To Bond — Subscribe",
         "summary": "Subscribe to `close_to_bond` alerts",
-        "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `min_probability`, `max_probability`, `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices`, `event_slugs`, `exclude_shortterm_markets`",
+        "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series).\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `min_probability`, `max_probability`, `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices`, `event_slugs`, `exclude_shortterm_markets`, `tags`, `series_slugs`, `one_shot`",
         "tags": [
           {
             "name": "Market"
@@ -5597,7 +5888,10 @@
               "event_slugs": [
                 "example-event"
               ],
-              "exclude_shortterm_markets": true
+              "exclude_shortterm_markets": true,
+              "tags": [
+                "Politics"
+              ]
             }
           }
         ]
@@ -5637,7 +5931,10 @@
               "event_slugs": [
                 "example-event"
               ],
-              "exclude_shortterm_markets": true
+              "exclude_shortterm_markets": true,
+              "tags": [
+                "Politics"
+              ]
             }
           }
         ]
@@ -5646,7 +5943,7 @@
         "name": "WsAlertCloseToBondEvent",
         "title": "Close To Bond — Event",
         "summary": "`close_to_bond` alert pushed from server",
-        "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "description": "Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series).\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
             "name": "Market"
@@ -5687,11 +5984,337 @@
           }
         ]
       },
+      "WsAlertPriceThresholdSubscribe": {
+        "name": "WsAlertPriceThresholdSubscribe",
+        "title": "Price Threshold Crossing — Subscribe",
+        "summary": "Subscribe to `price_threshold` alerts",
+        "description": "Fired when an outcome's price/probability crosses a target level (edge-triggered, fires once per crossing). **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.75`) to fire when the price crosses *up* to ≥ that level; use `max_probability` (e.g. `0.25`) to fire when it crosses *down* to ≤ that level. Set `one_shot` to delete the subscription after the first delivery (requires `position_ids` or `condition_ids`). Set `fire_if_already_past` to fire immediately when the first observed price is already past the target. Optional scope filters: `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices` (`0` = Yes/Up, `1` = No), `event_slugs`, `tags` (a market's tags or category), `series_slugs` (parent series).\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `min_probability`, `max_probability`, `one_shot`, `fire_if_already_past`, `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices`, `event_slugs`, `tags`, `series_slugs`, `exclude_shortterm_markets`",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertPriceThresholdSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "price_threshold",
+              "min_probability": 0.95,
+              "max_probability": 0.05,
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ],
+              "outcomes": [
+                "Yes"
+              ],
+              "position_outcome_indices": [
+                0
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "tags": [
+                "Politics"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          }
+        ]
+      },
+      "WsAlertPriceThresholdUnsubscribe": {
+        "name": "WsAlertPriceThresholdUnsubscribe",
+        "title": "Price Threshold Crossing — Unsubscribe",
+        "summary": "Unsubscribe from `price_threshold` alerts",
+        "description": "Unsubscribe from `price_threshold` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertPriceThresholdUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "price_threshold",
+              "min_probability": 0.95,
+              "max_probability": 0.05,
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ],
+              "outcomes": [
+                "Yes"
+              ],
+              "position_outcome_indices": [
+                0
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "tags": [
+                "Politics"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          }
+        ]
+      },
+      "WsAlertPriceThresholdEvent": {
+        "name": "WsAlertPriceThresholdEvent",
+        "title": "Price Threshold Crossing — Event",
+        "summary": "`price_threshold` alert pushed from server",
+        "description": "Fired when an outcome's price/probability crosses a target level (edge-triggered, fires once per crossing). **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.75`) to fire when the price crosses *up* to ≥ that level; use `max_probability` (e.g. `0.25`) to fire when it crosses *down* to ≤ that level. Set `one_shot` to delete the subscription after the first delivery (requires `position_ids` or `condition_ids`). Set `fire_if_already_past` to fire immediately when the first observed price is already past the target. Optional scope filters: `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices` (`0` = Yes/Up, `1` = No), `event_slugs`, `tags` (a market's tags or category), `series_slugs` (parent series).\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertPriceThresholdEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "price_threshold",
+              "timestamp": 1743500000000,
+              "data": {
+                "trader": "0x0000000000000000000000000000000000000000",
+                "taker": "0x0000000000000000000000000000000000000000",
+                "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+                "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "outcome": "Yes",
+                "outcome_index": 0,
+                "question": "Will this test webhook fire correctly?",
+                "market_slug": "test-market-0000000000",
+                "event_slug": "test-event-0000000000",
+                "trade_id": "00000000-0000-0000-0000-000000000000",
+                "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "block": 0,
+                "confirmed_at": 1700000000,
+                "amount_usd": 500.0,
+                "shares_amount": 666.67,
+                "fee": 2.5,
+                "side": "Buy",
+                "previous_price": 0.72,
+                "price": 0.75,
+                "probability": 0.75,
+                "direction": "up",
+                "threshold": 0.75
+              }
+            }
+          }
+        ]
+      },
+      "WsAlertMarketResolvedSubscribe": {
+        "name": "WsAlertMarketResolvedSubscribe",
+        "title": "Market Resolved — Subscribe",
+        "summary": "Subscribe to `market_resolved` alerts",
+        "description": "Fired once when a market reaches a terminal resolution. Collapses the underlying oracle events (`QuestionResolved`, `QuestionEmergencyResolved`, `ConditionResolution`, `NegRiskOutcomeReported`) into a single notification carrying the winning outcome and, when available, the settled price. Optional filters: `condition_ids`, `event_slugs`, `outcomes` (only fire when the winning outcome matches, e.g. `\"Yes\"`), `exclude_shortterm_markets`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `event_slugs`, `outcomes`, `exclude_shortterm_markets`, `one_shot`",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertMarketResolvedSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "market_resolved",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "outcomes": [
+                "Yes"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          }
+        ]
+      },
+      "WsAlertMarketResolvedUnsubscribe": {
+        "name": "WsAlertMarketResolvedUnsubscribe",
+        "title": "Market Resolved — Unsubscribe",
+        "summary": "Unsubscribe from `market_resolved` alerts",
+        "description": "Unsubscribe from `market_resolved` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertMarketResolvedUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "market_resolved",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "outcomes": [
+                "Yes"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          }
+        ]
+      },
+      "WsAlertMarketResolvedEvent": {
+        "name": "WsAlertMarketResolvedEvent",
+        "title": "Market Resolved — Event",
+        "summary": "`market_resolved` alert pushed from server",
+        "description": "Fired once when a market reaches a terminal resolution. Collapses the underlying oracle events (`QuestionResolved`, `QuestionEmergencyResolved`, `ConditionResolution`, `NegRiskOutcomeReported`) into a single notification carrying the winning outcome and, when available, the settled price. Optional filters: `condition_ids`, `event_slugs`, `outcomes` (only fire when the winning outcome matches, e.g. `\"Yes\"`), `exclude_shortterm_markets`.\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertMarketResolvedEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "market_resolved",
+              "timestamp": 1743500000000,
+              "data": {
+                "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "winning_outcome": "Yes",
+                "settled_price": 1.0,
+                "resolution_kind": "question_resolved",
+                "question": "Will this test webhook fire correctly?",
+                "market_slug": "test-market-0000000000",
+                "event_slug": "test-event-0000000000",
+                "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/test.png",
+                "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "block": 0,
+                "confirmed_at": 1700000000
+              }
+            }
+          }
+        ]
+      },
+      "WsAlertMarketDisputedSubscribe": {
+        "name": "WsAlertMarketDisputedSubscribe",
+        "title": "Market Disputed — Subscribe",
+        "summary": "Subscribe to `market_disputed` alerts",
+        "description": "Fired when a proposed market resolution is challenged on-chain (`DisputePrice` or `AssertionDisputed`) — the resolution is now contested and delayed. Carries the disputer, the proposer, and the disputed/proposed outcome when available. Optional filters: `condition_ids`, `event_slugs`, `exclude_shortterm_markets`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `event_slugs`, `exclude_shortterm_markets`, `one_shot`",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertMarketDisputedSubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "market_disputed",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          }
+        ]
+      },
+      "WsAlertMarketDisputedUnsubscribe": {
+        "name": "WsAlertMarketDisputedUnsubscribe",
+        "title": "Market Disputed — Unsubscribe",
+        "summary": "Unsubscribe from `market_disputed` alerts",
+        "description": "Unsubscribe from `market_disputed` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertMarketDisputedUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "market_disputed",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          }
+        ]
+      },
+      "WsAlertMarketDisputedEvent": {
+        "name": "WsAlertMarketDisputedEvent",
+        "title": "Market Disputed — Event",
+        "summary": "`market_disputed` alert pushed from server",
+        "description": "Fired when a proposed market resolution is challenged on-chain (`DisputePrice` or `AssertionDisputed`) — the resolution is now contested and delayed. Carries the disputer, the proposer, and the disputed/proposed outcome when available. Optional filters: `condition_ids`, `event_slugs`, `exclude_shortterm_markets`.\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertMarketDisputedEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "market_disputed",
+              "timestamp": 1743500000000,
+              "data": {
+                "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "dispute_kind": "dispute_price",
+                "disputer": "0x0000000000000000000000000000000000000000",
+                "proposer": "0x0000000000000000000000000000000000000001",
+                "proposed_outcome": "Yes",
+                "proposed_price": 1.0,
+                "question": "Will this test webhook fire correctly?",
+                "market_slug": "test-market-0000000000",
+                "event_slug": "test-event-0000000000",
+                "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/test.png",
+                "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "block": 0,
+                "confirmed_at": 1700000000
+              }
+            }
+          }
+        ]
+      },
       "WsAlertMarketCreatedSubscribe": {
         "name": "WsAlertMarketCreatedSubscribe",
         "title": "Market Created — Subscribe",
         "summary": "Subscribe to `market_created` alerts",
-        "description": "Fired when a new prediction market is created on Polymarket. Filterable by `tags` and `event_slugs`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `tags`, `exclude_shortterm_markets`",
+        "description": "Fired when a new prediction market is created on Polymarket. Filterable by `tags` and `event_slugs`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `tags`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Market"
@@ -5801,7 +6424,7 @@
         "name": "WsAlertOracleEventsSubscribe",
         "title": "Oracle Events — Subscribe",
         "summary": "Subscribe to `oracle_events` alerts",
-        "description": "Fired on every on-chain oracle event. Use `oracle_event_types` to restrict to specific kinds — valid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`, `RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`, `QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`, `QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`, `QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`, `NegRiskOutcomeReported`. Optional `condition_ids` narrows by market.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `oracle_event_types`, `condition_ids`",
+        "description": "Fired on every on-chain oracle event. Use `oracle_event_types` to restrict to specific kinds — valid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`, `RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`, `QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`, `QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`, `QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`, `NegRiskOutcomeReported`. Optional `condition_ids` narrows by market.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `oracle_event_types`, `condition_ids`, `one_shot`",
         "tags": [
           {
             "name": "Market"
@@ -5886,7 +6509,7 @@
         "name": "WsAlertAssetPriceTickSubscribe",
         "title": "Asset Price Tick — Subscribe",
         "summary": "Subscribe to `asset_price_tick` alerts",
-        "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Use `asset_symbols` to restrict to specific assets (empty = all).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `asset_symbols`",
+        "description": "Fired when the price of a tracked crypto asset updates (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Use `asset_symbols` to restrict to specific assets (empty = all).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `asset_symbols`, `one_shot`",
         "tags": [
           {
             "name": "Assets"
@@ -5963,7 +6586,7 @@
         "name": "WsAlertAssetPriceWindowUpdateSubscribe",
         "title": "Asset Price Window Update — Subscribe",
         "summary": "Subscribe to `asset_price_window_update` alerts",
-        "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"`, `\"24h\"`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `asset_symbols`, `timeframes`",
+        "description": "Fired at the start and end of each price candle for tracked crypto assets (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Payload includes `update_type` (`\"open\"` or `\"close\"`) indicating whether the candle is opening or closing. Use `asset_symbols` to restrict to specific assets. Use `timeframes` to restrict to specific candle sizes — valid values: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"`, `\"24h\"`.\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `asset_symbols`, `timeframes`, `one_shot`",
         "tags": [
           {
             "name": "Assets"
@@ -6424,6 +7047,13 @@
         "type": "object",
         "description": "Subscription filters for the `asset_price_tick` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "asset_symbols": {
             "type": [
               "array",
@@ -6465,6 +7095,13 @@
         "type": "object",
         "description": "Subscription filters for the `asset_price_window_update` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "asset_symbols": {
             "type": [
               "array",
@@ -6826,6 +7463,35 @@
         "type": "object",
         "description": "Subscription filters for the `close_to_bond` event. At least one of\n`min_probability` or `max_probability` is required (enforced at runtime).",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
+          "series_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in any of these series (by slug, case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
           "min_probability": {
             "type": [
               "number",
@@ -7059,6 +7725,13 @@
             "items": {
               "type": "string"
             }
+          },
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
           }
         }
       },
@@ -7521,6 +8194,13 @@
             "items": {
               "type": "string"
             }
+          },
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
           }
         }
       },
@@ -7555,6 +8235,13 @@
         "type": "object",
         "description": "Subscription filters for the `event_metrics` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "event_slugs": {
             "type": [
               "array",
@@ -7764,6 +8451,13 @@
           "timeframes"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "timeframes": {
             "type": "array",
             "items": {
@@ -7852,6 +8546,13 @@
           "spike_ratio"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "spike_ratio": {
             "type": "number",
             "format": "double",
@@ -8528,6 +9229,13 @@
         "type": "object",
         "description": "Subscription filters for the `market_created` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "tags": {
             "type": [
               "array",
@@ -8682,10 +9390,157 @@
           }
         }
       },
+      "MarketDisputedFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `market_disputed` event. All fields are optional.",
+        "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in these events.",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "MarketDisputedPayload": {
+        "type": "object",
+        "description": "Market-disputed webhook payload",
+        "required": [
+          "dispute_kind",
+          "disputer",
+          "hash"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Condition ID (the contested market), when resolvable"
+          },
+          "dispute_kind": {
+            "type": "string",
+            "description": "Which oracle event produced this dispute: `\"dispute_price\"` or `\"assertion_disputed\"`."
+          },
+          "disputer": {
+            "type": "string",
+            "description": "Address that filed the dispute"
+          },
+          "proposer": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address that made the disputed proposal/assertion, when known"
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The proposed outcome that was disputed, when known (e.g. \"Yes\", \"No\")"
+          },
+          "proposed_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "The proposed price (0.0–1.0) that was disputed (`DisputePrice` only)"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market image URL"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash of the dispute event"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Block number",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Confirmed timestamp (Unix seconds)",
+            "minimum": 0
+          }
+        }
+      },
       "MarketMetricsFilters": {
         "type": "object",
         "description": "Subscription filters for the `condition_metrics` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "condition_ids": {
             "type": [
               "array",
@@ -8913,6 +9768,143 @@
           }
         }
       },
+      "MarketResolvedFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `market_resolved` event. All fields are optional.",
+        "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in these events.",
+            "maxItems": 500
+          },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Only fire when the winning outcome matches one of these (e.g. \\[\"Yes\"\\]).",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "MarketResolvedPayload": {
+        "type": "object",
+        "description": "Market-resolved webhook payload",
+        "required": [
+          "condition_id",
+          "resolution_kind",
+          "hash"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": "string",
+            "description": "Condition ID (the resolved market)"
+          },
+          "winning_outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Winning outcome name when known (e.g. \"Yes\", \"No\")"
+          },
+          "settled_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Settled price (0.0–1.0) when the resolution event carries one\n(`QuestionResolved` only). 1.0 = full YES, 0.0 = full NO, 0.5 = split."
+          },
+          "resolution_kind": {
+            "type": "string",
+            "description": "Which oracle event produced this resolution: `\"question_resolved\"`,\n`\"question_emergency_resolved\"`, `\"condition_resolution\"`, or `\"neg_risk_outcome_reported\"`."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market image URL"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash of the resolution event"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Block number",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Confirmed timestamp (Unix seconds)",
+            "minimum": 0
+          }
+        }
+      },
       "MarketVolumeMilestoneFilters": {
         "type": "object",
         "description": "Subscription filters for the `market_volume_milestone` event.",
@@ -8920,6 +9912,13 @@
           "timeframes"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "timeframes": {
             "type": "array",
             "items": {
@@ -8961,6 +9960,13 @@
           "spike_ratio"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "spike_ratio": {
             "type": "number",
             "format": "double",
@@ -9979,6 +10985,13 @@
         "type": "object",
         "description": "Subscription filters for the `oracle_events` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "oracle_event_types": {
             "type": [
               "array",
@@ -10075,12 +11088,15 @@
           "asset_price_tick",
           "asset_price_window_update",
           "price_spike",
-          "oracle_events"
+          "oracle_events",
+          "price_threshold",
+          "market_resolved",
+          "market_disputed"
         ]
       },
       "PolymarketWebhookFilter": {
         "type": "object",
-        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- tag_metrics: tags, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets\n- market_created: event_slugs, tags, exclude_shortterm_markets\n- probability_spike: condition_ids, event_slugs, outcomes, min_probability, max_probability, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets\n- trader_event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded, exclude_shortterm_markets\n- trader_market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, exclude_shortterm_markets\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
+        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields.\nThe trade-driven events `price_spike`, `probability_spike`, and\n`close_to_bond` additionally accept `tags` (matches a market's tags OR its\ncategory) and `series_slugs` (matches the market's parent series); these are\nresolved from the tags/series the crawler enriches onto each trade.\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- tag_metrics: tags, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, tags, series_slugs, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets\n- market_created: event_slugs, tags, exclude_shortterm_markets\n- probability_spike: condition_ids, event_slugs, tags, series_slugs, outcomes, min_probability, max_probability, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- price_spike: condition_ids, event_slugs, tags, series_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets\n- trader_event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded, exclude_shortterm_markets\n- trader_market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, exclude_shortterm_markets\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
         "properties": {
           "wallet_addresses": {
             "type": "array",
@@ -10123,7 +11139,14 @@
             "items": {
               "type": "string"
             },
-            "description": "Filter by tags. Max 500 entries."
+            "description": "Filter by tags or category names (case-insensitive). Matches a market's\ntags or its category label. Max 500 entries."
+          },
+          "series_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by series slugs (case-insensitive). Matches a market's parent\nseries. Max 500 entries."
           },
           "min_probability": {
             "type": [
@@ -10351,6 +11374,14 @@
               "type": "string"
             },
             "description": "Filter for `oracle_events` by event name (case-insensitive).\nValid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`,\n`RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`,\n`QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`,\n`QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`,\n`QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`,\n`NegRiskOutcomeReported`. Empty = all types."
+          },
+          "one_shot": {
+            "type": "boolean",
+            "description": "Fire-and-delete: when `true`, the subscription is deleted after its first\nsuccessful delivery. Works on any webhook event. (`price_threshold`\nadditionally requires `position_ids` or `condition_ids`.)"
+          },
+          "fire_if_already_past": {
+            "type": "boolean",
+            "description": "For `price_threshold` — when `true`, fire immediately if the first observed\nprice is already past the target (no prior baseline). Default `false`."
           }
         }
       },
@@ -10362,6 +11393,13 @@
             "items": {
               "type": "string"
             }
+          },
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
           }
         }
       },
@@ -10420,6 +11458,13 @@
         "type": "object",
         "description": "Subscription filters for the `position_metrics` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "position_ids": {
             "type": [
               "array",
@@ -11144,6 +12189,13 @@
           "timeframes"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "timeframes": {
             "type": "array",
             "items": {
@@ -11290,6 +12342,13 @@
           "spike_ratio"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "spike_ratio": {
             "type": "number",
             "format": "double",
@@ -11449,6 +12508,13 @@
         "type": "object",
         "description": "Subscription filters for the `price_spike` event.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "position_ids": {
             "type": [
               "array",
@@ -11491,6 +12557,28 @@
               "type": "string"
             },
             "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
+          "series_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in any of these series (by slug, case-insensitive). Empty = all.",
             "maxItems": 500
           },
           "min_price_change_pct": {
@@ -11645,10 +12733,288 @@
           }
         }
       },
+      "PriceThresholdFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `price_threshold` event.",
+        "properties": {
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
+          "series_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in any of these series (by slug, case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Upward target — fire when the YES price crosses up to ≥ this value (e.g. 0.75 for 75%). At least one of `min_probability` or `max_probability` must be set.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Downward target — fire when the YES price crosses down to ≤ this value (e.g. 0.25).",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, delete the subscription after its first delivery (fire-and-delete). Requires `position_ids` or `condition_ids`. Default: `false`."
+          },
+          "fire_if_already_past": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, fire immediately if the first observed price is already past the target (no prior baseline). Default: `false` (wait for an actual crossing)."
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "position_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome token IDs.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in these events.",
+            "maxItems": 500
+          },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
+          "position_outcome_indices": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            },
+            "description": "Restrict by outcome index. 0 = Yes/Up, 1 = No. Position 0 usually represents the Up/Yes side in binary markets.",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "PriceThresholdPayload": {
+        "type": "object",
+        "description": "Price-threshold crossing webhook payload",
+        "required": [
+          "trader",
+          "taker",
+          "position_id",
+          "trade_id",
+          "hash",
+          "block",
+          "confirmed_at",
+          "amount_usd",
+          "shares_amount",
+          "fee",
+          "side",
+          "previous_price",
+          "price",
+          "direction",
+          "threshold"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader address (the limit-order maker)"
+          },
+          "taker": {
+            "type": "string",
+            "description": "Taker address (the order filler — often the exchange contract)"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Position ID (ERC1155 token ID)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Condition ID (parent market)"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Outcome index (0 = Yes/Up, 1 = No). Position 0 usually represents Yes/Up.",
+            "minimum": 0
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
+          },
+          "trade_id": {
+            "type": "string",
+            "description": "Trade ID"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Block number",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Confirmed timestamp (Unix seconds)",
+            "minimum": 0
+          },
+          "amount_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "USD size of the trade"
+          },
+          "shares_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Outcome shares traded"
+          },
+          "fee": {
+            "type": "number",
+            "format": "double",
+            "description": "Fee paid (USD)"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side (\"Buy\" or \"Sell\")"
+          },
+          "previous_price": {
+            "type": "number",
+            "format": "double",
+            "description": "Last observed price before this trade (the baseline the crossing is measured from)"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "description": "Price per share (0.0–1.0) that crossed the threshold"
+          },
+          "probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Implied probability of the outcome (0.0–1.0)"
+          },
+          "direction": {
+            "type": "string",
+            "description": "Crossing direction: `\"up\"` (crossed up to the `min_probability` target) or\n`\"down\"` (crossed down to the `max_probability` target)"
+          },
+          "threshold": {
+            "type": "number",
+            "format": "double",
+            "description": "The target threshold from the subscriber's filter that was crossed"
+          }
+        }
+      },
       "ProbabilitySpikeFilters": {
         "type": "object",
         "description": "Subscription filters for the `probability_spike` event.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "position_ids": {
             "type": [
               "array",
@@ -11712,6 +13078,28 @@
             "description": "Maximum YES probability (0-1).",
             "maximum": 1,
             "minimum": 0
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
+          "series_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in any of these series (by slug, case-insensitive). Empty = all.",
+            "maxItems": 500
           },
           "min_probability_change_pct": {
             "type": [
@@ -12995,6 +14383,13 @@
         "type": "object",
         "description": "Subscription filters for the `tag_metrics` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "tags": {
             "type": [
               "array",
@@ -13224,6 +14619,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_category_pnl` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "traders": {
             "type": [
               "array",
@@ -13328,6 +14730,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_pnl_exits` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "traders": {
             "type": [
               "array",
@@ -13367,6 +14776,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_first_trade` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "wallet_addresses": {
             "type": [
               "array",
@@ -13441,6 +14857,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_global_pnl` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "traders": {
             "type": [
               "array",
@@ -13534,6 +14957,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_market_pnl` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "traders": {
             "type": [
               "array",
@@ -13638,6 +15068,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_new_market` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "wallet_addresses": {
             "type": [
               "array",
@@ -13712,6 +15149,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_new_trade` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "wallet_addresses": {
             "type": [
               "array",
@@ -13803,6 +15247,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_position_resolved` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "traders": {
             "type": [
               "array",
@@ -13861,6 +15312,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_trade_event` event. All fields are optional.\n`event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that\nexclude `PositionsConverted`, because conversion events do not currently carry\n`event_slug` in the typed webhook payload.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "wallet_addresses": {
             "type": [
               "array",
@@ -13974,6 +15432,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_whale_trade` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "wallet_addresses": {
             "type": [
               "array",
@@ -14264,7 +15729,14 @@
             "items": {
               "type": "string"
             },
-            "description": "Filter by tags or category names (case-insensitive) — for market_created. Max 500 entries."
+            "description": "Filter by tags or category names (case-insensitive). Matches a market's tags or its\ncategory label — for market_created and all market-keyed events. Max 500 entries."
+          },
+          "series_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by series slugs (case-insensitive). Matches a market's parent series — for all\nmarket-keyed events. Max 500 entries."
           },
           "outcomes": {
             "type": "array",
@@ -14486,6 +15958,14 @@
               "$ref": "#/components/schemas/WebhookAssetSymbol"
             },
             "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update`.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\", \"DOGE\", \"BNB\", \"HYPE\". Empty = all assets (send everything)."
+          },
+          "one_shot": {
+            "type": "boolean",
+            "description": "Fire-and-delete: delete the subscription after its first successful\ndelivery. Works on any webhook event. (`price_threshold` additionally\nrequires `position_ids` or `condition_ids`.)"
+          },
+          "fire_if_already_past": {
+            "type": "boolean",
+            "description": "For `price_threshold` — fire immediately if the first observed price is\nalready past the target. Default `false` (wait for an actual crossing)."
           }
         }
       },
@@ -16847,6 +18327,9 @@
           "event_volume_spike",
           "position_volume_spike",
           "close_to_bond",
+          "price_threshold",
+          "market_resolved",
+          "market_disputed",
           "market_created",
           "oracle_events",
           "asset_price_tick",
@@ -19744,7 +21227,7 @@
         "allOf": [
           {
             "type": "object",
-            "description": "Subscribe to `probability_spike` alerts. Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
+            "description": "Subscribe to `probability_spike` alerts. Fired when a market's YES probability moves significantly. Use `min_probability_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window (e.g. `60` for 60 seconds). Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the YES probability band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
             "required": [
               "op",
               "event"
@@ -19774,6 +21257,9 @@
               ],
               "event_slugs": [
                 "example-event"
+              ],
+              "tags": [
+                "Politics"
               ],
               "outcomes": [
                 "Yes"
@@ -19827,6 +21313,9 @@
               ],
               "event_slugs": [
                 "example-event"
+              ],
+              "tags": [
+                "Politics"
               ],
               "outcomes": [
                 "Yes"
@@ -19893,7 +21382,7 @@
         "allOf": [
           {
             "type": "object",
-            "description": "Subscribe to `price_spike` alerts. Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
+            "description": "Subscribe to `price_spike` alerts. Fired when a position's price moves significantly. Use `min_price_change_pct` to set the minimum move (e.g. `10` for 10%). Use `window_secs` to observe moves within a specific time window. Use `spike_direction` (`\"up\"` | `\"down\"` | `\"both\"`) — defaults to `\"up\"` when not provided. Filter by `position_ids` or `outcomes` to narrow scope. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series). Optional `min_probability`/`max_probability` gate the price band, `min_txns`/`min_volume_usd` require a minimum number of trades or USD volume in the observation window.",
             "required": [
               "op",
               "event"
@@ -19923,6 +21412,9 @@
               ],
               "event_slugs": [
                 "example-event"
+              ],
+              "tags": [
+                "Politics"
               ],
               "outcomes": [
                 "Yes"
@@ -19976,6 +21468,9 @@
               ],
               "event_slugs": [
                 "example-event"
+              ],
+              "tags": [
+                "Politics"
               ],
               "outcomes": [
                 "Yes"
@@ -20432,7 +21927,7 @@
         "allOf": [
           {
             "type": "object",
-            "description": "Subscribe to `close_to_bond` alerts. Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events.",
+            "description": "Subscribe to `close_to_bond` alerts. Fired when a trade occurs at a near-certain-outcome price. **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.95`) to trigger when YES is near-certain; use `max_probability` (e.g. `0.05`) for NO near-certain. Optional filters: `position_outcome_indices` — restrict by outcome index (`0` = Yes/Up, `1` = No); `condition_ids` — restrict to specific markets; `position_ids` — restrict to specific outcome tokens; `outcomes` — restrict by outcome name (e.g. `\"Yes\"`, `\"No\"`); `event_slugs` — restrict to specific events. Scope by market taxonomy with `tags` (matches a market's tags or category) and `series_slugs` (matches its parent series).",
             "required": [
               "op",
               "event"
@@ -20471,7 +21966,10 @@
               "event_slugs": [
                 "example-event"
               ],
-              "exclude_shortterm_markets": true
+              "exclude_shortterm_markets": true,
+              "tags": [
+                "Politics"
+              ]
             }
           },
           {
@@ -20534,7 +22032,10 @@
               "event_slugs": [
                 "example-event"
               ],
-              "exclude_shortterm_markets": true
+              "exclude_shortterm_markets": true,
+              "tags": [
+                "Politics"
+              ]
             }
           },
           {
@@ -20603,6 +22104,443 @@
             "probability": 0.97,
             "bond_side": "high",
             "threshold": 0.95
+          }
+        }
+      },
+      "WsAlertPriceThresholdSubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `price_threshold` alerts. Fired when an outcome's price/probability crosses a target level (edge-triggered, fires once per crossing). **At least one of `min_probability` or `max_probability` is required.** Use `min_probability` (e.g. `0.75`) to fire when the price crosses *up* to ≥ that level; use `max_probability` (e.g. `0.25`) to fire when it crosses *down* to ≤ that level. Set `one_shot` to delete the subscription after the first delivery (requires `position_ids` or `condition_ids`). Set `fire_if_already_past` to fire immediately when the first observed price is already past the target. Optional scope filters: `condition_ids`, `position_ids`, `outcomes`, `position_outcome_indices` (`0` = Yes/Up, `1` = No), `event_slugs`, `tags` (a market's tags or category), `series_slugs` (parent series).",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "price_threshold"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "price_threshold",
+              "min_probability": 0.95,
+              "max_probability": 0.05,
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ],
+              "outcomes": [
+                "Yes"
+              ],
+              "position_outcome_indices": [
+                0
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "tags": [
+                "Politics"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          },
+          {
+            "$ref": "#/components/schemas/PriceThresholdFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "min_probability"
+            ]
+          },
+          {
+            "required": [
+              "max_probability"
+            ]
+          }
+        ]
+      },
+      "WsAlertPriceThresholdUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `price_threshold` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "price_threshold"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "price_threshold",
+              "min_probability": 0.95,
+              "max_probability": 0.05,
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ],
+              "outcomes": [
+                "Yes"
+              ],
+              "position_outcome_indices": [
+                0
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "tags": [
+                "Politics"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          },
+          {
+            "$ref": "#/components/schemas/PriceThresholdFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "min_probability"
+            ]
+          },
+          {
+            "required": [
+              "max_probability"
+            ]
+          }
+        ]
+      },
+      "WsAlertPriceThresholdEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `price_threshold` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "price_threshold"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PriceThresholdPayload"
+          }
+        },
+        "example": {
+          "event": "price_threshold",
+          "timestamp": 1743500000000,
+          "data": {
+            "trader": "0x0000000000000000000000000000000000000000",
+            "taker": "0x0000000000000000000000000000000000000000",
+            "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
+            "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "outcome": "Yes",
+            "outcome_index": 0,
+            "question": "Will this test webhook fire correctly?",
+            "market_slug": "test-market-0000000000",
+            "event_slug": "test-event-0000000000",
+            "trade_id": "00000000-0000-0000-0000-000000000000",
+            "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "block": 0,
+            "confirmed_at": 1700000000,
+            "amount_usd": 500.0,
+            "shares_amount": 666.67,
+            "fee": 2.5,
+            "side": "Buy",
+            "previous_price": 0.72,
+            "price": 0.75,
+            "probability": 0.75,
+            "direction": "up",
+            "threshold": 0.75
+          }
+        }
+      },
+      "WsAlertMarketResolvedSubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `market_resolved` alerts. Fired once when a market reaches a terminal resolution. Collapses the underlying oracle events (`QuestionResolved`, `QuestionEmergencyResolved`, `ConditionResolution`, `NegRiskOutcomeReported`) into a single notification carrying the winning outcome and, when available, the settled price. Optional filters: `condition_ids`, `event_slugs`, `outcomes` (only fire when the winning outcome matches, e.g. `\"Yes\"`), `exclude_shortterm_markets`.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "market_resolved"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "market_resolved",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "outcomes": [
+                "Yes"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          },
+          {
+            "$ref": "#/components/schemas/MarketResolvedFilters"
+          }
+        ]
+      },
+      "WsAlertMarketResolvedUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `market_resolved` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "market_resolved"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "market_resolved",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "outcomes": [
+                "Yes"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          },
+          {
+            "$ref": "#/components/schemas/MarketResolvedFilters"
+          }
+        ]
+      },
+      "WsAlertMarketResolvedEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `market_resolved` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "market_resolved"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MarketResolvedPayload"
+          }
+        },
+        "example": {
+          "event": "market_resolved",
+          "timestamp": 1743500000000,
+          "data": {
+            "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "winning_outcome": "Yes",
+            "settled_price": 1.0,
+            "resolution_kind": "question_resolved",
+            "question": "Will this test webhook fire correctly?",
+            "market_slug": "test-market-0000000000",
+            "event_slug": "test-event-0000000000",
+            "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/test.png",
+            "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "block": 0,
+            "confirmed_at": 1700000000
+          }
+        }
+      },
+      "WsAlertMarketDisputedSubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `market_disputed` alerts. Fired when a proposed market resolution is challenged on-chain (`DisputePrice` or `AssertionDisputed`) — the resolution is now contested and delayed. Carries the disputer, the proposer, and the disputed/proposed outcome when available. Optional filters: `condition_ids`, `event_slugs`, `exclude_shortterm_markets`.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "market_disputed"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "market_disputed",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          },
+          {
+            "$ref": "#/components/schemas/MarketDisputedFilters"
+          }
+        ]
+      },
+      "WsAlertMarketDisputedUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `market_disputed` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "market_disputed"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "market_disputed",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ],
+              "event_slugs": [
+                "example-event"
+              ],
+              "exclude_shortterm_markets": true
+            }
+          },
+          {
+            "$ref": "#/components/schemas/MarketDisputedFilters"
+          }
+        ]
+      },
+      "WsAlertMarketDisputedEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `market_disputed` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "market_disputed"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MarketDisputedPayload"
+          }
+        },
+        "example": {
+          "event": "market_disputed",
+          "timestamp": 1743500000000,
+          "data": {
+            "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "dispute_kind": "dispute_price",
+            "disputer": "0x0000000000000000000000000000000000000000",
+            "proposer": "0x0000000000000000000000000000000000000001",
+            "proposed_outcome": "Yes",
+            "proposed_price": 1.0,
+            "question": "Will this test webhook fire correctly?",
+            "market_slug": "test-market-0000000000",
+            "event_slug": "test-event-0000000000",
+            "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/test.png",
+            "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "block": 0,
+            "confirmed_at": 1700000000
           }
         }
       },
@@ -21163,6 +23101,15 @@
             "$ref": "#/components/schemas/WsAlertCloseToBondSubscribeMessage"
           },
           {
+            "$ref": "#/components/schemas/WsAlertPriceThresholdSubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertMarketResolvedSubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertMarketDisputedSubscribeMessage"
+          },
+          {
             "$ref": "#/components/schemas/WsAlertMarketCreatedSubscribeMessage"
           },
           {
@@ -21259,6 +23206,15 @@
             "$ref": "#/components/schemas/WsAlertCloseToBondUnsubscribeMessage"
           },
           {
+            "$ref": "#/components/schemas/WsAlertPriceThresholdUnsubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertMarketResolvedUnsubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertMarketDisputedUnsubscribeMessage"
+          },
+          {
             "$ref": "#/components/schemas/WsAlertMarketCreatedUnsubscribeMessage"
           },
           {
@@ -21353,6 +23309,15 @@
           },
           {
             "$ref": "#/components/schemas/WsAlertCloseToBondEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertPriceThresholdEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertMarketResolvedEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertMarketDisputedEvent"
           },
           {
             "$ref": "#/components/schemas/WsAlertMarketCreatedEvent"

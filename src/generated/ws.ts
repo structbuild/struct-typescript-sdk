@@ -88,6 +88,11 @@ export interface components {
         };
         /** @description Subscription filters for the `asset_price_tick` event. All fields are optional. */
         AssetPriceTickFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Restrict to these crypto assets. Empty = all assets. */
             asset_symbols?: components["schemas"]["WebhookAssetSymbol"][] | null;
         };
@@ -108,6 +113,11 @@ export interface components {
         };
         /** @description Subscription filters for the `asset_price_window_update` event. All fields are optional. */
         AssetPriceWindowUpdateFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Restrict to these crypto assets. Empty = all assets. */
             asset_symbols?: components["schemas"]["WebhookAssetSymbol"][] | null;
             /** @description Restrict to these candle sizes. Empty = all sizes. */
@@ -234,6 +244,15 @@ export interface components {
          */
         CloseToBondFilters: {
             /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
+            /** @description Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all. */
+            tags?: string[] | null;
+            /** @description Restrict to markets in any of these series (by slug, case-insensitive). Empty = all. */
+            series_slugs?: string[] | null;
+            /**
              * Format: double
              * @description Trigger when the YES outcome price is ≥ this value (e.g. 0.95 for 95% certainty). At least one of `min_probability` or `max_probability` must be set.
              */
@@ -330,6 +349,11 @@ export interface components {
         };
         ConditionHolderMetricsFilters: {
             condition_ids?: string[];
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
         };
         ConditionHolderMetricsPayload: {
             /** Format: int32 */
@@ -497,6 +521,11 @@ export interface components {
         };
         EventHolderMetricsFilters: {
             event_slugs?: string[];
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
         };
         EventHolderMetricsPayload: {
             /** Format: int32 */
@@ -509,6 +538,11 @@ export interface components {
         };
         /** @description Subscription filters for the `event_metrics` event. All fields are optional. */
         EventMetricsFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Restrict to these events. Empty = all events. */
             event_slugs?: string[] | null;
             /** @description Restrict to these aggregation windows. */
@@ -598,6 +632,11 @@ export interface components {
         };
         /** @description Subscription filters for the `event_volume_milestone` event. */
         EventVolumeMilestoneFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description **Required.** Aggregation windows to monitor. */
             timeframes: components["schemas"]["MetricFilterTimeframe"][];
             /** @description Restrict to these events. */
@@ -634,6 +673,11 @@ export interface components {
         };
         /** @description Subscription filters for the `event_volume_spike` event. `spike_ratio` is required. */
         EventVolumeSpikeFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /**
              * Format: double
              * @description **Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio.
@@ -874,6 +918,11 @@ export interface components {
         };
         /** @description Subscription filters for the `market_created` event. All fields are optional. */
         MarketCreatedFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Restrict to markets with these tags or category names (case-insensitive match). */
             tags?: string[] | null;
             /** @description Restrict to markets belonging to these events. */
@@ -924,8 +973,65 @@ export interface components {
             /** @description Whether this is a neg-risk market */
             neg_risk: boolean;
         };
+        /** @description Subscription filters for the `market_disputed` event. All fields are optional. */
+        MarketDisputedFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
+            /** @description Restrict to these markets. */
+            condition_ids?: string[] | null;
+            /** @description Restrict to markets in these events. */
+            event_slugs?: string[] | null;
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean | null;
+        };
+        /** @description Market-disputed webhook payload */
+        MarketDisputedPayload: {
+            /** @description Condition ID (the contested market), when resolvable */
+            condition_id?: string | null;
+            /** @description Which oracle event produced this dispute: `"dispute_price"` or `"assertion_disputed"`. */
+            dispute_kind: string;
+            /** @description Address that filed the dispute */
+            disputer: string;
+            /** @description Address that made the disputed proposal/assertion, when known */
+            proposer?: string | null;
+            /** @description The proposed outcome that was disputed, when known (e.g. "Yes", "No") */
+            proposed_outcome?: string | null;
+            /**
+             * Format: double
+             * @description The proposed price (0.0–1.0) that was disputed (`DisputePrice` only)
+             */
+            proposed_price?: number | null;
+            /** @description Market question */
+            question?: string | null;
+            /** @description Market slug */
+            market_slug?: string | null;
+            /** @description Event slug */
+            event_slug?: string | null;
+            /** @description Market image URL */
+            image_url?: string | null;
+            /** @description Transaction hash of the dispute event */
+            hash: string;
+            /**
+             * Format: int64
+             * @description Block number
+             */
+            block?: number | null;
+            /**
+             * Format: int64
+             * @description Confirmed timestamp (Unix seconds)
+             */
+            confirmed_at?: number | null;
+        };
         /** @description Subscription filters for the `condition_metrics` event. All fields are optional. */
         MarketMetricsFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Restrict to these markets. Empty = all markets. */
             condition_ids?: string[] | null;
             /** @description Restrict to these aggregation windows. Empty = all windows. */
@@ -1001,8 +1107,67 @@ export interface components {
             /** Format: int64 */
             last_trade_at?: number | null;
         };
+        /** @description Subscription filters for the `market_resolved` event. All fields are optional. */
+        MarketResolvedFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
+            /** @description Restrict to these markets. */
+            condition_ids?: string[] | null;
+            /** @description Restrict to markets in these events. */
+            event_slugs?: string[] | null;
+            /** @description Only fire when the winning outcome matches one of these (e.g. \["Yes"\]). */
+            outcomes?: string[] | null;
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean | null;
+        };
+        /** @description Market-resolved webhook payload */
+        MarketResolvedPayload: {
+            /** @description Condition ID (the resolved market) */
+            condition_id: string;
+            /** @description Winning outcome name when known (e.g. "Yes", "No") */
+            winning_outcome?: string | null;
+            /**
+             * Format: double
+             * @description Settled price (0.0–1.0) when the resolution event carries one
+             *     (`QuestionResolved` only). 1.0 = full YES, 0.0 = full NO, 0.5 = split.
+             */
+            settled_price?: number | null;
+            /**
+             * @description Which oracle event produced this resolution: `"question_resolved"`,
+             *     `"question_emergency_resolved"`, `"condition_resolution"`, or `"neg_risk_outcome_reported"`.
+             */
+            resolution_kind: string;
+            /** @description Market question */
+            question?: string | null;
+            /** @description Market slug */
+            market_slug?: string | null;
+            /** @description Event slug */
+            event_slug?: string | null;
+            /** @description Market image URL */
+            image_url?: string | null;
+            /** @description Transaction hash of the resolution event */
+            hash: string;
+            /**
+             * Format: int64
+             * @description Block number
+             */
+            block?: number | null;
+            /**
+             * Format: int64
+             * @description Confirmed timestamp (Unix seconds)
+             */
+            confirmed_at?: number | null;
+        };
         /** @description Subscription filters for the `market_volume_milestone` event. */
         MarketVolumeMilestoneFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description **Required.** Aggregation windows to monitor (e.g. \["1h", "24h"\]). */
             timeframes: components["schemas"]["MetricFilterTimeframe"][];
             /** @description Restrict to these markets. Empty = all markets. */
@@ -1012,6 +1177,11 @@ export interface components {
         };
         /** @description Subscription filters for the `market_volume_spike` event. `spike_ratio` is required. */
         MarketVolumeSpikeFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /**
              * Format: double
              * @description **Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio. The snapshot is set automatically on first data and resets after each fire.
@@ -1314,6 +1484,11 @@ export interface components {
         });
         /** @description Subscription filters for the `oracle_events` event. All fields are optional. */
         OracleEventsFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Restrict to these event types (case-insensitive). Empty = all. */
             oracle_event_types?: components["schemas"]["OracleEventFilterType"][] | null;
             /** @description Restrict to events for these condition IDs. */
@@ -1340,11 +1515,15 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_category_pnl" | "trader_position_resolved" | "trader_exit_markers" | "position_holder_metrics" | "condition_holder_metrics" | "event_holder_metrics" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_category_pnl" | "trader_position_resolved" | "trader_exit_markers" | "position_holder_metrics" | "condition_holder_metrics" | "event_holder_metrics" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events" | "price_threshold" | "market_resolved" | "market_disputed";
         /**
          * @description Polymarket-specific webhook filters
          *
-         *     Different webhook handlers use different subsets of these fields:
+         *     Different webhook handlers use different subsets of these fields.
+         *     The trade-driven events `price_spike`, `probability_spike`, and
+         *     `close_to_bond` additionally accept `tags` (matches a market's tags OR its
+         *     category) and `series_slugs` (matches the market's parent series); these are
+         *     resolved from the tags/series the crawler enriches onto each trade.
          *     - first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags
          *     - new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability
          *     - whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs
@@ -1356,10 +1535,10 @@ export interface components {
          *     - tag_metrics: tags, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes
          *     - position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes
          *     - volume_milestone: condition_ids, timeframes, milestone_amounts
-         *     - close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets
+         *     - close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, tags, series_slugs, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets
          *     - market_created: event_slugs, tags, exclude_shortterm_markets
-         *     - probability_spike: condition_ids, event_slugs, outcomes, min_probability, max_probability, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets
-         *     - price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets
+         *     - probability_spike: condition_ids, event_slugs, tags, series_slugs, outcomes, min_probability, max_probability, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets
+         *     - price_spike: condition_ids, event_slugs, tags, series_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets
          *     - trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
          *     - trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
          *     - trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets
@@ -1384,8 +1563,16 @@ export interface components {
             min_usd_value?: number | null;
             /** @description Filter by event slugs. Max 500 entries. */
             event_slugs?: string[];
-            /** @description Filter by tags. Max 500 entries. */
+            /**
+             * @description Filter by tags or category names (case-insensitive). Matches a market's
+             *     tags or its category label. Max 500 entries.
+             */
             tags?: string[];
+            /**
+             * @description Filter by series slugs (case-insensitive). Matches a market's parent
+             *     series. Max 500 entries.
+             */
+            series_slugs?: string[];
             /**
              * Format: double
              * @description Minimum probability threshold (0.0 - 1.0)
@@ -1528,9 +1715,25 @@ export interface components {
              *     `NegRiskOutcomeReported`. Empty = all types.
              */
             oracle_event_types?: string[];
+            /**
+             * @description Fire-and-delete: when `true`, the subscription is deleted after its first
+             *     successful delivery. Works on any webhook event. (`price_threshold`
+             *     additionally requires `position_ids` or `condition_ids`.)
+             */
+            one_shot?: boolean;
+            /**
+             * @description For `price_threshold` — when `true`, fire immediately if the first observed
+             *     price is already past the target (no prior baseline). Default `false`.
+             */
+            fire_if_already_past?: boolean;
         };
         PositionHolderMetricsFilters: {
             position_ids?: string[];
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
         };
         PositionHolderMetricsPayload: {
             /** Format: int32 */
@@ -1551,6 +1754,11 @@ export interface components {
         };
         /** @description Subscription filters for the `position_metrics` event. All fields are optional. */
         PositionMetricsFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Restrict to these outcome token IDs. */
             position_ids?: string[] | null;
             /** @description Restrict to positions within these markets. */
@@ -1854,6 +2062,11 @@ export interface components {
         };
         /** @description Subscription filters for the `position_volume_milestone` event. */
         PositionVolumeMilestoneFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description **Required.** Aggregation windows to monitor. */
             timeframes: components["schemas"]["MetricFilterTimeframe"][];
             /** @description Restrict to these outcome token IDs. */
@@ -1916,6 +2129,11 @@ export interface components {
         };
         /** @description Subscription filters for the `position_volume_spike` event. `spike_ratio` is required. */
         PositionVolumeSpikeFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /**
              * Format: double
              * @description **Required.** Multiplier threshold (must be > 1.0). Fires when current volume >= snapshot × ratio.
@@ -1980,6 +2198,11 @@ export interface components {
         };
         /** @description Subscription filters for the `price_spike` event. */
         PriceSpikeFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Restrict to specific outcome token IDs. Empty = all positions. */
             position_ids?: string[] | null;
             /** @description Restrict to specific market condition IDs. Empty = all markets. */
@@ -1988,6 +2211,10 @@ export interface components {
             event_slugs?: string[] | null;
             /** @description Restrict to these outcome names (e.g. \["Yes", "No"\]). */
             outcomes?: string[] | null;
+            /** @description Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all. */
+            tags?: string[] | null;
+            /** @description Restrict to markets in any of these series (by slug, case-insensitive). Empty = all. */
+            series_slugs?: string[] | null;
             /**
              * Format: double
              * @description Minimum price percentage move to trigger (e.g. `10` for a 10% move).
@@ -2051,8 +2278,126 @@ export interface components {
              */
             spike_pct: number;
         };
+        /** @description Subscription filters for the `price_threshold` event. */
+        PriceThresholdFilters: {
+            /** @description Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all. */
+            tags?: string[] | null;
+            /** @description Restrict to markets in any of these series (by slug, case-insensitive). Empty = all. */
+            series_slugs?: string[] | null;
+            /**
+             * Format: double
+             * @description Upward target — fire when the YES price crosses up to ≥ this value (e.g. 0.75 for 75%). At least one of `min_probability` or `max_probability` must be set.
+             */
+            min_probability?: number | null;
+            /**
+             * Format: double
+             * @description Downward target — fire when the YES price crosses down to ≤ this value (e.g. 0.25).
+             */
+            max_probability?: number | null;
+            /** @description When `true`, delete the subscription after its first delivery (fire-and-delete). Requires `position_ids` or `condition_ids`. Default: `false`. */
+            one_shot?: boolean | null;
+            /** @description When `true`, fire immediately if the first observed price is already past the target (no prior baseline). Default: `false` (wait for an actual crossing). */
+            fire_if_already_past?: boolean | null;
+            /** @description Restrict to these markets. */
+            condition_ids?: string[] | null;
+            /** @description Restrict to these outcome token IDs. */
+            position_ids?: string[] | null;
+            /** @description Restrict to markets in these events. */
+            event_slugs?: string[] | null;
+            /** @description Restrict to these outcome names (e.g. \["Yes", "No"\]). */
+            outcomes?: string[] | null;
+            /** @description Restrict by outcome index. 0 = Yes/Up, 1 = No. Position 0 usually represents the Up/Yes side in binary markets. */
+            position_outcome_indices?: number[] | null;
+            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
+            exclude_shortterm_markets?: boolean | null;
+        };
+        /** @description Price-threshold crossing webhook payload */
+        PriceThresholdPayload: {
+            /** @description Trader address (the limit-order maker) */
+            trader: string;
+            /** @description Taker address (the order filler — often the exchange contract) */
+            taker: string;
+            /** @description Position ID (ERC1155 token ID) */
+            position_id: string;
+            /** @description Condition ID (parent market) */
+            condition_id?: string | null;
+            /** @description Outcome name (e.g. "Yes", "No") */
+            outcome?: string | null;
+            /**
+             * Format: int32
+             * @description Outcome index (0 = Yes/Up, 1 = No). Position 0 usually represents Yes/Up.
+             */
+            outcome_index?: number | null;
+            /** @description Market question */
+            question?: string | null;
+            /** @description Market slug */
+            market_slug?: string | null;
+            /** @description Event slug */
+            event_slug?: string | null;
+            /** @description Trade ID */
+            trade_id: string;
+            /** @description Transaction hash */
+            hash: string;
+            /**
+             * Format: int64
+             * @description Block number
+             */
+            block: number;
+            /**
+             * Format: int64
+             * @description Confirmed timestamp (Unix seconds)
+             */
+            confirmed_at: number;
+            /**
+             * Format: double
+             * @description USD size of the trade
+             */
+            amount_usd: number;
+            /**
+             * Format: double
+             * @description Outcome shares traded
+             */
+            shares_amount: number;
+            /**
+             * Format: double
+             * @description Fee paid (USD)
+             */
+            fee: number;
+            /** @description Trade side ("Buy" or "Sell") */
+            side: string;
+            /**
+             * Format: double
+             * @description Last observed price before this trade (the baseline the crossing is measured from)
+             */
+            previous_price: number;
+            /**
+             * Format: double
+             * @description Price per share (0.0–1.0) that crossed the threshold
+             */
+            price: number;
+            /**
+             * Format: double
+             * @description Implied probability of the outcome (0.0–1.0)
+             */
+            probability?: number | null;
+            /**
+             * @description Crossing direction: `"up"` (crossed up to the `min_probability` target) or
+             *     `"down"` (crossed down to the `max_probability` target)
+             */
+            direction: string;
+            /**
+             * Format: double
+             * @description The target threshold from the subscriber's filter that was crossed
+             */
+            threshold: number;
+        };
         /** @description Subscription filters for the `probability_spike` event. */
         ProbabilitySpikeFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Restrict to specific outcome token IDs. Empty = all positions. */
             position_ids?: string[] | null;
             /** @description Restrict to specific market condition IDs. Empty = all markets. */
@@ -2071,6 +2416,10 @@ export interface components {
              * @description Maximum YES probability (0-1).
              */
             max_probability?: number | null;
+            /** @description Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all. */
+            tags?: string[] | null;
+            /** @description Restrict to markets in any of these series (by slug, case-insensitive). Empty = all. */
+            series_slugs?: string[] | null;
             /**
              * Format: double
              * @description Minimum probability percentage move to trigger (e.g. `10` for a 10% move).
@@ -2415,6 +2764,11 @@ export interface components {
         SpikeDirection: "up" | "down" | "both";
         /** @description Subscription filters for the `tag_metrics` event. All fields are optional. */
         TagMetricsFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Restrict to these tags. Empty = all tags. */
             tags?: string[] | null;
             /** @description Restrict to these aggregation windows. */
@@ -2508,6 +2862,11 @@ export interface components {
         TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
         /** @description Subscription filters for the `trader_category_pnl` event. All fields are optional. */
         TraderCategoryPnlFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Track only these trader wallet addresses. Empty = all traders. */
             traders?: string[] | null;
             /** @description Restrict to these market categories (e.g. `politics`, `sports`). */
@@ -2557,6 +2916,11 @@ export interface components {
         };
         /** @description Subscription filters for the `trader_pnl_exits` event. All fields are optional. */
         TraderExitMarkersFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Track only these trader wallet addresses. Empty = all traders. */
             traders?: string[] | null;
             /** @description Restrict to these markets. */
@@ -2566,6 +2930,11 @@ export interface components {
         };
         /** @description Subscription filters for the `trader_first_trade` event. All fields are optional. */
         TraderFirstTradeFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Only fire for trades by these wallet addresses (lowercase). Empty = all traders. */
             wallet_addresses?: string[] | null;
             /** @description Restrict to trades in these markets. Empty = all markets. */
@@ -2592,6 +2961,11 @@ export interface components {
         };
         /** @description Subscription filters for the `trader_global_pnl` event. All fields are optional. */
         TraderGlobalPnlFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Track only these trader wallet addresses. Empty = all traders. */
             traders?: string[] | null;
             /**
@@ -2639,6 +3013,11 @@ export interface components {
         };
         /** @description Subscription filters for the `trader_market_pnl` event. All fields are optional. */
         TraderMarketPnlFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Track only these trader wallet addresses. */
             traders?: string[] | null;
             /** @description Restrict to these markets. */
@@ -2682,6 +3061,11 @@ export interface components {
         };
         /** @description Subscription filters for the `trader_new_market` event. All fields are optional. */
         TraderNewMarketFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Only fire for these wallet addresses (lowercase). Empty = all traders. */
             wallet_addresses?: string[] | null;
             /** @description Restrict to these markets. */
@@ -2708,6 +3092,11 @@ export interface components {
         };
         /** @description Subscription filters for the `trader_new_trade` event. All fields are optional. */
         TraderNewTradeFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Only fire for trades by these wallet addresses. Empty = all traders. */
             wallet_addresses?: string[] | null;
             /** @description Restrict to these markets. */
@@ -2736,6 +3125,11 @@ export interface components {
         };
         /** @description Subscription filters for the `trader_position_resolved` event. All fields are optional. */
         TraderPositionResolvedFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Track only these trader wallet addresses. Empty = all traders. */
             traders?: string[] | null;
             /** @description Restrict to these markets. */
@@ -2754,6 +3148,11 @@ export interface components {
          *     `event_slug` in the typed webhook payload.
          */
         TraderTradeEventFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Only fire for events associated with these wallet addresses. Empty = all traders. */
             wallet_addresses?: string[] | null;
             /** @description Restrict to these markets. For `PositionsConverted`, this also matches the NegRisk `market_id`. */
@@ -2782,6 +3181,11 @@ export interface components {
         };
         /** @description Subscription filters for the `trader_whale_trade` event. All fields are optional. */
         TraderWhaleTradeFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery. Applies to any webhook event.
+             */
+            one_shot?: boolean | null;
             /** @description Only fire for trades by these wallet addresses. Empty = all traders. */
             wallet_addresses?: string[] | null;
             /** @description Restrict to these markets. */
@@ -2882,8 +3286,16 @@ export interface components {
             position_ids?: string[];
             /** @description Filter by event slugs. Max 500 entries. */
             event_slugs?: string[];
-            /** @description Filter by tags or category names (case-insensitive) — for market_created. Max 500 entries. */
+            /**
+             * @description Filter by tags or category names (case-insensitive). Matches a market's tags or its
+             *     category label — for market_created and all market-keyed events. Max 500 entries.
+             */
             tags?: string[];
+            /**
+             * @description Filter by series slugs (case-insensitive). Matches a market's parent series — for all
+             *     market-keyed events. Max 500 entries.
+             */
+            series_slugs?: string[];
             /** @description Filter by outcomes (e.g. "Yes", "No") — for position metrics / close_to_bond. Max 500 entries. */
             outcomes?: string[];
             /** @description Filter by position outcome index — for close_to_bond. Position 0 = Yes/Up, 1 = No. Max 500 entries. */
@@ -3006,6 +3418,17 @@ export interface components {
              *     Valid values: "BTC", "ETH", "SOL", "XRP", "DOGE", "BNB", "HYPE". Empty = all assets (send everything).
              */
             asset_symbols?: components["schemas"]["WebhookAssetSymbol"][];
+            /**
+             * @description Fire-and-delete: delete the subscription after its first successful
+             *     delivery. Works on any webhook event. (`price_threshold` additionally
+             *     requires `position_ids` or `condition_ids`.)
+             */
+            one_shot?: boolean;
+            /**
+             * @description For `price_threshold` — fire immediately if the first observed price is
+             *     already past the target. Default `false` (wait for an actual crossing).
+             */
+            fire_if_already_past?: boolean;
         };
         /** @description List webhooks response */
         WebhookListResponseBody: {

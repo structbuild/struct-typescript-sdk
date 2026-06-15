@@ -4181,6 +4181,13 @@
         "type": "object",
         "description": "Subscription filters for the `asset_price_tick` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "asset_symbols": {
             "type": [
               "array",
@@ -4222,6 +4229,13 @@
         "type": "object",
         "description": "Subscription filters for the `asset_price_window_update` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "asset_symbols": {
             "type": [
               "array",
@@ -4583,6 +4597,35 @@
         "type": "object",
         "description": "Subscription filters for the `close_to_bond` event. At least one of\n`min_probability` or `max_probability` is required (enforced at runtime).",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
+          "series_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in any of these series (by slug, case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
           "min_probability": {
             "type": [
               "number",
@@ -4816,6 +4859,13 @@
             "items": {
               "type": "string"
             }
+          },
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
           }
         }
       },
@@ -5278,6 +5328,13 @@
             "items": {
               "type": "string"
             }
+          },
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
           }
         }
       },
@@ -5312,6 +5369,13 @@
         "type": "object",
         "description": "Subscription filters for the `event_metrics` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "event_slugs": {
             "type": [
               "array",
@@ -5521,6 +5585,13 @@
           "timeframes"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "timeframes": {
             "type": "array",
             "items": {
@@ -5609,6 +5680,13 @@
           "spike_ratio"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "spike_ratio": {
             "type": "number",
             "format": "double",
@@ -6285,6 +6363,13 @@
         "type": "object",
         "description": "Subscription filters for the `market_created` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "tags": {
             "type": [
               "array",
@@ -6439,10 +6524,157 @@
           }
         }
       },
+      "MarketDisputedFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `market_disputed` event. All fields are optional.",
+        "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in these events.",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "MarketDisputedPayload": {
+        "type": "object",
+        "description": "Market-disputed webhook payload",
+        "required": [
+          "dispute_kind",
+          "disputer",
+          "hash"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Condition ID (the contested market), when resolvable"
+          },
+          "dispute_kind": {
+            "type": "string",
+            "description": "Which oracle event produced this dispute: `\"dispute_price\"` or `\"assertion_disputed\"`."
+          },
+          "disputer": {
+            "type": "string",
+            "description": "Address that filed the dispute"
+          },
+          "proposer": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address that made the disputed proposal/assertion, when known"
+          },
+          "proposed_outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The proposed outcome that was disputed, when known (e.g. \"Yes\", \"No\")"
+          },
+          "proposed_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "The proposed price (0.0–1.0) that was disputed (`DisputePrice` only)"
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market image URL"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash of the dispute event"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Block number",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Confirmed timestamp (Unix seconds)",
+            "minimum": 0
+          }
+        }
+      },
       "MarketMetricsFilters": {
         "type": "object",
         "description": "Subscription filters for the `condition_metrics` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "condition_ids": {
             "type": [
               "array",
@@ -6670,6 +6902,143 @@
           }
         }
       },
+      "MarketResolvedFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `market_resolved` event. All fields are optional.",
+        "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in these events.",
+            "maxItems": 500
+          },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Only fire when the winning outcome matches one of these (e.g. \\[\"Yes\"\\]).",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "MarketResolvedPayload": {
+        "type": "object",
+        "description": "Market-resolved webhook payload",
+        "required": [
+          "condition_id",
+          "resolution_kind",
+          "hash"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": "string",
+            "description": "Condition ID (the resolved market)"
+          },
+          "winning_outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Winning outcome name when known (e.g. \"Yes\", \"No\")"
+          },
+          "settled_price": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Settled price (0.0–1.0) when the resolution event carries one\n(`QuestionResolved` only). 1.0 = full YES, 0.0 = full NO, 0.5 = split."
+          },
+          "resolution_kind": {
+            "type": "string",
+            "description": "Which oracle event produced this resolution: `\"question_resolved\"`,\n`\"question_emergency_resolved\"`, `\"condition_resolution\"`, or `\"neg_risk_outcome_reported\"`."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market image URL"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash of the resolution event"
+          },
+          "block": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Block number",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Confirmed timestamp (Unix seconds)",
+            "minimum": 0
+          }
+        }
+      },
       "MarketVolumeMilestoneFilters": {
         "type": "object",
         "description": "Subscription filters for the `market_volume_milestone` event.",
@@ -6677,6 +7046,13 @@
           "timeframes"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "timeframes": {
             "type": "array",
             "items": {
@@ -6718,6 +7094,13 @@
           "spike_ratio"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "spike_ratio": {
             "type": "number",
             "format": "double",
@@ -7716,6 +8099,13 @@
         "type": "object",
         "description": "Subscription filters for the `oracle_events` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "oracle_event_types": {
             "type": [
               "array",
@@ -7812,12 +8202,15 @@
           "asset_price_tick",
           "asset_price_window_update",
           "price_spike",
-          "oracle_events"
+          "oracle_events",
+          "price_threshold",
+          "market_resolved",
+          "market_disputed"
         ]
       },
       "PolymarketWebhookFilter": {
         "type": "object",
-        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields:\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- tag_metrics: tags, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets\n- market_created: event_slugs, tags, exclude_shortterm_markets\n- probability_spike: condition_ids, event_slugs, outcomes, min_probability, max_probability, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- price_spike: condition_ids, event_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets\n- trader_event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded, exclude_shortterm_markets\n- trader_market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, exclude_shortterm_markets\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
+        "description": "Polymarket-specific webhook filters\n\nDifferent webhook handlers use different subsets of these fields.\nThe trade-driven events `price_spike`, `probability_spike`, and\n`close_to_bond` additionally accept `tags` (matches a market's tags OR its\ncategory) and `series_slugs` (matches the market's parent series); these are\nresolved from the tags/series the crawler enriches onto each trade.\n- first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags\n- new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability\n- whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs\n- global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded\n- market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs\n- event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded\n- condition_metrics: condition_ids, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- event_metrics: event_slugs, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- tag_metrics: tags, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes\n- position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes\n- volume_milestone: condition_ids, timeframes, milestone_amounts\n- close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, tags, series_slugs, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets\n- market_created: event_slugs, tags, exclude_shortterm_markets\n- probability_spike: condition_ids, event_slugs, tags, series_slugs, outcomes, min_probability, max_probability, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- price_spike: condition_ids, event_slugs, tags, series_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets\n- trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets\n- trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets\n- trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets\n- trader_event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded, exclude_shortterm_markets\n- trader_market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, exclude_shortterm_markets\n\nImplements Hash + Eq manually (f64 fields use bit representation)",
         "properties": {
           "wallet_addresses": {
             "type": "array",
@@ -7860,7 +8253,14 @@
             "items": {
               "type": "string"
             },
-            "description": "Filter by tags. Max 500 entries."
+            "description": "Filter by tags or category names (case-insensitive). Matches a market's\ntags or its category label. Max 500 entries."
+          },
+          "series_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by series slugs (case-insensitive). Matches a market's parent\nseries. Max 500 entries."
           },
           "min_probability": {
             "type": [
@@ -8088,6 +8488,14 @@
               "type": "string"
             },
             "description": "Filter for `oracle_events` by event name (case-insensitive).\nValid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`,\n`RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`,\n`QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`,\n`QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`,\n`QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`,\n`NegRiskOutcomeReported`. Empty = all types."
+          },
+          "one_shot": {
+            "type": "boolean",
+            "description": "Fire-and-delete: when `true`, the subscription is deleted after its first\nsuccessful delivery. Works on any webhook event. (`price_threshold`\nadditionally requires `position_ids` or `condition_ids`.)"
+          },
+          "fire_if_already_past": {
+            "type": "boolean",
+            "description": "For `price_threshold` — when `true`, fire immediately if the first observed\nprice is already past the target (no prior baseline). Default `false`."
           }
         }
       },
@@ -8099,6 +8507,13 @@
             "items": {
               "type": "string"
             }
+          },
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
           }
         }
       },
@@ -8157,6 +8572,13 @@
         "type": "object",
         "description": "Subscription filters for the `position_metrics` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "position_ids": {
             "type": [
               "array",
@@ -8881,6 +9303,13 @@
           "timeframes"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "timeframes": {
             "type": "array",
             "items": {
@@ -9027,6 +9456,13 @@
           "spike_ratio"
         ],
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "spike_ratio": {
             "type": "number",
             "format": "double",
@@ -9186,6 +9622,13 @@
         "type": "object",
         "description": "Subscription filters for the `price_spike` event.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "position_ids": {
             "type": [
               "array",
@@ -9228,6 +9671,28 @@
               "type": "string"
             },
             "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
+          "series_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in any of these series (by slug, case-insensitive). Empty = all.",
             "maxItems": 500
           },
           "min_price_change_pct": {
@@ -9382,10 +9847,288 @@
           }
         }
       },
+      "PriceThresholdFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `price_threshold` event.",
+        "properties": {
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
+          "series_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in any of these series (by slug, case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
+          "min_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Upward target — fire when the YES price crosses up to ≥ this value (e.g. 0.75 for 75%). At least one of `min_probability` or `max_probability` must be set.",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "max_probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Downward target — fire when the YES price crosses down to ≤ this value (e.g. 0.25).",
+            "maximum": 1,
+            "minimum": 0
+          },
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, delete the subscription after its first delivery (fire-and-delete). Requires `position_ids` or `condition_ids`. Default: `false`."
+          },
+          "fire_if_already_past": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, fire immediately if the first observed price is already past the target (no prior baseline). Default: `false` (wait for an actual crossing)."
+          },
+          "condition_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these markets.",
+            "maxItems": 500
+          },
+          "position_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome token IDs.",
+            "maxItems": 500
+          },
+          "event_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in these events.",
+            "maxItems": 500
+          },
+          "outcomes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to these outcome names (e.g. \\[\"Yes\", \"No\"\\]).",
+            "maxItems": 500
+          },
+          "position_outcome_indices": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            },
+            "description": "Restrict by outcome index. 0 = Yes/Up, 1 = No. Position 0 usually represents the Up/Yes side in binary markets.",
+            "maxItems": 500
+          },
+          "exclude_shortterm_markets": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When `true`, suppress webhooks for short-term \"updown\" markets. Default: `false`."
+          }
+        }
+      },
+      "PriceThresholdPayload": {
+        "type": "object",
+        "description": "Price-threshold crossing webhook payload",
+        "required": [
+          "trader",
+          "taker",
+          "position_id",
+          "trade_id",
+          "hash",
+          "block",
+          "confirmed_at",
+          "amount_usd",
+          "shares_amount",
+          "fee",
+          "side",
+          "previous_price",
+          "price",
+          "direction",
+          "threshold"
+        ],
+        "properties": {
+          "trader": {
+            "type": "string",
+            "description": "Trader address (the limit-order maker)"
+          },
+          "taker": {
+            "type": "string",
+            "description": "Taker address (the order filler — often the exchange contract)"
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Position ID (ERC1155 token ID)"
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Condition ID (parent market)"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name (e.g. \"Yes\", \"No\")"
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Outcome index (0 = Yes/Up, 1 = No). Position 0 usually represents Yes/Up.",
+            "minimum": 0
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question"
+          },
+          "market_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug"
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug"
+          },
+          "trade_id": {
+            "type": "string",
+            "description": "Trade ID"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash"
+          },
+          "block": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Block number",
+            "minimum": 0
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Confirmed timestamp (Unix seconds)",
+            "minimum": 0
+          },
+          "amount_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "USD size of the trade"
+          },
+          "shares_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Outcome shares traded"
+          },
+          "fee": {
+            "type": "number",
+            "format": "double",
+            "description": "Fee paid (USD)"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side (\"Buy\" or \"Sell\")"
+          },
+          "previous_price": {
+            "type": "number",
+            "format": "double",
+            "description": "Last observed price before this trade (the baseline the crossing is measured from)"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "description": "Price per share (0.0–1.0) that crossed the threshold"
+          },
+          "probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Implied probability of the outcome (0.0–1.0)"
+          },
+          "direction": {
+            "type": "string",
+            "description": "Crossing direction: `\"up\"` (crossed up to the `min_probability` target) or\n`\"down\"` (crossed down to the `max_probability` target)"
+          },
+          "threshold": {
+            "type": "number",
+            "format": "double",
+            "description": "The target threshold from the subscriber's filter that was crossed"
+          }
+        }
+      },
       "ProbabilitySpikeFilters": {
         "type": "object",
         "description": "Subscription filters for the `probability_spike` event.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "position_ids": {
             "type": [
               "array",
@@ -9449,6 +10192,28 @@
             "description": "Maximum YES probability (0-1).",
             "maximum": 1,
             "minimum": 0
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all.",
+            "maxItems": 500
+          },
+          "series_slugs": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Restrict to markets in any of these series (by slug, case-insensitive). Empty = all.",
+            "maxItems": 500
           },
           "min_probability_change_pct": {
             "type": [
@@ -10732,6 +11497,13 @@
         "type": "object",
         "description": "Subscription filters for the `tag_metrics` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "tags": {
             "type": [
               "array",
@@ -10961,6 +11733,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_category_pnl` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "traders": {
             "type": [
               "array",
@@ -11065,6 +11844,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_pnl_exits` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "traders": {
             "type": [
               "array",
@@ -11104,6 +11890,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_first_trade` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "wallet_addresses": {
             "type": [
               "array",
@@ -11178,6 +11971,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_global_pnl` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "traders": {
             "type": [
               "array",
@@ -11271,6 +12071,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_market_pnl` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "traders": {
             "type": [
               "array",
@@ -11375,6 +12182,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_new_market` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "wallet_addresses": {
             "type": [
               "array",
@@ -11449,6 +12263,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_new_trade` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "wallet_addresses": {
             "type": [
               "array",
@@ -11540,6 +12361,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_position_resolved` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "traders": {
             "type": [
               "array",
@@ -11598,6 +12426,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_trade_event` event. All fields are optional.\n`event_slugs` and `exclude_shortterm_markets` require explicit `trade_types` that\nexclude `PositionsConverted`, because conversion events do not currently carry\n`event_slug` in the typed webhook payload.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "wallet_addresses": {
             "type": [
               "array",
@@ -11711,6 +12546,13 @@
         "type": "object",
         "description": "Subscription filters for the `trader_whale_trade` event. All fields are optional.",
         "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery. Applies to any webhook event."
+          },
           "wallet_addresses": {
             "type": [
               "array",
@@ -11992,7 +12834,14 @@
             "items": {
               "type": "string"
             },
-            "description": "Filter by tags or category names (case-insensitive) — for market_created. Max 500 entries."
+            "description": "Filter by tags or category names (case-insensitive). Matches a market's tags or its\ncategory label — for market_created and all market-keyed events. Max 500 entries."
+          },
+          "series_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter by series slugs (case-insensitive). Matches a market's parent series — for all\nmarket-keyed events. Max 500 entries."
           },
           "outcomes": {
             "type": "array",
@@ -12214,6 +13063,14 @@
               "$ref": "#/components/schemas/WebhookAssetSymbol"
             },
             "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update`.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\", \"DOGE\", \"BNB\", \"HYPE\". Empty = all assets (send everything)."
+          },
+          "one_shot": {
+            "type": "boolean",
+            "description": "Fire-and-delete: delete the subscription after its first successful\ndelivery. Works on any webhook event. (`price_threshold` additionally\nrequires `position_ids` or `condition_ids`.)"
+          },
+          "fire_if_already_past": {
+            "type": "boolean",
+            "description": "For `price_threshold` — fire immediately if the first observed price is\nalready past the target. Default `false` (wait for an actual crossing)."
           }
         }
       },
