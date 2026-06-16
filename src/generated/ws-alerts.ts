@@ -337,7 +337,7 @@ export interface components {
         };
         /**
          * @description Subscription filters for the `close_to_bond` event. At least one of
-         *     `min_probability` or `max_probability` is required (enforced at runtime).
+         *     `min_price` or `max_price` is required (enforced at runtime).
          */
         CloseToBondFilters: {
             /**
@@ -351,14 +351,14 @@ export interface components {
             series_slugs?: string[] | null;
             /**
              * Format: double
-             * @description Trigger when the YES outcome price is ≥ this value (e.g. 0.95 for 95% certainty). At least one of `min_probability` or `max_probability` must be set.
+             * @description Trigger when the traded position's price is ≥ this value (e.g. 0.95 for a near-certain outcome). At least one of `min_price` or `max_price` must be set.
              */
-            min_probability?: number | null;
+            min_price?: number | null;
             /**
              * Format: double
-             * @description Trigger when the YES outcome price is ≤ this value (e.g. 0.05 for near-certain NO).
+             * @description Trigger when the traded position's price is ≤ this value (e.g. 0.05 for a near-zero outcome).
              */
-            max_probability?: number | null;
+            max_price?: number | null;
             /** @description Restrict to these markets. */
             condition_ids?: string[] | null;
             /** @description Restrict to these outcome token IDs. */
@@ -431,16 +431,11 @@ export interface components {
              * @description Price per share (0.0–1.0) — the value that triggered the notification
              */
             price: number;
-            /**
-             * Format: double
-             * @description Implied probability of the outcome (0.0–1.0)
-             */
-            probability?: number | null;
-            /** @description Which bond zone was entered: `"high"` (YES near-certain) or `"low"` (NO near-certain) */
+            /** @description Which bond zone was entered: `"high"` (price ≥ `min_price`) or `"low"` (price ≤ `max_price`) */
             bond_side: string;
             /**
              * Format: double
-             * @description The probability threshold from the subscriber's filter that was breached
+             * @description The price threshold from the subscriber's filter that was breached
              */
             threshold: number;
         };
@@ -1956,18 +1951,18 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_category_pnl" | "trader_position_resolved" | "trader_exit_markers" | "position_holder_metrics" | "condition_holder_metrics" | "event_holder_metrics" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "position_liquidity" | "market_liquidity" | "event_liquidity" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events" | "price_threshold" | "market_resolved" | "market_disputed";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_category_pnl" | "trader_position_resolved" | "trader_exit_markers" | "position_holder_metrics" | "condition_holder_metrics" | "event_holder_metrics" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "position_liquidity" | "market_liquidity" | "event_liquidity" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "probability_spike" | "oracle_events" | "price_threshold" | "market_resolved" | "market_disputed";
         /**
          * @description Polymarket-specific webhook filters
          *
          *     Different webhook handlers use different subsets of these fields.
-         *     The trade-driven events `price_spike`, `probability_spike`, and
+         *     The trade-driven events `price_spike` and
          *     `close_to_bond` additionally accept `tags` (matches a market's tags OR its
          *     category) and `series_slugs` (matches the market's parent series); these are
          *     resolved from the tags/series the crawler enriches onto each trade.
-         *     - first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, tags
-         *     - new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability
-         *     - whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs
+         *     - first_trade: wallet_addresses, min_usd_value, min_price, max_price, condition_ids, event_slugs, tags
+         *     - new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_price, max_price
+         *     - whale_trade: min_usd_value (required), min_price, max_price, condition_ids, event_slugs
          *     - global_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, min_win_rate, min_markets_traded
          *     - market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs
          *     - event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded
@@ -1976,15 +1971,14 @@ export interface components {
          *     - tag_metrics: tags, min_volume_usd, max_volume_usd, min_fees, min_txns, timeframes
          *     - position_metrics: position_ids, condition_ids, outcomes, min_volume_usd, max_volume_usd, min_buy_usd, min_sell_volume_usd, min_fees, min_txns, min_price_change_pct, min_probability_change_pct, timeframes
          *     - volume_milestone: condition_ids, timeframes, milestone_amounts
-         *     - close_to_bond: min_probability (high zone threshold), max_probability (low zone threshold), condition_ids, tags, series_slugs, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets
+         *     - close_to_bond: min_price (high zone threshold), max_price (low zone threshold), condition_ids, tags, series_slugs, position_ids, outcomes, position_outcome_indices, event_slugs, exclude_shortterm_markets
          *     - market_created: event_slugs, tags, exclude_shortterm_markets
-         *     - probability_spike: condition_ids, event_slugs, tags, series_slugs, outcomes, min_probability, max_probability, min_probability_change_pct, spike_direction, window_secs, exclude_shortterm_markets
          *     - price_spike: condition_ids, event_slugs, tags, series_slugs, outcomes, min_price_change_pct, spike_direction, window_secs, exclude_shortterm_markets
-         *     - trader_new_trade: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
-         *     - trader_trade_event: wallet_addresses, min_usd_value, min_probability, max_probability, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
-         *     - trader_first_trade: wallet_addresses, min_usd_value, min_probability, max_probability, exclude_shortterm_markets
-         *     - trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_probability, max_probability, exclude_shortterm_markets
-         *     - trader_whale_trade: min_usd_value (required), min_probability, max_probability, condition_ids, event_slugs, exclude_shortterm_markets
+         *     - trader_new_trade: wallet_addresses, min_usd_value, min_price, max_price, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
+         *     - trader_trade_event: wallet_addresses, min_usd_value, min_price, max_price, condition_ids, event_slugs, trade_types, exclude_shortterm_markets
+         *     - trader_first_trade: wallet_addresses, min_usd_value, min_price, max_price, exclude_shortterm_markets
+         *     - trader_new_market: wallet_addresses, condition_ids, event_slugs, min_usd_value, min_price, max_price, exclude_shortterm_markets
+         *     - trader_whale_trade: min_usd_value (required), min_price, max_price, condition_ids, event_slugs, exclude_shortterm_markets
          *     - trader_event_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_volume_usd, event_slugs, min_markets_traded, exclude_shortterm_markets
          *     - trader_market_pnl: traders, min_realized_pnl_usd, max_realized_pnl_usd, min_buy_usd, condition_ids, event_slugs, exclude_shortterm_markets
          *
@@ -2030,14 +2024,14 @@ export interface components {
             series_slugs?: string[];
             /**
              * Format: double
-             * @description Minimum probability threshold (0.0 - 1.0)
+             * @description Minimum trade price threshold (0.0 - 1.0). Accepts the legacy `min_probability` key.
              */
-            min_probability?: number | null;
+            min_price?: number | null;
             /**
              * Format: double
-             * @description Maximum probability threshold (0.0 - 1.0)
+             * @description Maximum trade price threshold (0.0 - 1.0). Accepts the legacy `max_probability` key.
              */
-            max_probability?: number | null;
+            max_price?: number | null;
             /**
              * Format: double
              * @description Minimum realized PnL (USD) - for PnL webhooks
@@ -2165,7 +2159,7 @@ export interface components {
             /**
              * @description When `true`, exclude all short-term "updown" markets (event slugs containing "updown").
              *     These are short-duration crypto price markets (e.g., "btc-updown-5m-…", "eth-updown-1h-…").
-             *     Supported by: close_to_bond, market_created, price_spike, probability_spike,
+             *     Supported by: close_to_bond, market_created, price_spike,
              *     trader_first_trade, trader_new_market, trader_whale_trade, trader_event_pnl, trader_market_pnl,
              *     event_metrics, event_volume_milestone, event_volume_spike.
              */
@@ -2179,7 +2173,7 @@ export interface components {
             spike_direction?: null | components["schemas"]["SpikeDirection"];
             /**
              * Format: int64
-             * @description Observation window in seconds for `probability_spike` and `price_spike`.
+             * @description Observation window in seconds for `price_spike`.
              *
              *     When set, the first trade seen for a position opens a window of this duration.
              *     The opening price becomes the baseline, and every subsequent trade within the
@@ -2882,12 +2876,12 @@ export interface components {
              * Format: double
              * @description Minimum YES probability (0-1).
              */
-            min_probability?: number | null;
+            min_price?: number | null;
             /**
              * Format: double
              * @description Maximum YES probability (0-1).
              */
-            max_probability?: number | null;
+            max_price?: number | null;
             /**
              * Format: int64
              * @description Minimum trades accumulated in the observation window before firing.
@@ -2954,14 +2948,14 @@ export interface components {
             series_slugs?: string[] | null;
             /**
              * Format: double
-             * @description Upward target — fire when the YES price crosses up to ≥ this value (e.g. 0.75 for 75%). At least one of `min_probability` or `max_probability` must be set.
+             * @description Upward target — fire when the YES price crosses up to ≥ this value (e.g. 0.75 for 75%). At least one of `min_price` or `max_price` must be set.
              */
-            min_probability?: number | null;
+            min_price?: number | null;
             /**
              * Format: double
              * @description Downward target — fire when the YES price crosses down to ≤ this value (e.g. 0.25).
              */
-            max_probability?: number | null;
+            max_price?: number | null;
             /** @description When `true`, delete the subscription after its first delivery (fire-and-delete). Requires `position_ids` or `condition_ids`. Default: `false`. */
             one_shot?: boolean | null;
             /** @description When `true`, fire immediately if the first observed price is already past the target (no prior baseline). Default: `false` (wait for an actual crossing). */
@@ -3049,8 +3043,8 @@ export interface components {
              */
             probability?: number | null;
             /**
-             * @description Crossing direction: `"up"` (crossed up to the `min_probability` target) or
-             *     `"down"` (crossed down to the `max_probability` target)
+             * @description Crossing direction: `"up"` (crossed up to the `min_price` target) or
+             *     `"down"` (crossed down to the `max_price` target)
              */
             direction: string;
             /**
@@ -3058,98 +3052,6 @@ export interface components {
              * @description The target threshold from the subscriber's filter that was crossed
              */
             threshold: number;
-        };
-        /** @description Subscription filters for the `probability_spike` event. */
-        ProbabilitySpikeFilters: {
-            /**
-             * @description Fire-and-delete: when `true`, delete the subscription after its first
-             *     successful delivery. Applies to any webhook event.
-             */
-            one_shot?: boolean | null;
-            /** @description Restrict to specific outcome token IDs. Empty = all positions. */
-            position_ids?: string[] | null;
-            /** @description Restrict to specific market condition IDs. Empty = all markets. */
-            condition_ids?: string[] | null;
-            /** @description Restrict to specific events. Empty = all events. */
-            event_slugs?: string[] | null;
-            /** @description Restrict to these outcome names (e.g. \["Yes", "No"\]). */
-            outcomes?: string[] | null;
-            /**
-             * Format: double
-             * @description Minimum YES probability (0-1). At least one of `min_probability`/`max_probability` is enforced at runtime if you want a probability gate.
-             */
-            min_probability?: number | null;
-            /**
-             * Format: double
-             * @description Maximum YES probability (0-1).
-             */
-            max_probability?: number | null;
-            /** @description Restrict to markets carrying any of these tags or category names (case-insensitive). Empty = all. */
-            tags?: string[] | null;
-            /** @description Restrict to markets in any of these series (by slug, case-insensitive). Empty = all. */
-            series_slugs?: string[] | null;
-            /**
-             * Format: double
-             * @description Minimum probability percentage move to trigger (e.g. `10` for a 10% move).
-             */
-            min_probability_change_pct?: number | null;
-            /**
-             * Format: int64
-             * @description Minimum trades accumulated in the observation window before firing.
-             */
-            min_txns?: number | null;
-            /**
-             * Format: double
-             * @description Minimum USD volume accumulated in the observation window before firing.
-             */
-            min_volume_usd?: number | null;
-            spike_direction?: null | components["schemas"]["SpikeDirection"];
-            /**
-             * Format: int64
-             * @description Observation window in seconds. The first trade in each window sets the reference price; subsequent trades are compared to it. E.g. `60` detects moves that occur within 60 seconds.
-             */
-            window_secs?: number | null;
-            /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
-            exclude_shortterm_markets?: boolean | null;
-        };
-        /** @description Position probability spike webhook payload */
-        ProbabilitySpikePayload: {
-            /** @description Outcome token ID. */
-            position_id: string;
-            /** @description Market condition ID. */
-            condition_id?: string | null;
-            /** @description Market question. */
-            question?: string | null;
-            /** @description Market slug. */
-            market_slug?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
-            /** @description Image URL. */
-            image_url?: string | null;
-            /** @description Outcome name. */
-            outcome?: string | null;
-            /**
-             * Format: int32
-             * @description Outcome index.
-             */
-            outcome_index?: number | null;
-            /**
-             * Format: double
-             * @description YES probability at the start of the observation window (the baseline snapshot)
-             */
-            previous_probability: number;
-            /**
-             * Format: double
-             * @description Current YES probability that triggered the spike
-             */
-            current_probability: number;
-            /** @description Direction of the spike: `"up"` (YES probability rising) or `"down"` (YES probability falling) */
-            spike_direction: string;
-            /**
-             * Format: double
-             * @description Detected spike percentage from the snapshot baseline. Positive = rising, negative = falling.
-             */
-            spike_pct: number;
         };
         /** @description V2 UMA OOv2: a price was proposed (resolution proposal). */
         ProposePriceEvent: {
@@ -3640,12 +3542,12 @@ export interface components {
              * Format: double
              * @description Only fire when the outcome probability is ≥ this value.
              */
-            min_probability?: number | null;
+            min_price?: number | null;
             /**
              * Format: double
              * @description Only fire when the outcome probability is ≤ this value.
              */
-            max_probability?: number | null;
+            max_price?: number | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets (event slugs containing `updown`). Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -3771,12 +3673,12 @@ export interface components {
              * Format: double
              * @description Only fire when the outcome probability is ≥ this value.
              */
-            min_probability?: number | null;
+            min_price?: number | null;
             /**
              * Format: double
              * @description Only fire when the outcome probability is ≤ this value.
              */
-            max_probability?: number | null;
+            max_price?: number | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -3802,12 +3704,12 @@ export interface components {
              * Format: double
              * @description Only fire when outcome probability is ≥ this value.
              */
-            min_probability?: number | null;
+            min_price?: number | null;
             /**
              * Format: double
              * @description Only fire when outcome probability is ≤ this value.
              */
-            max_probability?: number | null;
+            max_price?: number | null;
             /** @description Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default). */
             trade_types?: ("OrderFilled" | "OrdersMatched")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
@@ -3858,12 +3760,12 @@ export interface components {
              * Format: double
              * @description Only fire when event probability is ≥ this value. Events without probability data do not match.
              */
-            min_probability?: number | null;
+            min_price?: number | null;
             /**
              * Format: double
              * @description Only fire when event probability is ≤ this value. Events without probability data do not match.
              */
-            max_probability?: number | null;
+            max_price?: number | null;
             /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
             trade_types?: ("OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
@@ -3891,12 +3793,12 @@ export interface components {
              * Format: double
              * @description Only fire when outcome probability is ≥ this value.
              */
-            min_probability?: number | null;
+            min_price?: number | null;
             /**
              * Format: double
              * @description Only fire when outcome probability is ≤ this value.
              */
-            max_probability?: number | null;
+            max_price?: number | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -4004,14 +3906,14 @@ export interface components {
             min_usd_value?: number | null;
             /**
              * Format: double
-             * @description Minimum probability threshold (0.0 - 1.0)
+             * @description Minimum price threshold (0.0 - 1.0). Accepts the legacy `min_probability` key.
              */
-            min_probability?: number | null;
+            min_price?: number | null;
             /**
              * Format: double
-             * @description Maximum probability threshold (0.0 - 1.0)
+             * @description Maximum price threshold (0.0 - 1.0). Accepts the legacy `max_probability` key.
              */
-            max_probability?: number | null;
+            max_price?: number | null;
             /**
              * Format: double
              * @description Minimum realized PnL (USD) — for global_pnl / market_pnl / event_pnl
@@ -4084,7 +3986,7 @@ export interface components {
             min_price_change_pct?: number | null;
             /**
              * Format: double
-             * @description Minimum probability change percentage — for probability_spike
+             * @description Minimum probability change percentage (legacy spike filter field)
              */
             min_probability_change_pct?: number | null;
             /**
@@ -4103,7 +4005,7 @@ export interface components {
             spike_direction?: null | components["schemas"]["SpikeDirection"];
             /**
              * Format: int64
-             * @description Observation window in seconds (max 600) — for probability_spike, price_spike, volume_spike
+             * @description Observation window in seconds (max 600) — for price_spike, volume_spike
              */
             window_secs?: number | null;
             /** @description When true, suppress webhooks for short-term "updown" markets */
@@ -4853,7 +4755,7 @@ export interface components {
          * @description All alert event types supported by both HTTP webhooks and the alerts WebSocket.
          * @enum {string}
          */
-        WsAlertEventType: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_category_pnl" | "trader_position_resolved" | "trader_pnl_exits" | "position_holder_metrics" | "condition_holder_metrics" | "event_holder_metrics" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "position_liquidity" | "market_liquidity" | "event_liquidity" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "price_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "price_threshold" | "market_resolved" | "market_disputed" | "market_created" | "oracle_events" | "asset_price_tick" | "asset_price_window_update";
+        WsAlertEventType: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_category_pnl" | "trader_position_resolved" | "trader_pnl_exits" | "position_holder_metrics" | "condition_holder_metrics" | "event_holder_metrics" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "position_liquidity" | "market_liquidity" | "event_liquidity" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "price_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "price_threshold" | "market_resolved" | "market_disputed" | "market_created" | "oracle_events" | "asset_price_tick" | "asset_price_window_update";
         /** @description Server acknowledgement for a successful alert subscription. */
         WsAlertSubscribedResponse: {
             /** @enum {string} */
@@ -6339,64 +6241,6 @@ export interface components {
             timestamp: number;
             data: components["schemas"]["PositionVolumeMilestonePayload"];
         };
-        WsAlertProbabilitySpikeSubscribeMessage: {
-            /** @enum {string} */
-            op: "subscribe";
-            /** @enum {string} */
-            event: "probability_spike";
-        } & components["schemas"]["ProbabilitySpikeFilters"] & {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            event: "probability_spike";
-        };
-        WsAlertProbabilitySpikeUnsubscribeMessage: {
-            /** @enum {string} */
-            op: "unsubscribe";
-            /** @enum {string} */
-            event: "probability_spike";
-        } & components["schemas"]["ProbabilitySpikeFilters"] & {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            event: "probability_spike";
-        };
-        /**
-         * @description Pushed `probability_spike` alert. The `data` payload matches the corresponding HTTP webhook payload schema.
-         * @example {
-         *       "event": "probability_spike",
-         *       "timestamp": 1743500000000,
-         *       "data": {
-         *         "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
-         *         "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
-         *         "question": "Will this test webhook fire correctly?",
-         *         "market_slug": "test-market-0000000000",
-         *         "event_slug": "test-event-0000000000",
-         *         "image_url": "https://polymarket-upload.s3.us-east-2.amazonaws.com/test.png",
-         *         "outcome": "Yes",
-         *         "outcome_index": 0,
-         *         "previous_probability": 0.4,
-         *         "current_probability": 0.5,
-         *         "spike_direction": "up",
-         *         "spike_pct": 25
-         *       }
-         *     }
-         */
-        WsAlertProbabilitySpikeEvent: {
-            /**
-             * @description discriminator enum property added by openapi-typescript
-             * @enum {string}
-             */
-            event: "probability_spike";
-            /**
-             * Format: int64
-             * @description Unix timestamp in milliseconds
-             */
-            timestamp: number;
-            data: components["schemas"]["ProbabilitySpikePayload"];
-        };
         WsAlertPriceSpikeSubscribeMessage: {
             /** @enum {string} */
             op: "subscribe";
@@ -6678,7 +6522,6 @@ export interface components {
          *         "fee": 2.5,
          *         "side": "Buy",
          *         "price": 0.97,
-         *         "probability": 0.97,
          *         "bond_side": "high",
          *         "threshold": 0.95
          *       }
@@ -7115,11 +6958,11 @@ export interface components {
             data: components["schemas"]["AssetPriceWindowUpdatePayload"];
         };
         /** @description Typed subscribe request for the alerts WebSocket. The request shape depends on `event`; filters follow the schema associated with that event type. */
-        WsAlertSubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketSubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderCategoryPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderPositionResolvedSubscribeMessage"] | components["schemas"]["WsAlertTraderPnlExitsSubscribeMessage"] | components["schemas"]["WsAlertPositionHolderMetricsSubscribeMessage"] | components["schemas"]["WsAlertConditionHolderMetricsSubscribeMessage"] | components["schemas"]["WsAlertEventHolderMetricsSubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsSubscribeMessage"] | components["schemas"]["WsAlertEventMetricsSubscribeMessage"] | components["schemas"]["WsAlertTagMetricsSubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsSubscribeMessage"] | components["schemas"]["WsAlertPositionLiquiditySubscribeMessage"] | components["schemas"]["WsAlertMarketLiquiditySubscribeMessage"] | components["schemas"]["WsAlertEventLiquiditySubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeSubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertCloseToBondSubscribeMessage"] | components["schemas"]["WsAlertPriceThresholdSubscribeMessage"] | components["schemas"]["WsAlertMarketResolvedSubscribeMessage"] | components["schemas"]["WsAlertMarketDisputedSubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedSubscribeMessage"] | components["schemas"]["WsAlertOracleEventsSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateSubscribeMessage"];
+        WsAlertSubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketSubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeSubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventSubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderCategoryPnlSubscribeMessage"] | components["schemas"]["WsAlertTraderPositionResolvedSubscribeMessage"] | components["schemas"]["WsAlertTraderPnlExitsSubscribeMessage"] | components["schemas"]["WsAlertPositionHolderMetricsSubscribeMessage"] | components["schemas"]["WsAlertConditionHolderMetricsSubscribeMessage"] | components["schemas"]["WsAlertEventHolderMetricsSubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsSubscribeMessage"] | components["schemas"]["WsAlertEventMetricsSubscribeMessage"] | components["schemas"]["WsAlertTagMetricsSubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsSubscribeMessage"] | components["schemas"]["WsAlertPositionLiquiditySubscribeMessage"] | components["schemas"]["WsAlertMarketLiquiditySubscribeMessage"] | components["schemas"]["WsAlertEventLiquiditySubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneSubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeSubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeSubscribeMessage"] | components["schemas"]["WsAlertCloseToBondSubscribeMessage"] | components["schemas"]["WsAlertPriceThresholdSubscribeMessage"] | components["schemas"]["WsAlertMarketResolvedSubscribeMessage"] | components["schemas"]["WsAlertMarketDisputedSubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedSubscribeMessage"] | components["schemas"]["WsAlertOracleEventsSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickSubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateSubscribeMessage"];
         /** @description Typed unsubscribe request for the alerts WebSocket. The request shape depends on `event` and must match the original subscription filters. */
-        WsAlertUnsubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketUnsubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderCategoryPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderPositionResolvedUnsubscribeMessage"] | components["schemas"]["WsAlertTraderPnlExitsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionHolderMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertConditionHolderMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertEventHolderMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertEventMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertTagMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionLiquidityUnsubscribeMessage"] | components["schemas"]["WsAlertMarketLiquidityUnsubscribeMessage"] | components["schemas"]["WsAlertEventLiquidityUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertProbabilitySpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertCloseToBondUnsubscribeMessage"] | components["schemas"]["WsAlertPriceThresholdUnsubscribeMessage"] | components["schemas"]["WsAlertMarketResolvedUnsubscribeMessage"] | components["schemas"]["WsAlertMarketDisputedUnsubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedUnsubscribeMessage"] | components["schemas"]["WsAlertOracleEventsUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateUnsubscribeMessage"];
+        WsAlertUnsubscribeMessage: components["schemas"]["WsAlertTraderFirstTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewMarketUnsubscribeMessage"] | components["schemas"]["WsAlertTraderWhaleTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderNewTradeUnsubscribeMessage"] | components["schemas"]["WsAlertTraderTradeEventUnsubscribeMessage"] | components["schemas"]["WsAlertTraderGlobalPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderMarketPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderCategoryPnlUnsubscribeMessage"] | components["schemas"]["WsAlertTraderPositionResolvedUnsubscribeMessage"] | components["schemas"]["WsAlertTraderPnlExitsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionHolderMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertConditionHolderMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertEventHolderMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertConditionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertEventMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertTagMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionMetricsUnsubscribeMessage"] | components["schemas"]["WsAlertPositionLiquidityUnsubscribeMessage"] | components["schemas"]["WsAlertMarketLiquidityUnsubscribeMessage"] | components["schemas"]["WsAlertEventLiquidityUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeMilestoneUnsubscribeMessage"] | components["schemas"]["WsAlertPriceSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertMarketVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertEventVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertPositionVolumeSpikeUnsubscribeMessage"] | components["schemas"]["WsAlertCloseToBondUnsubscribeMessage"] | components["schemas"]["WsAlertPriceThresholdUnsubscribeMessage"] | components["schemas"]["WsAlertMarketResolvedUnsubscribeMessage"] | components["schemas"]["WsAlertMarketDisputedUnsubscribeMessage"] | components["schemas"]["WsAlertMarketCreatedUnsubscribeMessage"] | components["schemas"]["WsAlertOracleEventsUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceTickUnsubscribeMessage"] | components["schemas"]["WsAlertAssetPriceWindowUpdateUnsubscribeMessage"];
         /** @description Typed pushed-event envelope for the alerts WebSocket. The `data` payload depends on `event` and matches the corresponding HTTP webhook payload schema. */
-        WsAlertEventPayload: components["schemas"]["WsAlertTraderFirstTradeEvent"] | components["schemas"]["WsAlertTraderNewMarketEvent"] | components["schemas"]["WsAlertTraderWhaleTradeEvent"] | components["schemas"]["WsAlertTraderNewTradeEvent"] | components["schemas"]["WsAlertTraderTradeEventEvent"] | components["schemas"]["WsAlertTraderGlobalPnlEvent"] | components["schemas"]["WsAlertTraderMarketPnlEvent"] | components["schemas"]["WsAlertTraderCategoryPnlEvent"] | components["schemas"]["WsAlertTraderPositionResolvedEvent"] | components["schemas"]["WsAlertTraderPnlExitsEvent"] | components["schemas"]["WsAlertPositionHolderMetricsEvent"] | components["schemas"]["WsAlertConditionHolderMetricsEvent"] | components["schemas"]["WsAlertEventHolderMetricsEvent"] | components["schemas"]["WsAlertConditionMetricsEvent"] | components["schemas"]["WsAlertEventMetricsEvent"] | components["schemas"]["WsAlertTagMetricsEvent"] | components["schemas"]["WsAlertPositionMetricsEvent"] | components["schemas"]["WsAlertPositionLiquidityEvent"] | components["schemas"]["WsAlertMarketLiquidityEvent"] | components["schemas"]["WsAlertEventLiquidityEvent"] | components["schemas"]["WsAlertMarketVolumeMilestoneEvent"] | components["schemas"]["WsAlertEventVolumeMilestoneEvent"] | components["schemas"]["WsAlertPositionVolumeMilestoneEvent"] | components["schemas"]["WsAlertProbabilitySpikeEvent"] | components["schemas"]["WsAlertPriceSpikeEvent"] | components["schemas"]["WsAlertMarketVolumeSpikeEvent"] | components["schemas"]["WsAlertEventVolumeSpikeEvent"] | components["schemas"]["WsAlertPositionVolumeSpikeEvent"] | components["schemas"]["WsAlertCloseToBondEvent"] | components["schemas"]["WsAlertPriceThresholdEvent"] | components["schemas"]["WsAlertMarketResolvedEvent"] | components["schemas"]["WsAlertMarketDisputedEvent"] | components["schemas"]["WsAlertMarketCreatedEvent"] | components["schemas"]["WsAlertOracleEventsEvent"] | components["schemas"]["WsAlertAssetPriceTickEvent"] | components["schemas"]["WsAlertAssetPriceWindowUpdateEvent"];
+        WsAlertEventPayload: components["schemas"]["WsAlertTraderFirstTradeEvent"] | components["schemas"]["WsAlertTraderNewMarketEvent"] | components["schemas"]["WsAlertTraderWhaleTradeEvent"] | components["schemas"]["WsAlertTraderNewTradeEvent"] | components["schemas"]["WsAlertTraderTradeEventEvent"] | components["schemas"]["WsAlertTraderGlobalPnlEvent"] | components["schemas"]["WsAlertTraderMarketPnlEvent"] | components["schemas"]["WsAlertTraderCategoryPnlEvent"] | components["schemas"]["WsAlertTraderPositionResolvedEvent"] | components["schemas"]["WsAlertTraderPnlExitsEvent"] | components["schemas"]["WsAlertPositionHolderMetricsEvent"] | components["schemas"]["WsAlertConditionHolderMetricsEvent"] | components["schemas"]["WsAlertEventHolderMetricsEvent"] | components["schemas"]["WsAlertConditionMetricsEvent"] | components["schemas"]["WsAlertEventMetricsEvent"] | components["schemas"]["WsAlertTagMetricsEvent"] | components["schemas"]["WsAlertPositionMetricsEvent"] | components["schemas"]["WsAlertPositionLiquidityEvent"] | components["schemas"]["WsAlertMarketLiquidityEvent"] | components["schemas"]["WsAlertEventLiquidityEvent"] | components["schemas"]["WsAlertMarketVolumeMilestoneEvent"] | components["schemas"]["WsAlertEventVolumeMilestoneEvent"] | components["schemas"]["WsAlertPositionVolumeMilestoneEvent"] | components["schemas"]["WsAlertPriceSpikeEvent"] | components["schemas"]["WsAlertMarketVolumeSpikeEvent"] | components["schemas"]["WsAlertEventVolumeSpikeEvent"] | components["schemas"]["WsAlertPositionVolumeSpikeEvent"] | components["schemas"]["WsAlertCloseToBondEvent"] | components["schemas"]["WsAlertPriceThresholdEvent"] | components["schemas"]["WsAlertMarketResolvedEvent"] | components["schemas"]["WsAlertMarketDisputedEvent"] | components["schemas"]["WsAlertMarketCreatedEvent"] | components["schemas"]["WsAlertOracleEventsEvent"] | components["schemas"]["WsAlertAssetPriceTickEvent"] | components["schemas"]["WsAlertAssetPriceWindowUpdateEvent"];
     };
     responses: never;
     parameters: never;
@@ -7154,7 +6997,6 @@ export interface WsAlertSubscribeMap {
 	market_volume_milestone: components["schemas"]["WsAlertMarketVolumeMilestoneSubscribeMessage"];
 	event_volume_milestone: components["schemas"]["WsAlertEventVolumeMilestoneSubscribeMessage"];
 	position_volume_milestone: components["schemas"]["WsAlertPositionVolumeMilestoneSubscribeMessage"];
-	probability_spike: components["schemas"]["WsAlertProbabilitySpikeSubscribeMessage"];
 	price_spike: components["schemas"]["WsAlertPriceSpikeSubscribeMessage"];
 	market_volume_spike: components["schemas"]["WsAlertMarketVolumeSpikeSubscribeMessage"];
 	event_volume_spike: components["schemas"]["WsAlertEventVolumeSpikeSubscribeMessage"];
@@ -7193,7 +7035,6 @@ export interface WsAlertEventDataMap {
 	market_volume_milestone: components["schemas"]["VolumeMilestonePayload"];
 	event_volume_milestone: components["schemas"]["EventVolumeMilestonePayload"];
 	position_volume_milestone: components["schemas"]["PositionVolumeMilestonePayload"];
-	probability_spike: components["schemas"]["ProbabilitySpikePayload"];
 	price_spike: components["schemas"]["PriceSpikePayload"];
 	market_volume_spike: components["schemas"]["MarketVolumeSpikePayload"];
 	event_volume_spike: components["schemas"]["EventVolumeSpikePayload"];
