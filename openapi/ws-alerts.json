@@ -626,6 +626,114 @@
         }
       }
     },
+    "ws_alerts.position_liquidity": {
+      "address": "/ws/alerts",
+      "title": "Position Liquidity Threshold",
+      "summary": "Real-time `position_liquidity` alert subscription",
+      "description": "Fired when a position's USD order-book liquidity crosses a threshold. **`position_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `position_ids`, `min_liquidity_usd`, `max_liquidity_usd`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Position"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertPositionLiquiditySubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertPositionLiquidityUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertPositionLiquidityEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
+    "ws_alerts.market_liquidity": {
+      "address": "/ws/alerts",
+      "title": "Market Liquidity Threshold",
+      "summary": "Real-time `market_liquidity` alert subscription",
+      "description": "Fired when a market's total USD order-book liquidity crosses a threshold. **`condition_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `min_liquidity_usd`, `max_liquidity_usd`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertMarketLiquiditySubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertMarketLiquidityUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertMarketLiquidityEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
+    "ws_alerts.event_liquidity": {
+      "address": "/ws/alerts",
+      "title": "Event Liquidity Threshold",
+      "summary": "Real-time `event_liquidity` alert subscription",
+      "description": "Fired when an event's total USD order-book liquidity (summed across its markets) crosses a threshold. **`event_slugs` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `min_liquidity_usd`, `max_liquidity_usd`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "servers": [
+        {
+          "$ref": "#/servers/alerts"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Event"
+        }
+      ],
+      "messages": {
+        "subscribe": {
+          "$ref": "#/components/messages/WsAlertEventLiquiditySubscribe"
+        },
+        "unsubscribe": {
+          "$ref": "#/components/messages/WsAlertEventLiquidityUnsubscribe"
+        },
+        "event": {
+          "$ref": "#/components/messages/WsAlertEventLiquidityEvent"
+        },
+        "subscribed": {
+          "$ref": "#/components/messages/WsAlertSubscribed"
+        },
+        "unsubscribed": {
+          "$ref": "#/components/messages/WsAlertUnsubscribed"
+        },
+        "error": {
+          "$ref": "#/components/messages/WsAlertError"
+        }
+      }
+    },
     "ws_alerts.market_volume_milestone": {
       "address": "/ws/alerts",
       "title": "Market Volume Milestone",
@@ -2170,6 +2278,177 @@
       "messages": [
         {
           "$ref": "#/channels/ws_alerts.position_metrics/messages/event"
+        }
+      ]
+    },
+    "subscribePositionLiquidity": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.position_liquidity"
+      },
+      "title": "Subscribe — Position Liquidity Threshold",
+      "summary": "Subscribe to `position_liquidity` alerts",
+      "description": "Fired when a position's USD order-book liquidity crosses a threshold. **`position_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).",
+      "tags": [
+        {
+          "name": "Position"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.position_liquidity/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribePositionLiquidity": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.position_liquidity"
+      },
+      "title": "Unsubscribe — Position Liquidity Threshold",
+      "summary": "Unsubscribe from `position_liquidity` alerts",
+      "description": "Stop receiving `position_liquidity` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Position"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.position_liquidity/messages/unsubscribe"
+        }
+      ]
+    },
+    "receivePositionLiquidity": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.position_liquidity"
+      },
+      "title": "Event — Position Liquidity Threshold",
+      "summary": "Receive `position_liquidity` alerts",
+      "description": "Fired when a position's USD order-book liquidity crosses a threshold. **`position_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert.",
+      "tags": [
+        {
+          "name": "Position"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.position_liquidity/messages/event"
+        }
+      ]
+    },
+    "subscribeMarketLiquidity": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.market_liquidity"
+      },
+      "title": "Subscribe — Market Liquidity Threshold",
+      "summary": "Subscribe to `market_liquidity` alerts",
+      "description": "Fired when a market's total USD order-book liquidity crosses a threshold. **`condition_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.market_liquidity/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribeMarketLiquidity": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.market_liquidity"
+      },
+      "title": "Unsubscribe — Market Liquidity Threshold",
+      "summary": "Unsubscribe from `market_liquidity` alerts",
+      "description": "Stop receiving `market_liquidity` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.market_liquidity/messages/unsubscribe"
+        }
+      ]
+    },
+    "receiveMarketLiquidity": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.market_liquidity"
+      },
+      "title": "Event — Market Liquidity Threshold",
+      "summary": "Receive `market_liquidity` alerts",
+      "description": "Fired when a market's total USD order-book liquidity crosses a threshold. **`condition_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert.",
+      "tags": [
+        {
+          "name": "Market"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.market_liquidity/messages/event"
+        }
+      ]
+    },
+    "subscribeEventLiquidity": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.event_liquidity"
+      },
+      "title": "Subscribe — Event Liquidity Threshold",
+      "summary": "Subscribe to `event_liquidity` alerts",
+      "description": "Fired when an event's total USD order-book liquidity (summed across its markets) crosses a threshold. **`event_slugs` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).",
+      "tags": [
+        {
+          "name": "Event"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.event_liquidity/messages/subscribe"
+        }
+      ]
+    },
+    "unsubscribeEventLiquidity": {
+      "action": "send",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.event_liquidity"
+      },
+      "title": "Unsubscribe — Event Liquidity Threshold",
+      "summary": "Unsubscribe from `event_liquidity` alerts",
+      "description": "Stop receiving `event_liquidity` alerts. Filter fields must match the original subscription exactly.",
+      "tags": [
+        {
+          "name": "Event"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.event_liquidity/messages/unsubscribe"
+        }
+      ]
+    },
+    "receiveEventLiquidity": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/ws_alerts.event_liquidity"
+      },
+      "title": "Event — Event Liquidity Threshold",
+      "summary": "Receive `event_liquidity` alerts",
+      "description": "Fired when an event's total USD order-book liquidity (summed across its markets) crosses a threshold. **`event_slugs` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert.",
+      "tags": [
+        {
+          "name": "Event"
+        }
+      ],
+      "messages": [
+        {
+          "$ref": "#/channels/ws_alerts.event_liquidity/messages/event"
         }
       ]
     },
@@ -5001,6 +5280,243 @@
           }
         ]
       },
+      "WsAlertPositionLiquiditySubscribe": {
+        "name": "WsAlertPositionLiquiditySubscribe",
+        "title": "Position Liquidity Threshold — Subscribe",
+        "summary": "Subscribe to `position_liquidity` alerts",
+        "description": "Fired when a position's USD order-book liquidity crosses a threshold. **`position_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `position_ids`, `min_liquidity_usd`, `max_liquidity_usd`, `one_shot`",
+        "tags": [
+          {
+            "name": "Position"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertPositionLiquiditySubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "position_liquidity",
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertPositionLiquidityUnsubscribe": {
+        "name": "WsAlertPositionLiquidityUnsubscribe",
+        "title": "Position Liquidity Threshold — Unsubscribe",
+        "summary": "Unsubscribe from `position_liquidity` alerts",
+        "description": "Unsubscribe from `position_liquidity` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Position"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertPositionLiquidityUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "position_liquidity",
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertPositionLiquidityEvent": {
+        "name": "WsAlertPositionLiquidityEvent",
+        "title": "Position Liquidity Threshold — Event",
+        "summary": "`position_liquidity` alert pushed from server",
+        "description": "Fired when a position's USD order-book liquidity crosses a threshold. **`position_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Position"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertPositionLiquidityEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "position_liquidity",
+              "timestamp": 1743500000000,
+              "data": {
+                "position_id": "71321045679252212594626385532706912750332728571942532289631379312455583992563",
+                "liquidity_usd": 48000.0,
+                "threshold_usd": 50000.0,
+                "direction": "below",
+                "liquidity_updated_at": 1700000000000
+              }
+            }
+          }
+        ]
+      },
+      "WsAlertMarketLiquiditySubscribe": {
+        "name": "WsAlertMarketLiquiditySubscribe",
+        "title": "Market Liquidity Threshold — Subscribe",
+        "summary": "Subscribe to `market_liquidity` alerts",
+        "description": "Fired when a market's total USD order-book liquidity crosses a threshold. **`condition_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `condition_ids`, `min_liquidity_usd`, `max_liquidity_usd`, `one_shot`",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertMarketLiquiditySubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "market_liquidity",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertMarketLiquidityUnsubscribe": {
+        "name": "WsAlertMarketLiquidityUnsubscribe",
+        "title": "Market Liquidity Threshold — Unsubscribe",
+        "summary": "Unsubscribe from `market_liquidity` alerts",
+        "description": "Unsubscribe from `market_liquidity` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertMarketLiquidityUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "market_liquidity",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertMarketLiquidityEvent": {
+        "name": "WsAlertMarketLiquidityEvent",
+        "title": "Market Liquidity Threshold — Event",
+        "summary": "`market_liquidity` alert pushed from server",
+        "description": "Fired when a market's total USD order-book liquidity crosses a threshold. **`condition_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Market"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertMarketLiquidityEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "market_liquidity",
+              "timestamp": 1743500000000,
+              "data": {
+                "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "liquidity_usd": 125000.0,
+                "threshold_usd": 100000.0,
+                "direction": "above",
+                "liquidity_updated_at": 1700000000000
+              }
+            }
+          }
+        ]
+      },
+      "WsAlertEventLiquiditySubscribe": {
+        "name": "WsAlertEventLiquiditySubscribe",
+        "title": "Event Liquidity Threshold — Subscribe",
+        "summary": "Subscribe to `event_liquidity` alerts",
+        "description": "Fired when an event's total USD order-book liquidity (summed across its markets) crosses a threshold. **`event_slugs` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert.\n\n**Applicable filters:** `event_slugs`, `min_liquidity_usd`, `max_liquidity_usd`, `one_shot`",
+        "tags": [
+          {
+            "name": "Event"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertEventLiquiditySubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "subscribe",
+              "event": "event_liquidity",
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertEventLiquidityUnsubscribe": {
+        "name": "WsAlertEventLiquidityUnsubscribe",
+        "title": "Event Liquidity Threshold — Unsubscribe",
+        "summary": "Unsubscribe from `event_liquidity` alerts",
+        "description": "Unsubscribe from `event_liquidity` alerts. The filter fields must match the original subscription exactly.",
+        "tags": [
+          {
+            "name": "Event"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertEventLiquidityUnsubscribeMessage"
+        },
+        "examples": [
+          {
+            "payload": {
+              "op": "unsubscribe",
+              "event": "event_liquidity",
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          }
+        ]
+      },
+      "WsAlertEventLiquidityEvent": {
+        "name": "WsAlertEventLiquidityEvent",
+        "title": "Event Liquidity Threshold — Event",
+        "summary": "`event_liquidity` alert pushed from server",
+        "description": "Fired when an event's total USD order-book liquidity (summed across its markets) crosses a threshold. **`event_slugs` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).\n\n**Credits cost:** 100 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "tags": [
+          {
+            "name": "Event"
+          }
+        ],
+        "payload": {
+          "$ref": "#/components/schemas/WsAlertEventLiquidityEvent"
+        },
+        "examples": [
+          {
+            "payload": {
+              "event": "event_liquidity",
+              "timestamp": 1743500000000,
+              "data": {
+                "event_slug": "us-presidential-election-2024",
+                "liquidity_usd": 2500000.0,
+                "threshold_usd": 1000000.0,
+                "direction": "above",
+                "liquidity_updated_at": 1700000000000
+              }
+            }
+          }
+        ]
+      },
       "WsAlertMarketVolumeMilestoneSubscribe": {
         "name": "WsAlertMarketVolumeMilestoneSubscribe",
         "title": "Market Volume Milestone — Subscribe",
@@ -7216,13 +7732,15 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Trader wallet address."
           },
           "category": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Category."
           },
           "timeframe": {
             "type": "string",
@@ -7233,229 +7751,262 @@
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Realized pnl in USD."
           },
           "markets_in_category": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Markets in this category."
           },
           "markets_traded": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Markets traded."
           },
           "outcomes_traded": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Number of outcomes traded."
           },
           "total_buys": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total buy count."
           },
           "total_sells": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total sell count."
           },
           "total_redemptions": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total redemption count."
           },
           "total_merges": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total merge count."
           },
           "total_splits": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total split count."
           },
           "total_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total volume in USD."
           },
           "buy_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Buy in USD."
           },
           "sell_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Sell in USD."
           },
           "redemption_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Redemption in USD."
           },
           "merge_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Merge in USD."
           },
           "convert_collateral_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Convert collateral in USD."
           },
           "split_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Split volume in USD."
           },
           "total_fees": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total fees amount."
           },
           "total_shares_bought": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total shares bought."
           },
           "markets_won": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Markets won."
           },
           "markets_lost": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Markets lost."
           },
           "market_win_rate_pct": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Market win rate percent."
           },
           "avg_hold_time_seconds": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Average hold time seconds."
           },
           "best_trade_pnl_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Best trade pnl in USD."
           },
           "best_trade_condition_id": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Best trade condition id."
           },
           "worst_trade_pnl_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Worst trade pnl in USD."
           },
           "worst_trade_condition_id": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Worst trade condition id."
           },
           "total_wins_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total wins in USD."
           },
           "total_losses_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total losses in USD."
           },
           "avg_win_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Average win in USD."
           },
           "avg_loss_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Average loss in USD."
           },
           "profit_factor": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Profit factor."
           },
           "first_trade_at": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "First trade timestamp."
           },
           "last_trade_at": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Last trade timestamp."
           }
         }
       },
@@ -7724,7 +8275,8 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Market condition IDs to match."
           },
           "one_shot": {
             "type": [
@@ -7747,18 +8299,22 @@
           "ts": {
             "type": "integer",
             "format": "int32",
+            "description": "Unix timestamp in seconds.",
             "minimum": 0
           },
           "block": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Block number."
           },
           "condition_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Market condition ID."
           },
           "holder_count": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Number of holders."
           }
         }
       },
@@ -8046,7 +8602,8 @@
         ],
         "properties": {
           "deleted": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether the webhook was deleted."
           }
         }
       },
@@ -8193,7 +8750,8 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Event slugs to match."
           },
           "one_shot": {
             "type": [
@@ -8216,18 +8774,99 @@
           "ts": {
             "type": "integer",
             "format": "int32",
+            "description": "Unix timestamp in seconds.",
             "minimum": 0
           },
           "block": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Block number."
           },
           "event_slug": {
-            "type": "string"
+            "type": "string",
+            "description": "Event slug."
           },
           "holder_count": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Number of holders."
+          }
+        }
+      },
+      "EventLiquidityFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `event_liquidity` event.\n\nAt least one of `min_liquidity_usd`, `max_liquidity_usd`, or `one_shot` must be set.\nThresholds are edge-triggered: a callback fires when liquidity crosses the threshold,\nthen re-arms once it crosses back (unless `one_shot`).",
+        "required": [
+          "event_slugs"
+        ],
+        "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery."
+          },
+          "min_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Fire when total liquidity crosses up through this USD value."
+          },
+          "max_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Fire when total liquidity crosses down through this USD value."
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "**Required.** Events to receive liquidity updates for.",
+            "maxItems": 500,
+            "minItems": 1
+          }
+        }
+      },
+      "EventLiquidityPayload": {
+        "type": "object",
+        "description": "Event liquidity webhook payload.",
+        "required": [
+          "event_slug",
+          "liquidity_usd",
+          "threshold_usd",
+          "direction",
+          "liquidity_updated_at"
+        ],
+        "properties": {
+          "event_slug": {
+            "type": "string",
+            "description": "Event slug."
+          },
+          "liquidity_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Total order-book liquidity in USD at the time of firing."
+          },
+          "threshold_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "The threshold (USD) that was crossed."
+          },
+          "direction": {
+            "type": "string",
+            "description": "`\"above\"` when liquidity crossed up through `min_liquidity_usd`,\n`\"below\"` when it crossed down through `max_liquidity_usd`."
+          },
+          "liquidity_updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Update timestamp (Unix millis)."
           }
         }
       },
@@ -8277,28 +8916,32 @@
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Maximum volume USD."
           },
           "min_txns": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Minimum transactions."
           },
           "min_unique_traders": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Minimum unique traders."
           },
           "min_fees": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Minimum fees."
           },
           "exclude_shortterm_markets": {
             "type": [
@@ -8512,10 +9155,12 @@
         ],
         "properties": {
           "event_slug": {
-            "type": "string"
+            "type": "string",
+            "description": "Event slug."
           },
           "timeframe": {
-            "type": "string"
+            "type": "string",
+            "description": "Metric timeframe."
           },
           "milestone_usd": {
             "type": "number",
@@ -8615,22 +9260,26 @@
         ],
         "properties": {
           "event_slug": {
-            "type": "string"
+            "type": "string",
+            "description": "Event slug."
           },
           "event_title": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Event title."
           },
           "image_url": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Image URL."
           },
           "timeframe": {
-            "type": "string"
+            "type": "string",
+            "description": "Metric timeframe."
           },
           "current_volume_usd": {
             "type": "number",
@@ -8686,31 +9335,40 @@
         ],
         "properties": {
           "trader": {
-            "type": "string"
+            "type": "string",
+            "description": "Trader wallet address."
           },
           "position_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Outcome token ID."
           },
           "condition_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Market condition ID."
           },
           "event_slug": {
-            "type": "string"
+            "type": "string",
+            "description": "Event slug."
           },
           "market_slug": {
-            "type": "string"
+            "type": "string",
+            "description": "Market slug."
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "description": "Title."
           },
           "question": {
-            "type": "string"
+            "type": "string",
+            "description": "Market question."
           },
           "image_url": {
-            "type": "string"
+            "type": "string",
+            "description": "Image URL."
           },
           "outcome": {
-            "type": "string"
+            "type": "string",
+            "description": "Outcome name."
           },
           "outcome_index": {
             "type": [
@@ -8718,19 +9376,23 @@
               "null"
             ],
             "format": "int32",
+            "description": "Outcome index.",
             "minimum": 0
           },
           "pnl_usd": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Pnl in USD."
           },
           "pnl_pct": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Pnl percent."
           },
           "cost_basis_usd": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Cost basis in USD."
           },
           "reason": {
             "type": "string",
@@ -8738,7 +9400,8 @@
           },
           "block": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Block number."
           },
           "ts": {
             "type": "integer",
@@ -8930,7 +9593,8 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Trader wallet address."
           },
           "timeframe": {
             "type": "string",
@@ -8949,264 +9613,302 @@
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Events traded."
           },
           "markets_traded": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Markets traded."
           },
           "total_buys": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total buy count."
           },
           "total_sells": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total sell count."
           },
           "total_redemptions": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total redemption count."
           },
           "total_merges": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total merge count."
           },
           "total_splits": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total split count."
           },
           "total_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total volume in USD."
           },
           "buy_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Buy volume in USD."
           },
           "sell_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Sell volume in USD."
           },
           "redemption_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Redemption volume in USD."
           },
           "merge_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Merge volume in USD."
           },
           "convert_collateral_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Convert collateral in USD."
           },
           "split_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Split volume in USD."
           },
           "maker_rebate_count": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Maker rebate count."
           },
           "maker_rebate_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Maker rebate in USD."
           },
           "reward_count": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Reward count."
           },
           "reward_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Reward in USD."
           },
           "yield_count": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Yield count."
           },
           "yield_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Yield in USD."
           },
           "total_credit_count": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total credit count."
           },
           "total_credit_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total credit in USD."
           },
           "markets_won": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Markets won."
           },
           "markets_lost": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Markets lost."
           },
           "market_win_rate_pct": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Market win rate percent."
           },
           "total_wins_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total wins in USD."
           },
           "total_losses_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total losses in USD."
           },
           "avg_win_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Average win in USD."
           },
           "avg_loss_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Average loss in USD."
           },
           "profit_factor": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Profit factor."
           },
           "avg_hold_time_seconds": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Average hold time seconds."
           },
           "total_fees": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total fees amount."
           },
           "best_trade_pnl_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Best trade pnl in USD."
           },
           "best_trade_condition_id": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Best trade condition id."
           },
           "worst_trade_pnl_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Worst trade pnl in USD."
           },
           "worst_trade_condition_id": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Worst trade condition id."
           },
           "first_trade_at": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "First trade timestamp."
           },
           "last_trade_at": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Last trade timestamp."
           }
         }
       },
@@ -9221,7 +9923,8 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/WebhookEventInfo"
-            }
+            },
+            "description": "Supported webhook events."
           }
         }
       },
@@ -9530,6 +10233,83 @@
           }
         }
       },
+      "MarketLiquidityFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `market_liquidity` event.\n\nAt least one of `min_liquidity_usd`, `max_liquidity_usd`, or `one_shot` must be set.\nThresholds are edge-triggered: a callback fires when liquidity crosses the threshold,\nthen re-arms once it crosses back (unless `one_shot`).",
+        "required": [
+          "condition_ids"
+        ],
+        "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery."
+          },
+          "min_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Fire when total liquidity crosses up through this USD value."
+          },
+          "max_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Fire when total liquidity crosses down through this USD value."
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "**Required.** Markets to receive liquidity updates for.",
+            "maxItems": 500,
+            "minItems": 1
+          }
+        }
+      },
+      "MarketLiquidityPayload": {
+        "type": "object",
+        "description": "Market liquidity webhook payload.",
+        "required": [
+          "condition_id",
+          "liquidity_usd",
+          "threshold_usd",
+          "direction",
+          "liquidity_updated_at"
+        ],
+        "properties": {
+          "condition_id": {
+            "type": "string",
+            "description": "Market condition ID."
+          },
+          "liquidity_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Total order-book liquidity in USD at the time of firing."
+          },
+          "threshold_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "The threshold (USD) that was crossed."
+          },
+          "direction": {
+            "type": "string",
+            "description": "`\"above\"` when liquidity crossed up through `min_liquidity_usd`,\n`\"below\"` when it crossed down through `max_liquidity_usd`."
+          },
+          "liquidity_updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Update timestamp (Unix millis)."
+          }
+        }
+      },
       "MarketMetricsFilters": {
         "type": "object",
         "description": "Subscription filters for the `condition_metrics` event. All fields are optional.",
@@ -9616,25 +10396,29 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Trader wallet address."
           },
           "condition_id": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market condition ID."
           },
           "event_slug": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Event slug."
           },
           "category": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Category."
           },
           "timeframe": {
             "type": "string",
@@ -9645,126 +10429,144 @@
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Realized pnl in USD."
           },
           "current_shares_balance": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Current shares balance."
           },
           "outcomes_traded": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Number of outcomes traded."
           },
           "total_buys": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total buy count."
           },
           "total_sells": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total sell count."
           },
           "total_redemptions": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total redemption count."
           },
           "total_merges": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total merge count."
           },
           "total_splits": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Total split count."
           },
           "buy_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Buy in USD."
           },
           "sell_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Sell in USD."
           },
           "redemption_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Redemption in USD."
           },
           "merge_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Merge in USD."
           },
           "convert_collateral_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Convert collateral in USD."
           },
           "split_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Split volume in USD."
           },
           "total_fees": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total fees amount."
           },
           "total_shares_bought": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Total shares bought."
           },
           "first_trade_at": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "First trade timestamp."
           },
           "last_trade_at": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Last trade timestamp."
           }
         }
       },
@@ -10022,34 +10824,40 @@
         ],
         "properties": {
           "condition_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Market condition ID."
           },
           "question": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market question."
           },
           "market_slug": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market slug."
           },
           "event_slug": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Event slug."
           },
           "image_url": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Image URL."
           },
           "timeframe": {
-            "type": "string"
+            "type": "string",
+            "description": "Metric timeframe."
           },
           "current_volume_usd": {
             "type": "number",
@@ -10564,7 +11372,7 @@
               "string",
               "null"
             ],
-            "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1\ntrades; may be `0x0000…` for V2 trades placed without a builder code."
+            "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1\ntrades; may be `0x0000…` for V2 trades placed without a builder code.\nCLOB builder code."
           },
           "builder_fee": {
             "type": [
@@ -11076,6 +11884,9 @@
           "event_metrics",
           "tag_metrics",
           "position_metrics",
+          "position_liquidity",
+          "market_liquidity",
+          "event_liquidity",
           "market_volume_milestone",
           "event_volume_milestone",
           "position_volume_milestone",
@@ -11103,21 +11914,21 @@
             "items": {
               "type": "string"
             },
-            "description": "Filter by wallet addresses (for first_trade, normalized to lowercase). Max 500 entries."
+            "description": "Filter by wallet addresses (for first_trade, normalized to lowercase). Max 500 entries.\nWallet addresses to match."
           },
           "traders": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Filter by trader addresses (for PnL webhooks, normalized to lowercase). Max 500 entries."
+            "description": "Filter by trader addresses (for PnL webhooks, normalized to lowercase). Max 500 entries.\nTrader wallet addresses to match."
           },
           "condition_ids": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Filter by market/condition IDs. Max 500 entries."
+            "description": "Filter by market/condition IDs. Max 500 entries.\nMarket condition IDs to match."
           },
           "min_usd_value": {
             "type": [
@@ -11132,21 +11943,21 @@
             "items": {
               "type": "string"
             },
-            "description": "Filter by event slugs. Max 500 entries."
+            "description": "Filter by event slugs. Max 500 entries.\nEvent slugs to match."
           },
           "tags": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Filter by tags or category names (case-insensitive). Matches a market's\ntags or its category label. Max 500 entries."
+            "description": "Filter by tags or category names (case-insensitive). Matches a market's\ntags or its category label. Max 500 entries.\nTags to match."
           },
           "series_slugs": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Filter by series slugs (case-insensitive). Matches a market's parent\nseries. Max 500 entries."
+            "description": "Filter by series slugs (case-insensitive). Matches a market's parent\nseries. Max 500 entries.\nSeries slugs to match."
           },
           "min_probability": {
             "type": [
@@ -11196,6 +12007,22 @@
             "format": "double",
             "description": "Maximum volume (USD) - for metrics webhooks"
           },
+          "min_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Minimum order-book liquidity (USD) - for liquidity webhooks.\nFires when liquidity crosses up through this value."
+          },
+          "max_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Maximum order-book liquidity (USD) - for liquidity webhooks.\nFires when liquidity crosses down through this value."
+          },
           "min_buy_usd": {
             "type": [
               "number",
@@ -11241,14 +12068,14 @@
             "items": {
               "type": "string"
             },
-            "description": "Filter by position IDs - for position PnL webhooks. Max 500 entries."
+            "description": "Filter by position IDs - for position PnL webhooks. Max 500 entries.\nOutcome token IDs to match."
           },
           "outcomes": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Filter by outcomes (e.g., \"Yes\", \"No\") - for position PnL webhooks. Max 500 entries."
+            "description": "Filter by outcomes (e.g., \"Yes\", \"No\") - for position PnL webhooks. Max 500 entries.\nOutcome names to match."
           },
           "position_outcome_indices": {
             "type": "array",
@@ -11257,14 +12084,14 @@
               "format": "int32",
               "minimum": 0
             },
-            "description": "Filter by position outcome index — for close_to_bond. Position 0 usually represents Yes/Up, 1 = No.\nWhen non-empty, only trades whose outcome_index is in this list will match. Max 500 entries."
+            "description": "Filter by position outcome index — for close_to_bond. Position 0 usually represents Yes/Up, 1 = No.\nWhen non-empty, only trades whose outcome_index is in this list will match. Max 500 entries.\nOutcome indices to match."
           },
           "trade_types": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Filter by trade type (e.g. \"OrderFilled\", \"Redemption\", \"Merge\", \"Split\"). Empty = default behavior per handler."
+            "description": "Filter by trade type (e.g. \"OrderFilled\", \"Redemption\", \"Merge\", \"Split\"). Empty = default behavior per handler.\nTrade types to match."
           },
           "min_fees": {
             "type": [
@@ -11319,7 +12146,7 @@
             "items": {
               "$ref": "#/components/schemas/WebhookTimeframe"
             },
-            "description": "Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d)."
+            "description": "Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d).\nMetric timeframes to match."
           },
           "milestone_amounts": {
             "type": "array",
@@ -11327,7 +12154,7 @@
               "type": "integer",
               "format": "int64"
             },
-            "description": "Milestone amounts to track - for volume milestone webhooks (e.g., 10000, 100000, 1000000). Max 500 entries."
+            "description": "Milestone amounts to track - for volume milestone webhooks (e.g., 10000, 100000, 1000000). Max 500 entries.\nMilestone amounts to match."
           },
           "spike_ratio": {
             "type": [
@@ -11346,7 +12173,7 @@
             "items": {
               "$ref": "#/components/schemas/WebhookAssetSymbol"
             },
-            "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update` webhooks.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\", \"DOGE\", \"BNB\", \"HYPE\". Empty = all assets."
+            "description": "Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update` webhooks.\nValid values: \"BTC\", \"ETH\", \"SOL\", \"XRP\", \"DOGE\", \"BNB\", \"HYPE\". Empty = all assets.\nAsset symbols to match."
           },
           "spike_direction": {
             "oneOf": [
@@ -11373,7 +12200,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Filter for `oracle_events` by event name (case-insensitive).\nValid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`,\n`RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`,\n`QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`,\n`QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`,\n`QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`,\n`NegRiskOutcomeReported`. Empty = all types."
+            "description": "Filter for `oracle_events` by event name (case-insensitive).\nValid values: `AssertionMade`, `AssertionDisputed`, `AssertionSettled`,\n`RequestPrice`, `ProposePrice`, `DisputePrice`, `Settle`,\n`QuestionResolved`, `QuestionEmergencyResolved`, `QuestionReset`,\n`QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`,\n`QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`,\n`NegRiskOutcomeReported`. Empty = all types.\nOracle event types to match."
           },
           "one_shot": {
             "type": "boolean",
@@ -11392,7 +12219,8 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Outcome token IDs to match."
           },
           "one_shot": {
             "type": [
@@ -11417,40 +12245,125 @@
           "ts": {
             "type": "integer",
             "format": "int32",
+            "description": "Unix timestamp in seconds.",
             "minimum": 0
           },
           "block": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Block number."
           },
           "position_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Outcome token ID."
           },
           "holder_count": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Number of holders."
           },
           "total_balance": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Total shares held."
           },
           "total_cost_basis": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Total holder cost basis in USD."
           },
           "condition_holder_count": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int32"
+            "format": "int32",
+            "description": "Number of market-level holders."
           },
           "event_holder_count": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int32"
+            "format": "int32",
+            "description": "Number of event-level holders."
+          }
+        }
+      },
+      "PositionLiquidityFilters": {
+        "type": "object",
+        "description": "Subscription filters for the `position_liquidity` event.\n\nAt least one of `min_liquidity_usd`, `max_liquidity_usd`, or `one_shot` must be set.\nThresholds are edge-triggered: a callback fires when liquidity crosses the threshold,\nthen re-arms once it crosses back (unless `one_shot`).",
+        "required": [
+          "position_ids"
+        ],
+        "properties": {
+          "one_shot": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Fire-and-delete: when `true`, delete the subscription after its first\nsuccessful delivery."
+          },
+          "min_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Fire when liquidity crosses up through this USD value."
+          },
+          "max_liquidity_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Fire when liquidity crosses down through this USD value."
+          },
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "**Required.** Outcome token IDs to receive liquidity updates for.",
+            "maxItems": 500,
+            "minItems": 1
+          }
+        }
+      },
+      "PositionLiquidityPayload": {
+        "type": "object",
+        "description": "Position liquidity webhook payload.",
+        "required": [
+          "position_id",
+          "liquidity_usd",
+          "threshold_usd",
+          "direction",
+          "liquidity_updated_at"
+        ],
+        "properties": {
+          "position_id": {
+            "type": "string",
+            "description": "Outcome token (position) ID."
+          },
+          "liquidity_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "Order-book liquidity in USD at the time of firing."
+          },
+          "threshold_usd": {
+            "type": "number",
+            "format": "double",
+            "description": "The threshold (USD) that was crossed."
+          },
+          "direction": {
+            "type": "string",
+            "description": "`\"above\"` when liquidity crossed up through `min_liquidity_usd`,\n`\"below\"` when it crossed down through `max_liquidity_usd`."
+          },
+          "liquidity_updated_at": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Update timestamp (Unix millis)."
           }
         }
       },
@@ -11522,35 +12435,40 @@
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Maximum volume USD."
           },
           "min_buy_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Minimum buy USD."
           },
           "min_sell_volume_usd": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Minimum sell volume USD."
           },
           "min_txns": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Minimum transactions."
           },
           "min_unique_traders": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Minimum unique traders."
           },
           "min_price_change_pct": {
             "type": [
@@ -11573,7 +12491,8 @@
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Minimum fees."
           }
         }
       },
@@ -11746,70 +12665,80 @@
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Transaction count."
           },
           "buys": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Buy count."
           },
           "sells": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Sell count."
           },
           "builder_txns": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Builder-attributed transaction count."
           },
           "builder_buys": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Builder-attributed buy count."
           },
           "builder_sells": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Builder-attributed sell count."
           },
           "unique_traders": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Unique traders."
           },
           "unique_makers": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Unique makers."
           },
           "unique_takers": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Unique takers."
           },
           "unique_builder_traders": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Unique builder traders."
           },
           "price_open": {
             "type": [
@@ -11817,6 +12746,7 @@
               "null"
             ],
             "format": "double",
+            "description": "Opening price.",
             "maximum": 1,
             "minimum": 0
           },
@@ -11826,6 +12756,7 @@
               "null"
             ],
             "format": "double",
+            "description": "Closing price.",
             "maximum": 1,
             "minimum": 0
           },
@@ -11835,6 +12766,7 @@
               "null"
             ],
             "format": "double",
+            "description": "Highest price.",
             "maximum": 1,
             "minimum": 0
           },
@@ -11844,6 +12776,7 @@
               "null"
             ],
             "format": "double",
+            "description": "Lowest price.",
             "maximum": 1,
             "minimum": 0
           },
@@ -11853,6 +12786,7 @@
               "null"
             ],
             "format": "double",
+            "description": "Opening implied probability.",
             "maximum": 1,
             "minimum": 0
           },
@@ -11862,6 +12796,7 @@
               "null"
             ],
             "format": "double",
+            "description": "Closing implied probability.",
             "maximum": 1,
             "minimum": 0
           },
@@ -11871,6 +12806,7 @@
               "null"
             ],
             "format": "double",
+            "description": "Highest implied probability.",
             "maximum": 1,
             "minimum": 0
           },
@@ -11880,6 +12816,7 @@
               "null"
             ],
             "format": "double",
+            "description": "Lowest implied probability.",
             "maximum": 1,
             "minimum": 0
           },
@@ -11888,21 +12825,24 @@
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Average shares per trade."
           },
           "avg_buy_shares": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Average shares per buy."
           },
           "avg_sell_shares": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Average shares per sell."
           }
         }
       },
@@ -12272,26 +13212,31 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market condition ID."
           },
           "position_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Outcome token ID."
           },
           "outcome": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Outcome name."
           },
           "outcome_index": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int32"
+            "format": "int32",
+            "description": "Outcome index."
           },
           "timeframe": {
-            "type": "string"
+            "type": "string",
+            "description": "Metric timeframe."
           },
           "milestone_usd": {
             "type": "number",
@@ -12427,50 +13372,59 @@
         ],
         "properties": {
           "position_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Outcome token ID."
           },
           "condition_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Market condition ID."
           },
           "question": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market question."
           },
           "market_slug": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market slug."
           },
           "event_slug": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Event slug."
           },
           "image_url": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Image URL."
           },
           "outcome": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Outcome name."
           },
           "outcome_index": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int32"
+            "format": "int32",
+            "description": "Outcome index."
           },
           "timeframe": {
-            "type": "string"
+            "type": "string",
+            "description": "Metric timeframe."
           },
           "current_volume_usd": {
             "type": "number",
@@ -12667,50 +13621,58 @@
         ],
         "properties": {
           "position_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Outcome token ID."
           },
           "condition_id": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market condition ID."
           },
           "question": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market question."
           },
           "market_slug": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market slug."
           },
           "event_slug": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Event slug."
           },
           "image_url": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Image URL."
           },
           "outcome": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Outcome name."
           },
           "outcome_index": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int32"
+            "format": "int32",
+            "description": "Outcome index."
           },
           "previous_price": {
             "type": "number",
@@ -13167,50 +14129,58 @@
         ],
         "properties": {
           "position_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Outcome token ID."
           },
           "condition_id": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market condition ID."
           },
           "question": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market question."
           },
           "market_slug": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Market slug."
           },
           "event_slug": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Event slug."
           },
           "image_url": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Image URL."
           },
           "outcome": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Outcome name."
           },
           "outcome_index": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int32"
+            "format": "int32",
+            "description": "Outcome index."
           },
           "previous_probability": {
             "type": "number",
@@ -14425,28 +15395,32 @@
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Maximum volume USD."
           },
           "min_txns": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Minimum transactions."
           },
           "min_unique_traders": {
             "type": [
               "integer",
               "null"
             ],
-            "format": "int64"
+            "format": "int64",
+            "description": "Minimum unique traders."
           },
           "min_fees": {
             "type": [
               "number",
               "null"
             ],
-            "format": "double"
+            "format": "double",
+            "description": "Minimum fees."
           }
         }
       },
@@ -15583,10 +16557,12 @@
         ],
         "properties": {
           "condition_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Market condition ID."
           },
           "timeframe": {
-            "type": "string"
+            "type": "string",
+            "description": "Metric timeframe."
           },
           "milestone_usd": {
             "type": "number",
@@ -16398,7 +17374,7 @@
               "string",
               "null"
             ],
-            "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1\ntrades; may be `0x0000…` for V2 trades placed without a builder code."
+            "description": "CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1\ntrades; may be `0x0000…` for V2 trades placed without a builder code.\nCLOB builder code."
           },
           "builder_fee": {
             "type": [
@@ -18318,6 +19294,9 @@
           "event_metrics",
           "tag_metrics",
           "position_metrics",
+          "position_liquidity",
+          "market_liquidity",
+          "event_liquidity",
           "market_volume_milestone",
           "event_volume_milestone",
           "position_volume_milestone",
@@ -20839,6 +21818,372 @@
           }
         }
       },
+      "WsAlertPositionLiquiditySubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `position_liquidity` alerts. Fired when a position's USD order-book liquidity crosses a threshold. **`position_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "position_liquidity"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "position_liquidity",
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/PositionLiquidityFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "position_ids"
+            ]
+          }
+        ]
+      },
+      "WsAlertPositionLiquidityUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `position_liquidity` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "position_liquidity"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "position_liquidity",
+              "position_ids": [
+                "452312848583266388373324160190187140051835877600158453279131187530910662656"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/PositionLiquidityFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "position_ids"
+            ]
+          }
+        ]
+      },
+      "WsAlertPositionLiquidityEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `position_liquidity` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "position_liquidity"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PositionLiquidityPayload"
+          }
+        },
+        "example": {
+          "event": "position_liquidity",
+          "timestamp": 1743500000000,
+          "data": {
+            "position_id": "71321045679252212594626385532706912750332728571942532289631379312455583992563",
+            "liquidity_usd": 48000.0,
+            "threshold_usd": 50000.0,
+            "direction": "below",
+            "liquidity_updated_at": 1700000000000
+          }
+        }
+      },
+      "WsAlertMarketLiquiditySubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `market_liquidity` alerts. Fired when a market's total USD order-book liquidity crosses a threshold. **`condition_ids` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "market_liquidity"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "market_liquidity",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/MarketLiquidityFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "condition_ids"
+            ]
+          }
+        ]
+      },
+      "WsAlertMarketLiquidityUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `market_liquidity` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "market_liquidity"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "market_liquidity",
+              "condition_ids": [
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/MarketLiquidityFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "condition_ids"
+            ]
+          }
+        ]
+      },
+      "WsAlertMarketLiquidityEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `market_liquidity` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "market_liquidity"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MarketLiquidityPayload"
+          }
+        },
+        "example": {
+          "event": "market_liquidity",
+          "timestamp": 1743500000000,
+          "data": {
+            "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
+            "liquidity_usd": 125000.0,
+            "threshold_usd": 100000.0,
+            "direction": "above",
+            "liquidity_updated_at": 1700000000000
+          }
+        }
+      },
+      "WsAlertEventLiquiditySubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Subscribe to `event_liquidity` alerts. Fired when an event's total USD order-book liquidity (summed across its markets) crosses a threshold. **`event_slugs` is required**, plus at least one of `min_liquidity_usd` (fires when liquidity crosses **up** through the value) or `max_liquidity_usd` (fires when it crosses **down**). Thresholds are edge-triggered and re-arm once liquidity crosses back, unless `one_shot` is set (fire once, then delete).",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "event_liquidity"
+                ]
+              }
+            },
+            "example": {
+              "op": "subscribe",
+              "event": "event_liquidity",
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/EventLiquidityFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "event_slugs"
+            ]
+          }
+        ]
+      },
+      "WsAlertEventLiquidityUnsubscribeMessage": {
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Unsubscribe from `event_liquidity` alerts. The filter fields must match the original subscription exactly.",
+            "required": [
+              "op",
+              "event"
+            ],
+            "properties": {
+              "op": {
+                "type": "string",
+                "enum": [
+                  "unsubscribe"
+                ]
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "event_liquidity"
+                ]
+              }
+            },
+            "example": {
+              "op": "unsubscribe",
+              "event": "event_liquidity",
+              "event_slugs": [
+                "example-event"
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/schemas/EventLiquidityFilters"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "event_slugs"
+            ]
+          }
+        ]
+      },
+      "WsAlertEventLiquidityEvent": {
+        "type": "object",
+        "required": [
+          "event",
+          "timestamp",
+          "data"
+        ],
+        "description": "Pushed `event_liquidity` alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "event_liquidity"
+            ]
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp in milliseconds"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EventLiquidityPayload"
+          }
+        },
+        "example": {
+          "event": "event_liquidity",
+          "timestamp": 1743500000000,
+          "data": {
+            "event_slug": "us-presidential-election-2024",
+            "liquidity_usd": 2500000.0,
+            "threshold_usd": 1000000.0,
+            "direction": "above",
+            "liquidity_updated_at": 1700000000000
+          }
+        }
+      },
       "WsAlertMarketVolumeMilestoneSubscribeMessage": {
         "allOf": [
           {
@@ -23074,6 +24419,15 @@
             "$ref": "#/components/schemas/WsAlertPositionMetricsSubscribeMessage"
           },
           {
+            "$ref": "#/components/schemas/WsAlertPositionLiquiditySubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertMarketLiquiditySubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertEventLiquiditySubscribeMessage"
+          },
+          {
             "$ref": "#/components/schemas/WsAlertMarketVolumeMilestoneSubscribeMessage"
           },
           {
@@ -23179,6 +24533,15 @@
             "$ref": "#/components/schemas/WsAlertPositionMetricsUnsubscribeMessage"
           },
           {
+            "$ref": "#/components/schemas/WsAlertPositionLiquidityUnsubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertMarketLiquidityUnsubscribeMessage"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertEventLiquidityUnsubscribeMessage"
+          },
+          {
             "$ref": "#/components/schemas/WsAlertMarketVolumeMilestoneUnsubscribeMessage"
           },
           {
@@ -23282,6 +24645,15 @@
           },
           {
             "$ref": "#/components/schemas/WsAlertPositionMetricsEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertPositionLiquidityEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertMarketLiquidityEvent"
+          },
+          {
+            "$ref": "#/components/schemas/WsAlertEventLiquidityEvent"
           },
           {
             "$ref": "#/components/schemas/WsAlertMarketVolumeMilestoneEvent"

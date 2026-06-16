@@ -35,7 +35,10 @@ export type WsRoomId =
 	| "polymarket_clob_rewards"
 	| "polymarket_events_stream"
 	| "polymarket_markets_stream"
-	| "polymarket_oracle_events";
+	| "polymarket_oracle_events"
+	| "polymarket_position_liquidity"
+	| "polymarket_market_liquidity"
+	| "polymarket_event_liquidity";
 
 export type WsFiltersOptionalRoom =
 	| "polymarket_trades"
@@ -44,7 +47,10 @@ export type WsFiltersOptionalRoom =
 	| "polymarket_events_stream"
 	| "polymarket_markets_stream"
 	| "polymarket_oracle_events"
-	| "polymarket_holder_metrics";
+	| "polymarket_holder_metrics"
+	| "polymarket_position_liquidity"
+	| "polymarket_market_liquidity"
+	| "polymarket_event_liquidity";
 export type WsFiltersRequiredRoom = Exclude<WsRoomId, WsFiltersOptionalRoom>;
 
 export type TradesSubscribeFilters = Omit<WsSchemas["TradesStreamSubscribeMessage"], "action">;
@@ -64,6 +70,9 @@ export type ClobRewardsSubscribeFilters = Omit<WsSchemas["ClobRewardsSubscribeMe
 export type EventsStreamSubscribeFilters = Omit<WsSchemas["EventsStreamSubscribeMessage"], "action">;
 export type MarketsStreamSubscribeFilters = Omit<WsSchemas["MarketsStreamSubscribeMessage"], "action">;
 export type OracleEventsStreamSubscribeFilters = Omit<WsSchemas["OracleEventsStreamSubscribeMessage"], "action">;
+export type PositionLiquiditySubscribeFilters = Omit<WsSchemas["PositionLiquiditySubscribeMessage"], "action">;
+export type MarketLiquiditySubscribeFilters = Omit<WsSchemas["MarketLiquiditySubscribeMessage"], "action">;
+export type EventLiquiditySubscribeFilters = Omit<WsSchemas["EventLiquiditySubscribeMessage"], "action">;
 
 export type WsTradeType = NonNullable<TradesSubscribeFilters["trade_types"]>[number];
 export type WsTradeStatus = NonNullable<TradesSubscribeFilters["status"]>;
@@ -115,6 +124,9 @@ export type MarketsStreamUpdateEvent = WsSchemas["MarketsStreamUpdateEvent"];
 export type MarketsStreamSubscribeResponse = WsSchemas["MarketsStreamSubscribeResponse"];
 export type OracleEventStreamEvent = WsSchemas["OracleEventTyped"];
 export type OracleEventsStreamSubscribeResponse = WsSchemas["OracleEventsStreamSubscribeResponse"];
+export type PositionLiquidityEvent = WsSchemas["PositionLiquidityEvent"];
+export type MarketLiquidityEvent = WsSchemas["MarketLiquidityEvent"];
+export type EventLiquidityEvent = WsSchemas["EventLiquidityEvent"];
 export type TradeOrderFilledEvent = WsSchemas["TradeOrderFilledEvent"];
 export type TradeRedemptionEvent = WsSchemas["TradeRedemptionEvent"];
 export type TradeMergeEvent = WsSchemas["TradeMergeEvent"];
@@ -150,6 +162,19 @@ export interface HolderMetricsSubscribeResponse {
 }
 export type AccountsSubscribeResponse = WsSchemas["AccountsSubscribeResponse"];
 export type OrderBookSubscribeResponse = WsSchemas["OrderBookSubscribeResponse"];
+interface LiquiditySubscribeResponseBase {
+	rejected?: string[];
+	error?: string | null;
+}
+export interface PositionLiquiditySubscribeResponse extends LiquiditySubscribeResponseBase {
+	position_ids?: string[];
+}
+export interface MarketLiquiditySubscribeResponse extends LiquiditySubscribeResponseBase {
+	condition_ids?: string[];
+}
+export interface EventLiquiditySubscribeResponse extends LiquiditySubscribeResponseBase {
+	event_slugs?: string[];
+}
 
 export interface WebSocketEventMap {
 	trade_stream_update: TradeStreamEvent;
@@ -185,6 +210,9 @@ export interface WebSocketEventMap {
 	events_stream_update: EventsStreamUpdateEvent;
 	markets_stream_update: MarketsStreamUpdateEvent;
 	oracle_event_update: OracleEventStreamEvent;
+	position_liquidity_update: PositionLiquidityEvent;
+	market_liquidity_update: MarketLiquidityEvent;
+	event_liquidity_update: EventLiquidityEvent;
 	connected: void;
 	disconnected: { code: number; reason: string };
 	reconnecting: { attempt: number };
@@ -212,6 +240,9 @@ export interface WsSubscriptionMap {
 	polymarket_events_stream: EventsStreamSubscribeFilters;
 	polymarket_markets_stream: MarketsStreamSubscribeFilters;
 	polymarket_oracle_events: OracleEventsStreamSubscribeFilters;
+	polymarket_position_liquidity: PositionLiquiditySubscribeFilters;
+	polymarket_market_liquidity: MarketLiquiditySubscribeFilters;
+	polymarket_event_liquidity: EventLiquiditySubscribeFilters;
 }
 
 export interface WsSubscribeResponseMap {
@@ -232,6 +263,9 @@ export interface WsSubscribeResponseMap {
 	polymarket_events_stream: EventsStreamSubscribeResponse;
 	polymarket_markets_stream: MarketsStreamSubscribeResponse;
 	polymarket_oracle_events: OracleEventsStreamSubscribeResponse;
+	polymarket_position_liquidity: PositionLiquiditySubscribeResponse;
+	polymarket_market_liquidity: MarketLiquiditySubscribeResponse;
+	polymarket_event_liquidity: EventLiquiditySubscribeResponse;
 }
 
 export type AlertsWebSocketEventMap = {

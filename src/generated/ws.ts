@@ -169,73 +169,170 @@ export interface components {
         AssetWindowFilterTimeframe: "5m" | "15m" | "1h" | "4h" | "1d" | "24h";
         /** @description Category PnL webhook payload. */
         CategoryPnlPayload: {
+            /** @description Trader wallet address. */
             trader?: string | null;
+            /** @description Category. */
             category?: string | null;
             /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
             timeframe: string;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Realized pnl in USD.
+             */
             realized_pnl_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets in this category.
+             */
             markets_in_category?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets traded.
+             */
             markets_traded?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Number of outcomes traded.
+             */
             outcomes_traded?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total buy count.
+             */
             total_buys?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total sell count.
+             */
             total_sells?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total redemption count.
+             */
             total_redemptions?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total merge count.
+             */
             total_merges?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total split count.
+             */
             total_splits?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total volume in USD.
+             */
             total_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Buy in USD.
+             */
             buy_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Sell in USD.
+             */
             sell_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Redemption in USD.
+             */
             redemption_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Merge in USD.
+             */
             merge_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Convert collateral in USD.
+             */
             convert_collateral_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Split volume in USD.
+             */
             split_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total fees amount.
+             */
             total_fees?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total shares bought.
+             */
             total_shares_bought?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets won.
+             */
             markets_won?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets lost.
+             */
             markets_lost?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Market win rate percent.
+             */
             market_win_rate_pct?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Average hold time seconds.
+             */
             avg_hold_time_seconds?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Best trade pnl in USD.
+             */
             best_trade_pnl_usd?: number | null;
+            /** @description Best trade condition id. */
             best_trade_condition_id?: string | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Worst trade pnl in USD.
+             */
             worst_trade_pnl_usd?: number | null;
+            /** @description Worst trade condition id. */
             worst_trade_condition_id?: string | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total wins in USD.
+             */
             total_wins_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total losses in USD.
+             */
             total_losses_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Average win in USD.
+             */
             avg_win_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Average loss in USD.
+             */
             avg_loss_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Profit factor.
+             */
             profit_factor?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description First trade timestamp.
+             */
             first_trade_at?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last trade timestamp.
+             */
             last_trade_at?: number | null;
         };
         /**
@@ -348,6 +445,7 @@ export interface components {
             threshold: number;
         };
         ConditionHolderMetricsFilters: {
+            /** @description Market condition IDs to match. */
             condition_ids?: string[];
             /**
              * @description Fire-and-delete: when `true`, delete the subscription after its first
@@ -356,12 +454,22 @@ export interface components {
             one_shot?: boolean | null;
         };
         ConditionHolderMetricsPayload: {
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Unix timestamp in seconds.
+             */
             ts: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Block number.
+             */
             block: number;
+            /** @description Market condition ID. */
             condition_id: string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Number of holders.
+             */
             holder_count: number;
         };
         /** @description Payload delivered when a market's volume or transaction metrics cross a configured threshold */
@@ -468,6 +576,7 @@ export interface components {
         };
         /** @description Delete webhook response */
         DeleteWebhookResponse: {
+            /** @description Whether the webhook was deleted. */
             deleted: boolean;
         };
         /**
@@ -520,6 +629,7 @@ export interface components {
             event_slug?: string | null;
         };
         EventHolderMetricsFilters: {
+            /** @description Event slugs to match. */
             event_slugs?: string[];
             /**
              * @description Fire-and-delete: when `true`, delete the subscription after its first
@@ -528,13 +638,74 @@ export interface components {
             one_shot?: boolean | null;
         };
         EventHolderMetricsPayload: {
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Unix timestamp in seconds.
+             */
             ts: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Block number.
+             */
             block: number;
+            /** @description Event slug. */
             event_slug: string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Number of holders.
+             */
             holder_count: number;
+        };
+        /**
+         * @description Subscription filters for the `event_liquidity` event.
+         *
+         *     At least one of `min_liquidity_usd`, `max_liquidity_usd`, or `one_shot` must be set.
+         *     Thresholds are edge-triggered: a callback fires when liquidity crosses the threshold,
+         *     then re-arms once it crosses back (unless `one_shot`).
+         */
+        EventLiquidityFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery.
+             */
+            one_shot?: boolean | null;
+            /**
+             * Format: double
+             * @description Fire when total liquidity crosses up through this USD value.
+             */
+            min_liquidity_usd?: number | null;
+            /**
+             * Format: double
+             * @description Fire when total liquidity crosses down through this USD value.
+             */
+            max_liquidity_usd?: number | null;
+            /** @description **Required.** Events to receive liquidity updates for. */
+            event_slugs: string[];
+        };
+        /** @description Event liquidity webhook payload. */
+        EventLiquidityPayload: {
+            /** @description Event slug. */
+            event_slug: string;
+            /**
+             * Format: double
+             * @description Total order-book liquidity in USD at the time of firing.
+             */
+            liquidity_usd: number;
+            /**
+             * Format: double
+             * @description The threshold (USD) that was crossed.
+             */
+            threshold_usd: number;
+            /**
+             * @description `"above"` when liquidity crossed up through `min_liquidity_usd`,
+             *     `"below"` when it crossed down through `max_liquidity_usd`.
+             */
+            direction: string;
+            /**
+             * Format: int64
+             * @description Update timestamp (Unix millis).
+             */
+            liquidity_updated_at: number;
         };
         /** @description Subscription filters for the `event_metrics` event. All fields are optional. */
         EventMetricsFilters: {
@@ -552,13 +723,25 @@ export interface components {
              * @description Only fire when aggregated event volume ≥ this value (USD).
              */
             min_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Maximum volume USD.
+             */
             max_volume_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Minimum transactions.
+             */
             min_txns?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Minimum unique traders.
+             */
             min_unique_traders?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Minimum fees.
+             */
             min_fees?: number | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
@@ -648,7 +831,9 @@ export interface components {
         };
         /** @description Event volume milestone webhook payload */
         EventVolumeMilestonePayload: {
+            /** @description Event slug. */
             event_slug: string;
+            /** @description Metric timeframe. */
             timeframe: string;
             /**
              * Format: double
@@ -697,9 +882,13 @@ export interface components {
         };
         /** @description Event volume spike webhook payload */
         EventVolumeSpikePayload: {
+            /** @description Event slug. */
             event_slug: string;
+            /** @description Event title. */
             event_title?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Metric timeframe. */
             timeframe: string;
             /**
              * Format: double
@@ -734,26 +923,50 @@ export interface components {
         };
         /** @description Exit Markers webhook payload — one position open->closed transition. */
         ExitMarkersPayload: {
+            /** @description Trader wallet address. */
             trader: string;
+            /** @description Outcome token ID. */
             position_id: string;
+            /** @description Market condition ID. */
             condition_id: string;
+            /** @description Event slug. */
             event_slug: string;
+            /** @description Market slug. */
             market_slug: string;
+            /** @description Title. */
             title: string;
+            /** @description Market question. */
             question: string;
+            /** @description Image URL. */
             image_url: string;
+            /** @description Outcome name. */
             outcome: string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Outcome index.
+             */
             outcome_index?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Pnl in USD.
+             */
             pnl_usd: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Pnl percent.
+             */
             pnl_pct: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Cost basis in USD.
+             */
             cost_basis_usd: number;
             /** @description resolved_win | resolved_loss | sold_win | sold_loss */
             reason: string;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Block number.
+             */
             block: number;
             /**
              * Format: int32
@@ -829,6 +1042,7 @@ export interface components {
         };
         /** @description Global PnL webhook payload. */
         GlobalPnlPayload: {
+            /** @description Trader wallet address. */
             trader?: string | null;
             /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
             timeframe: string;
@@ -837,83 +1051,194 @@ export interface components {
              * @description Realized PnL for the timeframe (matches REST `/pnl/global`).
              */
             realized_pnl_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Events traded.
+             */
             events_traded?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets traded.
+             */
             markets_traded?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total buy count.
+             */
             total_buys?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total sell count.
+             */
             total_sells?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total redemption count.
+             */
             total_redemptions?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total merge count.
+             */
             total_merges?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total split count.
+             */
             total_splits?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total volume in USD.
+             */
             total_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Buy volume in USD.
+             */
             buy_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Sell volume in USD.
+             */
             sell_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Redemption volume in USD.
+             */
             redemption_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Merge volume in USD.
+             */
             merge_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Convert collateral in USD.
+             */
             convert_collateral_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Split volume in USD.
+             */
             split_volume_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Maker rebate count.
+             */
             maker_rebate_count?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Maker rebate in USD.
+             */
             maker_rebate_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Reward count.
+             */
             reward_count?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Reward in USD.
+             */
             reward_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Yield count.
+             */
             yield_count?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Yield in USD.
+             */
             yield_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total credit count.
+             */
             total_credit_count?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total credit in USD.
+             */
             total_credit_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets won.
+             */
             markets_won?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets lost.
+             */
             markets_lost?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Market win rate percent.
+             */
             market_win_rate_pct?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total wins in USD.
+             */
             total_wins_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total losses in USD.
+             */
             total_losses_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Average win in USD.
+             */
             avg_win_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Average loss in USD.
+             */
             avg_loss_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Profit factor.
+             */
             profit_factor?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Average hold time seconds.
+             */
             avg_hold_time_seconds?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total fees amount.
+             */
             total_fees?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Best trade pnl in USD.
+             */
             best_trade_pnl_usd?: number | null;
+            /** @description Best trade condition id. */
             best_trade_condition_id?: string | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Worst trade pnl in USD.
+             */
             worst_trade_pnl_usd?: number | null;
+            /** @description Worst trade condition id. */
             worst_trade_condition_id?: string | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description First trade timestamp.
+             */
             first_trade_at?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last trade timestamp.
+             */
             last_trade_at?: number | null;
         };
         /** @description Response for GET /v1/webhook/events */
         ListEventsResponse: {
+            /** @description Supported webhook events. */
             events: components["schemas"]["WebhookEventInfo"][];
         };
         /** @description Subscription filters for the `market_created` event. All fields are optional. */
@@ -1025,6 +1350,57 @@ export interface components {
              */
             confirmed_at?: number | null;
         };
+        /**
+         * @description Subscription filters for the `market_liquidity` event.
+         *
+         *     At least one of `min_liquidity_usd`, `max_liquidity_usd`, or `one_shot` must be set.
+         *     Thresholds are edge-triggered: a callback fires when liquidity crosses the threshold,
+         *     then re-arms once it crosses back (unless `one_shot`).
+         */
+        MarketLiquidityFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery.
+             */
+            one_shot?: boolean | null;
+            /**
+             * Format: double
+             * @description Fire when total liquidity crosses up through this USD value.
+             */
+            min_liquidity_usd?: number | null;
+            /**
+             * Format: double
+             * @description Fire when total liquidity crosses down through this USD value.
+             */
+            max_liquidity_usd?: number | null;
+            /** @description **Required.** Markets to receive liquidity updates for. */
+            condition_ids: string[];
+        };
+        /** @description Market liquidity webhook payload. */
+        MarketLiquidityPayload: {
+            /** @description Market condition ID. */
+            condition_id: string;
+            /**
+             * Format: double
+             * @description Total order-book liquidity in USD at the time of firing.
+             */
+            liquidity_usd: number;
+            /**
+             * Format: double
+             * @description The threshold (USD) that was crossed.
+             */
+            threshold_usd: number;
+            /**
+             * @description `"above"` when liquidity crossed up through `min_liquidity_usd`,
+             *     `"below"` when it crossed down through `max_liquidity_usd`.
+             */
+            direction: string;
+            /**
+             * Format: int64
+             * @description Update timestamp (Unix millis).
+             */
+            liquidity_updated_at: number;
+        };
         /** @description Subscription filters for the `condition_metrics` event. All fields are optional. */
         MarketMetricsFilters: {
             /**
@@ -1064,47 +1440,105 @@ export interface components {
         };
         /** @description Market PnL webhook payload. */
         MarketPnlPayload: {
+            /** @description Trader wallet address. */
             trader?: string | null;
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Category. */
             category?: string | null;
             /** @description Aggregation timeframe: "1d", "7d", "30d", or "lifetime" */
             timeframe: string;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Realized pnl in USD.
+             */
             realized_pnl_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Current shares balance.
+             */
             current_shares_balance?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Number of outcomes traded.
+             */
             outcomes_traded?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total buy count.
+             */
             total_buys?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total sell count.
+             */
             total_sells?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total redemption count.
+             */
             total_redemptions?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total merge count.
+             */
             total_merges?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total split count.
+             */
             total_splits?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Buy in USD.
+             */
             buy_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Sell in USD.
+             */
             sell_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Redemption in USD.
+             */
             redemption_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Merge in USD.
+             */
             merge_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Convert collateral in USD.
+             */
             convert_collateral_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Split volume in USD.
+             */
             split_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total fees amount.
+             */
             total_fees?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total shares bought.
+             */
             total_shares_bought?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description First trade timestamp.
+             */
             first_trade_at?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last trade timestamp.
+             */
             last_trade_at?: number | null;
         };
         /** @description Subscription filters for the `market_resolved` event. All fields are optional. */
@@ -1199,11 +1633,17 @@ export interface components {
         };
         /** @description Market volume spike webhook payload */
         MarketVolumeSpikePayload: {
+            /** @description Market condition ID. */
             condition_id: string;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Market slug. */
             market_slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Metric timeframe. */
             timeframe: string;
             /**
              * Format: double
@@ -1413,6 +1853,7 @@ export interface components {
             /**
              * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
              *     trades; may be `0x0000…` for V2 trades placed without a builder code.
+             *     CLOB builder code.
              */
             builder_code?: string | null;
             /**
@@ -1515,7 +1956,7 @@ export interface components {
          * @description Polymarket webhook event types
          * @enum {string}
          */
-        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_category_pnl" | "trader_position_resolved" | "trader_exit_markers" | "position_holder_metrics" | "condition_holder_metrics" | "event_holder_metrics" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events" | "price_threshold" | "market_resolved" | "market_disputed";
+        PolymarketWebhookEvent: "trader_first_trade" | "trader_new_market" | "trader_whale_trade" | "trader_new_trade" | "trader_trade_event" | "trader_global_pnl" | "trader_market_pnl" | "trader_category_pnl" | "trader_position_resolved" | "trader_exit_markers" | "position_holder_metrics" | "condition_holder_metrics" | "event_holder_metrics" | "condition_metrics" | "event_metrics" | "tag_metrics" | "position_metrics" | "position_liquidity" | "market_liquidity" | "event_liquidity" | "market_volume_milestone" | "event_volume_milestone" | "position_volume_milestone" | "probability_spike" | "market_volume_spike" | "event_volume_spike" | "position_volume_spike" | "close_to_bond" | "market_created" | "asset_price_tick" | "asset_price_window_update" | "price_spike" | "oracle_events" | "price_threshold" | "market_resolved" | "market_disputed";
         /**
          * @description Polymarket-specific webhook filters
          *
@@ -1550,27 +1991,41 @@ export interface components {
          *     Implements Hash + Eq manually (f64 fields use bit representation)
          */
         PolymarketWebhookFilter: {
-            /** @description Filter by wallet addresses (for first_trade, normalized to lowercase). Max 500 entries. */
+            /**
+             * @description Filter by wallet addresses (for first_trade, normalized to lowercase). Max 500 entries.
+             *     Wallet addresses to match.
+             */
             wallet_addresses?: string[];
-            /** @description Filter by trader addresses (for PnL webhooks, normalized to lowercase). Max 500 entries. */
+            /**
+             * @description Filter by trader addresses (for PnL webhooks, normalized to lowercase). Max 500 entries.
+             *     Trader wallet addresses to match.
+             */
             traders?: string[];
-            /** @description Filter by market/condition IDs. Max 500 entries. */
+            /**
+             * @description Filter by market/condition IDs. Max 500 entries.
+             *     Market condition IDs to match.
+             */
             condition_ids?: string[];
             /**
              * Format: double
              * @description Filter by minimum USD value (for trades)
              */
             min_usd_value?: number | null;
-            /** @description Filter by event slugs. Max 500 entries. */
+            /**
+             * @description Filter by event slugs. Max 500 entries.
+             *     Event slugs to match.
+             */
             event_slugs?: string[];
             /**
              * @description Filter by tags or category names (case-insensitive). Matches a market's
              *     tags or its category label. Max 500 entries.
+             *     Tags to match.
              */
             tags?: string[];
             /**
              * @description Filter by series slugs (case-insensitive). Matches a market's parent
              *     series. Max 500 entries.
+             *     Series slugs to match.
              */
             series_slugs?: string[];
             /**
@@ -1605,6 +2060,18 @@ export interface components {
             max_volume_usd?: number | null;
             /**
              * Format: double
+             * @description Minimum order-book liquidity (USD) - for liquidity webhooks.
+             *     Fires when liquidity crosses up through this value.
+             */
+            min_liquidity_usd?: number | null;
+            /**
+             * Format: double
+             * @description Maximum order-book liquidity (USD) - for liquidity webhooks.
+             *     Fires when liquidity crosses down through this value.
+             */
+            max_liquidity_usd?: number | null;
+            /**
+             * Format: double
              * @description Minimum buy volume (USD) - for PnL and metrics webhooks
              */
             min_buy_usd?: number | null;
@@ -1628,16 +2095,26 @@ export interface components {
              * @description Maximum net shares - for position PnL webhooks
              */
             max_net_shares?: number | null;
-            /** @description Filter by position IDs - for position PnL webhooks. Max 500 entries. */
+            /**
+             * @description Filter by position IDs - for position PnL webhooks. Max 500 entries.
+             *     Outcome token IDs to match.
+             */
             position_ids?: string[];
-            /** @description Filter by outcomes (e.g., "Yes", "No") - for position PnL webhooks. Max 500 entries. */
+            /**
+             * @description Filter by outcomes (e.g., "Yes", "No") - for position PnL webhooks. Max 500 entries.
+             *     Outcome names to match.
+             */
             outcomes?: string[];
             /**
              * @description Filter by position outcome index — for close_to_bond. Position 0 usually represents Yes/Up, 1 = No.
              *     When non-empty, only trades whose outcome_index is in this list will match. Max 500 entries.
+             *     Outcome indices to match.
              */
             position_outcome_indices?: number[];
-            /** @description Filter by trade type (e.g. "OrderFilled", "Redemption", "Merge", "Split"). Empty = default behavior per handler. */
+            /**
+             * @description Filter by trade type (e.g. "OrderFilled", "Redemption", "Merge", "Split"). Empty = default behavior per handler.
+             *     Trade types to match.
+             */
             trade_types?: string[];
             /**
              * Format: double
@@ -1669,9 +2146,15 @@ export interface components {
              * @description Minimum probability change percentage - for position metrics webhooks
              */
             min_probability_change_pct?: number | null;
-            /** @description Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d). */
+            /**
+             * @description Timeframes to track - for metrics webhooks (1m, 5m, 30m, 1h, 6h, 24h, 7d, 30d).
+             *     Metric timeframes to match.
+             */
             timeframes?: components["schemas"]["WebhookTimeframe"][];
-            /** @description Milestone amounts to track - for volume milestone webhooks (e.g., 10000, 100000, 1000000). Max 500 entries. */
+            /**
+             * @description Milestone amounts to track - for volume milestone webhooks (e.g., 10000, 100000, 1000000). Max 500 entries.
+             *     Milestone amounts to match.
+             */
             milestone_amounts?: number[];
             /**
              * Format: double
@@ -1690,6 +2173,7 @@ export interface components {
             /**
              * @description Filter by crypto asset symbol — for `asset_price_tick` and `asset_price_window_update` webhooks.
              *     Valid values: "BTC", "ETH", "SOL", "XRP", "DOGE", "BNB", "HYPE". Empty = all assets.
+             *     Asset symbols to match.
              */
             asset_symbols?: components["schemas"]["WebhookAssetSymbol"][];
             spike_direction?: null | components["schemas"]["SpikeDirection"];
@@ -1713,6 +2197,7 @@ export interface components {
              *     `QuestionInitialized`, `QuestionPaused`, `QuestionUnpaused`,
              *     `QuestionFlagged`, `QuestionUnflagged`, `ConditionResolution`,
              *     `NegRiskOutcomeReported`. Empty = all types.
+             *     Oracle event types to match.
              */
             oracle_event_types?: string[];
             /**
@@ -1728,6 +2213,7 @@ export interface components {
             fire_if_already_past?: boolean;
         };
         PositionHolderMetricsFilters: {
+            /** @description Outcome token IDs to match. */
             position_ids?: string[];
             /**
              * @description Fire-and-delete: when `true`, delete the subscription after its first
@@ -1736,21 +2222,94 @@ export interface components {
             one_shot?: boolean | null;
         };
         PositionHolderMetricsPayload: {
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Unix timestamp in seconds.
+             */
             ts: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Block number.
+             */
             block: number;
+            /** @description Outcome token ID. */
             position_id: string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Number of holders.
+             */
             holder_count: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total shares held.
+             */
             total_balance: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Total holder cost basis in USD.
+             */
             total_cost_basis: number;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Number of market-level holders.
+             */
             condition_holder_count?: number | null;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Number of event-level holders.
+             */
             event_holder_count?: number | null;
+        };
+        /**
+         * @description Subscription filters for the `position_liquidity` event.
+         *
+         *     At least one of `min_liquidity_usd`, `max_liquidity_usd`, or `one_shot` must be set.
+         *     Thresholds are edge-triggered: a callback fires when liquidity crosses the threshold,
+         *     then re-arms once it crosses back (unless `one_shot`).
+         */
+        PositionLiquidityFilters: {
+            /**
+             * @description Fire-and-delete: when `true`, delete the subscription after its first
+             *     successful delivery.
+             */
+            one_shot?: boolean | null;
+            /**
+             * Format: double
+             * @description Fire when liquidity crosses up through this USD value.
+             */
+            min_liquidity_usd?: number | null;
+            /**
+             * Format: double
+             * @description Fire when liquidity crosses down through this USD value.
+             */
+            max_liquidity_usd?: number | null;
+            /** @description **Required.** Outcome token IDs to receive liquidity updates for. */
+            position_ids: string[];
+        };
+        /** @description Position liquidity webhook payload. */
+        PositionLiquidityPayload: {
+            /** @description Outcome token (position) ID. */
+            position_id: string;
+            /**
+             * Format: double
+             * @description Order-book liquidity in USD at the time of firing.
+             */
+            liquidity_usd: number;
+            /**
+             * Format: double
+             * @description The threshold (USD) that was crossed.
+             */
+            threshold_usd: number;
+            /**
+             * @description `"above"` when liquidity crossed up through `min_liquidity_usd`,
+             *     `"below"` when it crossed down through `max_liquidity_usd`.
+             */
+            direction: string;
+            /**
+             * Format: int64
+             * @description Update timestamp (Unix millis).
+             */
+            liquidity_updated_at: number;
         };
         /** @description Subscription filters for the `position_metrics` event. All fields are optional. */
         PositionMetricsFilters: {
@@ -1772,15 +2331,30 @@ export interface components {
              * @description Only fire when position volume ≥ this value (USD).
              */
             min_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Maximum volume USD.
+             */
             max_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Minimum buy USD.
+             */
             min_buy_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Minimum sell volume USD.
+             */
             min_sell_volume_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Minimum transactions.
+             */
             min_txns?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Minimum unique traders.
+             */
             min_unique_traders?: number | null;
             /**
              * Format: double
@@ -1792,7 +2366,10 @@ export interface components {
              * @description Only fire when probability change % ≥ this value.
              */
             min_probability_change_pct?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Minimum fees.
+             */
             min_fees?: number | null;
         };
         /** @description Payload delivered when a position's volume or transaction metrics cross a configured threshold */
@@ -1878,47 +2455,110 @@ export interface components {
              * @description Builder-attributed fees in USD
              */
             builder_fees?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Transaction count.
+             */
             txns?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Buy count.
+             */
             buys?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Sell count.
+             */
             sells?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Builder-attributed transaction count.
+             */
             builder_txns?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Builder-attributed buy count.
+             */
             builder_buys?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Builder-attributed sell count.
+             */
             builder_sells?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique traders.
+             */
             unique_traders?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique makers.
+             */
             unique_makers?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique takers.
+             */
             unique_takers?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique builder traders.
+             */
             unique_builder_traders?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Opening price.
+             */
             price_open?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Closing price.
+             */
             price_close?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Highest price.
+             */
             price_high?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Lowest price.
+             */
             price_low?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Opening implied probability.
+             */
             probability_open?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Closing implied probability.
+             */
             probability_close?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Highest implied probability.
+             */
             probability_high?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Lowest implied probability.
+             */
             probability_low?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Average shares per trade.
+             */
             avg_trade_shares?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Average shares per buy.
+             */
             avg_buy_shares?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Average shares per sell.
+             */
             avg_sell_shares?: number | null;
         };
         PositionResolvedPayload: {
@@ -2080,11 +2720,18 @@ export interface components {
         };
         /** @description Position volume milestone webhook payload */
         PositionVolumeMilestonePayload: {
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Outcome token ID. */
             position_id: string;
+            /** @description Outcome name. */
             outcome?: string | null;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Outcome index.
+             */
             outcome_index?: number | null;
+            /** @description Metric timeframe. */
             timeframe: string;
             /**
              * Format: double
@@ -2155,15 +2802,26 @@ export interface components {
         };
         /** @description Position volume spike webhook payload */
         PositionVolumeSpikePayload: {
+            /** @description Outcome token ID. */
             position_id: string;
+            /** @description Market condition ID. */
             condition_id: string;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Market slug. */
             market_slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Outcome name. */
             outcome?: string | null;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Outcome index.
+             */
             outcome_index?: number | null;
+            /** @description Metric timeframe. */
             timeframe: string;
             /**
              * Format: double
@@ -2251,14 +2909,24 @@ export interface components {
         };
         /** @description Position price spike webhook payload */
         PriceSpikePayload: {
+            /** @description Outcome token ID. */
             position_id: string;
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Market slug. */
             market_slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Outcome name. */
             outcome?: string | null;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Outcome index.
+             */
             outcome_index?: number | null;
             /**
              * Format: double
@@ -2446,14 +3114,24 @@ export interface components {
         };
         /** @description Position probability spike webhook payload */
         ProbabilitySpikePayload: {
+            /** @description Outcome token ID. */
             position_id: string;
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Market slug. */
             market_slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Outcome name. */
             outcome?: string | null;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description Outcome index.
+             */
             outcome_index?: number | null;
             /**
              * Format: double
@@ -2778,13 +3456,25 @@ export interface components {
              * @description Only fire when aggregated tag volume >= this value (USD).
              */
             min_volume_usd?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Maximum volume USD.
+             */
             max_volume_usd?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Minimum transactions.
+             */
             min_txns?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Minimum unique traders.
+             */
             min_unique_traders?: number | null;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description Minimum fees.
+             */
             min_fees?: number | null;
         };
         /** @description Payload delivered when a tag's aggregated volume or transaction metrics cross a configured threshold */
@@ -3224,7 +3914,9 @@ export interface components {
         };
         /** @description Volume milestone webhook payload */
         VolumeMilestonePayload: {
+            /** @description Market condition ID. */
             condition_id: string;
+            /** @description Metric timeframe. */
             timeframe: string;
             /**
              * Format: double
@@ -3612,6 +4304,7 @@ export interface components {
             /**
              * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
              *     trades; may be `0x0000…` for V2 trades placed without a builder code.
+             *     CLOB builder code.
              */
             builder_code?: string | null;
             /**
@@ -3622,19 +4315,30 @@ export interface components {
         };
         /** @description Server acknowledgement for an oracle events stream subscription */
         OracleEventsStreamSubscribeResponse: {
+            /** @description Accepted market condition IDs. */
             condition_ids?: string[];
+            /** @description Accepted market slugs. */
             market_slugs?: string[];
+            /** @description Accepted event slugs. */
             event_slugs?: string[];
+            /** @description Accepted oracle event types. */
             oracle_event_types?: string[];
-            /** @enum {string} */
+            /**
+             * @description Trade status filter.
+             * @enum {string}
+             */
             status?: "confirmed" | "pending" | "all";
+            /** @description Whether to subscribe to all matching events. */
             subscribe_all?: boolean;
             /** @description Filter values that were rejected (invalid format or unknown type) */
             rejected?: string[];
         };
         /** @description Subscribe to the oracle events stream. No filters = subscribe to all events. */
         OracleEventsStreamSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description 64-char hex condition IDs (with or without 0x prefix) */
             condition_ids?: string[];
@@ -3656,23 +4360,38 @@ export interface components {
         MarketsStreamUpdateEvent: {
             /** @enum {string} */
             type: "markets_stream_update";
-            /** @enum {string} */
+            /**
+             * @description WebSocket room ID.
+             * @enum {string}
+             */
             room_id: "polymarket_markets_stream";
-            /** @enum {string} */
+            /**
+             * @description Subscription mode.
+             * @enum {string}
+             */
             mode: "filter" | "ids";
-            /** @enum {integer} */
+            /**
+             * @description Flush interval in milliseconds.
+             * @enum {integer}
+             */
             interval_ms: 500 | 1000 | 3000 | 10000;
             /** @description Full market rows (same shape as `GET /polymarket/market`). Not a delta — each element is a complete row replacement. */
             data: Record<string, never>[];
         };
         /** @description Server acknowledgement for a markets_stream subscribe/unsubscribe. Envelope type: "markets_stream_subscribe_response". */
         MarketsStreamSubscribeResponse: {
-            /** @enum {string} */
+            /**
+             * @description Subscription mode.
+             * @enum {string}
+             */
             mode?: "filter" | "ids" | "";
+            /** @description Flush interval in milliseconds. */
             interval_ms?: number;
             /** @description Accepted condition_ids (ids mode). */
             condition_ids?: string[];
+            /** @description Accepted market slugs. */
             market_slugs?: string[];
+            /** @description Accepted event slugs. */
             event_slugs?: string[];
             /** @description Ids that failed normalization or exceeded the per-sub cap. */
             rejected?: string[];
@@ -3683,21 +4402,39 @@ export interface components {
         MarketsStreamFilter: {
             /** @description Case-insensitive substring match on `title`. 3–100 chars. */
             search?: string;
+            /** @description Categories to include. */
             categories?: string[];
+            /** @description Categories to exclude. */
             exclude_categories?: string[];
+            /** @description Accepted tag slugs. */
             tags?: string[];
+            /** @description Tags to exclude. */
             exclude_tags?: string[];
+            /** @description Minimum volume. */
             min_volume?: number;
+            /** @description Maximum volume. */
             max_volume?: number;
+            /** @description Minimum transaction count. */
             min_txns?: number;
+            /** @description Maximum transaction count. */
             max_txns?: number;
+            /** @description Minimum unique trader count. */
             min_unique_traders?: number;
+            /** @description Maximum unique trader count. */
             max_unique_traders?: number;
+            /** @description Minimum liquidity. */
             min_liquidity?: number;
+            /** @description Maximum liquidity. */
             max_liquidity?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Minimum holder count.
+             */
             min_holders?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Maximum holder count.
+             */
             max_holders?: number;
             /**
              * Format: int64
@@ -3719,7 +4456,10 @@ export interface components {
         };
         /** @description Subscribe to the trades stream. No filters = subscribe to all trades. */
         TradesStreamSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description 64-char hex condition IDs (with or without 0x prefix) */
             condition_ids?: string[];
@@ -3743,14 +4483,24 @@ export interface components {
         };
         /** @description Server acknowledgement for a trades stream subscription */
         TradesStreamSubscribeResponse: {
+            /** @description Accepted market condition IDs. */
             condition_ids?: string[];
+            /** @description Accepted market slugs. */
             market_slugs?: string[];
+            /** @description Accepted event slugs. */
             event_slugs?: string[];
+            /** @description Accepted outcome token IDs. */
             position_ids?: string[];
+            /** @description Accepted trader wallets. */
             traders?: string[];
+            /** @description Accepted trade types. */
             trade_types?: string[];
-            /** @enum {string} */
+            /**
+             * @description Trade status filter.
+             * @enum {string}
+             */
             status?: "confirmed" | "pending" | "all";
+            /** @description Whether to subscribe to all matching events. */
             subscribe_all?: boolean;
             /** @description Filter values that were rejected (invalid format or unknown type) */
             rejected?: string[];
@@ -3763,9 +4513,14 @@ export interface components {
          *     **Pending trades:** `block`, `confirmed_at`, `log_index`, `block_index` are absent. `received_at` (milliseconds) is included instead. For OrderFilled/OrdersMatched, `order_hash`, `taker`, `fee`, `fee_shares`, `fee_pct` are also absent.
          */
         TradeStreamEvent: {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "OrderFilled" | "OrdersMatched";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
             /** @description Absent for pending trades */
             block?: number;
@@ -3780,28 +4535,49 @@ export interface components {
             /** @description Absent for pending trades */
             order_hash?: string;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
             /** @description Absent for pending trades */
             taker?: string;
-            /** @enum {string} */
+            /**
+             * @description Trade side.
+             * @enum {string}
+             */
             side?: "Buy" | "Sell";
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Outcome token ID. */
             position_id?: string;
+            /** @description Outcome name. */
             outcome?: string | null;
+            /** @description Outcome index. */
             outcome_index?: number | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Trade amount in USD. */
             usd_amount?: number;
+            /** @description Trade size in shares. */
             shares_amount?: number;
+            /** @description Outcome price. */
             price?: number;
+            /** @description Implied probability. */
             probability?: number | null;
             /** @description Absent for pending trades */
             fee?: number;
@@ -3809,31 +4585,49 @@ export interface components {
             fee_shares?: number;
             /** @description Absent for pending trades */
             fee_pct?: number;
+            /** @description Exchange identifier. */
             exchange: number;
             /** @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code. */
             builder_code?: string;
             /** @description Builder fee in USDC. Absent when no builder code is attached. */
             builder_fee?: number;
         } | {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "MakerRebate" | "Reward" | "Yield";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
             /** @description Payout distributor address */
             taker?: string;
+            /** @description Trade amount in USD. */
             usd_amount?: number;
             /** @description Always 0 for payout credits */
             shares_amount?: number;
@@ -3848,195 +4642,370 @@ export interface components {
             /** @description Unknown/non-exchange credit source */
             exchange: number;
         } | {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "Redemption";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Outcome name. */
             outcome?: string | null;
+            /** @description Outcome index. */
             outcome_index?: number | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Trade amount in USD. */
             usd_amount?: number;
+            /** @description Winning outcome index. */
             winning_outcome_index?: number | null;
+            /** @description Position details. */
             position_details?: {
+                /** @description Outcome token ID. */
                 position_id?: string;
+                /** @description Outcome index. */
                 outcome_index?: number;
+                /** @description Amount as a decimal string. */
                 amount?: string;
             }[];
+            /** @description Exchange identifier. */
             exchange: number;
         } | {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "Merge";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Trade amount in USD. */
             usd_amount?: number;
+            /** @description Position details. */
             position_details?: {
+                /** @description Outcome token ID. */
                 position_id?: string;
+                /** @description Outcome index. */
                 outcome_index?: number;
+                /** @description Amount as a decimal string. */
                 amount?: string;
             }[];
+            /** @description Exchange identifier. */
             exchange: number;
         } | {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "Split";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Trade amount in USD. */
             usd_amount?: number;
+            /** @description Position details. */
             position_details?: {
+                /** @description Outcome token ID. */
                 position_id?: string;
+                /** @description Outcome index. */
                 outcome_index?: number;
+                /** @description Amount as a decimal string. */
                 amount?: string;
             }[];
+            /** @description Exchange identifier. */
             exchange: number;
         } | {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "PositionsConverted";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
+            /** @description Market id. */
             market_id?: string;
+            /** @description Index set. */
             index_set?: string;
+            /** @description Trade size in shares. */
             shares_amount?: number;
+            /** @description Fee. */
             fee?: number;
+            /** @description Fee percent. */
             fee_pct?: number;
             /** @description Per-position conversion amounts */
             position_details?: {
+                /** @description Outcome token ID. */
                 position_id?: string;
+                /** @description Outcome index. */
                 outcome_index?: number;
+                /** @description Amount as a decimal string. */
                 amount?: string;
             }[];
+            /** @description Exchange identifier. */
             exchange: number;
         } | {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "Cancelled";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
+            /** @description Order hash. */
             order_hash?: string;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Exchange identifier. */
             exchange: number;
         } | {
-            /** @enum {string} */
+            /**
+             * @description Oracle lifecycle event type.
+             * @enum {string}
+             */
             trade_type: "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
+            /** @description Oracle contract. */
             oracle_contract: string;
+            /** @description Market condition ID. */
             condition_id: string;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Assertion id. */
             assertion_id?: string | null;
+            /** @description Proposer. */
             proposer?: string | null;
+            /** @description Disputer. */
             disputer?: string | null;
+            /** @description Proposed outcome. */
             proposed_outcome?: string | null;
+            /** @description Settled price. */
             settled_price?: number | null;
+            /** @description Disputed. */
             disputed?: boolean | null;
+            /** @description Settlement resolution. */
             settlement_resolution?: boolean | null;
+            /** @description Bond. */
             bond?: string | null;
+            /** @description Expiration time. */
             expiration_time?: number | null;
+            /** @description Creator. */
             creator?: string | null;
+            /** @description Reward token. */
             reward_token?: string | null;
+            /** @description Reward details. */
             reward?: string | null;
+            /** @description Proposal bond. */
             proposal_bond?: string | null;
         } | {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "RegisterToken";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
+            /** @description Market condition ID. */
             condition_id: string;
+            /** @description Token0. */
             token0?: string;
+            /** @description Token1. */
             token1?: string;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Exchange identifier. */
             exchange: number;
         };
         /** @description Subscribe to the asset prices stream. Empty asset_symbols = all assets. */
         AssetPricesSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description Uppercase asset symbols (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Empty = subscribe to all. */
             asset_symbols?: string[];
@@ -4097,7 +5066,10 @@ export interface components {
         };
         /** @description Subscribe to the asset window updates stream. At least one of asset_symbols or timeframes must be non-empty. */
         AssetWindowUpdatesSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description Uppercase asset symbols (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE) */
             asset_symbols?: string[];
@@ -4106,7 +5078,9 @@ export interface components {
         };
         /** @description Server acknowledgement for an asset window updates subscription */
         AssetWindowUpdatesSubscribeResponse: {
+            /** @description Accepted asset symbols. */
             asset_symbols?: string[];
+            /** @description Accepted metric timeframes. */
             timeframes?: string[];
             /** @description Set if the subscription was rejected (e.g. no filters provided) */
             error?: string | null;
@@ -4115,15 +5089,21 @@ export interface components {
         AssetWindowUpdateEvent: components["schemas"]["AssetPriceWindowUpdateEvent"];
         /** @description Subscribe to the market metrics stream. condition_ids is required and must be non-empty. */
         MarketMetricsSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description 64-char hex condition IDs (with or without 0x prefix) */
             condition_ids: string[];
+            /** @description Accepted metric timeframes. */
             timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime")[];
         };
         /** @description Server acknowledgement for a market metrics subscription */
         MarketMetricsSubscribeResponse: {
+            /** @description Accepted market condition IDs. */
             condition_ids?: string[];
+            /** @description Accepted metric timeframes. */
             timeframes?: string[];
             /** @description Condition IDs that were rejected (invalid format) */
             rejected?: string[];
@@ -4134,7 +5114,10 @@ export interface components {
         MarketMetricsEvent: {
             /** @description 64-char hex condition ID */
             condition_id: string;
-            /** @enum {string} */
+            /**
+             * @description Metric timeframe.
+             * @enum {string}
+             */
             timeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime";
             /**
              * Format: int64
@@ -4163,34 +5146,58 @@ export interface components {
              * @description Builder-attributed transactions
              */
             builder_txns: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique trader count.
+             */
             unique_traders: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique maker count.
+             */
             unique_makers: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique taker count.
+             */
             unique_takers: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique builder-attributed trader count.
+             */
             unique_builder_traders: number;
         };
         /** @description Subscribe to the event metrics stream. event_slugs is required and must be non-empty. */
         EventMetricsSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description Event slugs (lowercase) */
             event_slugs: string[];
+            /** @description Accepted metric timeframes. */
             timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime")[];
         };
         /** @description Server acknowledgement for an event metrics subscription */
         EventMetricsSubscribeResponse: {
+            /** @description Accepted event slugs. */
             event_slugs?: string[];
+            /** @description Accepted metric timeframes. */
             timeframes?: string[];
+            /** @description Rejected filter values. */
             rejected?: string[];
+            /** @description Subscription error message. */
             error?: string | null;
         };
         /** @description Server-pushed event: aggregated metrics update for one timeframe of an event. Envelope type: "event_metrics_update". One event is emitted per timeframe window on each update. */
         EventMetricsEvent: {
+            /** @description Event slug. */
             event_slug: string;
-            /** @enum {string} */
+            /**
+             * @description Metric timeframe.
+             * @enum {string}
+             */
             timeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime";
             /**
              * Format: int64
@@ -4205,40 +5212,72 @@ export interface components {
             builder_usd_volume: string;
             /** @description Builder-attributed shares/contracts volume in this timeframe window (decimal string) */
             builder_shares_volume: string;
+            /** @description Total fees. */
             fees: number;
+            /** @description Builder-attributed fees. */
             builder_fees: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Transaction count.
+             */
             txns: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Builder-attributed transaction count.
+             */
             builder_txns: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique trader count.
+             */
             unique_traders: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique maker count.
+             */
             unique_makers: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique taker count.
+             */
             unique_takers: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique builder-attributed trader count.
+             */
             unique_builder_traders: number;
         };
         /** @description Subscribe to the tag metrics stream. tags is required and must be non-empty. */
         TagMetricsSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description Tag labels or slugs, matched case-insensitively */
             tags: string[];
+            /** @description Accepted metric timeframes. */
             timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime")[];
         };
         /** @description Server acknowledgement for a tag metrics subscription */
         TagMetricsSubscribeResponse: {
+            /** @description Accepted tag slugs. */
             tags?: string[];
+            /** @description Accepted metric timeframes. */
             timeframes?: string[];
+            /** @description Rejected filter values. */
             rejected?: string[];
+            /** @description Subscription error message. */
             error?: string | null;
         };
         /** @description Server-pushed event: aggregated metrics update for one timeframe of a tag. Envelope type: "tag_metrics_update". One event is emitted per timeframe window on each update. */
         TagMetricsEvent: {
+            /** @description Tag slug. */
             tag: string;
-            /** @enum {string} */
+            /**
+             * @description Metric timeframe.
+             * @enum {string}
+             */
             timeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime";
             /**
              * Format: int64
@@ -4253,34 +5292,62 @@ export interface components {
             builder_usd_volume: string;
             /** @description Builder-attributed shares/contracts volume in this timeframe window (decimal string) */
             builder_shares_volume: string;
+            /** @description Total fees. */
             fees: number;
+            /** @description Builder-attributed fees. */
             builder_fees: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Transaction count.
+             */
             txns: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Builder-attributed transaction count.
+             */
             builder_txns: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique trader count.
+             */
             unique_traders: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique maker count.
+             */
             unique_makers: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique taker count.
+             */
             unique_takers: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique builder-attributed trader count.
+             */
             unique_builder_traders: number;
         };
         /** @description Subscribe to the position metrics stream. position_ids is required and must be non-empty. */
         PositionMetricsSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description ERC-1155 outcome token IDs (decimal or hex strings) */
             position_ids: string[];
+            /** @description Accepted metric timeframes. */
             timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime")[];
         };
         /** @description Server acknowledgement for a position metrics subscription */
         PositionMetricsSubscribeResponse: {
+            /** @description Accepted outcome token IDs. */
             position_ids?: string[];
+            /** @description Accepted metric timeframes. */
             timeframes?: string[];
+            /** @description Rejected filter values. */
             rejected?: string[];
+            /** @description Subscription error message. */
             error?: string | null;
         };
         /** @description Server-pushed event: metrics update for one timeframe of an outcome token. Envelope type: "position_metrics_update". One event is emitted per timeframe window on each update. */
@@ -4291,8 +5358,12 @@ export interface components {
             position_id: string;
             /** @description Outcome name (e.g. "Yes") */
             outcome?: string | null;
+            /** @description Outcome index. */
             outcome_index?: number | null;
-            /** @enum {string} */
+            /**
+             * @description Metric timeframe.
+             * @enum {string}
+             */
             timeframe: "1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime";
             /**
              * Format: int64
@@ -4323,27 +5394,59 @@ export interface components {
             builder_shares_buy_volume: string;
             /** @description Builder-attributed sell shares/contracts volume (decimal string) */
             builder_shares_sell_volume: string;
+            /** @description Total fees. */
             fees: number;
+            /** @description Builder-attributed fees. */
             builder_fees: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Transaction count.
+             */
             txns: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Buy count.
+             */
             buys: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Sell count.
+             */
             sells: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Builder-attributed transaction count.
+             */
             builder_txns: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Builder-attributed buy count.
+             */
             builder_buys: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Builder-attributed sell count.
+             */
             builder_sells: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique trader count.
+             */
             unique_traders: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique maker count.
+             */
             unique_makers: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique taker count.
+             */
             unique_takers: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Unique builder-attributed trader count.
+             */
             unique_builder_traders: number;
             /** @description OHLC open price (0–1) */
             price_open: number;
@@ -4361,13 +5464,85 @@ export interface components {
             probability_high: number;
             /** @description Lowest implied probability in window (0–1) */
             probability_low: number;
+            /** @description Average shares per trade. */
             avg_trade_shares: number;
+            /** @description Average shares per buy. */
             avg_buy_shares: number;
+            /** @description Average shares per sell. */
             avg_sell_shares: number;
+        };
+        /** @description Subscribe to the position liquidity stream. position_ids is optional — omit for firehose. */
+        PositionLiquiditySubscribeMessage: {
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
+            action: "subscribe" | "unsubscribe_all";
+            /** @description ERC-1155 outcome token IDs (decimal or hex). Empty/omitted = all positions. */
+            position_ids?: string[];
+        };
+        /** @description Server-pushed event: latest USD liquidity for an outcome token. Envelope type: "position_liquidity_update". */
+        PositionLiquidityEvent: {
+            /** @description ERC-1155 token ID (decimal string) */
+            position_id: string;
+            /** @description Order-book liquidity in USD */
+            liquidity_usd: number;
+            /**
+             * Format: int64
+             * @description Update timestamp (Unix millis)
+             */
+            liquidity_updated_at: number;
+        };
+        /** @description Subscribe to the market liquidity stream. condition_ids is optional — omit for firehose. */
+        MarketLiquiditySubscribeMessage: {
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
+            action: "subscribe" | "unsubscribe_all";
+            /** @description 64-char hex market IDs. Empty/omitted = all markets. */
+            condition_ids?: string[];
+        };
+        /** @description Server-pushed event: latest total USD liquidity for a market. Envelope type: "market_liquidity_update". */
+        MarketLiquidityEvent: {
+            /** @description 64-char hex condition ID */
+            condition_id: string;
+            /** @description Total order-book liquidity in USD */
+            liquidity_usd: number;
+            /**
+             * Format: int64
+             * @description Update timestamp (Unix millis)
+             */
+            liquidity_updated_at: number;
+        };
+        /** @description Subscribe to the event liquidity stream. event_slugs is optional — omit for firehose. */
+        EventLiquiditySubscribeMessage: {
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
+            action: "subscribe" | "unsubscribe_all";
+            /** @description Event slugs. Empty/omitted = all events. */
+            event_slugs?: string[];
+        };
+        /** @description Server-pushed event: latest total USD liquidity for an event. Envelope type: "event_liquidity_update". */
+        EventLiquidityEvent: {
+            /** @description Event slug */
+            event_slug: string;
+            /** @description Total order-book liquidity in USD */
+            liquidity_usd: number;
+            /**
+             * Format: int64
+             * @description Update timestamp (Unix millis)
+             */
+            liquidity_updated_at: number;
         };
         /** @description Subscribe to the trader PnL stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. */
         TraderPnlSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description EVM wallet addresses */
             traders: string[];
@@ -4380,6 +5555,7 @@ export interface components {
         };
         /** @description Server acknowledgement for a trader PnL subscription. Echoes the accepted (normalized) filter sets so clients can confirm the active subscription. */
         TraderPnlSubscribeResponse: {
+            /** @description Accepted trader wallets. */
             traders?: string[];
             /** @description Accepted update types. Empty = all. */
             update_types?: ("global" | "market" | "category")[];
@@ -4394,58 +5570,120 @@ export interface components {
         TraderGlobalPnlRow: {
             /** @description Trader EVM wallet address */
             trader: string;
+            /** @description Dirty update kinds included in this event. */
             dirty_kinds?: ("trade" | "price" | "window" | "market_resolved")[];
             /** @description "1d", "7d", "30d", or "lifetime" */
             timeframe?: string | null;
             /** @description Realized PnL for the timeframe */
             realized_pnl_usd: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Events traded.
+             */
             events_traded?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets traded.
+             */
             markets_traded?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total buy count.
+             */
             total_buys?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total sell count.
+             */
             total_sells?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total redemption count.
+             */
             total_redemptions?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total merge count.
+             */
             total_merges?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total split count.
+             */
             total_splits?: number;
+            /** @description Total volume in USD. */
             total_volume_usd?: number;
+            /** @description Buy volume in USD. */
             buy_volume_usd?: number;
+            /** @description Sell volume in USD. */
             sell_volume_usd?: number;
+            /** @description Redemption volume in USD. */
             redemption_volume_usd?: number;
+            /** @description Merge volume in USD. */
             merge_volume_usd?: number;
+            /** @description Split volume in USD. */
             split_volume_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Maker rebate count.
+             */
             maker_rebate_count?: number;
+            /** @description Maker rebates in USD. */
             maker_rebate_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Reward count.
+             */
             reward_count?: number;
+            /** @description Rewards in USD. */
             reward_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Yield count.
+             */
             yield_count?: number;
+            /** @description Yield in USD. */
             yield_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total credit count.
+             */
             total_credit_count?: number;
+            /** @description Total credits in USD. */
             total_credit_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets won.
+             */
             markets_won?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets lost.
+             */
             markets_lost?: number;
+            /** @description Market win rate percent. */
             market_win_rate_pct?: number;
+            /** @description Total wins in USD. */
             total_wins_usd?: number;
+            /** @description Total losses in USD. */
             total_losses_usd?: number;
+            /** @description Average win in USD. */
             avg_win_usd?: number | null;
+            /** @description Average loss in USD. */
             avg_loss_usd?: number | null;
+            /** @description Profit factor. */
             profit_factor?: number | null;
+            /** @description Average hold time in seconds. */
             avg_hold_time_seconds?: number;
+            /** @description Total fees. */
             total_fees?: number;
+            /** @description Best trade PnL in USD. */
             best_trade_pnl_usd?: number | null;
+            /** @description Best trade condition ID. */
             best_trade_condition_id?: string | null;
+            /** @description Worst trade PnL in USD. */
             worst_trade_pnl_usd?: number | null;
+            /** @description Worst trade condition ID. */
             worst_trade_condition_id?: string | null;
             /**
              * Format: int64
@@ -4460,34 +5698,65 @@ export interface components {
         };
         /** @description One per-market PnL row inside a `trader_market_pnl_batch` envelope's `data` array. */
         TraderMarketPnlRow: {
+            /** @description Trader wallet address. */
             trader: string;
+            /** @description Dirty update kinds included in this event. */
             dirty_kinds?: ("trade" | "price" | "window" | "market_resolved")[];
             /** @description "1d", "7d", "30d", or "lifetime" */
             timeframe?: string | null;
             /** @description 64-char hex condition ID */
             condition_id: string;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Current shares balance. */
             current_shares_balance?: number;
+            /** @description Category label. */
             category?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Outcomes traded.
+             */
             outcomes_traded?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total buy count.
+             */
             total_buys?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total sell count.
+             */
             total_sells?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total redemption count.
+             */
             total_redemptions?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total merge count.
+             */
             total_merges?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total split count.
+             */
             total_splits?: number;
+            /** @description Buy volume in USD. */
             buy_usd?: number;
+            /** @description Sell volume in USD. */
             sell_usd?: number;
+            /** @description Redemption volume in USD. */
             redemption_usd?: number;
+            /** @description Merge volume in USD. */
             merge_usd?: number;
+            /** @description Split volume in USD. */
             split_volume_usd?: number;
+            /** @description Total fees. */
             total_fees?: number;
+            /** @description Total shares bought. */
             total_shares_bought?: number;
             /**
              * Format: int64
@@ -4502,50 +5771,103 @@ export interface components {
         };
         /** @description One per-category PnL row inside a `trader_category_pnl_batch` envelope's `data` array. */
         TraderCategoryPnlRow: {
+            /** @description Trader wallet address. */
             trader: string;
+            /** @description Dirty update kinds included in this event. */
             dirty_kinds?: ("trade" | "price" | "window" | "market_resolved")[];
             /** @description "1d", "7d", "30d", or "lifetime" */
             timeframe?: string | null;
+            /** @description Category label. */
             category: string;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets in this category.
+             */
             markets_in_category?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets traded.
+             */
             markets_traded?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Outcomes traded.
+             */
             outcomes_traded?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total buy count.
+             */
             total_buys?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total sell count.
+             */
             total_sells?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total redemption count.
+             */
             total_redemptions?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total merge count.
+             */
             total_merges?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total split count.
+             */
             total_splits?: number;
+            /** @description Total volume in USD. */
             total_volume_usd?: number;
+            /** @description Buy volume in USD. */
             buy_usd?: number;
+            /** @description Sell volume in USD. */
             sell_usd?: number;
+            /** @description Redemption volume in USD. */
             redemption_usd?: number;
+            /** @description Merge volume in USD. */
             merge_usd?: number;
+            /** @description Split volume in USD. */
             split_volume_usd?: number;
+            /** @description Total fees. */
             total_fees?: number;
+            /** @description Total shares bought. */
             total_shares_bought?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets won.
+             */
             markets_won?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets lost.
+             */
             markets_lost?: number;
+            /** @description Market win rate percent. */
             market_win_rate_pct?: number;
+            /** @description Average hold time in seconds. */
             avg_hold_time_seconds?: number;
+            /** @description Best trade PnL in USD. */
             best_trade_pnl_usd?: number | null;
+            /** @description Best trade condition ID. */
             best_trade_condition_id?: string | null;
+            /** @description Worst trade PnL in USD. */
             worst_trade_pnl_usd?: number | null;
+            /** @description Worst trade condition ID. */
             worst_trade_condition_id?: string | null;
+            /** @description Total wins in USD. */
             total_wins_usd?: number;
+            /** @description Total losses in USD. */
             total_losses_usd?: number;
+            /** @description Average win in USD. */
             avg_win_usd?: number | null;
+            /** @description Average loss in USD. */
             avg_loss_usd?: number | null;
+            /** @description Profit factor. */
             profit_factor?: number | null;
             /**
              * Format: int64
@@ -4560,10 +5882,16 @@ export interface components {
         };
         /** @description Row carried by `trader_global_tick_batch` (price-only trader aggregate). */
         TraderGlobalTickRow: {
+            /** @description Trader wallet address. */
             trader: string;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Open positions value. */
             open_positions_value?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last block number.
+             */
             last_block?: number;
             /**
              * Format: int64
@@ -4574,10 +5902,16 @@ export interface components {
         };
         /** @description Row carried by `trader_market_tick_batch` (price-only per-market). */
         TraderMarketTickRow: {
+            /** @description Trader wallet address. */
             trader: string;
+            /** @description Market condition ID. */
             condition_id: string;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last block number.
+             */
             last_block?: number;
             /**
              * Format: int64
@@ -4588,10 +5922,16 @@ export interface components {
         };
         /** @description Row carried by `trader_category_tick_batch` (price-only per-category). */
         TraderCategoryTickRow: {
+            /** @description Trader wallet address. */
             trader: string;
+            /** @description Category label. */
             category: string;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last block number.
+             */
             last_block?: number;
             /**
              * Format: int64
@@ -4602,17 +5942,33 @@ export interface components {
         };
         /** @description Row carried by `trader_global_resolution_batch` (trader-aggregate resolution). */
         TraderGlobalResolutionRow: {
+            /** @description Trader wallet address. */
             trader: string;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets won.
+             */
             markets_won?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets lost.
+             */
             markets_lost?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets resolved.
+             */
             markets_resolved?: number;
+            /** @description Total wins usd lifetime. */
             total_wins_usd_lifetime?: number;
+            /** @description Total losses usd lifetime. */
             total_losses_usd_lifetime?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last block number.
+             */
             last_block?: number;
             /**
              * Format: int64
@@ -4623,12 +5979,20 @@ export interface components {
         };
         /** @description Row carried by `trader_market_resolution_batch` (per-market resolution). */
         TraderMarketResolutionRow: {
+            /** @description Trader wallet address. */
             trader: string;
+            /** @description Market condition ID. */
             condition_id: string;
+            /** @description Whether the market is resolved. */
             resolved?: boolean;
+            /** @description Whether the position won. */
             won?: boolean | null;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last block number.
+             */
             last_block?: number;
             /**
              * Format: int64
@@ -4639,16 +6003,30 @@ export interface components {
         };
         /** @description Row carried by `trader_category_resolution_batch` (per-category resolution). */
         TraderCategoryResolutionRow: {
+            /** @description Trader wallet address. */
             trader: string;
+            /** @description Category label. */
             category: string;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets won.
+             */
             markets_won?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Markets lost.
+             */
             markets_lost?: number;
+            /** @description Total wins usd lifetime. */
             total_wins_usd_lifetime?: number;
+            /** @description Total losses usd lifetime. */
             total_losses_usd_lifetime?: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last block number.
+             */
             last_block?: number;
             /**
              * Format: int64
@@ -4755,7 +6133,10 @@ export interface components {
         };
         /** @description Subscribe to the trader positions stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `["all"]` = receive every kind of update. */
         TraderPositionsSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description EVM wallet addresses */
             traders: string[];
@@ -4764,49 +6145,80 @@ export interface components {
         };
         /** @description Server acknowledgement for a trader positions subscription. */
         TraderPositionsSubscribeResponse: {
+            /** @description Accepted trader wallets. */
             traders?: string[];
             /** @description Echoed accepted dirty_kinds filter. Empty = all. */
             dirty_kinds?: ("trade" | "price" | "position_resolved")[];
+            /** @description Rejected filter values. */
             rejected?: string[];
+            /** @description Subscription error message. */
             error?: string | null;
         };
         /** @description One position-update row inside a `trader_position_batch` envelope's `data` array. */
         TraderPositionRow: {
             /** @description ERC-1155 token ID (decimal string) */
             position_id?: string | null;
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Market slug. */
             market_slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
             title?: string | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
             /** @description Outcome name (e.g. "Yes") */
             outcome?: string | null;
+            /** @description Outcome index. */
             outcome_index?: number | null;
+            /** @description Whether the position is open. */
             open?: boolean | null;
             /** @description Resolution outcome — present once the market resolved */
             won?: boolean | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total buy count.
+             */
             total_buys?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Total sell count.
+             */
             total_sells?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Conversion count.
+             */
             converted_count?: number | null;
+            /** @description Converted shares gained. */
             converted_shares_gained?: number | null;
+            /** @description Converted shares lost. */
             converted_shares_lost?: number | null;
+            /** @description Total shares bought. */
             total_shares_bought?: number | null;
+            /** @description Total shares sold. */
             total_shares_sold?: number | null;
+            /** @description Total buys in USD. */
             total_buy_usd?: number | null;
+            /** @description Total sells in USD. */
             total_sell_usd?: number | null;
+            /** @description Redemption volume in USD. */
             redemption_usd?: number | null;
+            /** @description Merge volume in USD. */
             merge_usd?: number | null;
             /** @description 0–1 */
             avg_entry_price?: number | null;
+            /** @description Average exit price. */
             avg_exit_price?: number | null;
             /** @description Volume-weighted across buys + sells */
             avg_price?: number | null;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number | null;
+            /** @description Realized PnL percent. */
             realized_pnl_pct?: number | null;
+            /** @description Total fees. */
             total_fees?: number | null;
             /**
              * Format: int64
@@ -4820,9 +6232,11 @@ export interface components {
             last_trade_at?: number | null;
             /** @description Latest on-chain mark for the outcome token */
             current_price?: number | null;
+            /** @description Current shares balance. */
             current_shares_balance?: number | null;
             /** @description current_price × current_shares_balance */
             current_value?: number | null;
+            /** @description Last traded price. */
             last_traded_price?: number | null;
             /**
              * Format: int64
@@ -4842,7 +6256,10 @@ export interface components {
         TraderPositionBatchEvent: {
             /** @enum {string} */
             type: "trader_position_batch";
-            /** @enum {string} */
+            /**
+             * @description WebSocket room ID.
+             * @enum {string}
+             */
             room_id: "polymarket_trader_positions";
             /**
              * Format: int64
@@ -4853,66 +6270,100 @@ export interface components {
         };
         /** @description One price-tick row inside a `trader_position_price_batch` envelope's `data` array. */
         TraderPositionPriceRow: {
+            /** @description Trader wallet address. */
             trader?: string | null;
             /** @description ERC-1155 token ID (decimal string) */
             position_id?: string | null;
+            /** @description Market condition ID. */
             condition_id?: string | null;
             /** @description Latest on-chain mark for the outcome token */
             current_price?: number | null;
+            /** @description Current position value. */
             current_value?: number | null;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number | null;
+            /** @description Realized PnL percent. */
             realized_pnl_pct?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last block number.
+             */
             last_block?: number | null;
             /**
              * Format: int64
              * @description Unix milliseconds
              */
             last_trade_at?: number | null;
+            /** @description Dirty update kinds included in this event. */
             dirty_kinds?: "price"[];
         };
         /** @description Server-pushed per-block batch of position price ticks (mark-to-market refreshes). Envelope type: `trader_position_price_batch`. */
         TraderPositionPriceBatchEvent: {
             /** @enum {string} */
             type: "trader_position_price_batch";
-            /** @enum {string} */
+            /**
+             * @description WebSocket room ID.
+             * @enum {string}
+             */
             room_id: "polymarket_trader_positions";
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Block number.
+             */
             block: number;
             data: components["schemas"]["TraderPositionPriceRow"][];
         };
         /** @description One resolution row inside a `trader_position_resolution_batch` envelope's `data` array. */
         TraderPositionResolutionRow: {
+            /** @description Trader wallet address. */
             trader?: string | null;
             /** @description ERC-1155 token ID (decimal string) */
             position_id?: string | null;
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Whether the market is resolved. */
             resolved?: boolean | null;
+            /** @description Whether the position won. */
             won?: boolean | null;
+            /** @description Realized PnL in USD. */
             realized_pnl_usd?: number | null;
+            /** @description Realized PnL percent. */
             realized_pnl_pct?: number | null;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Last block number.
+             */
             last_block?: number | null;
             /**
              * Format: int64
              * @description Unix milliseconds
              */
             last_trade_at?: number | null;
+            /** @description Dirty update kinds included in this event. */
             dirty_kinds?: "position_resolved"[];
         };
         /** @description Server-pushed per-block batch of position resolutions. Envelope type: `trader_position_resolution_batch`. */
         TraderPositionResolutionBatchEvent: {
             /** @enum {string} */
             type: "trader_position_resolution_batch";
-            /** @enum {string} */
+            /**
+             * @description WebSocket room ID.
+             * @enum {string}
+             */
             room_id: "polymarket_trader_positions";
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Block number.
+             */
             block: number;
             data: components["schemas"]["TraderPositionResolutionRow"][];
         };
         /** @description Subscribe to the trader exit markers stream. `traders` is required and must be non-empty. `reasons` is an optional narrowing filter — empty/omitted or `["all"]` = receive every exit reason. */
         TraderExitMarkersSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description EVM wallet addresses */
             traders: string[];
@@ -4921,10 +6372,13 @@ export interface components {
         };
         /** @description Server acknowledgement for a trader exit markers subscription. */
         TraderExitMarkersSubscribeResponse: {
+            /** @description Accepted trader wallets. */
             traders?: string[];
             /** @description Echoed accepted reasons filter. Empty = all. */
             reasons?: ("resolved_win" | "resolved_loss" | "sold_win" | "sold_loss")[];
+            /** @description Rejected filter values. */
             rejected?: string[];
+            /** @description Subscription error message. */
             error?: string | null;
         };
         /** @description One exit row inside a `trader_exit_marker_batch` envelope's `data` array. */
@@ -4933,20 +6387,26 @@ export interface components {
             trader?: string;
             /** @description ERC-1155 token ID (decimal string) */
             position_id?: string;
+            /** @description Market condition ID. */
             condition_id?: string;
+            /** @description Event slug. */
             event_slug?: string;
+            /** @description Market slug. */
             market_slug?: string;
             title?: string;
             /** @description Full market question text */
             question?: string;
+            /** @description Image URL. */
             image_url?: string;
             /** @description Outcome name (e.g. "Yes") */
             outcome?: string;
+            /** @description Outcome index. */
             outcome_index?: number | null;
             /** @description Realized PnL at exit, USD */
             pnl_usd?: number;
             /** @description Realized PnL at exit, percent */
             pnl_pct?: number;
+            /** @description Cost basis in USD. */
             cost_basis_usd?: number;
             /**
              * @description Why the position closed: `resolved_*` held to market resolution (win/loss by verdict); `sold_*` closed before resolution (win/loss by realized PnL sign).
@@ -4968,7 +6428,10 @@ export interface components {
         TraderExitMarkerBatchEvent: {
             /** @enum {string} */
             type: "trader_exit_marker_batch";
-            /** @enum {string} */
+            /**
+             * @description WebSocket room ID.
+             * @enum {string}
+             */
             room_id: "polymarket_trader_pnl_exits";
             /**
              * Format: int64
@@ -4979,7 +6442,10 @@ export interface components {
         };
         /** @description Subscribe to holder metrics for explicit positions, conditions, or events. At least one identifier array must be non-empty. Omitted arrays receive no updates for that metric family. Up to 500 total identifiers are accepted. */
         HolderMetricsSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description Position token IDs to receive position holder metrics for. */
             position_ids?: string[];
@@ -4989,54 +6455,85 @@ export interface components {
             event_slugs?: string[];
         };
         PositionHolderMetricsRow: {
+            /** @description Unix timestamp in seconds. */
             ts?: number;
+            /** @description Block number. */
             block?: number;
+            /** @description Outcome token ID. */
             position_id?: string;
+            /** @description Number of holders. */
             holder_count?: number;
+            /** @description Total shares held. */
             total_balance?: number;
+            /** @description Total holder cost basis in USD. */
             total_cost_basis?: number;
+            /** @description Number of market-level holders. */
             condition_holder_count?: number | null;
+            /** @description Number of event-level holders. */
             event_holder_count?: number | null;
         };
         ConditionHolderMetricsRow: {
+            /** @description Unix timestamp in seconds. */
             ts?: number;
+            /** @description Block number. */
             block?: number;
+            /** @description Market condition ID. */
             condition_id?: string;
+            /** @description Number of holders. */
             holder_count?: number;
         };
         EventHolderMetricsRow: {
+            /** @description Unix timestamp in seconds. */
             ts?: number;
+            /** @description Block number. */
             block?: number;
+            /** @description Event slug. */
             event_slug?: string;
+            /** @description Number of holders. */
             holder_count?: number;
         };
         HolderMetricsPositionBatchEvent: {
             /** @enum {string} */
             type: "holder_metrics_position_batch";
-            /** @enum {string} */
+            /**
+             * @description WebSocket room ID.
+             * @enum {string}
+             */
             room_id: "polymarket_holder_metrics";
+            /** @description Block number. */
             block: number;
             data: components["schemas"]["PositionHolderMetricsRow"][];
         };
         HolderMetricsConditionBatchEvent: {
             /** @enum {string} */
             type: "holder_metrics_condition_batch";
-            /** @enum {string} */
+            /**
+             * @description WebSocket room ID.
+             * @enum {string}
+             */
             room_id: "polymarket_holder_metrics";
+            /** @description Block number. */
             block: number;
             data: components["schemas"]["ConditionHolderMetricsRow"][];
         };
         HolderMetricsEventBatchEvent: {
             /** @enum {string} */
             type: "holder_metrics_event_batch";
-            /** @enum {string} */
+            /**
+             * @description WebSocket room ID.
+             * @enum {string}
+             */
             room_id: "polymarket_holder_metrics";
+            /** @description Block number. */
             block: number;
             data: components["schemas"]["EventHolderMetricsRow"][];
         };
         /** @description Subscribe to the accounts stream. `wallets` is required. Share balance updates (`accounts_update`) are always delivered. Set `include_usdce`, `include_pusd`, or `include_matic` to also receive those balance streams. */
         AccountsSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description EVM wallet addresses */
             wallets: string[];
@@ -5049,12 +6546,17 @@ export interface components {
         };
         /** @description Server acknowledgement for an accounts subscription */
         AccountsSubscribeResponse: {
+            /** @description Accepted wallet addresses. */
             wallets?: string[];
             /** @description Addresses rejected (invalid format) */
             rejected?: string[];
+            /** @description Whether to include USDC.e balances. */
             include_usdce?: boolean;
+            /** @description Whether to include pUSD balances. */
             include_pusd?: boolean;
+            /** @description Whether to include MATIC balances. */
             include_matic?: boolean;
+            /** @description Subscription error message. */
             error?: string | null;
         };
         /** @description Server-pushed event: ERC-1155 outcome token balance change for a wallet. Envelope type: "accounts_update". */
@@ -5065,7 +6567,10 @@ export interface components {
             position_id: string;
             /** @description Current token balance (decimal string) */
             balance: string;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @description Block number.
+             */
             block_number: number;
             /**
              * Format: int64
@@ -5085,7 +6590,10 @@ export interface components {
             token_address?: string;
             /** @description Current USDCe balance (decimal string) — omitted when not available */
             balance?: string;
-            /** Format: uint64 */
+            /**
+             * Format: uint64
+             * @description Block number.
+             */
             block_number: number;
             /**
              * Format: int64
@@ -5101,7 +6609,10 @@ export interface components {
             token_address?: string;
             /** @description Current pUSD balance (decimal string) — omitted when not available */
             balance?: string;
-            /** Format: uint64 */
+            /**
+             * Format: uint64
+             * @description Block number.
+             */
             block_number: number;
             /**
              * Format: int64
@@ -5117,7 +6628,10 @@ export interface components {
             token_address?: string;
             /** @description Current MATIC balance (decimal string) — omitted when not available */
             balance?: string;
-            /** Format: uint64 */
+            /**
+             * Format: uint64
+             * @description Block number.
+             */
             block_number: number;
             /**
              * Format: int64
@@ -5127,7 +6641,10 @@ export interface components {
         };
         /** @description Subscribe to the order book stream. At least one filter is required. Maximum 500 combined condition_ids + position_ids per client. No `type` field is needed — the server routes by room_id. */
         OrderBookSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description Condition IDs (markets). All positions within each market are delivered. */
             condition_ids?: string[];
@@ -5181,7 +6698,10 @@ export interface components {
         };
         /** @description Subscribe to CLOB reward changes. Either provide specific condition_ids or set subscribe_all to true. */
         ClobRewardsSubscribeMessage: {
-            /** @enum {string} */
+            /**
+             * @description Subscription action.
+             * @enum {string}
+             */
             action: "subscribe" | "unsubscribe_all";
             /** @description Condition IDs to watch for reward changes. */
             condition_ids?: string[];
@@ -5208,14 +6728,22 @@ export interface components {
             condition_id?: string;
             /** @description Full reward state (null for 'removed' events) */
             reward?: {
+                /** @description Market condition ID. */
                 condition_id?: string;
                 rewards_config?: {
+                    /** @description Event ID. */
                     id?: number;
                     /** @description Reward token address (e.g. USDC) */
                     asset_address?: string;
-                    /** Format: date */
+                    /**
+                     * Format: date
+                     * @description Reward start date.
+                     */
                     start_date?: string;
-                    /** Format: date */
+                    /**
+                     * Format: date
+                     * @description Reward end date.
+                     */
                     end_date?: string;
                     /** @description Daily reward rate in USDC */
                     rate_per_day?: number;
@@ -5266,16 +6794,25 @@ export interface components {
         EventsStreamFilter: {
             /** @description Case-insensitive substring match on `title`. 3–100 chars. */
             search?: string;
+            /** @description Categories to include. */
             categories?: string[];
+            /** @description Categories to exclude. */
             exclude_categories?: string[];
             /** @description Match by tag slug OR label (case-insensitive). */
             tags?: string[];
+            /** @description Tags to exclude. */
             exclude_tags?: string[];
+            /** @description Minimum volume. */
             min_volume?: number;
+            /** @description Maximum volume. */
             max_volume?: number;
+            /** @description Minimum transaction count. */
             min_txns?: number;
+            /** @description Maximum transaction count. */
             max_txns?: number;
+            /** @description Minimum unique trader count. */
             min_unique_traders?: number;
+            /** @description Maximum unique trader count. */
             max_unique_traders?: number;
             /**
              * @description Timeframe that `volume`/`txns`/`unique_traders` thresholds are evaluated against. Default `24h`.
@@ -5285,8 +6822,12 @@ export interface components {
         };
         /** @description Server acknowledgement for an events_stream subscribe/unsubscribe. Envelope type: "events_stream_subscribe_response". */
         EventsStreamSubscribeResponse: {
-            /** @enum {string} */
+            /**
+             * @description Subscription mode.
+             * @enum {string}
+             */
             mode?: "filter" | "ids" | "";
+            /** @description Flush interval in milliseconds. */
             interval_ms?: number;
             /** @description Accepted ids (ids mode only). Empty in filter mode. */
             event_slugs?: string[];
@@ -5299,11 +6840,20 @@ export interface components {
         EventsStreamUpdateEvent: {
             /** @enum {string} */
             type: "events_stream_update";
-            /** @enum {string} */
+            /**
+             * @description WebSocket room ID.
+             * @enum {string}
+             */
             room_id: "polymarket_events_stream";
-            /** @enum {string} */
+            /**
+             * @description Subscription mode.
+             * @enum {string}
+             */
             mode: "filter" | "ids";
-            /** @enum {integer} */
+            /**
+             * @description Flush interval in milliseconds.
+             * @enum {integer}
+             */
             interval_ms: 500 | 1000 | 3000 | 10000;
             /** @description Full `PolymarketEvent` rows (same shape as `GET /polymarket/events`). Not a delta — each array element is a complete row replacement. */
             data: Record<string, never>[];
@@ -5339,9 +6889,14 @@ export interface components {
          * @description A buy/sell trade was matched on the exchange.
          */
         TradeOrderFilledEvent: {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "OrderFilled" | "OrdersMatched";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
             /** @description Absent for pending trades */
             block?: number;
@@ -5356,28 +6911,49 @@ export interface components {
             /** @description Absent for pending trades */
             order_hash?: string;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
             /** @description Absent for pending trades */
             taker?: string;
-            /** @enum {string} */
+            /**
+             * @description Trade side.
+             * @enum {string}
+             */
             side?: "Buy" | "Sell";
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Outcome token ID. */
             position_id?: string;
+            /** @description Outcome name. */
             outcome?: string | null;
+            /** @description Outcome index. */
             outcome_index?: number | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Trade amount in USD. */
             usd_amount?: number;
+            /** @description Trade size in shares. */
             shares_amount?: number;
+            /** @description Outcome price. */
             price?: number;
+            /** @description Implied probability. */
             probability?: number | null;
             /** @description Absent for pending trades */
             fee?: number;
@@ -5385,6 +6961,7 @@ export interface components {
             fee_shares?: number;
             /** @description Absent for pending trades */
             fee_pct?: number;
+            /** @description Exchange identifier. */
             exchange: number;
             /** @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1 trades; may be `0x0000…` for V2 trades placed without a builder code. */
             builder_code?: string;
@@ -5396,25 +6973,42 @@ export interface components {
          * @description pUSD credit paid directly to the trader wallet.
          */
         TradeRedemptionEvent: {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "MakerRebate" | "Reward" | "Yield";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
             /** @description Payout distributor address */
             taker?: string;
+            /** @description Trade amount in USD. */
             usd_amount?: number;
             /** @description Always 0 for payout credits */
             shares_amount?: number;
@@ -5434,37 +7028,67 @@ export interface components {
          * @description Positions redeemed after market resolution.
          */
         TradeMergeEvent: {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "Redemption";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Outcome name. */
             outcome?: string | null;
+            /** @description Outcome index. */
             outcome_index?: number | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Trade amount in USD. */
             usd_amount?: number;
+            /** @description Winning outcome index. */
             winning_outcome_index?: number | null;
+            /** @description Position details. */
             position_details?: {
+                /** @description Outcome token ID. */
                 position_id?: string;
+                /** @description Outcome index. */
                 outcome_index?: number;
+                /** @description Amount as a decimal string. */
                 amount?: string;
             }[];
+            /** @description Exchange identifier. */
             exchange: number;
         };
         /**
@@ -5472,34 +7096,61 @@ export interface components {
          * @description Outcome tokens burned to receive collateral.
          */
         TradeSplitEvent: {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "Merge";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Trade amount in USD. */
             usd_amount?: number;
+            /** @description Position details. */
             position_details?: {
+                /** @description Outcome token ID. */
                 position_id?: string;
+                /** @description Outcome index. */
                 outcome_index?: number;
+                /** @description Amount as a decimal string. */
                 amount?: string;
             }[];
+            /** @description Exchange identifier. */
             exchange: number;
         };
         /**
@@ -5507,34 +7158,61 @@ export interface components {
          * @description Collateral deposited to receive outcome tokens.
          */
         TradePositionsConvertedEvent: {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "Split";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
+            /** @description Market condition ID. */
             condition_id?: string | null;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Trade amount in USD. */
             usd_amount?: number;
+            /** @description Position details. */
             position_details?: {
+                /** @description Outcome token ID. */
                 position_id?: string;
+                /** @description Outcome index. */
                 outcome_index?: number;
+                /** @description Amount as a decimal string. */
                 amount?: string;
             }[];
+            /** @description Exchange identifier. */
             exchange: number;
         };
         /**
@@ -5542,34 +7220,59 @@ export interface components {
          * @description NegRisk NO tokens converted to YES tokens + collateral.
          */
         TradeCancelledEvent: {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "PositionsConverted";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
             trader: {
+                /** @description Wallet address. */
                 address?: string;
+                /** @description Display name. */
                 name?: string | null;
+                /** @description Pseudonym. */
                 pseudonym?: string | null;
+                /** @description Profile image URL. */
                 profile_image?: string | null;
+                /** @description X username. */
                 x_username?: string | null;
+                /** @description Whether the profile is verified. */
                 verified_badge?: boolean;
             };
+            /** @description Market id. */
             market_id?: string;
+            /** @description Index set. */
             index_set?: string;
+            /** @description Trade size in shares. */
             shares_amount?: number;
+            /** @description Fee. */
             fee?: number;
+            /** @description Fee percent. */
             fee_pct?: number;
             /** @description Per-position conversion amounts */
             position_details?: {
+                /** @description Outcome token ID. */
                 position_id?: string;
+                /** @description Outcome index. */
                 outcome_index?: number;
+                /** @description Amount as a decimal string. */
                 amount?: string;
             }[];
+            /** @description Exchange identifier. */
             exchange: number;
         };
         /**
@@ -5577,20 +7280,36 @@ export interface components {
          * @description Order cancelled on-chain.
          */
         TradeOracleLifecycleEvent: {
-            /** @enum {string} */
+            /**
+             * @description Trade type.
+             * @enum {string}
+             */
             trade_type: "Cancelled";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
+            /** @description Order hash. */
             order_hash?: string;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Exchange identifier. */
             exchange: number;
         };
         /**
@@ -5598,33 +7317,62 @@ export interface components {
          * @description Market lifecycle events: Initialization, Proposal, Dispute, Settled, Resolution, ConditionResolution, Reset, Flag, Unflag, Pause, Unpause, ManualResolution, NegRiskOutcomeReported.
          */
         TradeRegisterTokenEvent: {
-            /** @enum {string} */
+            /**
+             * @description Oracle lifecycle event type.
+             * @enum {string}
+             */
             trade_type: "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported";
+            /** @description Event ID. */
             id: string;
+            /** @description Transaction hash. */
             hash: string;
+            /** @description Block number. */
             block?: number;
+            /** @description Confirmation timestamp. */
             confirmed_at?: number;
+            /** @description Receive timestamp. */
             received_at?: number;
+            /** @description Log index. */
             log_index?: number;
+            /** @description Block index. */
             block_index?: number;
+            /** @description Oracle contract. */
             oracle_contract: string;
+            /** @description Market condition ID. */
             condition_id: string;
+            /** @description Market question. */
             question?: string | null;
+            /** @description Image URL. */
             image_url?: string | null;
+            /** @description Market slug. */
             slug?: string | null;
+            /** @description Event slug. */
             event_slug?: string | null;
+            /** @description Assertion id. */
             assertion_id?: string | null;
+            /** @description Proposer. */
             proposer?: string | null;
+            /** @description Disputer. */
             disputer?: string | null;
+            /** @description Proposed outcome. */
             proposed_outcome?: string | null;
+            /** @description Settled price. */
             settled_price?: number | null;
+            /** @description Disputed. */
             disputed?: boolean | null;
+            /** @description Settlement resolution. */
             settlement_resolution?: boolean | null;
+            /** @description Bond. */
             bond?: string | null;
+            /** @description Expiration time. */
             expiration_time?: number | null;
+            /** @description Creator. */
             creator?: string | null;
+            /** @description Reward token. */
             reward_token?: string | null;
+            /** @description Reward details. */
             reward?: string | null;
+            /** @description Proposal bond. */
             proposal_bond?: string | null;
         };
     };

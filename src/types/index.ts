@@ -161,6 +161,7 @@ export type AssertionDisputedEvent = Schemas["AssertionDisputedEvent"];
 export type AssertionMadeEvent = Schemas["AssertionMadeEvent"];
 export type AssertionSettledEvent = Schemas["AssertionSettledEvent"];
 export type CancelledTrade = Schemas["CancelledTrade"];
+export type ComboTrade = Schemas["ComboTrade"];
 export type ConditionResolutionEvent = Schemas["ConditionResolutionEvent"];
 export type MergeTrade = Schemas["MergeTrade"];
 export type NegRiskOutcomeReportedEvent = Schemas["NegRiskOutcomeReportedEvent"];
@@ -796,6 +797,15 @@ export type {
 	OracleEventStreamEvent,
 	OracleEventsStreamSubscribeFilters,
 	OracleEventsStreamSubscribeResponse,
+	PositionLiquiditySubscribeFilters,
+	MarketLiquiditySubscribeFilters,
+	EventLiquiditySubscribeFilters,
+	PositionLiquidityEvent,
+	MarketLiquidityEvent,
+	EventLiquidityEvent,
+	PositionLiquiditySubscribeResponse,
+	MarketLiquiditySubscribeResponse,
+	EventLiquiditySubscribeResponse,
 	WsAlertSubscribedResponse,
 	WsAlertUnsubscribedResponse,
 	WsAlertErrorResponse,
