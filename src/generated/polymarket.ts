@@ -524,7 +524,7 @@ export interface paths {
         };
         /**
          * Top traders for a builder
-         * @description Returns the highest-volume (or highest-fee / highest-txn) traders that have routed through this builder over the requested window.
+         * @description Returns the highest-volume (or highest-fee / highest-txn) traders that have routed through this builder over the requested window. Paginate past the first page with `offset` or `pagination_key` to enumerate all of a builder's traders.
          */
         get: operations["get_builder_top_traders"];
         put?: never;
@@ -4437,6 +4437,18 @@ export interface components {
             /** @description Retention fractions. */
             retention: components["schemas"]["RetentionFractions"];
         };
+        /** @description Enriched Combo leg output. */
+        ComboLeg: {
+            position_id: string;
+            condition_id?: string | null;
+            outcome?: string | null;
+            /** Format: int32 */
+            outcome_index?: number | null;
+            question?: string | null;
+            slug?: string | null;
+            image_url?: string | null;
+            title?: string | null;
+        };
         /** @description Output payload for Polymarket Combo events. */
         ComboTrade: {
             id: string;
@@ -4480,7 +4492,7 @@ export interface components {
             payout?: string | null;
             position_ids?: string[];
             amounts?: string[];
-            legs?: string[];
+            legs?: components["schemas"]["ComboLeg"][];
             position_details?: components["schemas"]["PositionDetail"][];
             question?: string | null;
             image_url?: string | null;
@@ -9958,8 +9970,12 @@ export interface operations {
                 sort_by?: components["schemas"]["TopTradersSortBy"];
                 /** @description Sort direction (default: true = highest first). */
                 sort_desc?: boolean;
-                /** @description Number of traders to return (default 10, max 250) */
+                /** @description Traders per page (default 10, max 250) */
                 limit?: number;
+                /** @description Number of traders to skip. Default 0. Takes precedence over `pagination_key`. */
+                offset?: number;
+                /** @description Opaque cursor from a previous response. Ignored when `offset` is set. */
+                pagination_key?: string;
             };
             header?: never;
             path: {

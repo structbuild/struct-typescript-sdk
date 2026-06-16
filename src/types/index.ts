@@ -161,6 +161,7 @@ export type AssertionDisputedEvent = Schemas["AssertionDisputedEvent"];
 export type AssertionMadeEvent = Schemas["AssertionMadeEvent"];
 export type AssertionSettledEvent = Schemas["AssertionSettledEvent"];
 export type CancelledTrade = Schemas["CancelledTrade"];
+export type ComboLeg = Schemas["ComboLeg"];
 export type ComboTrade = Schemas["ComboTrade"];
 export type ConditionResolutionEvent = Schemas["ConditionResolutionEvent"];
 export type MergeTrade = Schemas["MergeTrade"];
