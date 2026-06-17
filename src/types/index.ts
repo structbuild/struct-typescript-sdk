@@ -20,7 +20,7 @@ export type {
 	components as WsAlertComponents,
 } from "../generated/ws-alerts.js";
 
-import type { Schemas, OperationQuery } from "./helpers.js";
+import type { Schemas, OperationQuery, OperationResponse } from "./helpers.js";
 import type { WebhookSchemas, WebhookOperationQuery, WebhookOperationRequestBody } from "./webhook-helpers.js";
 
 type TimeframeKey = Schemas["MetricsTimeframe"];
@@ -575,6 +575,11 @@ export type PnlPeriodsResponse = Schemas["PnlPeriodsResponse"];
 export type PnlRiskMarketMetadata = Schemas["PnlRiskMarketMetadata"];
 export type PnlRiskMetric = Schemas["PnlRiskMetric"];
 export type PnlRiskResponse = Schemas["PnlRiskResponse"];
+
+export type BatchPnlRequest = Schemas["BatchPnlRequest"];
+export type BatchPnlResponse = OperationResponse<"get_trader_pnl_batch">;
+
+export type GetTraderPnlBatchParams = BatchPnlRequest;
 
 export interface GetTraderPnlChangesParams {
 	address: string;

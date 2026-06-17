@@ -1495,6 +1495,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/pnl/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Batch trader PnL summaries
+         * @description PnL summaries for many wallets across many timeframes in one call. Credits scale with the number of wallet × timeframe units but stay below the cost of the equivalent single-trader requests. Results are keyed by wallet then timeframe; the `billing` block reports the units and credits charged.
+         */
+        post: operations["get_trader_pnl_batch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/pnl/{address}": {
         parameters: {
             query?: never;
@@ -2817,6 +2837,16 @@ export interface components {
          * @enum {string}
          */
         WebhookAssetSymbol: "BTC" | "ETH" | "SOL" | "XRP" | "DOGE" | "BNB" | "HYPE";
+        /** @description Request body for the batch PnL endpoint. */
+        BatchPnlRequest: {
+            /** @description Trader wallet addresses. Deduplicated and lower-cased before billing. */
+            wallets: string[];
+            /**
+             * @description Timeframes to fetch for every wallet. Defaults to `["lifetime"]` when
+             *     omitted. Valid values: `1d`, `7d`, `30d`, `lifetime`.
+             */
+            timeframes?: string[] | null;
+        };
         BondMarket: {
             /** @description Condition ID. */
             condition_id: string;
@@ -12109,6 +12139,41 @@ export interface operations {
                 };
             };
             /** @description Invalid params */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_trader_pnl_batch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchPnlRequest"];
+            };
+        };
+        responses: {
+            /** @description PnL summaries keyed by wallet and timeframe */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            [key: string]: components["schemas"]["GlobalEntry"];
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request (bad address, unknown timeframe, too many wallets, or malformed body) */
             400: {
                 headers: {
                     [name: string]: unknown;

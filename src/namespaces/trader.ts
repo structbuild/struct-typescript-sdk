@@ -10,6 +10,8 @@ import type {
 	GetTraderTradesParams,
 	GetTraderProfileParams,
 	GetTraderProfilesBatchParams,
+	GetTraderPnlBatchParams,
+	BatchPnlResponse,
 	GetTraderVolumeChartParams,
 	GetTraderPnlParams,
 	GetTraderPnlBreakdownParams,
@@ -45,6 +47,10 @@ export class TraderNamespace extends Namespace {
 
 	async getTraderProfilesBatch(params: GetTraderProfilesBatchParams, venue?: Venue): Promise<HttpResponse<UserProfile[]>> {
 		return this.get<UserProfile[]>(venue, "/trader/profiles/batch", { params: { ...params } });
+	}
+
+	async getTraderPnlBatch(params: GetTraderPnlBatchParams, venue?: Venue): Promise<HttpResponse<BatchPnlResponse>> {
+		return this.post<BatchPnlResponse>(venue, "/trader/pnl/batch", params);
 	}
 
 	async getTraderVolumeChart(params: GetTraderVolumeChartParams, venue?: Venue): Promise<HttpResponse<TraderVolumeDataPoint[]>> {
