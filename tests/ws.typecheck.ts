@@ -4,10 +4,14 @@ import type {
 	AccountsUpdateEvent,
 	AssetPriceTickEvent,
 	AssetPricesSubscribeResponse,
+	Event,
 	EventMetricsEvent,
 	EventMetricsSubscribeResponse,
+	EventsStreamUpdateRows,
 	MarketMetricsEvent,
 	MarketMetricsSubscribeResponse,
+	MarketResponse,
+	MarketsStreamUpdateRows,
 	OrderBookUpdateEvent,
 	OrderBookSubscribeResponse,
 	PositionMetricsSubscribeResponse,
@@ -202,12 +206,42 @@ const orderBookDisposer = ws.on("order_book_update", (event) => {
 	event.symbol;
 });
 
+const eventsStreamDisposer = ws.on("events_stream_update", (event) => {
+	const rows: EventsStreamUpdateRows = event;
+	const firstId: string | undefined = event[0]?.id;
+	const eventRows: Event[] = event;
+	const count: number = event.length;
+	void rows;
+	void firstId;
+	void eventRows;
+	void count;
+
+	// @ts-expect-error events_stream_update payloads are the rows array, not the wire envelope
+	event.data;
+});
+
+const marketsStreamDisposer = ws.on("markets_stream_update", (event) => {
+	const rows: MarketsStreamUpdateRows = event;
+	const firstConditionId: string | undefined = event[0]?.condition_id;
+	const marketRows: MarketResponse[] = event;
+	const count: number = event.length;
+	void rows;
+	void firstConditionId;
+	void marketRows;
+	void count;
+
+	// @ts-expect-error markets_stream_update payloads are the rows array, not the wire envelope
+	event.data;
+});
+
 void tradeDisposer;
 void assetPriceDisposer;
 void marketMetricsDisposer;
 void eventMetricsDisposer;
 void accountsDisposer;
 void orderBookDisposer;
+void eventsStreamDisposer;
+void marketsStreamDisposer;
 
 // @ts-expect-error polymarket_order_book requires at least one filter object
 ws.subscribe("polymarket_order_book");

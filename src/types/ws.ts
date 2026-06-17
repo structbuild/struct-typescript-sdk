@@ -1,4 +1,5 @@
 import type { RetryConfig } from "./http.js";
+import type { Event, MarketResponse } from "./index.js";
 import type {
 	WsSchemas,
 	WsAlertSchemas,
@@ -119,8 +120,10 @@ export type TraderPositionsSubscribeResponse = WsSchemas["TraderPositionsSubscri
 export type ClobRewardsUpdateEvent = WsSchemas["ClobRewardsUpdateEvent"];
 export type ClobRewardsSubscribeResponse = WsSchemas["ClobRewardsSubscribeResponse"];
 export type EventsStreamUpdateEvent = WsSchemas["EventsStreamUpdateEvent"];
+export type EventsStreamUpdateRows = Event[];
 export type EventsStreamSubscribeResponse = WsSchemas["EventsStreamSubscribeResponse"];
 export type MarketsStreamUpdateEvent = WsSchemas["MarketsStreamUpdateEvent"];
+export type MarketsStreamUpdateRows = MarketResponse[];
 export type MarketsStreamSubscribeResponse = WsSchemas["MarketsStreamSubscribeResponse"];
 export type OracleEventStreamEvent = WsSchemas["OracleEventTyped"];
 export type OracleEventsStreamSubscribeResponse = WsSchemas["OracleEventsStreamSubscribeResponse"];
@@ -207,8 +210,8 @@ export interface WebSocketEventMap {
 	pusd_update: PusdUpdateEvent;
 	order_book_update: OrderBookUpdateEvent;
 	clob_rewards_update: ClobRewardsUpdateEvent;
-	events_stream_update: EventsStreamUpdateEvent;
-	markets_stream_update: MarketsStreamUpdateEvent;
+	events_stream_update: EventsStreamUpdateRows;
+	markets_stream_update: MarketsStreamUpdateRows;
 	oracle_event_update: OracleEventStreamEvent;
 	position_liquidity_update: PositionLiquidityEvent;
 	market_liquidity_update: MarketLiquidityEvent;
