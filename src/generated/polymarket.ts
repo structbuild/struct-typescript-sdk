@@ -1506,7 +1506,7 @@ export interface paths {
         put?: never;
         /**
          * Batch trader PnL summaries
-         * @description PnL summaries for many wallets across many timeframes in one call. Credits scale with the number of wallet × timeframe units but stay below the cost of the equivalent single-trader requests. Results are keyed by wallet then timeframe; the `billing` block reports the units and credits charged.
+         * @description PnL summaries for many wallets across many timeframes in one call, keyed by wallet then timeframe (a wallet/timeframe with no data is omitted). Billing is per `wallet × timeframe` unit on a decreasing marginal tariff: 1 credit for the 1st unit, 0.6 for units 2–5, 0.45 for units 6–20, and 0.35 for units 21+, summed and rounded to the nearest credit (minimum 1). For example, 4 units cost 3 credits, 40 units cost 17, and 200 units cost 73.
          */
         post: operations["get_trader_pnl_batch"];
         delete?: never;
@@ -12166,6 +12166,56 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    /**
+                     * @example {
+                     *       "0x96cfcb0c30942cfcd1cdf76c7d408794d66b1acb": {
+                     *         "lifetime": {
+                     *           "trader": {
+                     *             "address": "0x96cfcb0c30942cfcd1cdf76c7d408794d66b1acb",
+                     *             "name": "mintblade",
+                     *             "pseudonym": "Golden-Reclamation",
+                     *             "verified_badge": false
+                     *           },
+                     *           "realized_pnl_usd": 1878816.203922,
+                     *           "total_pnl_usd": 9094807.981258,
+                     *           "unrealized_pnl_usd": 7215991.777336,
+                     *           "usd_balance": 3367872.058961,
+                     *           "realized_pnl_pct": 21.719621,
+                     *           "total_pnl_pct": 105.13843,
+                     *           "open_positions_value": 14351553.789366,
+                     *           "events_traded": 4,
+                     *           "categories_traded": 1,
+                     *           "markets_traded": 5,
+                     *           "markets_won": 4,
+                     *           "markets_lost": 0,
+                     *           "market_win_rate_pct": 100,
+                     *           "avg_win_usd": 469704.050981,
+                     *           "avg_loss_usd": 0,
+                     *           "profit_factor": 0,
+                     *           "total_buys": 727,
+                     *           "total_sells": 0,
+                     *           "total_redemptions": 4,
+                     *           "total_volume_usd": 11916491.517144,
+                     *           "buy_volume_usd": 8522919.883091,
+                     *           "total_fees": 127397.55907,
+                     *           "total_wins_usd": 1878816.203922,
+                     *           "total_losses_usd": 0,
+                     *           "best_trade_pnl_usd": 1351658.511818,
+                     *           "best_trade_condition_id": "0xbc54d73527785bdc7b443cfdf3b0d59558c5ac2bbffca23425ecfbd161b07317",
+                     *           "best_trade_metadata": {
+                     *             "market_slug": "fifwc-ksa-ury-2026-06-15-ury",
+                     *             "event_slug": "fifwc-ksa-ury-2026-06-15",
+                     *             "question": "Will Uruguay win on 2026-06-15?",
+                     *             "title": "Uruguay"
+                     *           },
+                     *           "avg_hold_time_seconds": 518864,
+                     *           "first_trade_at": 1780521522,
+                     *           "last_trade_at": 1781580031,
+                     *           "open_position_count": 1
+                     *         }
+                     *       }
+                     *     }
+                     */
                     "application/json": {
                         [key: string]: {
                             [key: string]: components["schemas"]["GlobalEntry"];

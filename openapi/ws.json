@@ -19624,13 +19624,22 @@
         }
       },
       "OrderBookLevel": {
-        "type": "array",
-        "description": "A single price level: [price_string, size_string]",
-        "items": {
-          "type": "string"
-        },
-        "minItems": 2,
-        "maxItems": 2
+        "type": "object",
+        "description": "A single order book price level. Matches the HTTP order book API's OrderbookLevel.",
+        "required": [
+          "p",
+          "s"
+        ],
+        "properties": {
+          "p": {
+            "type": "string",
+            "description": "Price as a decimal string (0–1)"
+          },
+          "s": {
+            "type": "string",
+            "description": "Size as a decimal string"
+          }
+        }
       },
       "OrderBookUpdateEvent": {
         "type": "object",

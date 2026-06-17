@@ -6562,8 +6562,13 @@ export interface components {
             /** @description Filter values that were rejected (invalid format or limit exceeded) */
             rejected?: string[];
         };
-        /** @description A single price level: [price_string, size_string] */
-        OrderBookLevel: string[];
+        /** @description A single order book price level. Matches the HTTP order book API's OrderbookLevel. */
+        OrderBookLevel: {
+            /** @description Price as a decimal string (0–1) */
+            p: string;
+            /** @description Size as a decimal string */
+            s: string;
+        };
         /** @description Server-pushed event: full CLOB orderbook snapshot for an outcome token. Envelope type: "order_book_update". Delivered whenever the book changes for a subscribed condition or position. */
         OrderBookUpdateEvent: {
             /** @description Hex token ID (position / outcome token) */
