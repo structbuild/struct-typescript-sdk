@@ -1595,6 +1595,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/pnl/{address}/category-candles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader category PnL candles
+         * @description Per-category PnL candles for a trader (v3.1). Same shape as `/candles`, plus a required `category`.
+         */
+        get: operations["get_trader_category_pnl_candles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/pnl/{address}/changes": {
         parameters: {
             query?: never;
@@ -7849,7 +7869,7 @@ export interface components {
          * @description Polymarket exchange contract types.
          * @enum {string}
          */
-        PolymarketExchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
+        PolymarketExchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "ComboExchange" | "ComboCombinatorialModule" | "ComboNegRiskModule" | "Unknown";
         /**
          * @description A Polymarket series from the Gamma API
          *     Series are parent groupings above events (e.g., "NBA Season 2024-25")
@@ -8540,7 +8560,7 @@ export interface components {
             exchange: components["schemas"]["PolymarketExchange"];
         };
         /** @enum {string} */
-        TradeType: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "22" | "23" | "24";
+        TradeType: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "22" | "23" | "24" | "25" | "26" | "27" | "28";
         /** @enum {string} */
         TradeSide: "0" | "1";
         PredictionCandlestickBar: {
@@ -11126,7 +11146,7 @@ export interface operations {
                 outcome?: string;
                 /** @description Outcome index: 0 (Yes), 1 (No) */
                 outcome_index?: components["schemas"]["OutcomeIndex"];
-                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched, MakerRebate, Reward, Yield */
+                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched, MakerRebate, Reward, Yield, ComboCreation, ComboExecution, ComboStatusUpdate, ComboLifecycle */
                 trade_types?: string;
                 /** @description Min USD amount */
                 min_usd_amount?: number;
@@ -12376,6 +12396,46 @@ export interface operations {
             };
         };
     };
+    get_trader_category_pnl_candles: {
+        parameters: {
+            query: {
+                /** @description Category to scope candles to. Required. */
+                category: components["schemas"]["PolymarketCategory"];
+                /** @description Candle bucket size. Default: 1m for 1d, 1d otherwise. */
+                resolution?: components["schemas"]["PnlCandleResolution"];
+                /** @description Default: lifetime */
+                timeframe?: components["schemas"]["PnlCandleTimeframe"];
+                /** @description Start unix seconds. Overrides the timeframe lower bound. */
+                from?: number;
+                /** @description End unix seconds */
+                to?: number;
+                /** @description Number of candle buckets to return. Default 500, max 2500. */
+                count_back?: number;
+                /** @description Cursor from a previous response */
+                pagination_key?: string;
+                /** @description Forward-fill missing buckets. Default: true. */
+                fill_gaps?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Trader category PnL candles */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PnlCandlestickBar"][];
+                };
+            };
+        };
+    };
     get_trader_pnl_changes: {
         parameters: {
             query?: never;
@@ -12717,7 +12777,7 @@ export interface operations {
                 outcome?: string;
                 /** @description Outcome index: 0 (Yes), 1 (No) */
                 outcome_index?: components["schemas"]["OutcomeIndex"];
-                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched, MakerRebate, Reward, Yield */
+                /** @description Comma-separated trade types: OrderFilled, Redemption, Merge, Split, Cancelled, PositionsConverted, OrdersMatched, MakerRebate, Reward, Yield, ComboCreation, ComboExecution, ComboStatusUpdate, ComboLifecycle */
                 trade_types?: string;
                 /** @description Min USD amount */
                 min_usd_amount?: number;

@@ -126,7 +126,7 @@
       "address": "/ws/alerts",
       "title": "New Trade",
       "summary": "Real-time `trader_new_trade` alert subscription",
-      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_price`, `max_price`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
+      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`, `ComboExecution`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_price`, `max_price`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`, `one_shot`\n\nConnection: `wss://api.struct.to/ws/alerts?api-key=<key>` — all alert channels share the same physical endpoint.",
       "servers": [
         {
           "$ref": "#/servers/alerts"
@@ -1454,7 +1454,7 @@
       },
       "title": "Subscribe — New Trade",
       "summary": "Subscribe to `trader_new_trade` alerts",
-      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.",
+      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`, `ComboExecution`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.",
       "tags": [
         {
           "name": "Trader"
@@ -1492,7 +1492,7 @@
       },
       "title": "Event — New Trade",
       "summary": "Receive `trader_new_trade` alerts",
-      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.",
+      "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`, `ComboExecution`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.",
       "tags": [
         {
           "name": "Trader"
@@ -3627,7 +3627,7 @@
         "name": "WsAlertTraderNewTradeSubscribe",
         "title": "New Trade — Subscribe",
         "summary": "Subscribe to `trader_new_trade` alerts",
-        "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_price`, `max_price`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`, `one_shot`",
+        "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`, `ComboExecution`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert.\n\n**Applicable filters:** `wallet_addresses`, `min_usd_value`, `min_price`, `max_price`, `condition_ids`, `event_slugs`, `trade_types`, `exclude_shortterm_markets`, `one_shot`",
         "tags": [
           {
             "name": "Trader"
@@ -3697,7 +3697,7 @@
         "name": "WsAlertTraderNewTradeEvent",
         "title": "New Trade — Event",
         "summary": "`trader_new_trade` alert pushed from server",
-        "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
+        "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`, `ComboExecution`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.\n\n**Credits cost:** 200 per delivered alert. The `data` payload matches the corresponding HTTP webhook payload schema.",
         "tags": [
           {
             "name": "Trader"
@@ -9333,6 +9333,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -9343,10 +9346,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -10931,6 +10935,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -10941,10 +10948,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -10957,7 +10965,8 @@
         "description": "Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on\nfill-style trades only.",
         "enum": [
           "OrderFilled",
-          "OrdersMatched"
+          "OrdersMatched",
+          "ComboExecution"
         ]
       },
       "NewTradePayload": {
@@ -11120,6 +11129,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -11130,10 +11142,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -15108,6 +15121,10 @@
           "Split",
           "Cancelled",
           "PositionsConverted",
+          "ComboCreation",
+          "ComboExecution",
+          "ComboStatusUpdate",
+          "ComboLifecycle",
           "Initialization",
           "Proposal",
           "Dispute",
@@ -15737,10 +15754,11 @@
               "description": "Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on\nfill-style trades only.",
               "enum": [
                 "OrderFilled",
-                "OrdersMatched"
+                "OrdersMatched",
+                "ComboExecution"
               ]
             },
-            "description": "Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default).",
+            "description": "Only fire for these fill-style trade types. Empty = OrderFilled, OrdersMatched, and ComboExecution only (default).",
             "maxItems": 500
           },
           "exclude_shortterm_markets": {
@@ -15909,6 +15927,10 @@
                 "Split",
                 "Cancelled",
                 "PositionsConverted",
+                "ComboCreation",
+                "ComboExecution",
+                "ComboStatusUpdate",
+                "ComboLifecycle",
                 "Initialization",
                 "Proposal",
                 "Dispute",
@@ -16885,6 +16907,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -16895,10 +16920,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -16967,7 +16993,7 @@
         "description": "Tagged union of trade-type variants delivered to `trader_trade_event` callbacks. Pending-only fields such as `received_at` are absent — callbacks fire only for confirmed trades.",
         "oneOf": [
           {
-            "title": "OrderFilled / OrdersMatched",
+            "title": "OrderFilled / OrdersMatched / ComboExecution",
             "description": "A confirmed buy or sell matched on the exchange.",
             "type": "object",
             "required": [
@@ -17147,7 +17173,8 @@
                 "type": "string",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             },
@@ -19344,7 +19371,7 @@
         "allOf": [
           {
             "type": "object",
-            "description": "Subscribe to `trader_new_trade` alerts. Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.",
+            "description": "Subscribe to `trader_new_trade` alerts. Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`, `ComboExecution`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.",
             "required": [
               "op",
               "event"

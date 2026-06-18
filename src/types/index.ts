@@ -409,6 +409,10 @@ export interface GetTraderPnlCandlesParams extends OperationQuery<"get_trader_pn
 	address: string;
 }
 
+export interface GetTraderCategoryPnlCandlesParams extends OperationQuery<"get_trader_category_pnl_candles"> {
+	address: string;
+}
+
 export interface GetTraderTradesParams extends OperationQuery<"get_trader_trades"> {
 	address: string;
 }

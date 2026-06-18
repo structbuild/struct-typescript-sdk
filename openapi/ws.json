@@ -6342,6 +6342,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -6352,10 +6355,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -7940,6 +7944,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -7950,10 +7957,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -7966,7 +7974,8 @@
         "description": "Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on\nfill-style trades only.",
         "enum": [
           "OrderFilled",
-          "OrdersMatched"
+          "OrdersMatched",
+          "ComboExecution"
         ]
       },
       "NewTradePayload": {
@@ -8129,6 +8138,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -8139,10 +8151,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -12097,6 +12110,10 @@
           "Split",
           "Cancelled",
           "PositionsConverted",
+          "ComboCreation",
+          "ComboExecution",
+          "ComboStatusUpdate",
+          "ComboLifecycle",
           "Initialization",
           "Proposal",
           "Dispute",
@@ -12726,10 +12743,11 @@
               "description": "Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on\nfill-style trades only.",
               "enum": [
                 "OrderFilled",
-                "OrdersMatched"
+                "OrdersMatched",
+                "ComboExecution"
               ]
             },
-            "description": "Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default).",
+            "description": "Only fire for these fill-style trade types. Empty = OrderFilled, OrdersMatched, and ComboExecution only (default).",
             "maxItems": 500
           },
           "exclude_shortterm_markets": {
@@ -12898,6 +12916,10 @@
                 "Split",
                 "Cancelled",
                 "PositionsConverted",
+                "ComboCreation",
+                "ComboExecution",
+                "ComboStatusUpdate",
+                "ComboLifecycle",
                 "Initialization",
                 "Proposal",
                 "Dispute",
@@ -13859,6 +13881,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -13869,10 +13894,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -14303,6 +14329,7 @@
               "enum": [
                 "OrderFilled",
                 "OrdersMatched",
+                "ComboExecution",
                 "Redemption",
                 "Merge",
                 "Split",
@@ -14418,7 +14445,7 @@
         "description": "Server-pushed event. Discriminated by `trade_type` — each variant only includes relevant fields.\n\nEnvelope: `{\"type\": \"trade_stream_update\", \"room_id\": \"polymarket_trades\", \"status\": \"confirmed\"|\"pending\", \"data\": {...}}`\n\n**Pending trades:** `block`, `confirmed_at`, `log_index`, `block_index` are absent. `received_at` (milliseconds) is included instead. For OrderFilled/OrdersMatched, `order_hash`, `taker`, `fee`, `fee_shares`, `fee_pct` are also absent.",
         "oneOf": [
           {
-            "title": "OrderFilled / OrdersMatched",
+            "title": "OrderFilled / OrdersMatched / ComboExecution",
             "description": "A buy/sell trade was matched on the exchange.",
             "type": "object",
             "required": [
@@ -14433,7 +14460,8 @@
                 "type": "string",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ],
                 "description": "Trade type."
               },
@@ -20196,7 +20224,7 @@
         }
       },
       "TradeOrderFilledEvent": {
-        "title": "OrderFilled / OrdersMatched",
+        "title": "OrderFilled / OrdersMatched / ComboExecution",
         "description": "A buy/sell trade was matched on the exchange.",
         "type": "object",
         "required": [
@@ -20211,7 +20239,8 @@
             "type": "string",
             "enum": [
               "OrderFilled",
-              "OrdersMatched"
+              "OrdersMatched",
+              "ComboExecution"
             ],
             "description": "Trade type."
           },
