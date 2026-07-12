@@ -162,7 +162,6 @@ export type AssertionMadeEvent = Schemas["AssertionMadeEvent"];
 export type AssertionSettledEvent = Schemas["AssertionSettledEvent"];
 export type CancelledTrade = Schemas["CancelledTrade"];
 export type ComboLeg = Schemas["ComboLeg"];
-export type ComboTrade = Schemas["ComboTrade"];
 export type ConditionResolutionEvent = Schemas["ConditionResolutionEvent"];
 export type MergeTrade = Schemas["MergeTrade"];
 export type NegRiskOutcomeReportedEvent = Schemas["NegRiskOutcomeReportedEvent"];
@@ -389,15 +388,15 @@ export interface GetPriceJumpsParams extends OperationQuery<"get_price_jumps"> {
 
 export interface GetGlobalPnlParams extends OperationQuery<"get_global_pnl"> {}
 
-export interface GetTraderPnlParams extends OperationQuery<"get_trader_pnl"> {
+export interface GetTraderPnlParams extends OperationQuery<"get_trader_pnl_v3_1"> {
 	address: string;
 }
 
-export interface GetTraderPnlBreakdownParams extends OperationQuery<"get_trader_market_pnl"> {
+export interface GetTraderPnlBreakdownParams extends OperationQuery<"get_trader_market_pnl_v3_1"> {
 	address: string;
 }
 
-export interface GetTraderPositionPnlParams extends OperationQuery<"get_trader_position_pnl"> {
+export interface GetTraderPositionPnlParams extends OperationQuery<"get_trader_position_pnl_v3_1"> {
 	address: string;
 }
 
@@ -405,11 +404,11 @@ export interface GetTraderPnlCalendarParams extends OperationQuery<"get_trader_p
 	address: string;
 }
 
-export interface GetTraderPnlCandlesParams extends OperationQuery<"get_trader_pnl_candles"> {
+export interface GetTraderPnlCandlesParams extends OperationQuery<"get_trader_pnl_candles_v3_1"> {
 	address: string;
 }
 
-export interface GetTraderCategoryPnlCandlesParams extends OperationQuery<"get_trader_category_pnl_candles"> {
+export interface GetTraderCategoryPnlCandlesParams extends OperationQuery<"get_trader_category_pnl_candles_v3_1"> {
 	address: string;
 }
 
@@ -579,9 +578,26 @@ export type PnlPeriodsResponse = Schemas["PnlPeriodsResponse"];
 export type PnlRiskMarketMetadata = Schemas["PnlRiskMarketMetadata"];
 export type PnlRiskMetric = Schemas["PnlRiskMetric"];
 export type PnlRiskResponse = Schemas["PnlRiskResponse"];
+export type V31TraderPnl = Schemas["V31TraderPnl"];
+export type V31MarketPnl = Schemas["V31MarketPnl"];
+export type V31CategoryPnl = Schemas["V31CategoryPnl"];
+export type V31PositionPnl = Schemas["V31PositionPnl"];
+export type ApprovalTrade = Schemas["ApprovalTrade"];
+export type ComboBasketTrade = Schemas["ComboBasketTrade"];
+export type ComboCompressedTrade = Schemas["ComboCompressedTrade"];
+export type ComboConditionTransformTrade = Schemas["ComboConditionTransformTrade"];
+export type ComboCreationTrade = Schemas["ComboCreationTrade"];
+export type ComboExecutionTrade = Schemas["ComboExecutionTrade"];
+export type ComboHorizontalTrade = Schemas["ComboHorizontalTrade"];
+export type ComboMigrationTrade = Schemas["ComboMigrationTrade"];
+export type ComboPositionConvertedTrade = Schemas["ComboPositionConvertedTrade"];
+export type ComboPositionPairTrade = Schemas["ComboPositionPairTrade"];
+export type ComboRedemptionTrade = Schemas["ComboRedemptionTrade"];
+export type ComboStatusUpdateTrade = Schemas["ComboStatusUpdateTrade"];
+export type ComboWrapTrade = Schemas["ComboWrapTrade"];
 
 export type BatchPnlRequest = Schemas["BatchPnlRequest"];
-export type BatchPnlResponse = OperationResponse<"get_trader_pnl_batch">;
+export type BatchPnlResponse = OperationResponse<"get_trader_pnl_batch_v3_1">;
 
 export type GetTraderPnlBatchParams = BatchPnlRequest;
 
@@ -597,15 +613,15 @@ export interface GetTraderPnlRiskParams extends OperationQuery<"get_trader_pnl_r
 	address: string;
 }
 
-export interface GetTraderCategoryPnlParams extends OperationQuery<"get_trader_category_pnl"> {
+export interface GetTraderCategoryPnlParams extends OperationQuery<"get_trader_category_pnl_v3_1"> {
 	address: string;
 }
 
-export interface GetTraderPnlExitsParams extends OperationQuery<"get_trader_pnl_exits"> {
+export interface GetTraderPnlExitsParams extends OperationQuery<"get_trader_pnl_exits_v3_1"> {
 	address: string;
 }
 
-export interface GetTopTradesMarketsParams extends OperationQuery<"get_top_trades_markets"> {}
+export interface GetTopTradesMarketsParams extends OperationQuery<"get_top_trades_markets_v3_1"> {}
 
 export interface GetCategoryTopTradersParams extends OperationQuery<"get_category_top_traders"> {}
 
@@ -617,6 +633,7 @@ export type WebhookLogsResponseBody = WebhookSchemas["WebhookLogsResponseBody"];
 export type CreateWebhookRequestBody = WebhookSchemas["CreateWebhookRequestBody"];
 export type UpdateWebhookRequestBody = WebhookSchemas["UpdateWebhookRequestBody"];
 export type WebhookFiltersBody = WebhookSchemas["WebhookFiltersBody"];
+export type WebhookTraderInfo = WebhookSchemas["WebhookTraderInfo"];
 export type WebhookStatusBody = WebhookSchemas["WebhookStatusBody"];
 export type PolymarketWebhookEvent = WebhookSchemas["PolymarketWebhookEvent"];
 export type PolymarketWebhookFilter = WebhookSchemas["PolymarketWebhookFilter"];

@@ -3365,6 +3365,14 @@
               "data": {
                 "trader": "0x0000000000000000000000000000000000000000",
                 "taker": "0x0000000000000000000000000000000000000000",
+                "trader_info": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "name": "Test Trader",
+                  "pseudonym": "Brave-Fox",
+                  "profile_image": "https://example.com/avatar.png",
+                  "x_username": "testtrader",
+                  "verified_badge": true
+                },
                 "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
                 "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
                 "outcome": "Yes",
@@ -3480,6 +3488,14 @@
               "data": {
                 "trader": "0x0000000000000000000000000000000000000000",
                 "taker": "0x0000000000000000000000000000000000000000",
+                "trader_info": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "name": "Test Trader",
+                  "pseudonym": "Brave-Fox",
+                  "profile_image": "https://example.com/avatar.png",
+                  "x_username": "testtrader",
+                  "verified_badge": true
+                },
                 "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
                 "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
                 "outcome": "Yes",
@@ -3596,6 +3612,14 @@
               "data": {
                 "trader": "0x0000000000000000000000000000000000000000",
                 "taker": "0x0000000000000000000000000000000000000000",
+                "trader_info": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "name": "Test Trader",
+                  "pseudonym": "Brave-Fox",
+                  "profile_image": "https://example.com/avatar.png",
+                  "x_username": "testtrader",
+                  "verified_badge": true
+                },
                 "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
                 "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
                 "outcome": "Yes",
@@ -3714,6 +3738,14 @@
               "data": {
                 "trader": "0x0000000000000000000000000000000000000000",
                 "taker": "0x0000000000000000000000000000000000000000",
+                "trader_info": {
+                  "address": "0x0000000000000000000000000000000000000000",
+                  "name": "Test Trader",
+                  "pseudonym": "Brave-Fox",
+                  "profile_image": "https://example.com/avatar.png",
+                  "x_username": "testtrader",
+                  "verified_badge": true
+                },
                 "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
                 "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
                 "outcome": "Yes",
@@ -9189,6 +9221,7 @@
         "required": [
           "trader",
           "taker",
+          "trader_info",
           "position_id",
           "trade_id",
           "hash",
@@ -9210,6 +9243,10 @@
           "taker": {
             "type": "string",
             "description": "Order filler wallet address (lowercase)"
+          },
+          "trader_info": {
+            "$ref": "#/components/schemas/WebhookTraderInfo",
+            "description": "Maker trader display metadata (address + name / pseudonym / image / x / verified)"
           },
           "position_id": {
             "type": "string",
@@ -10781,6 +10818,7 @@
         "required": [
           "trader",
           "taker",
+          "trader_info",
           "position_id",
           "trade_id",
           "hash",
@@ -10802,6 +10840,10 @@
           "taker": {
             "type": "string",
             "description": "Order filler wallet address (lowercase)"
+          },
+          "trader_info": {
+            "$ref": "#/components/schemas/WebhookTraderInfo",
+            "description": "Maker trader display metadata (address + name / pseudonym / image / x / verified)"
           },
           "position_id": {
             "type": "string",
@@ -10975,6 +11017,7 @@
         "required": [
           "trader",
           "taker",
+          "trader_info",
           "position_id",
           "trade_id",
           "hash",
@@ -10996,6 +11039,10 @@
           "taker": {
             "type": "string",
             "description": "Order filler wallet address (lowercase)"
+          },
+          "trader_info": {
+            "$ref": "#/components/schemas/WebhookTraderInfo",
+            "description": "Maker trader display metadata (address + name / pseudonym / image / x / verified)"
           },
           "position_id": {
             "type": "string",
@@ -15124,7 +15171,22 @@
           "ComboCreation",
           "ComboExecution",
           "ComboStatusUpdate",
-          "ComboLifecycle",
+          "ComboPositionsSplit",
+          "ComboPositionsMerged",
+          "ComboSplitOnCondition",
+          "ComboMergedOnCondition",
+          "ComboExtracted",
+          "ComboInjected",
+          "ComboConvertedToYesBasket",
+          "ComboMergedFromYesBasket",
+          "ComboCompressed",
+          "ComboPositionRedeemed",
+          "ComboWrapped",
+          "ComboUnwrapped",
+          "ComboHorizontalSplit",
+          "ComboHorizontalMerge",
+          "ComboPositionConverted",
+          "ComboPositionMigrated",
           "Initialization",
           "Proposal",
           "Dispute",
@@ -15930,7 +15992,22 @@
                 "ComboCreation",
                 "ComboExecution",
                 "ComboStatusUpdate",
-                "ComboLifecycle",
+                "ComboPositionsSplit",
+                "ComboPositionsMerged",
+                "ComboSplitOnCondition",
+                "ComboMergedOnCondition",
+                "ComboExtracted",
+                "ComboInjected",
+                "ComboConvertedToYesBasket",
+                "ComboMergedFromYesBasket",
+                "ComboCompressed",
+                "ComboPositionRedeemed",
+                "ComboWrapped",
+                "ComboUnwrapped",
+                "ComboHorizontalSplit",
+                "ComboHorizontalMerge",
+                "ComboPositionConverted",
+                "ComboPositionMigrated",
                 "Initialization",
                 "Proposal",
                 "Dispute",
@@ -16747,12 +16824,59 @@
           "lifetime"
         ]
       },
+      "WebhookTraderInfo": {
+        "type": "object",
+        "description": "Trader display metadata nested into trade-fill webhook payloads.\n\nMirrors the shape used by the trade-event and PnL alert payloads. `address`\n(the lower-cased maker wallet) is always present; the remaining fields are\nsourced from the producer-enriched `trader_profile` carried on the trade and\nare omitted until that profile has been resolved.",
+        "required": [
+          "address",
+          "verified_badge"
+        ],
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Maker wallet address (lower-cased)"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Display name"
+          },
+          "pseudonym": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Polymarket pseudonym"
+          },
+          "profile_image": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Profile image URL (our CDN copy when available)"
+          },
+          "x_username": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Linked X (Twitter) username"
+          },
+          "verified_badge": {
+            "type": "boolean",
+            "description": "Whether the trader carries a verified badge"
+          }
+        }
+      },
       "WhaleTradePayload": {
         "type": "object",
         "description": "Payload delivered when a trade exceeds the configured size and probability thresholds",
         "required": [
           "trader",
           "taker",
+          "trader_info",
           "position_id",
           "trade_id",
           "hash",
@@ -16774,6 +16898,10 @@
           "taker": {
             "type": "string",
             "description": "Order filler wallet address (lowercase)"
+          },
+          "trader_info": {
+            "$ref": "#/components/schemas/WebhookTraderInfo",
+            "description": "Maker trader display metadata (address + name / pseudonym / image / x / verified)"
           },
           "position_id": {
             "type": "string",
@@ -19053,6 +19181,14 @@
           "data": {
             "trader": "0x0000000000000000000000000000000000000000",
             "taker": "0x0000000000000000000000000000000000000000",
+            "trader_info": {
+              "address": "0x0000000000000000000000000000000000000000",
+              "name": "Test Trader",
+              "pseudonym": "Brave-Fox",
+              "profile_image": "https://example.com/avatar.png",
+              "x_username": "testtrader",
+              "verified_badge": true
+            },
             "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
             "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
             "outcome": "Yes",
@@ -19197,6 +19333,14 @@
           "data": {
             "trader": "0x0000000000000000000000000000000000000000",
             "taker": "0x0000000000000000000000000000000000000000",
+            "trader_info": {
+              "address": "0x0000000000000000000000000000000000000000",
+              "name": "Test Trader",
+              "pseudonym": "Brave-Fox",
+              "profile_image": "https://example.com/avatar.png",
+              "x_username": "testtrader",
+              "verified_badge": true
+            },
             "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
             "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
             "outcome": "Yes",
@@ -19342,6 +19486,14 @@
           "data": {
             "trader": "0x0000000000000000000000000000000000000000",
             "taker": "0x0000000000000000000000000000000000000000",
+            "trader_info": {
+              "address": "0x0000000000000000000000000000000000000000",
+              "name": "Test Trader",
+              "pseudonym": "Brave-Fox",
+              "profile_image": "https://example.com/avatar.png",
+              "x_username": "testtrader",
+              "verified_badge": true
+            },
             "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
             "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
             "outcome": "Yes",
@@ -19489,6 +19641,14 @@
           "data": {
             "trader": "0x0000000000000000000000000000000000000000",
             "taker": "0x0000000000000000000000000000000000000000",
+            "trader_info": {
+              "address": "0x0000000000000000000000000000000000000000",
+              "name": "Test Trader",
+              "pseudonym": "Brave-Fox",
+              "profile_image": "https://example.com/avatar.png",
+              "x_username": "testtrader",
+              "verified_badge": true
+            },
             "position_id": "452312848583266388373324160190187140051835877600158453279131187530910662656",
             "condition_id": "0x0000000000000000000000000000000000000000000000000000000000000000",
             "outcome": "Yes",

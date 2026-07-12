@@ -1814,6 +1814,8 @@ export interface components {
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID (0x-prefixed hex) */
@@ -2543,6 +2545,8 @@ export interface components {
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID */
@@ -2620,6 +2624,8 @@ export interface components {
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID */
@@ -4290,7 +4296,7 @@ export interface components {
          *     full set of typed prediction-trade variants.
          * @enum {string}
          */
-        TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "ComboCreation" | "ComboExecution" | "ComboStatusUpdate" | "ComboLifecycle" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
+        TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "ComboCreation" | "ComboExecution" | "ComboStatusUpdate" | "ComboPositionsSplit" | "ComboPositionsMerged" | "ComboSplitOnCondition" | "ComboMergedOnCondition" | "ComboExtracted" | "ComboInjected" | "ComboConvertedToYesBasket" | "ComboMergedFromYesBasket" | "ComboCompressed" | "ComboPositionRedeemed" | "ComboWrapped" | "ComboUnwrapped" | "ComboHorizontalSplit" | "ComboHorizontalMerge" | "ComboPositionConverted" | "ComboPositionMigrated" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
         /** @description Subscription filters for the `trader_category_pnl` event. All fields are optional. */
         TraderCategoryPnlFilters: {
             /**
@@ -4608,7 +4614,7 @@ export interface components {
              */
             max_price?: number | null;
             /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
-            trade_types?: ("OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "ComboCreation" | "ComboExecution" | "ComboStatusUpdate" | "ComboLifecycle" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[] | null;
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "ComboCreation" | "ComboExecution" | "ComboStatusUpdate" | "ComboPositionsSplit" | "ComboPositionsMerged" | "ComboSplitOnCondition" | "ComboMergedOnCondition" | "ComboExtracted" | "ComboInjected" | "ComboConvertedToYesBasket" | "ComboMergedFromYesBasket" | "ComboCompressed" | "ComboPositionRedeemed" | "ComboWrapped" | "ComboUnwrapped" | "ComboHorizontalSplit" | "ComboHorizontalMerge" | "ComboPositionConverted" | "ComboPositionMigrated" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -4981,12 +4987,36 @@ export interface components {
          * @enum {string}
          */
         WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime";
+        /**
+         * @description Trader display metadata nested into trade-fill webhook payloads.
+         *
+         *     Mirrors the shape used by the trade-event and PnL alert payloads. `address`
+         *     (the lower-cased maker wallet) is always present; the remaining fields are
+         *     sourced from the producer-enriched `trader_profile` carried on the trade and
+         *     are omitted until that profile has been resolved.
+         */
+        WebhookTraderInfo: {
+            /** @description Maker wallet address (lower-cased) */
+            address: string;
+            /** @description Display name */
+            name?: string | null;
+            /** @description Polymarket pseudonym */
+            pseudonym?: string | null;
+            /** @description Profile image URL (our CDN copy when available) */
+            profile_image?: string | null;
+            /** @description Linked X (Twitter) username */
+            x_username?: string | null;
+            /** @description Whether the trader carries a verified badge */
+            verified_badge: boolean;
+        };
         /** @description Payload delivered when a trade exceeds the configured size and probability thresholds */
         WhaleTradePayload: {
             /** @description Limit-order maker wallet address (lowercase) */
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID */
