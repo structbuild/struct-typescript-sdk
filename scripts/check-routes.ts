@@ -12,7 +12,21 @@ interface SpecConfig {
 	venuePrefix: string | null;
 	namespaceFiles: string[];
 	schemaAccessor: string;
+	ignoredMissingRoutes?: string[];
 }
+
+const DEPRECATED_UNVERSIONED_PNL_ROUTES = [
+	"/trader/pnl/{param}",
+	"/trader/pnl/{param}/markets",
+	"/trader/pnl/{param}/candles",
+	"/trader/pnl/{param}/categories",
+	"/trader/pnl/{param}/category-candles",
+	"/trader/pnl/{param}/exits",
+	"/trader/pnl/{param}/positions",
+	"/trader/pnl/batch",
+	"/trader/top_trades_markets",
+	"/trader/global_pnl",
+];
 
 const specs: SpecConfig[] = [
 	{
@@ -21,6 +35,7 @@ const specs: SpecConfig[] = [
 		venuePrefix: "/polymarket",
 		namespaceFiles: ["assets.ts", "holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "builders.ts", "search.ts", "tags.ts", "orderBook.ts", "analytics.ts"],
 		schemaAccessor: "Schemas",
+		ignoredMissingRoutes: DEPRECATED_UNVERSIONED_PNL_ROUTES,
 	},
 	{
 		specPath: join(import.meta.dirname, "../src/generated/webhooks.ts"),
@@ -182,9 +197,10 @@ for (const config of specs) {
 
 	const sdkNormalized = new Set(sdkRoutes.map((r) => r.normalized));
 
+	const ignoredMissing = new Set(config.ignoredMissingRoutes ?? []);
 	const phantomRoutes = sdkRoutes.filter((r) => !specRoutes.has(r.normalized));
 	const missingRoutes = [...specRoutes.entries()]
-		.filter(([normalized]) => !sdkNormalized.has(normalized))
+		.filter(([normalized]) => !sdkNormalized.has(normalized) && !ignoredMissing.has(normalized))
 		.sort(([a], [b]) => a.localeCompare(b));
 
 	if (phantomRoutes.length > 0) {

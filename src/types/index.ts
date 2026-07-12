@@ -386,7 +386,7 @@ export interface GetMarketChartParams extends OperationQuery<"get_chart"> {}
 
 export interface GetPriceJumpsParams extends OperationQuery<"get_price_jumps"> {}
 
-export interface GetGlobalPnlParams extends OperationQuery<"get_global_pnl"> {}
+export interface GetGlobalPnlParams extends OperationQuery<"get_global_pnl_v3_1"> {}
 
 export interface GetTraderPnlParams extends OperationQuery<"get_trader_pnl_v3_1"> {
 	address: string;

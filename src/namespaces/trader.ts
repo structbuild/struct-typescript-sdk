@@ -30,7 +30,6 @@ import type {
 	PnlChangesResponse,
 	PnlPeriodsResponse,
 	PnlRiskResponse,
-	GlobalEntry,
 	V31TraderPnl,
 	V31MarketPnl,
 	V31CategoryPnl,
@@ -90,8 +89,8 @@ export class TraderNamespace extends Namespace {
 		return this.get<V31PositionPnl[]>(venue, `/trader/pnl/v3_1/${encodeURIComponent(address)}/positions`, { params: query });
 	}
 
-	async getGlobalPnl(params?: GetGlobalPnlParams, venue?: Venue): Promise<HttpResponse<GlobalEntry[]>> {
-		return this.get<GlobalEntry[]>(venue, "/trader/global_pnl", { params: { ...params } });
+	async getGlobalPnl(params?: GetGlobalPnlParams, venue?: Venue): Promise<HttpResponse<V31TraderPnl[]>> {
+		return this.get<V31TraderPnl[]>(venue, "/trader/pnl/v3_1/global", { params: { ...params } });
 	}
 
 	async getTraderPnlChanges(params: GetTraderPnlChangesParams, venue?: Venue): Promise<HttpResponse<PnlChangesResponse>> {

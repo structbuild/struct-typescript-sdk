@@ -1535,6 +1535,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/pnl/v3_1/global": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get global PnL leaderboard (v3.1)
+         * @description Trader leaderboard from the v3.1 PnL store, including combo fields.
+         */
+        get: operations["get_global_pnl_v3_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/pnl/v3_1/top-trades/markets": {
         parameters: {
             query?: never;
@@ -14122,6 +14142,44 @@ export interface operations {
                 };
             };
             /** @description Invalid request (bad address, unknown timeframe, too many wallets, or malformed body) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_global_pnl_v3_1: {
+        parameters: {
+            query?: {
+                /** @description Default: lifetime */
+                timeframe?: components["schemas"]["PnlTimeframe"];
+                /** @description Default: total_pnl_usd */
+                sort_by?: components["schemas"]["TraderPnlSortBy"];
+                /** @description Default: desc */
+                sort_direction?: components["schemas"]["SortDirection"];
+                /** @description Default 50, max 500 */
+                limit?: number;
+                /** @description Cursor from a previous response */
+                pagination_key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Leaderboard page */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["V31TraderPnl"][];
+                };
+            };
+            /** @description Invalid params */
             400: {
                 headers: {
                     [name: string]: unknown;
