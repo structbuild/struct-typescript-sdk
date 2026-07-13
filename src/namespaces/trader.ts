@@ -24,6 +24,8 @@ import type {
 	GetTraderPnlRiskParams,
 	GetTraderCategoryPnlParams,
 	GetTopTradesMarketsParams,
+	GetTraderPnlExitsParams,
+	PnlExitMarker,
 	PnlChangesResponse,
 	PnlPeriodsResponse,
 	PnlRiskResponse,
@@ -102,6 +104,11 @@ export class TraderNamespace extends Namespace {
 	async getTraderCategoryPnl(params: GetTraderCategoryPnlParams, venue?: Venue): Promise<HttpResponse<CategoryEntry[]>> {
 		const { address, ...query } = params;
 		return this.get<CategoryEntry[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/categories`, { params: query });
+	}
+
+	async getTraderPnlExits(params: GetTraderPnlExitsParams, venue?: Venue): Promise<HttpResponse<PnlExitMarker[]>> {
+		const { address, ...query } = params;
+		return this.get<PnlExitMarker[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/exits`, { params: query });
 	}
 
 	async getTopTradesMarkets(params?: GetTopTradesMarketsParams, venue?: Venue): Promise<HttpResponse<MarketEntry[]>> {

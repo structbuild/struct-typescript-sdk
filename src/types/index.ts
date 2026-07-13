@@ -623,6 +623,10 @@ export interface GetTraderCategoryPnlParams extends OperationQuery<"get_trader_c
 	address: string;
 }
 
+export interface GetTraderPnlExitsParams extends OperationQuery<"get_trader_pnl_exits"> {
+	address: string;
+}
+
 export interface GetTopTradesMarketsParams extends OperationQuery<"get_top_trades_markets"> {}
 
 export interface GetCategoryTopTradersParams extends OperationQuery<"get_category_top_traders"> {}

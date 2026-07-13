@@ -1615,6 +1615,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/pnl/{address}/exits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader position exits
+         * @description Position exits for a trader, to overlay on the PnL chart.
+         */
+        get: operations["get_trader_pnl_exits"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/pnl/{address}/markets": {
         parameters: {
             query?: never;
@@ -13144,6 +13164,62 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PnlChangesResponse"];
+                };
+            };
+        };
+    };
+    get_trader_pnl_exits: {
+        parameters: {
+            query?: {
+                /** @description Default: lifetime */
+                timeframe?: components["schemas"]["PnlCandleTimeframe"];
+                /** @description Start unix seconds. Overrides the timeframe lower bound. */
+                from?: number;
+                /** @description End unix seconds */
+                to?: number;
+                /** @description Return only exits with this reason */
+                reason?: components["schemas"]["PnlExitReason"];
+                /** @description Return only exits in this market category */
+                category?: components["schemas"]["PolymarketCategory"];
+                /** @description Maximum exits to return. Default 500, max 2500. */
+                count_back?: number;
+                /** @description Alias for count_back. Default 500, max 2500. */
+                limit?: number;
+                /** @description Sort field. Default exit_time. */
+                sort_by?: components["schemas"]["PositionExitPnlSortBy"];
+                /** @description Sort direction for sort_by. Default desc. */
+                sort_direction?: components["schemas"]["SortDirection"];
+                /** @description Shortcut: highest or lowest. Sorts by pnl_pct desc/asc. */
+                profitability?: string;
+                /** @description Minimum realized PnL USD to include. */
+                min_pnl_usd?: number;
+                /** @description Maximum realized PnL USD to include. */
+                max_pnl_usd?: number;
+                /** @description Minimum realized PnL percent to include. */
+                min_pnl_pct?: number;
+                /** @description Maximum realized PnL percent to include. */
+                max_pnl_pct?: number;
+                /** @description Offset for ranked sort pagination. Max 3500. */
+                offset?: number;
+                /** @description Cursor from a previous response */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Trader position exits */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PnlExitMarker"][];
                 };
             };
         };

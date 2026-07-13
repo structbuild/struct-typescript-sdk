@@ -210,6 +210,10 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { address: "$address", limit: 2 },
 		operationId: "get_trader_category_pnl",
 	},
+	"trader.getTraderPnlExits": {
+		params: { address: "$address", limit: 2 },
+		operationId: "get_trader_pnl_exits",
+	},
 	"trader.getTopTradesMarkets": {
 		params: { limit: 2 },
 		operationId: "get_top_trades_markets",
