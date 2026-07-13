@@ -352,6 +352,8 @@ export interface GetMarketBySlugParams extends OperationQuery<"get_market_by_slu
 	marketSlug: string;
 }
 
+export interface GetComboLegsParams extends OperationQuery<"get_combo_legs"> {}
+
 export interface GetCandlestickParams extends OperationQuery<"get_market_candlestick"> {}
 
 export interface GetPositionCandlestickParams extends OperationQuery<"get_position_candlestick"> {}
@@ -582,6 +584,20 @@ export type V31TraderPnl = Schemas["V31TraderPnl"];
 export type V31MarketPnl = Schemas["V31MarketPnl"];
 export type V31CategoryPnl = Schemas["V31CategoryPnl"];
 export type V31PositionPnl = Schemas["V31PositionPnl"];
+export type V31TraderPnlSortBy = Schemas["V31TraderPnlSortBy"];
+export type V31MarketPnlSortBy = Schemas["V31MarketPnlSortBy"];
+export type V31CategoryPnlSortBy = Schemas["V31CategoryPnlSortBy"];
+export type V31PositionPnlSortBy = Schemas["V31PositionPnlSortBy"];
+export type V31PositionOpenPnlSortBy = Schemas["V31PositionOpenPnlSortBy"];
+export type V31PositionClosedPnlSortBy = Schemas["V31PositionClosedPnlSortBy"];
+export type V31PositionExitPnlSortBy = Schemas["V31PositionExitPnlSortBy"];
+export type V31ComboPnlSortBy = Schemas["V31ComboPnlSortBy"];
+export type V31ComboStatus = Schemas["V31ComboStatus"];
+export type V31ComboStatusFilter = Schemas["V31ComboStatusFilter"];
+export type V31ComboPnlResponse = Schemas["V31ComboPnlResponse"];
+export type ComboLegDetail = Schemas["ComboLegDetail"];
+export type ComboLegMarketType = Schemas["ComboLegMarketType"];
+export type ComboLegsResponse = Schemas["ComboLegsResponse"];
 export type ApprovalTrade = Schemas["ApprovalTrade"];
 export type ComboBasketTrade = Schemas["ComboBasketTrade"];
 export type ComboCompressedTrade = Schemas["ComboCompressedTrade"];
@@ -622,6 +638,14 @@ export interface GetTraderPnlExitsParams extends OperationQuery<"get_trader_pnl_
 }
 
 export interface GetTopTradesMarketsParams extends OperationQuery<"get_top_trades_markets_v3_1"> {}
+
+export interface GetTraderComboPnlParams extends OperationQuery<"get_trader_combo_pnl_v3_1"> {
+	address: string;
+}
+
+export interface GetTraderCombosPnlParams extends OperationQuery<"get_trader_combos_pnl_v3_1"> {
+	address: string;
+}
 
 export interface GetCategoryTopTradersParams extends OperationQuery<"get_category_top_traders"> {}
 
@@ -865,6 +889,7 @@ export type {
 	PusdUpdateEvent,
 	WsOrderBookLevel,
 	OrderBookUpdateEvent,
+	OrderBookBatchEvent,
 	TradesStreamSubscribeResponse,
 	AssetPricesSubscribeResponse,
 	AssetWindowUpdatesSubscribeResponse,

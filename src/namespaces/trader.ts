@@ -25,6 +25,9 @@ import type {
 	GetTraderPnlRiskParams,
 	GetTraderCategoryPnlParams,
 	GetTopTradesMarketsParams,
+	GetTraderComboPnlParams,
+	GetTraderCombosPnlParams,
+	V31ComboPnlResponse,
 	GetTraderPnlExitsParams,
 	PnlExitMarker,
 	PnlChangesResponse,
@@ -119,5 +122,15 @@ export class TraderNamespace extends Namespace {
 
 	async getTopTradesMarkets(params?: GetTopTradesMarketsParams, venue?: Venue): Promise<HttpResponse<V31MarketPnl[]>> {
 		return this.get<V31MarketPnl[]>(venue, "/trader/pnl/v3_1/top-trades/markets", { params: { ...params } });
+	}
+
+	async getTraderComboPnl(params: GetTraderComboPnlParams, venue?: Venue): Promise<HttpResponse<V31ComboPnlResponse>> {
+		const { address, ...query } = params;
+		return this.get<V31ComboPnlResponse>(venue, `/trader/pnl/v3_1/${encodeURIComponent(address)}/combo`, { params: query });
+	}
+
+	async getTraderCombosPnl(params: GetTraderCombosPnlParams, venue?: Venue): Promise<HttpResponse<V31ComboPnlResponse[]>> {
+		const { address, ...query } = params;
+		return this.get<V31ComboPnlResponse[]>(venue, `/trader/pnl/v3_1/${encodeURIComponent(address)}/combos`, { params: query });
 	}
 }

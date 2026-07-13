@@ -148,6 +148,7 @@ export type MaticUpdateEvent = WsSchemas["MaticUpdateEvent"];
 export type PusdUpdateEvent = WsSchemas["PusdUpdateEvent"];
 export type WsOrderBookLevel = WsSchemas["OrderBookLevel"];
 export type OrderBookUpdateEvent = WsSchemas["OrderBookUpdateEvent"];
+export type OrderBookBatchEvent = WsSchemas["OrderBookBatchEvent"];
 export type TraderPositionsSubscribeResponse = WsSchemas["TraderPositionsSubscribeResponse"];
 export type ClobRewardsUpdateEvent = WsSchemas["ClobRewardsUpdateEvent"];
 export type ClobRewardsSubscribeResponse = WsSchemas["ClobRewardsSubscribeResponse"];
@@ -257,6 +258,7 @@ export interface WebSocketEventMap {
 	matic_update: MaticUpdateEvent;
 	pusd_update: PusdUpdateEvent;
 	order_book_update: OrderBookUpdateEvent;
+	order_book_batch: OrderBookBatchEvent;
 	clob_rewards_update: ClobRewardsUpdateEvent;
 	events_stream_update: EventsStreamUpdateRows;
 	markets_stream_update: MarketsStreamUpdateRows;

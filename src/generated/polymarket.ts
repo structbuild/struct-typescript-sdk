@@ -895,6 +895,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/market/combo_legs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Expand a combo into its legs with market metadata
+         * @description Returns the individual legs that make up a combo (parlay), each with its outcome and market metadata. Pass exactly one of `condition_id` or `position_id`.
+         */
+        get: operations["get_combo_legs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/market/metrics": {
         parameters: {
             query?: never;
@@ -1404,7 +1424,7 @@ export interface paths {
         };
         /**
          * Get tag by slug
-         * @description Retrieve a single tag by its ID or slug. Pass `include_metrics=true` to attach analytics metrics (volume_usd, shares_volume, txn_count, unique_traders, unique_makers, unique_takers, fees_usd, and builder metrics) — adds +1 credit. Use `timeframe` to select the window; defaults to `1d`.
+         * @description Retrieve a single tag by its ID or slug. Pass `include_metrics=true` to attach analytics metrics (volume_usd, shares_volume, txn_count, unique_traders, unique_makers, unique_takers, fees_usd, and builder metrics). Use `timeframe` to select the window; defaults to `1d`.
          */
         get: operations["get_tag_by_id"];
         put?: never;
@@ -1506,7 +1526,7 @@ export interface paths {
         put?: never;
         /**
          * Batch trader PnL summaries
-         * @description PnL summaries for many wallets across many timeframes in one call, keyed by wallet then timeframe (a wallet/timeframe with no data is omitted). Billing is per `wallet × timeframe` unit on a decreasing marginal tariff: 1 credit for the 1st unit, 0.6 for units 2–5, 0.45 for units 6–20, and 0.35 for units 21+, summed and rounded to the nearest credit (minimum 1). For example, 4 units cost 3 credits, 40 units cost 17, and 200 units cost 73.
+         * @description PnL summaries for many wallets across many timeframes in one call, keyed by wallet then timeframe (a wallet/timeframe with no data is omitted).
          */
         post: operations["get_trader_pnl_batch"];
         delete?: never;
@@ -1526,7 +1546,7 @@ export interface paths {
         put?: never;
         /**
          * Batch trader PnL summaries (v3.1)
-         * @description PnL summaries for many wallets across many timeframes in one call, keyed by wallet then timeframe (a wallet/timeframe with no data is omitted). Billing is per `wallet × timeframe` unit on a decreasing marginal tariff: 1 credit for the 1st unit, 0.6 for units 2–5, 0.45 for units 6–20, and 0.35 for units 21+, summed and rounded to the nearest credit (minimum 1). For example, 4 units cost 3 credits, 40 units cost 17, and 200 units cost 73.
+         * @description PnL summaries for many wallets across many timeframes in one call, keyed by wallet then timeframe (a wallet/timeframe with no data is omitted).
          */
         post: operations["get_trader_pnl_batch_v3_1"];
         delete?: never;
@@ -1655,6 +1675,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/pnl/v3_1/{address}/combo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Combo position with legs, metadata, and PnL
+         * @description Expands one combo (parlay) position into its legs — each with market metadata, live price, and won/lost/pending status — together with the trader's PnL row for the combo and derived figures (implied probability, potential payout, dead flag).
+         */
+        get: operations["get_trader_combo_pnl_v3_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/trader/pnl/v3_1/{address}/combos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List combo positions with legs, metadata, and PnL
+         * @description Lists a trader's combos (parlays), one entry per combo, each expanded into its legs with market metadata, live prices, won/lost/pending status, the trader's PnL row, and derived figures (implied probability, potential payout, dead flag).
+         */
+        get: operations["get_trader_combos_pnl_v3_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/pnl/v3_1/{address}/exits": {
         parameters: {
             query?: never;
@@ -1704,7 +1764,7 @@ export interface paths {
         };
         /**
          * Get trader position PnL (v3.1)
-         * @description Per-position PnL for a trader. `status` is required — every position lookup is scoped to either currently-open positions or closed/resolved ones. `sort_by` and `search` can only be combined with a status; the per-status sort-by whitelists are exposed as `PositionOpenPnlSortBy` and `PositionClosedPnlSortBy`.
+         * @description Per-position PnL for a trader. `status` is required — every position lookup is scoped to either currently-open positions or closed/resolved ones. `sort_by` and `search` can only be combined with a status; the per-status sort-by whitelists are exposed as `V31PositionOpenPnlSortBy` and `V31PositionClosedPnlSortBy`.
          */
         get: operations["get_trader_position_pnl_v3_1"];
         put?: never;
@@ -2720,194 +2780,124 @@ export interface components {
              */
             uk: number;
         };
-        V31MarketPnl: {
+        /**
+         * @description (`raw_*`) PnL metrics — see `V31PositionOpenPnlSortBy` and
+         *     `V31PositionClosedPnlSortBy` for the per-status whitelists.
+         * @enum {string}
+         */
+        V31PositionPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "raw_total_pnl_pct" | "raw_realized_pnl_pct" | "raw_unrealized_pnl_pct" | "merge_usd" | "convert_collateral_usd" | "converted_count" | "converted_shares_gained" | "converted_shares_lost" | "last_traded_price" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "total_pnl_pct" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "title" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
+        V31PositionPnl: {
+            /** @description Position ID. */
+            position_id?: string | null;
             /** @description Condition ID. */
             condition_id?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
             /** @description Market slug. */
             market_slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+            /** @description Category. */
+            category?: string | null;
             /** @description Title. */
             title?: string | null;
-            /** @description Image URL. */
-            image_url?: string | null;
             /** @description Question. */
             question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
             trader?: null | components["schemas"]["TraderProfile"];
+            /** @description Outcome. */
+            outcome?: string | null;
             /**
-             * Format: double
-             * @description Realized PnL in USD.
+             * Format: int32
+             * @description Outcome index.
              */
-            realized_pnl_usd: number;
-            /**
-             * Format: double
-             * @description Total PnL in USD.
-             */
-            total_pnl_usd?: number;
-            /**
-             * Format: double
-             * @description Unrealized PnL in USD.
-             */
-            unrealized_pnl_usd?: number;
-            /**
-             * Format: double
-             * @description Realized PnL percent.
-             */
-            realized_pnl_pct?: number | null;
-            /**
-             * Format: double
-             * @description Total PnL percent.
-             */
-            total_pnl_pct?: number | null;
-            /**
-             * Format: double
-             * @description Total volume in USD.
-             */
-            total_volume_usd: number;
-            /**
-             * Format: double
-             * @description Buy volume in USD.
-             */
-            buy_volume_usd: number;
-            /**
-             * Format: double
-             * @description Sell volume in USD.
-             */
-            sell_volume_usd: number;
-            /**
-             * Format: double
-             * @description Redemption volume in USD.
-             */
-            redemption_volume_usd: number;
-            /**
-             * Format: double
-             * @description Merge volume in USD.
-             */
-            merge_volume_usd: number;
-            /**
-             * Format: double
-             * @description Convert collateral in USD.
-             */
-            convert_collateral_usd?: number;
-            /**
-             * Format: double
-             * @description Total fees.
-             */
-            total_fees: number;
-            /**
-             * Format: int64
-             * @description Total buys.
-             */
-            total_buys: number;
-            /**
-             * Format: int64
-             * @description Total sells.
-             */
-            total_sells: number;
-            /**
-             * Format: int64
-             * @description Number of split transactions in the selected timeframe.
-             */
-            total_splits?: number;
-            /**
-             * Format: double
-             * @description Total shares bought.
-             */
-            total_shares_bought: number;
-            /**
-             * Format: double
-             * @description Total shares sold.
-             */
-            total_shares_sold: number;
-            /**
-             * Format: int64
-             * @description Buy count.
-             */
-            buy_count: number;
-            /**
-             * Format: int64
-             * @description Sell count.
-             */
-            sell_count: number;
-            /**
-             * Format: int64
-             * @description Redeem count.
-             */
-            redeem_count: number;
-            /**
-             * Format: int64
-             * @description Merge count.
-             */
-            merge_count: number;
-            /**
-             * Format: int64
-             * @description Split count.
-             */
-            split_count: number;
-            /**
-             * Format: double
-             * @description USD collateral split into outcome tokens in the selected timeframe.
-             */
-            split_volume_usd?: number;
-            /**
-             * Format: int64
-             * @description Converted count.
-             */
-            converted_count: number;
-            /**
-             * Format: double
-             * @description Converted shares gained.
-             */
-            converted_shares_gained: number;
-            /**
-             * Format: double
-             * @description Converted shares lost.
-             */
-            converted_shares_lost: number;
-            /**
-             * Format: int64
-             * @description Outcomes traded.
-             */
-            outcomes_traded: number;
+            outcome_index?: number | null;
             /**
              * @description Combo market type: `binary`, `negrisk`, or `combinatorial`
-             *     (parlay). Omitted for standard markets.
+             *     (parlay). Omitted for standard positions.
              */
             combo_type?: string | null;
-            /** @description Resolved. */
-            resolved: boolean;
             /** @description Won. */
             won?: boolean | null;
             /**
              * Format: int64
-             * @description First trade at timestamp.
+             * @description Total buys.
              */
-            first_trade_at?: number | null;
+            total_buys?: number | null;
             /**
              * Format: int64
-             * @description Last trade at timestamp.
+             * @description Total sells.
              */
-            last_trade_at?: number | null;
+            total_sells?: number | null;
             /**
              * Format: int64
-             * @description Snapshot timestamp.
+             * @description Converted count.
              */
-            snapshot_ts?: number | null;
+            converted_count?: number | null;
             /**
-             * Format: int64
-             * @description Last block.
+             * Format: double
+             * @description Converted shares gained.
              */
-            last_block: number;
-        };
-        V31CategoryPnl: {
-            /** @description Category. */
-            category?: string | null;
-            trader?: null | components["schemas"]["TraderProfile"];
+            converted_shares_gained?: number | null;
+            /**
+             * Format: double
+             * @description Converted shares lost.
+             */
+            converted_shares_lost?: number | null;
+            /**
+             * Format: double
+             * @description Total shares bought.
+             */
+            total_shares_bought?: number | null;
+            /**
+             * Format: double
+             * @description Total shares sold.
+             */
+            total_shares_sold?: number | null;
+            /**
+             * Format: double
+             * @description Total buy in USD.
+             */
+            total_buy_usd?: number | null;
+            /**
+             * Format: double
+             * @description Total sell in USD.
+             */
+            total_sell_usd?: number | null;
+            /**
+             * Format: double
+             * @description Redemption in USD.
+             */
+            redemption_usd?: number | null;
+            /**
+             * Format: double
+             * @description USD value from merge activity.
+             */
+            merge_usd?: number | null;
+            /**
+             * Format: double
+             * @description Convert collateral in USD.
+             */
+            convert_collateral_usd?: number | null;
+            /**
+             * Format: double
+             * @description Average entry price.
+             */
+            avg_entry_price?: number | null;
+            /**
+             * Format: double
+             * @description Average exit price.
+             */
+            avg_exit_price?: number | null;
+            /**
+             * Format: double
+             * @description Volume-weighted average trade price across buys and sells.
+             */
+            avg_price?: number | null;
             /**
              * Format: double
              * @description Realized PnL in USD.
              */
-            realized_pnl_usd: number;
+            realized_pnl_usd?: number;
             /**
              * Format: double
              * @description Total PnL in USD.
@@ -2920,200 +2910,9 @@ export interface components {
             unrealized_pnl_usd?: number;
             /**
              * Format: double
-             * @description Realized PnL percent.
-             */
-            realized_pnl_pct?: number | null;
-            /**
-             * Format: double
-             * @description Total PnL percent.
-             */
-            total_pnl_pct?: number | null;
-            /**
-             * Format: int64
-             * @description Markets traded.
-             */
-            markets_traded: number;
-            /**
-             * Format: int64
-             * @description Markets resolved.
-             */
-            markets_resolved: number;
-            /**
-             * Format: int64
-             * @description Markets won.
-             */
-            markets_won: number;
-            /**
-             * Format: int64
-             * @description Markets lost.
-             */
-            markets_lost: number;
-            /**
-             * Format: double
-             * @description Market win rate percent.
-             */
-            market_win_rate_pct: number;
-            /**
-             * Format: double
-             * @description Average win in USD.
-             */
-            avg_win_usd: number;
-            /**
-             * Format: double
-             * @description Average loss in USD.
-             */
-            avg_loss_usd: number;
-            /**
-             * Format: double
-             * @description Profit factor.
-             */
-            profit_factor: number;
-            /**
-             * Format: int64
-             * @description Total buys.
-             */
-            total_buys: number;
-            /**
-             * Format: int64
-             * @description Total sells.
-             */
-            total_sells: number;
-            /**
-             * Format: int64
-             * @description Total redemptions.
-             */
-            total_redemptions: number;
-            /**
-             * Format: int64
-             * @description Total merges.
-             */
-            total_merges: number;
-            /**
-             * Format: int64
-             * @description Number of split transactions in the selected timeframe.
-             */
-            total_splits?: number;
-            /**
-             * Format: double
-             * @description Total volume in USD.
-             */
-            total_volume_usd: number;
-            /**
-             * Format: double
-             * @description Buy volume in USD.
-             */
-            buy_volume_usd: number;
-            /**
-             * Format: double
-             * @description Sell volume in USD.
-             */
-            sell_volume_usd: number;
-            /**
-             * Format: double
-             * @description Redemption volume in USD.
-             */
-            redemption_volume_usd: number;
-            /**
-             * Format: double
-             * @description Merge volume in USD.
-             */
-            merge_volume_usd: number;
-            /**
-             * Format: double
-             * @description Convert collateral in USD.
-             */
-            convert_collateral_usd?: number;
-            /**
-             * Format: double
-             * @description USD collateral split into outcome tokens in the selected timeframe.
-             */
-            split_volume_usd?: number;
-            /**
-             * Format: double
              * @description Total fees.
              */
-            total_fees: number;
-            /**
-             * Format: double
-             * @description Total wins in USD.
-             */
-            total_wins_usd: number;
-            /**
-             * Format: double
-             * @description Total losses in USD.
-             */
-            total_losses_usd: number;
-            /**
-             * Format: double
-             * @description Best trade PnL in USD.
-             */
-            best_trade_pnl_usd?: number | null;
-            /** @description Best trade condition ID. */
-            best_trade_condition_id?: string | null;
-            /**
-             * Format: double
-             * @description Worst trade PnL in USD.
-             */
-            worst_trade_pnl_usd?: number | null;
-            /** @description Worst trade condition ID. */
-            worst_trade_condition_id?: string | null;
-            best_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
-            worst_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
-            /**
-             * Format: double
-             * @description Average hold time seconds.
-             */
-            avg_hold_time_seconds: number;
-            /**
-             * Format: double
-             * @description Total shares bought.
-             */
-            total_shares_bought: number;
-            /**
-             * Format: int64
-             * @description Buy count.
-             */
-            buy_count: number;
-            /**
-             * Format: int64
-             * @description Sell count.
-             */
-            sell_count: number;
-            /**
-             * Format: int64
-             * @description Redeem count.
-             */
-            redeem_count: number;
-            /**
-             * Format: int64
-             * @description Merge count.
-             */
-            merge_count: number;
-            /**
-             * Format: int64
-             * @description Split count.
-             */
-            split_count: number;
-            /**
-             * Format: int64
-             * @description Converted count.
-             */
-            converted_count: number;
-            /**
-             * Format: double
-             * @description Converted shares gained.
-             */
-            converted_shares_gained: number;
-            /**
-             * Format: double
-             * @description Converted shares lost.
-             */
-            converted_shares_lost: number;
-            /**
-             * Format: int64
-             * @description Outcomes traded.
-             */
-            outcomes_traded: number;
+            total_fees?: number | null;
             /**
              * Format: int64
              * @description First trade at timestamp.
@@ -3125,10 +2924,46 @@ export interface components {
              */
             last_trade_at?: number | null;
             /**
-             * Format: int64
-             * @description Last block.
+             * Format: double
+             * @description Current price.
              */
-            last_block: number;
+            current_price?: number | null;
+            /**
+             * Format: double
+             * @description Last traded price.
+             */
+            last_traded_price?: number | null;
+            /**
+             * Format: double
+             * @description Current shares balance.
+             */
+            current_shares_balance?: number | null;
+            /**
+             * Format: double
+             * @description Current value.
+             */
+            current_value?: number | null;
+            /**
+             * Format: double
+             * @description Realized PnL percent.
+             */
+            realized_pnl_pct?: number | null;
+            /**
+             * Format: double
+             * @description Total PnL percent.
+             */
+            total_pnl_pct?: number | null;
+            /**
+             * Format: int64
+             * @description End date timestamp.
+             */
+            end_date?: number | null;
+            /** @description Whether neg risk is true. */
+            is_neg_risk?: boolean | null;
+            /** @description Redeemable. */
+            redeemable?: boolean | null;
+            /** @description Mergeable. */
+            mergeable?: boolean | null;
         };
         /** @description Output payload for ERC-1155 approval changes. */
         ApprovalTrade: {
@@ -3153,6 +2988,13 @@ export interface components {
             /** @description Exchange or token contract namespace that emitted the approval. */
             exchange: components["schemas"]["PolymarketExchange"];
         };
+        /**
+         * @description Sort field for the v3.1 trader-grain endpoints (`/pnl/v3_1/global`).
+         *     Extends the legacy set with fee-excluded (`raw_*`) PnL metrics and
+         *     `combo_trade_count` (number of combo-exchange fills, lifetime).
+         * @enum {string}
+         */
+        V31TraderPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "raw_total_pnl_pct" | "raw_realized_pnl_pct" | "raw_unrealized_pnl_pct" | "realized_pnl_pct" | "total_pnl_pct" | "usd_balance" | "total_volume_usd" | "markets_traded" | "events_traded" | "categories_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_splits" | "total_converts" | "combo_trade_count" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "open_positions_value" | "open_position_count";
         V31TraderPnl: {
             /** @description Trader wallet or profile. */
             trader: components["schemas"]["TraderProfile"];
@@ -3398,185 +3240,6 @@ export interface components {
              */
             combo_trade_count?: number;
         };
-        V31PositionPnl: {
-            /** @description Position ID. */
-            position_id?: string | null;
-            /** @description Condition ID. */
-            condition_id?: string | null;
-            /** @description Market slug. */
-            market_slug?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
-            /** @description Category. */
-            category?: string | null;
-            /** @description Title. */
-            title?: string | null;
-            /** @description Question. */
-            question?: string | null;
-            /** @description Image URL. */
-            image_url?: string | null;
-            trader?: null | components["schemas"]["TraderProfile"];
-            /** @description Outcome. */
-            outcome?: string | null;
-            /**
-             * Format: int32
-             * @description Outcome index.
-             */
-            outcome_index?: number | null;
-            /**
-             * @description Combo market type: `binary`, `negrisk`, or `combinatorial`
-             *     (parlay). Omitted for standard positions.
-             */
-            combo_type?: string | null;
-            /** @description Won. */
-            won?: boolean | null;
-            /**
-             * Format: int64
-             * @description Total buys.
-             */
-            total_buys?: number | null;
-            /**
-             * Format: int64
-             * @description Total sells.
-             */
-            total_sells?: number | null;
-            /**
-             * Format: int64
-             * @description Converted count.
-             */
-            converted_count?: number | null;
-            /**
-             * Format: double
-             * @description Converted shares gained.
-             */
-            converted_shares_gained?: number | null;
-            /**
-             * Format: double
-             * @description Converted shares lost.
-             */
-            converted_shares_lost?: number | null;
-            /**
-             * Format: double
-             * @description Total shares bought.
-             */
-            total_shares_bought?: number | null;
-            /**
-             * Format: double
-             * @description Total shares sold.
-             */
-            total_shares_sold?: number | null;
-            /**
-             * Format: double
-             * @description Total buy in USD.
-             */
-            total_buy_usd?: number | null;
-            /**
-             * Format: double
-             * @description Total sell in USD.
-             */
-            total_sell_usd?: number | null;
-            /**
-             * Format: double
-             * @description Redemption in USD.
-             */
-            redemption_usd?: number | null;
-            /**
-             * Format: double
-             * @description USD value from merge activity.
-             */
-            merge_usd?: number | null;
-            /**
-             * Format: double
-             * @description Convert collateral in USD.
-             */
-            convert_collateral_usd?: number | null;
-            /**
-             * Format: double
-             * @description Average entry price.
-             */
-            avg_entry_price?: number | null;
-            /**
-             * Format: double
-             * @description Average exit price.
-             */
-            avg_exit_price?: number | null;
-            /**
-             * Format: double
-             * @description Volume-weighted average trade price across buys and sells.
-             */
-            avg_price?: number | null;
-            /**
-             * Format: double
-             * @description Realized PnL in USD.
-             */
-            realized_pnl_usd?: number;
-            /**
-             * Format: double
-             * @description Total PnL in USD.
-             */
-            total_pnl_usd?: number;
-            /**
-             * Format: double
-             * @description Unrealized PnL in USD.
-             */
-            unrealized_pnl_usd?: number;
-            /**
-             * Format: double
-             * @description Total fees.
-             */
-            total_fees?: number | null;
-            /**
-             * Format: int64
-             * @description First trade at timestamp.
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Last trade at timestamp.
-             */
-            last_trade_at?: number | null;
-            /**
-             * Format: double
-             * @description Current price.
-             */
-            current_price?: number | null;
-            /**
-             * Format: double
-             * @description Last traded price.
-             */
-            last_traded_price?: number | null;
-            /**
-             * Format: double
-             * @description Current shares balance.
-             */
-            current_shares_balance?: number | null;
-            /**
-             * Format: double
-             * @description Current value.
-             */
-            current_value?: number | null;
-            /**
-             * Format: double
-             * @description Realized PnL percent.
-             */
-            realized_pnl_pct?: number | null;
-            /**
-             * Format: double
-             * @description Total PnL percent.
-             */
-            total_pnl_pct?: number | null;
-            /**
-             * Format: int64
-             * @description End date timestamp.
-             */
-            end_date?: number | null;
-            /** @description Whether neg risk is true. */
-            is_neg_risk?: boolean | null;
-            /** @description Redeemable. */
-            redeemable?: boolean | null;
-            /** @description Mergeable. */
-            mergeable?: boolean | null;
-        };
         /** @description V3 UMA OOv3: an assertion was disputed. */
         AssertionDisputedEvent: {
             id: string;
@@ -3803,43 +3466,11 @@ export interface components {
         };
         /** @enum {string} */
         BondsSortBy: "end_date" | "apy" | "liquidity" | "volume";
-        TraderVolumeDataPoint: {
-            /**
-             * Format: int64
-             * @description Unix timestamp in seconds.
-             */
-            t: number;
-            /**
-             * Format: double
-             * @description Total volume in USD.
-             */
-            v: number;
-            /**
-             * Format: double
-             * @description Buy volume in USD.
-             */
-            bv: number;
-            /**
-             * Format: double
-             * @description Sell volume in USD.
-             */
-            sv: number;
-            /**
-             * Format: int64
-             * @description Total transaction count.
-             */
-            tc: number;
-            /**
-             * Format: int64
-             * @description Buy transaction count.
-             */
-            btc: number;
-            /**
-             * Format: int64
-             * @description Sell transaction count.
-             */
-            stc: number;
-        };
+        /**
+         * @description Sort options for the v3.1 positions endpoint with `status=closed`.
+         * @enum {string}
+         */
+        V31PositionClosedPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "raw_total_pnl_pct" | "raw_realized_pnl_pct" | "raw_unrealized_pnl_pct" | "merge_usd" | "convert_collateral_usd" | "converted_count" | "converted_shares_gained" | "converted_shares_lost" | "last_traded_price" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "realized_pnl_pct" | "total_pnl_pct" | "title" | "merge_count" | "split_count" | "end_date" | "is_neg_risk";
         BuilderFeeRate: {
             code: string;
             /** Format: int32 */
@@ -4325,26 +3956,46 @@ export interface components {
              */
             avg_vol_per_user: number;
         };
-        /** @enum {string} */
-        TradeSide: "0" | "1";
-        /**
-         * @description Market metadata for the market a trader's best / worst trade landed in.
-         *     Accompanies the existing flat `best_trade_pnl_usd` / `worst_trade_pnl_usd`
-         *     numerics on trader / event / category PnL summaries.
-         */
-        TradeMarketRef: {
-            /** @description Condition ID. */
-            condition_id?: string | null;
-            /** @description Market slug. */
-            market_slug?: string | null;
-            /** @description Title. */
-            title?: string | null;
-            /** @description Question. */
-            question?: string | null;
-            /** @description Image URL. */
-            image_url?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
+        TraderVolumeDataPoint: {
+            /**
+             * Format: int64
+             * @description Unix timestamp in seconds.
+             */
+            t: number;
+            /**
+             * Format: double
+             * @description Total volume in USD.
+             */
+            v: number;
+            /**
+             * Format: double
+             * @description Buy volume in USD.
+             */
+            bv: number;
+            /**
+             * Format: double
+             * @description Sell volume in USD.
+             */
+            sv: number;
+            /**
+             * Format: int64
+             * @description Total transaction count.
+             */
+            tc: number;
+            /**
+             * Format: int64
+             * @description Buy transaction count.
+             */
+            btc: number;
+            /**
+             * Format: int64
+             * @description Sell transaction count.
+             */
+            stc: number;
+        };
+        TraderVolumeChartResponse: {
+            volumes: components["schemas"]["TraderVolumeDataPoint"][];
+            has_more: boolean;
         };
         /**
          * @description Sort metric for the builders list endpoint.
@@ -4639,417 +4290,245 @@ export interface components {
          */
         BuilderTimeframe: "lifetime" | "1d" | "7d" | "30d";
         /**
-         * @description Trader profile info embedded in API responses.
-         *
-         *     Used in:
-         *     - holders endpoints (market/event holders)
-         *     - trades endpoints
-         *     - leaderboard endpoints
+         * @description Sort metric for the trader → builders list.
+         * @enum {string}
          */
-        Trader: {
-            address: string;
-            name?: string | null;
-            pseudonym?: string | null;
-            profile_image?: string | null;
-            x_username?: string | null;
-            verified_badge?: boolean;
-        };
-        TraderAnalyticsDeltaTimeBucketRow: {
-            /**
-             * Format: int32
-             * @description Bucket start time as Unix seconds.
-             */
-            t: number;
+        TraderBuilderSortBy: "volume" | "txns" | "fees";
+        V31CategoryPnl: {
+            /** @description Category. */
+            category?: string | null;
+            trader?: null | components["schemas"]["TraderProfile"];
             /**
              * Format: double
-             * @description Volume in USD.
+             * @description Realized PnL in USD.
              */
-            v: number;
+            realized_pnl_usd: number;
+            /**
+             * Format: double
+             * @description Total PnL in USD.
+             */
+            total_pnl_usd?: number;
+            /**
+             * Format: double
+             * @description Unrealized PnL in USD.
+             */
+            unrealized_pnl_usd?: number;
+            /**
+             * Format: double
+             * @description Realized PnL percent.
+             */
+            realized_pnl_pct?: number | null;
+            /**
+             * Format: double
+             * @description Total PnL percent.
+             */
+            total_pnl_pct?: number | null;
+            /**
+             * Format: int64
+             * @description Markets traded.
+             */
+            markets_traded: number;
+            /**
+             * Format: int64
+             * @description Markets resolved.
+             */
+            markets_resolved: number;
+            /**
+             * Format: int64
+             * @description Markets won.
+             */
+            markets_won: number;
+            /**
+             * Format: int64
+             * @description Markets lost.
+             */
+            markets_lost: number;
+            /**
+             * Format: double
+             * @description Market win rate percent.
+             */
+            market_win_rate_pct: number;
+            /**
+             * Format: double
+             * @description Average win in USD.
+             */
+            avg_win_usd: number;
+            /**
+             * Format: double
+             * @description Average loss in USD.
+             */
+            avg_loss_usd: number;
+            /**
+             * Format: double
+             * @description Profit factor.
+             */
+            profit_factor: number;
+            /**
+             * Format: int64
+             * @description Total buys.
+             */
+            total_buys: number;
+            /**
+             * Format: int64
+             * @description Total sells.
+             */
+            total_sells: number;
+            /**
+             * Format: int64
+             * @description Total redemptions.
+             */
+            total_redemptions: number;
+            /**
+             * Format: int64
+             * @description Total merges.
+             */
+            total_merges: number;
+            /**
+             * Format: int64
+             * @description Number of split transactions in the selected timeframe.
+             */
+            total_splits?: number;
+            /**
+             * Format: double
+             * @description Total volume in USD.
+             */
+            total_volume_usd: number;
             /**
              * Format: double
              * @description Buy volume in USD.
              */
-            bv: number;
+            buy_volume_usd: number;
             /**
              * Format: double
              * @description Sell volume in USD.
              */
-            sv: number;
-            /**
-             * Format: int64
-             * @description Transaction count.
-             */
-            tc: number;
-            /**
-             * Format: int64
-             * @description Buy count.
-             */
-            bc: number;
-            /**
-             * Format: int64
-             * @description Sell count.
-             */
-            sc: number;
-            /**
-             * Format: int64
-             * @description Redemption count.
-             */
-            rc: number;
+            sell_volume_usd: number;
             /**
              * Format: double
              * @description Redemption volume in USD.
              */
-            rv: number;
-            /**
-             * Format: int64
-             * @description Merge count.
-             */
-            mc: number;
+            redemption_volume_usd: number;
             /**
              * Format: double
              * @description Merge volume in USD.
              */
-            mv: number;
+            merge_volume_usd: number;
+            /**
+             * Format: double
+             * @description Convert collateral in USD.
+             */
+            convert_collateral_usd?: number;
+            /**
+             * Format: double
+             * @description USD collateral split into outcome tokens in the selected timeframe.
+             */
+            split_volume_usd?: number;
+            /**
+             * Format: double
+             * @description Total fees.
+             */
+            total_fees: number;
+            /**
+             * Format: double
+             * @description Total wins in USD.
+             */
+            total_wins_usd: number;
+            /**
+             * Format: double
+             * @description Total losses in USD.
+             */
+            total_losses_usd: number;
+            /**
+             * Format: double
+             * @description Best trade PnL in USD.
+             */
+            best_trade_pnl_usd?: number | null;
+            /** @description Best trade condition ID. */
+            best_trade_condition_id?: string | null;
+            /**
+             * Format: double
+             * @description Worst trade PnL in USD.
+             */
+            worst_trade_pnl_usd?: number | null;
+            /** @description Worst trade condition ID. */
+            worst_trade_condition_id?: string | null;
+            best_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
+            worst_trade_metadata?: null | components["schemas"]["TradeMarketRef"];
+            /**
+             * Format: double
+             * @description Average hold time seconds.
+             */
+            avg_hold_time_seconds: number;
+            /**
+             * Format: double
+             * @description Total shares bought.
+             */
+            total_shares_bought: number;
+            /**
+             * Format: double
+             * @description Total shares sold (sells + merges; redemption shares excluded).
+             */
+            total_shares_sold?: number;
+            /**
+             * Format: int64
+             * @description Buy count.
+             */
+            buy_count: number;
+            /**
+             * Format: int64
+             * @description Sell count.
+             */
+            sell_count: number;
+            /**
+             * Format: int64
+             * @description Redeem count.
+             */
+            redeem_count: number;
+            /**
+             * Format: int64
+             * @description Merge count.
+             */
+            merge_count: number;
             /**
              * Format: int64
              * @description Split count.
              */
-            sp: number;
-            /**
-             * Format: double
-             * @description Split volume in USD.
-             */
-            spv: number;
+            split_count: number;
             /**
              * Format: int64
              * @description Converted count.
              */
-            cc: number;
-            /**
-             * Format: double
-             * @description Converted collateral in USD.
-             */
-            ccu: number;
+            converted_count: number;
             /**
              * Format: double
              * @description Converted shares gained.
              */
-            csg: number;
+            converted_shares_gained: number;
             /**
              * Format: double
              * @description Converted shares lost.
              */
-            csl: number;
+            converted_shares_lost: number;
             /**
              * Format: int64
-             * @description Maker rebate count.
+             * @description Outcomes traded.
              */
-            mrc: number;
-            /**
-             * Format: double
-             * @description Maker rebate volume in USD.
-             */
-            mrv: number;
+            outcomes_traded: number;
             /**
              * Format: int64
-             * @description Reward count.
+             * @description First trade at timestamp.
              */
-            rwc: number;
-            /**
-             * Format: double
-             * @description Reward volume in USD.
-             */
-            rwv: number;
+            first_trade_at?: number | null;
             /**
              * Format: int64
-             * @description Yield count.
+             * @description Last trade at timestamp.
              */
-            ydc: number;
-            /**
-             * Format: double
-             * @description Yield volume in USD.
-             */
-            ydv: number;
-            /**
-             * Format: double
-             * @description Fees in USD.
-             */
-            f: number;
-            /**
-             * Format: double
-             * @description Shares volume.
-             */
-            sh: number;
-            /**
-             * Format: double
-             * @description Buy shares volume.
-             */
-            bsh: number;
-            /**
-             * Format: double
-             * @description Sell shares volume.
-             */
-            ssh: number;
-            /**
-             * Format: double
-             * @description Yes shares volume.
-             */
-            ysh: number;
-            /**
-             * Format: double
-             * @description No shares volume.
-             */
-            nsh: number;
-            /**
-             * Format: double
-             * @description Yes volume in USD.
-             */
-            yv: number;
-            /**
-             * Format: double
-             * @description No volume in USD.
-             */
-            nv: number;
+            last_trade_at?: number | null;
             /**
              * Format: int64
-             * @description Yes count.
+             * @description Last block.
              */
-            yc: number;
-            /**
-             * Format: int64
-             * @description No count.
-             */
-            nc: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the under-10 USD bucket.
-             */
-            bd_u10: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the 10-100 USD bucket.
-             */
-            bd_100: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the 100-1k USD bucket.
-             */
-            bd_1k: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the 1k-10k USD bucket.
-             */
-            bd_10k: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the 10k-50k USD bucket.
-             */
-            bd_50k: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the 50k-plus USD bucket.
-             */
-            bd_50p: number;
-            /**
-             * Format: int64
-             * @description Buy count in the 0-10 cent price bucket.
-             */
-            buy_price_cnt_0_10: number;
-            /**
-             * Format: int64
-             * @description Buy count in the 10-20 cent price bucket.
-             */
-            buy_price_cnt_10_20: number;
-            /**
-             * Format: int64
-             * @description Buy count in the 20-30 cent price bucket.
-             */
-            buy_price_cnt_20_30: number;
-            /**
-             * Format: int64
-             * @description Buy count in the 30-40 cent price bucket.
-             */
-            buy_price_cnt_30_40: number;
-            /**
-             * Format: int64
-             * @description Buy count in the 40-50 cent price bucket.
-             */
-            buy_price_cnt_40_50: number;
-            /**
-             * Format: int64
-             * @description Buy count in the 50-60 cent price bucket.
-             */
-            buy_price_cnt_50_60: number;
-            /**
-             * Format: int64
-             * @description Buy count in the 60-70 cent price bucket.
-             */
-            buy_price_cnt_60_70: number;
-            /**
-             * Format: int64
-             * @description Buy count in the 70-80 cent price bucket.
-             */
-            buy_price_cnt_70_80: number;
-            /**
-             * Format: int64
-             * @description Buy count in the 80-90 cent price bucket.
-             */
-            buy_price_cnt_80_90: number;
-            /**
-             * Format: int64
-             * @description Buy count in the 90-100 cent price bucket.
-             */
-            buy_price_cnt_90_100: number;
-            /**
-             * Format: double
-             * @description Buy price vol 0 10.
-             */
-            buy_price_vol_0_10: number;
-            /**
-             * Format: double
-             * @description Buy price vol 10 20.
-             */
-            buy_price_vol_10_20: number;
-            /**
-             * Format: double
-             * @description Buy price vol 20 30.
-             */
-            buy_price_vol_20_30: number;
-            /**
-             * Format: double
-             * @description Buy price vol 30 40.
-             */
-            buy_price_vol_30_40: number;
-            /**
-             * Format: double
-             * @description Buy price vol 40 50.
-             */
-            buy_price_vol_40_50: number;
-            /**
-             * Format: double
-             * @description Buy price vol 50 60.
-             */
-            buy_price_vol_50_60: number;
-            /**
-             * Format: double
-             * @description Buy price vol 60 70.
-             */
-            buy_price_vol_60_70: number;
-            /**
-             * Format: double
-             * @description Buy price vol 70 80.
-             */
-            buy_price_vol_70_80: number;
-            /**
-             * Format: double
-             * @description Buy price vol 80 90.
-             */
-            buy_price_vol_80_90: number;
-            /**
-             * Format: double
-             * @description Buy price vol 90 100.
-             */
-            buy_price_vol_90_100: number;
-            /**
-             * Format: int64
-             * @description Sell count in the 0-10 cent price bucket.
-             */
-            sell_price_cnt_0_10: number;
-            /**
-             * Format: int64
-             * @description Sell count in the 10-20 cent price bucket.
-             */
-            sell_price_cnt_10_20: number;
-            /**
-             * Format: int64
-             * @description Sell count in the 20-30 cent price bucket.
-             */
-            sell_price_cnt_20_30: number;
-            /**
-             * Format: int64
-             * @description Sell count in the 30-40 cent price bucket.
-             */
-            sell_price_cnt_30_40: number;
-            /**
-             * Format: int64
-             * @description Sell count in the 40-50 cent price bucket.
-             */
-            sell_price_cnt_40_50: number;
-            /**
-             * Format: int64
-             * @description Sell count in the 50-60 cent price bucket.
-             */
-            sell_price_cnt_50_60: number;
-            /**
-             * Format: int64
-             * @description Sell count in the 60-70 cent price bucket.
-             */
-            sell_price_cnt_60_70: number;
-            /**
-             * Format: int64
-             * @description Sell count in the 70-80 cent price bucket.
-             */
-            sell_price_cnt_70_80: number;
-            /**
-             * Format: int64
-             * @description Sell count in the 80-90 cent price bucket.
-             */
-            sell_price_cnt_80_90: number;
-            /**
-             * Format: int64
-             * @description Sell count in the 90-100 cent price bucket.
-             */
-            sell_price_cnt_90_100: number;
-            /**
-             * Format: double
-             * @description Sell price vol 0 10.
-             */
-            sell_price_vol_0_10: number;
-            /**
-             * Format: double
-             * @description Sell price vol 10 20.
-             */
-            sell_price_vol_10_20: number;
-            /**
-             * Format: double
-             * @description Sell price vol 20 30.
-             */
-            sell_price_vol_20_30: number;
-            /**
-             * Format: double
-             * @description Sell price vol 30 40.
-             */
-            sell_price_vol_30_40: number;
-            /**
-             * Format: double
-             * @description Sell price vol 40 50.
-             */
-            sell_price_vol_40_50: number;
-            /**
-             * Format: double
-             * @description Sell price vol 50 60.
-             */
-            sell_price_vol_50_60: number;
-            /**
-             * Format: double
-             * @description Sell price vol 60 70.
-             */
-            sell_price_vol_60_70: number;
-            /**
-             * Format: double
-             * @description Sell price vol 70 80.
-             */
-            sell_price_vol_70_80: number;
-            /**
-             * Format: double
-             * @description Sell price vol 80 90.
-             */
-            sell_price_vol_80_90: number;
-            /**
-             * Format: double
-             * @description Sell price vol 90 100.
-             */
-            sell_price_vol_90_100: number;
+            last_block: number;
         };
         /** @description Output payload for Cancelled orders. */
         CancelledTrade: {
@@ -5324,26 +4803,198 @@ export interface components {
         ChangeTimeframe: "1h" | "24h" | "7d" | "30d" | "1mo" | "1y";
         /** @enum {string} */
         ChartResolution: "1H" | "6H" | "1D" | "1W" | "1M" | "ALL";
-        TraderProfile: {
-            /** @description Wallet address. */
-            address: string;
-            /** @description Name. */
-            name?: string | null;
-            /** @description Pseudonym. */
-            pseudonym?: string | null;
-            /** @description Profile image. */
-            profile_image?: string | null;
-            /** @description X username. */
-            x_username?: string | null;
-            /** @description Verified badge. */
-            verified_badge: boolean;
+        V31MarketPnl: {
+            /** @description Condition ID. */
+            condition_id?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+            /** @description Market slug. */
+            market_slug?: string | null;
+            /** @description Title. */
+            title?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Question. */
+            question?: string | null;
+            trader?: null | components["schemas"]["TraderProfile"];
+            /**
+             * Format: double
+             * @description Realized PnL in USD.
+             */
+            realized_pnl_usd: number;
+            /**
+             * Format: double
+             * @description Total PnL in USD.
+             */
+            total_pnl_usd?: number;
+            /**
+             * Format: double
+             * @description Unrealized PnL in USD.
+             */
+            unrealized_pnl_usd?: number;
+            /**
+             * Format: double
+             * @description Realized PnL percent.
+             */
+            realized_pnl_pct?: number | null;
+            /**
+             * Format: double
+             * @description Total PnL percent.
+             */
+            total_pnl_pct?: number | null;
+            /**
+             * Format: double
+             * @description Total volume in USD.
+             */
+            total_volume_usd: number;
+            /**
+             * Format: double
+             * @description Buy volume in USD.
+             */
+            buy_volume_usd: number;
+            /**
+             * Format: double
+             * @description Sell volume in USD.
+             */
+            sell_volume_usd: number;
+            /**
+             * Format: double
+             * @description Redemption volume in USD.
+             */
+            redemption_volume_usd: number;
+            /**
+             * Format: double
+             * @description Merge volume in USD.
+             */
+            merge_volume_usd: number;
+            /**
+             * Format: double
+             * @description Convert collateral in USD.
+             */
+            convert_collateral_usd?: number;
+            /**
+             * Format: double
+             * @description Total fees.
+             */
+            total_fees: number;
+            /**
+             * Format: int64
+             * @description Total buys.
+             */
+            total_buys: number;
+            /**
+             * Format: int64
+             * @description Total sells.
+             */
+            total_sells: number;
+            /**
+             * Format: int64
+             * @description Number of split transactions in the selected timeframe.
+             */
+            total_splits?: number;
+            /**
+             * Format: double
+             * @description Total shares bought.
+             */
+            total_shares_bought: number;
+            /**
+             * Format: double
+             * @description Total shares sold.
+             */
+            total_shares_sold: number;
+            /**
+             * Format: int64
+             * @description Buy count.
+             */
+            buy_count: number;
+            /**
+             * Format: int64
+             * @description Sell count.
+             */
+            sell_count: number;
+            /**
+             * Format: int64
+             * @description Redeem count.
+             */
+            redeem_count: number;
+            /**
+             * Format: int64
+             * @description Merge count.
+             */
+            merge_count: number;
+            /**
+             * Format: int64
+             * @description Split count.
+             */
+            split_count: number;
+            /**
+             * Format: double
+             * @description USD collateral split into outcome tokens in the selected timeframe.
+             */
+            split_volume_usd?: number;
+            /**
+             * Format: int64
+             * @description Converted count.
+             */
+            converted_count: number;
+            /**
+             * Format: double
+             * @description Converted shares gained.
+             */
+            converted_shares_gained: number;
+            /**
+             * Format: double
+             * @description Converted shares lost.
+             */
+            converted_shares_lost: number;
+            /**
+             * Format: int64
+             * @description Outcomes traded.
+             */
+            outcomes_traded: number;
+            /**
+             * @description Combo market type: `binary`, `negrisk`, or `combinatorial`
+             *     (parlay). Omitted for standard markets.
+             */
+            combo_type?: string | null;
+            /** @description Resolved. */
+            resolved: boolean;
+            /** @description Won. */
+            won?: boolean | null;
+            /**
+             * Format: int64
+             * @description First trade at timestamp.
+             */
+            first_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Last trade at timestamp.
+             */
+            last_trade_at?: number | null;
+            /**
+             * Format: int64
+             * @description Snapshot timestamp.
+             */
+            snapshot_ts?: number | null;
+            /**
+             * Format: int64
+             * @description Last block.
+             */
+            last_block: number;
         };
-        TraderVolumeChartResponse: {
-            volumes: components["schemas"]["TraderVolumeDataPoint"][];
-            has_more: boolean;
-        };
-        /** @enum {string} */
-        TraderPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "realized_pnl_pct" | "total_pnl_pct" | "usd_balance" | "total_volume_usd" | "markets_traded" | "events_traded" | "categories_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_splits" | "total_converts" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "open_positions_value" | "open_position_count";
+        /**
+         * @description Sort field for v3.1 per-trader market PnL results. Extends the legacy
+         *     set with fee-excluded (`raw_*`) PnL metrics.
+         * @enum {string}
+         */
+        V31MarketPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "raw_total_pnl_pct" | "raw_realized_pnl_pct" | "raw_unrealized_pnl_pct" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "total_shares_sold" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at" | "last_block";
+        /**
+         * @description Status filter for the v3.1 combo listing. Looser than the entry's
+         *     `status` field: `resolved` matches wins and losses, and `resolved_win`
+         *     also matches redeemable/redeemed combos.
+         * @enum {string}
+         */
+        V31ComboStatusFilter: "open" | "closed" | "resolved" | "resolved_win" | "resolved_loss" | "redeemable" | "redeemed";
         /** @description CLOB reward (public API format) */
         ClobReward: {
             id: string;
@@ -5413,11 +5064,7 @@ export interface components {
              * @description Decimalized Combo shares converted or merged.
              */
             shares_amount: number;
-            /**
-             * @description Enriched underlying-market legs of the combo condition, when the
-             *     condition's leg set is known (KV cache warmed from
-             *     `CombinatorialConditionPrepared` or seeded via `getLegs` RPC).
-             */
+            /** @description The combo's underlying-market legs, present when the condition's leg set is known. */
             legs?: components["schemas"]["ComboLeg"][];
             /** @description Ordered position details, enriched from same-receipt PositionManager transfers when available. */
             position_details?: components["schemas"]["PositionDetail"][];
@@ -5472,11 +5119,7 @@ export interface components {
             position_amount?: string | null;
             /** @description Raw collateral output emitted by the contract. */
             collateral_out?: string | null;
-            /**
-             * @description Enriched underlying-market legs of the combo condition, when the
-             *     condition's leg set is known (KV cache warmed from
-             *     `CombinatorialConditionPrepared` or seeded via `getLegs` RPC).
-             */
+            /** @description The combo's underlying-market legs, present when the condition's leg set is known. */
             legs?: components["schemas"]["ComboLeg"][];
             /** @description Per-position burn/mint details for PnL cost-basis movement. */
             position_details?: components["schemas"]["PositionDetail"][];
@@ -5528,11 +5171,7 @@ export interface components {
              * @description Decimalized Combo shares transformed.
              */
             shares_amount: number;
-            /**
-             * @description Enriched underlying-market legs of the combo condition, when the
-             *     condition's leg set is known (KV cache warmed from
-             *     `CombinatorialConditionPrepared` or seeded via `getLegs` RPC).
-             */
+            /** @description The combo's underlying-market legs, present when the condition's leg set is known. */
             legs?: components["schemas"]["ComboLeg"][];
             /** @description Ordered per-position details describing transform inputs and outputs. */
             position_details?: components["schemas"]["PositionDetail"][];
@@ -5562,7 +5201,7 @@ export interface components {
             /** Format: int64 */
             block_index?: number | null;
             trader?: null | components["schemas"]["TraderInfo"];
-            /** @description Combo condition ID created by `CombinatorialConditionPrepared`. */
+            /** @description Condition ID of the combo created by this trade. */
             condition_id?: string | null;
             /** @description Combo module contract that emitted the creation event. */
             source_contract?: string | null;
@@ -5663,11 +5302,7 @@ export interface components {
             fee_pct?: number | null;
             /** @description Combo exchange contract address that emitted the fill. */
             source_contract?: string | null;
-            /**
-             * @description Enriched underlying-market legs of the combo condition, when the
-             *     condition's leg set is known (KV cache warmed from
-             *     `CombinatorialConditionPrepared` or seeded via `getLegs` RPC).
-             */
+            /** @description The combo's underlying-market legs, present when the condition's leg set is known. */
             legs?: components["schemas"]["ComboLeg"][];
             /** @description Per-position details derived from the Combo token ID. */
             position_details?: components["schemas"]["PositionDetail"][];
@@ -5741,6 +5376,56 @@ export interface components {
             image_url?: string | null;
             /** @description Underlying market title when Gamma exposes a title separate from question. */
             title?: string | null;
+        };
+        ComboLegDetail: {
+            /** @description Position id of this leg (decimal). */
+            position_id: string;
+            /**
+             * @description Alternate condition id form of this leg; use `condition_id` for
+             *     market lookups.
+             */
+            v2_condition_id: string;
+            /**
+             * @description Condition id of the leg's market — use this with the market
+             *     endpoints.
+             */
+            condition_id: string;
+            /** @description Type of the leg's market. */
+            leg_market_type: components["schemas"]["ComboLegMarketType"];
+            /**
+             * Format: int32
+             * @description Index of the outcome this leg is on within its market.
+             */
+            outcome_index: number;
+            /** @description Outcome name (e.g. "Yes", "No", or a team/player name). */
+            outcome?: string | null;
+            /**
+             * Format: double
+             * @description Latest traded price of this leg's outcome (0-1).
+             */
+            last_price?: number | null;
+            /**
+             * @description Leg result: "won", "lost", or "pending" while the market is
+             *     unresolved.
+             */
+            status?: string | null;
+            market_slug?: string | null;
+            event_slug?: string | null;
+            question?: string | null;
+            title?: string | null;
+            image_url?: string | null;
+        };
+        /**
+         * @description Kind of market a combo leg is on.
+         * @enum {string}
+         */
+        ComboLegMarketType: "binary" | "multi_outcome";
+        ComboLegsResponse: {
+            /** @description Normalized combo condition id this breakdown belongs to. */
+            condition_id: string;
+            /** @description Number of legs in the combo. */
+            leg_count: number;
+            legs: components["schemas"]["ComboLegDetail"][];
         };
         /** @description Combo migration into the new PositionManager position ID space. */
         ComboMigrationTrade: {
@@ -5875,11 +5560,7 @@ export interface components {
              * @description Decimalized Combo shares moved by the split/merge.
              */
             shares_amount: number;
-            /**
-             * @description Enriched underlying-market legs of the combo condition, when the
-             *     condition's leg set is known (KV cache warmed from
-             *     `CombinatorialConditionPrepared` or seeded via `getLegs` RPC).
-             */
+            /** @description The combo's underlying-market legs, present when the condition's leg set is known. */
             legs?: components["schemas"]["ComboLeg"][];
             /** @description Per-position mint/burn details for the split/merge. */
             position_details?: components["schemas"]["PositionDetail"][];
@@ -5937,11 +5618,7 @@ export interface components {
             shares_amount: number;
             /** @description Raw payout value emitted by the Combo module. */
             payout?: string | null;
-            /**
-             * @description Enriched underlying-market legs of the combo condition, when the
-             *     condition's leg set is known (KV cache warmed from
-             *     `CombinatorialConditionPrepared` or seeded via `getLegs` RPC).
-             */
+            /** @description The combo's underlying-market legs, present when the condition's leg set is known. */
             legs?: components["schemas"]["ComboLeg"][];
             /** @description Per-position burn details for realized PnL. */
             position_details?: components["schemas"]["PositionDetail"][];
@@ -6024,11 +5701,7 @@ export interface components {
              * @description Decimalized shares wrapped or unwrapped.
              */
             shares_amount: number;
-            /**
-             * @description Enriched underlying-market legs of the combo condition, when the
-             *     condition's leg set is known (KV cache warmed from
-             *     `CombinatorialConditionPrepared` or seeded via `getLegs` RPC).
-             */
+            /** @description The combo's underlying-market legs, present when the condition's leg set is known. */
             legs?: components["schemas"]["ComboLeg"][];
             /** @description Per-position details for cost-basis movement across wrappers. */
             position_details?: components["schemas"]["PositionDetail"][];
@@ -6786,10 +6459,11 @@ export interface components {
         /** @enum {string} */
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
         /**
-         * @description Sort metric for the trader → builders list.
+         * @description Sort keys for the v3.1 combo listing — aggregates summed (or, for the
+         *     timestamps, min/max) across a combo's held sides.
          * @enum {string}
          */
-        TraderBuilderSortBy: "volume" | "txns" | "fees";
+        V31ComboPnlSortBy: "total_pnl_usd" | "realized_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "total_buy_usd" | "first_trade_at" | "last_trade_at";
         /**
          * @description One tag's stats aggregated across every builder routing activity into it.
          *
@@ -7999,11 +7673,11 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
-        /** @description Token outcome (position) */
-        TokenOutcome: {
-            token_id: string;
-            outcome: string;
-        };
+        /**
+         * @description Sort options for the v3.1 positions endpoint with `status=open`.
+         * @enum {string}
+         */
+        V31PositionOpenPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "raw_total_pnl_pct" | "raw_realized_pnl_pct" | "raw_unrealized_pnl_pct" | "merge_usd" | "convert_collateral_usd" | "converted_count" | "converted_shares_gained" | "converted_shares_lost" | "last_traded_price" | "total_buy_usd" | "total_sell_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "total_pnl_pct" | "title" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
         /**
          * @description Tagged enum for all oracle event types — serializes with `"event_type": "..."` discriminator
          *     and only includes fields relevant to each type.
@@ -8149,15 +7823,13 @@ export interface components {
              */
             builder_fee?: number | null;
         };
-        /** @description Trader profile info - backwards compatibility */
-        TraderInfo: {
-            address: string;
-            name?: string | null;
-            pseudonym?: string | null;
-            profile_image?: string | null;
-            x_username?: string | null;
-            verified_badge?: boolean;
-        };
+        /**
+         * @description Union of every sort_by value accepted by the v3.1 positions endpoint
+         *     across both statuses. Extends the legacy union with fee-excluded
+         *     Lifecycle state of a combo entry — the most specific state that applies.
+         * @enum {string}
+         */
+        V31ComboStatus: "open" | "closed" | "resolved_win" | "resolved_loss" | "redeemable" | "redeemed";
         OrderbookHistoryRow: {
             /**
              * Format: int64
@@ -9712,325 +9384,42 @@ export interface components {
             /** @description Contract namespace that emitted the conversion. */
             exchange: components["schemas"]["PolymarketExchange"];
         };
-        TraderAnalyticsTimeBucketRow: {
+        V31ComboPnlResponse: {
+            /** @description Normalized combo condition id. */
+            condition_id: string;
             /**
-             * Format: int32
-             * @description Bucket start time as Unix seconds.
+             * @description The trader's position row for this combo (same shape as the
+             *     positions endpoint). Omitted when the trader holds no position on
+             *     this combo.
              */
-            t: number;
-            /**
-             * Format: double
-             * @description Volume in USD.
-             */
-            v: number;
+            position?: Record<string, never>;
             /**
              * Format: double
-             * @description Buy volume in USD.
+             * @description Probability of this position paying out, implied by current leg
+             *     prices (resolved legs count as 0 or 1).
              */
-            bv: number;
+            implied_probability?: number | null;
             /**
              * Format: double
-             * @description Sell volume in USD.
+             * @description USD paid out if the position wins, based on the current share
+             *     balance (each winning share pays $1).
              */
-            sv: number;
-            /**
-             * Format: int64
-             * @description Transaction count.
-             */
-            tc: number;
-            /**
-             * Format: int64
-             * @description Buy count.
-             */
-            bc: number;
-            /**
-             * Format: int64
-             * @description Sell count.
-             */
-            sc: number;
-            /**
-             * Format: int64
-             * @description Redemption count.
-             */
-            rc: number;
-            /**
-             * Format: double
-             * @description Redemption volume in USD.
-             */
-            rv: number;
-            /**
-             * Format: int64
-             * @description Merge count.
-             */
-            mc: number;
-            /**
-             * Format: double
-             * @description Merge volume in USD.
-             */
-            mv: number;
-            /**
-             * Format: int64
-             * @description Split count.
-             */
-            sp: number;
-            /**
-             * Format: double
-             * @description Split volume in USD.
-             */
-            spv: number;
-            /**
-             * Format: int64
-             * @description Converted count.
-             */
-            cc: number;
-            /**
-             * Format: double
-             * @description Converted collateral in USD.
-             */
-            ccu: number;
-            /**
-             * Format: double
-             * @description Converted shares gained.
-             */
-            csg: number;
-            /**
-             * Format: double
-             * @description Converted shares lost.
-             */
-            csl: number;
-            /**
-             * Format: int64
-             * @description Maker rebate count.
-             */
-            mrc: number;
-            /**
-             * Format: double
-             * @description Maker rebate volume in USD.
-             */
-            mrv: number;
-            /**
-             * Format: int64
-             * @description Reward count.
-             */
-            rwc: number;
-            /**
-             * Format: double
-             * @description Reward volume in USD.
-             */
-            rwv: number;
-            /**
-             * Format: int64
-             * @description Yield count.
-             */
-            ydc: number;
-            /**
-             * Format: double
-             * @description Yield volume in USD.
-             */
-            ydv: number;
-            /**
-             * Format: double
-             * @description Fees in USD.
-             */
-            f: number;
-            /**
-             * Format: double
-             * @description Shares volume.
-             */
-            sh: number;
-            /**
-             * Format: double
-             * @description Buy shares volume.
-             */
-            bsh: number;
-            /**
-             * Format: double
-             * @description Sell shares volume.
-             */
-            ssh: number;
-            /**
-             * Format: double
-             * @description Yes shares volume.
-             */
-            ysh: number;
-            /**
-             * Format: double
-             * @description No shares volume.
-             */
-            nsh: number;
-            /**
-             * Format: double
-             * @description Yes volume in USD.
-             */
-            yv: number;
-            /**
-             * Format: double
-             * @description No volume in USD.
-             */
-            nv: number;
-            /**
-             * Format: int64
-             * @description Yes count.
-             */
-            yc: number;
-            /**
-             * Format: int64
-             * @description No count.
-             */
-            nc: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the under-10 USD bucket.
-             */
-            bd_u10: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the 10-100 USD bucket.
-             */
-            bd_100: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the 100-1k USD bucket.
-             */
-            bd_1k: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the 1k-10k USD bucket.
-             */
-            bd_10k: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the 10k-50k USD bucket.
-             */
-            bd_50k: number;
-            /**
-             * Format: int64
-             * @description Buy trade count in the 50k-plus USD bucket.
-             */
-            bd_50p: number;
+            potential_payout?: number | null;
+            /** @description True once the position can no longer pay out. */
+            is_dead: boolean;
+            status?: null | components["schemas"]["V31ComboStatus"];
+            legs_won: number;
+            legs_lost: number;
+            legs_pending: number;
+            leg_count: number;
+            legs: components["schemas"]["ComboLegDetail"][];
         };
-        TraderAnalyticsMetricPctChange: {
-            /**
-             * Format: double
-             * @description Volume in USD.
-             */
-            volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Buy volume in USD.
-             */
-            buy_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Sell volume in USD.
-             */
-            sell_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Merge volume in USD.
-             */
-            merge_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Split volume in USD.
-             */
-            split_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Converted count.
-             */
-            converted_count?: number | null;
-            /**
-             * Format: double
-             * @description Converted collateral in USD.
-             */
-            converted_collateral_usd?: number | null;
-            /**
-             * Format: double
-             * @description Converted shares gained.
-             */
-            converted_shares_gained?: number | null;
-            /**
-             * Format: double
-             * @description Converted shares lost.
-             */
-            converted_shares_lost?: number | null;
-            /**
-             * Format: double
-             * @description Maker rebate count.
-             */
-            maker_rebate_count?: number | null;
-            /**
-             * Format: double
-             * @description Maker rebate volume in USD.
-             */
-            maker_rebate_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Reward count.
-             */
-            reward_count?: number | null;
-            /**
-             * Format: double
-             * @description Reward volume in USD.
-             */
-            reward_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Yield count.
-             */
-            yield_count?: number | null;
-            /**
-             * Format: double
-             * @description Yield volume in USD.
-             */
-            yield_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description Transaction count.
-             */
-            txn_count?: number | null;
-            /**
-             * Format: double
-             * @description Fees in USD.
-             */
-            fees_usd?: number | null;
-            /**
-             * Format: double
-             * @description Shares volume.
-             */
-            shares_volume?: number | null;
-            /**
-             * Format: double
-             * @description Buy shares volume.
-             */
-            buy_shares_volume?: number | null;
-            /**
-             * Format: double
-             * @description Sell shares volume.
-             */
-            sell_shares_volume?: number | null;
-            /**
-             * Format: double
-             * @description Yes shares volume.
-             */
-            yes_shares_volume?: number | null;
-            /**
-             * Format: double
-             * @description No shares volume.
-             */
-            no_shares_volume?: number | null;
-            /**
-             * Format: double
-             * @description Yes volume in USD.
-             */
-            yes_volume_usd?: number | null;
-            /**
-             * Format: double
-             * @description No volume in USD.
-             */
-            no_volume_usd?: number | null;
-        };
+        /**
+         * @description Sort field for v3.1 category PnL results. Extends the legacy set with
+         *     fee-excluded (`raw_*`) PnL metrics.
+         * @enum {string}
+         */
+        V31CategoryPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "raw_total_pnl_pct" | "raw_realized_pnl_pct" | "raw_unrealized_pnl_pct" | "total_volume_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_converts" | "total_fees" | "total_buys" | "total_sells" | "total_splits" | "total_shares_bought" | "markets_traded" | "markets_resolved" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "avg_hold_time_seconds" | "buy_count" | "sell_count" | "redeem_count" | "merge_count" | "split_count" | "outcomes_traded" | "first_trade_at" | "last_trade_at";
         PredictionCandlestickBar: {
             /**
              * Format: double
@@ -10376,145 +9765,24 @@ export interface components {
             /** @description Contract namespace that emitted the redemption. */
             exchange: components["schemas"]["PolymarketExchange"];
         };
-        /** @enum {string} */
-        TradeType: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "22" | "23" | "24" | "25" | "26" | "27" | "28" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "39" | "40" | "41" | "42" | "43";
-        /**
-         * @description Tagged enum for all trade types — serializes with `"trade_type": "..."` discriminator
-         *     and only includes fields relevant to each type.
-         */
-        TradeEvent: (components["schemas"]["OrderFilledTrade"] & {
-            /** @enum {string} */
-            trade_type: "OrderFilled";
-        }) | (components["schemas"]["OrderFilledTrade"] & {
-            /** @enum {string} */
-            trade_type: "OrdersMatched";
-        }) | (components["schemas"]["OrderFilledTrade"] & {
-            /** @enum {string} */
-            trade_type: "MakerRebate";
-        }) | (components["schemas"]["OrderFilledTrade"] & {
-            /** @enum {string} */
-            trade_type: "Reward";
-        }) | (components["schemas"]["OrderFilledTrade"] & {
-            /** @enum {string} */
-            trade_type: "Yield";
-        }) | (components["schemas"]["RedemptionTrade"] & {
-            /** @enum {string} */
-            trade_type: "Redemption";
-        }) | (components["schemas"]["MergeTrade"] & {
-            /** @enum {string} */
-            trade_type: "Merge";
-        }) | (components["schemas"]["SplitTrade"] & {
-            /** @enum {string} */
-            trade_type: "Split";
-        }) | (components["schemas"]["PositionsConvertedTrade"] & {
-            /** @enum {string} */
-            trade_type: "PositionsConverted";
-        }) | (components["schemas"]["CancelledTrade"] & {
-            /** @enum {string} */
-            trade_type: "Cancelled";
-        }) | (components["schemas"]["QuestionInitializedEvent"] & {
-            /** @enum {string} */
-            trade_type: "Initialization";
-        }) | (components["schemas"]["AssertionMadeEvent"] & {
-            /** @enum {string} */
-            trade_type: "Proposal";
-        }) | (components["schemas"]["AssertionDisputedEvent"] & {
-            /** @enum {string} */
-            trade_type: "Dispute";
-        }) | (components["schemas"]["AssertionSettledEvent"] & {
-            /** @enum {string} */
-            trade_type: "Settled";
-        }) | (components["schemas"]["QuestionResolvedEvent"] & {
-            /** @enum {string} */
-            trade_type: "Resolution";
-        }) | (components["schemas"]["ConditionResolutionEvent"] & {
-            /** @enum {string} */
-            trade_type: "ConditionResolution";
-        }) | (components["schemas"]["QuestionResetEvent"] & {
-            /** @enum {string} */
-            trade_type: "Reset";
-        }) | (components["schemas"]["QuestionFlaggedEvent"] & {
-            /** @enum {string} */
-            trade_type: "Flag";
-        }) | (components["schemas"]["QuestionUnflaggedEvent"] & {
-            /** @enum {string} */
-            trade_type: "Unflag";
-        }) | (components["schemas"]["QuestionPausedEvent"] & {
-            /** @enum {string} */
-            trade_type: "Pause";
-        }) | (components["schemas"]["QuestionUnpausedEvent"] & {
-            /** @enum {string} */
-            trade_type: "Unpause";
-        }) | (components["schemas"]["QuestionEmergencyResolvedEvent"] & {
-            /** @enum {string} */
-            trade_type: "ManualResolution";
-        }) | (components["schemas"]["NegRiskOutcomeReportedEvent"] & {
-            /** @enum {string} */
-            trade_type: "NegRiskOutcomeReported";
-        }) | (components["schemas"]["RegisterTokenTrade"] & {
-            /** @enum {string} */
-            trade_type: "RegisterToken";
-        }) | (components["schemas"]["ApprovalTrade"] & {
-            /** @enum {string} */
-            trade_type: "Approval";
-        }) | (components["schemas"]["ComboCreationTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboCreation";
-        }) | (components["schemas"]["ComboExecutionTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboExecution";
-        }) | (components["schemas"]["ComboStatusUpdateTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboStatusUpdate";
-        }) | (components["schemas"]["ComboPositionPairTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboPositionsSplit";
-        }) | (components["schemas"]["ComboPositionPairTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboPositionsMerged";
-        }) | (components["schemas"]["ComboConditionTransformTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboSplitOnCondition";
-        }) | (components["schemas"]["ComboConditionTransformTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboMergedOnCondition";
-        }) | (components["schemas"]["ComboConditionTransformTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboExtracted";
-        }) | (components["schemas"]["ComboConditionTransformTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboInjected";
-        }) | (components["schemas"]["ComboBasketTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboConvertedToYesBasket";
-        }) | (components["schemas"]["ComboBasketTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboMergedFromYesBasket";
-        }) | (components["schemas"]["ComboCompressedTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboCompressed";
-        }) | (components["schemas"]["ComboRedemptionTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboPositionRedeemed";
-        }) | (components["schemas"]["ComboWrapTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboWrapped";
-        }) | (components["schemas"]["ComboWrapTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboUnwrapped";
-        }) | (components["schemas"]["ComboHorizontalTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboHorizontalSplit";
-        }) | (components["schemas"]["ComboHorizontalTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboHorizontalMerge";
-        }) | (components["schemas"]["ComboPositionConvertedTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboPositionConverted";
-        }) | (components["schemas"]["ComboMigrationTrade"] & {
-            /** @enum {string} */
-            trade_type: "ComboPositionMigrated";
-        });
+        TraderWithPnl: components["schemas"]["Trader"] & {
+            /** @description PnL. */
+            pnl?: unknown;
+        };
+        TraderProfile: {
+            /** @description Wallet address. */
+            address: string;
+            /** @description Name. */
+            name?: string | null;
+            /** @description Pseudonym. */
+            pseudonym?: string | null;
+            /** @description Profile image. */
+            profile_image?: string | null;
+            /** @description X username. */
+            x_username?: string | null;
+            /** @description Verified badge. */
+            verified_badge: boolean;
+        };
         /** @description Output payload for RegisterToken events (YES/NO token pair registered for a condition). */
         RegisterTokenTrade: {
             id: string;
@@ -10546,11 +9814,8 @@ export interface components {
             /** @description Exchange contract namespace that registered the pair. */
             exchange: components["schemas"]["PolymarketExchange"];
         };
-        /**
-         * @description Sort key for the top-traders ranking.
-         * @enum {string}
-         */
-        TopTradersSortBy: "volume" | "txns" | "fees" | "builder_fees";
+        /** @enum {string} */
+        TraderPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "realized_pnl_pct" | "total_pnl_pct" | "usd_balance" | "total_volume_usd" | "markets_traded" | "events_traded" | "categories_traded" | "markets_won" | "markets_lost" | "market_win_rate_pct" | "avg_win_usd" | "avg_loss_usd" | "profit_factor" | "total_buys" | "total_sells" | "total_redemptions" | "total_merges" | "total_fees" | "total_wins_usd" | "total_losses_usd" | "best_trade_pnl_usd" | "worst_trade_pnl_usd" | "buy_volume_usd" | "sell_volume_usd" | "redemption_volume_usd" | "merge_volume_usd" | "split_volume_usd" | "total_splits" | "total_converts" | "maker_rebate_count" | "maker_rebate_usd" | "reward_count" | "reward_usd" | "yield_count" | "yield_usd" | "avg_hold_time_seconds" | "first_trade_at" | "last_trade_at" | "open_positions_value" | "open_position_count";
         /** @description V2 UMA OOv2: a price request was made (market initialization). */
         RequestPriceEvent: {
             id: string;
@@ -10622,29 +9887,14 @@ export interface components {
              */
             d30: number;
         };
-        TopTraderRow: {
-            /** @description Trader wallet or profile. */
-            trader: string;
-            /**
-             * Format: double
-             * @description Volume in USD.
-             */
-            volume_usd: number;
-            /**
-             * Format: int64
-             * @description Transaction count.
-             */
-            txn_count: number;
-            /**
-             * Format: double
-             * @description Fees in USD.
-             */
-            fees_usd: number;
-            /**
-             * Format: double
-             * @description Builder fees.
-             */
-            builder_fees: number;
+        /** @description Trader profile info - backwards compatibility */
+        TraderInfo: {
+            address: string;
+            name?: string | null;
+            pseudonym?: string | null;
+            profile_image?: string | null;
+            x_username?: string | null;
+            verified_badge?: boolean;
         };
         /**
          * @description Timeframe values accepted by webhook metric, milestone, spike, and asset-price filters.
@@ -10698,10 +9948,12 @@ export interface components {
             slug?: string | null;
             event_slug?: string | null;
         };
-        TraderWithPnl: components["schemas"]["Trader"] & {
-            /** @description PnL. */
-            pnl?: unknown;
-        };
+        /**
+         * @description Sort field for v3.1 trader position exits. Extends the legacy set
+         *     with the fee-excluded exit PnL metrics.
+         * @enum {string}
+         */
+        V31PositionExitPnlSortBy: "exit_time" | "pnl_usd" | "pnl_pct" | "raw_pnl_usd" | "raw_pnl_pct" | "cost_basis_usd";
         SimpleTimeframeMetrics: {
             /**
              * Format: double
@@ -11024,6 +10276,932 @@ export interface components {
          * @enum {string}
          */
         TagSortTimeframe: "lifetime" | "1h" | "24h" | "7d" | "30d" | "1mo";
+        /** @description Token outcome (position) */
+        TokenOutcome: {
+            token_id: string;
+            outcome: string;
+        };
+        TopTraderRow: {
+            /** @description Trader wallet or profile. */
+            trader: string;
+            /**
+             * Format: double
+             * @description Volume in USD.
+             */
+            volume_usd: number;
+            /**
+             * Format: int64
+             * @description Transaction count.
+             */
+            txn_count: number;
+            /**
+             * Format: double
+             * @description Fees in USD.
+             */
+            fees_usd: number;
+            /**
+             * Format: double
+             * @description Builder fees.
+             */
+            builder_fees: number;
+        };
+        /**
+         * @description Sort key for the top-traders ranking.
+         * @enum {string}
+         */
+        TopTradersSortBy: "volume" | "txns" | "fees" | "builder_fees";
+        /**
+         * @description Tagged enum for all trade types — serializes with `"trade_type": "..."` discriminator
+         *     and only includes fields relevant to each type.
+         */
+        TradeEvent: (components["schemas"]["OrderFilledTrade"] & {
+            /** @enum {string} */
+            trade_type: "OrderFilled";
+        }) | (components["schemas"]["OrderFilledTrade"] & {
+            /** @enum {string} */
+            trade_type: "OrdersMatched";
+        }) | (components["schemas"]["OrderFilledTrade"] & {
+            /** @enum {string} */
+            trade_type: "MakerRebate";
+        }) | (components["schemas"]["OrderFilledTrade"] & {
+            /** @enum {string} */
+            trade_type: "Reward";
+        }) | (components["schemas"]["OrderFilledTrade"] & {
+            /** @enum {string} */
+            trade_type: "Yield";
+        }) | (components["schemas"]["RedemptionTrade"] & {
+            /** @enum {string} */
+            trade_type: "Redemption";
+        }) | (components["schemas"]["MergeTrade"] & {
+            /** @enum {string} */
+            trade_type: "Merge";
+        }) | (components["schemas"]["SplitTrade"] & {
+            /** @enum {string} */
+            trade_type: "Split";
+        }) | (components["schemas"]["PositionsConvertedTrade"] & {
+            /** @enum {string} */
+            trade_type: "PositionsConverted";
+        }) | (components["schemas"]["CancelledTrade"] & {
+            /** @enum {string} */
+            trade_type: "Cancelled";
+        }) | (components["schemas"]["QuestionInitializedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Initialization";
+        }) | (components["schemas"]["AssertionMadeEvent"] & {
+            /** @enum {string} */
+            trade_type: "Proposal";
+        }) | (components["schemas"]["AssertionDisputedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Dispute";
+        }) | (components["schemas"]["AssertionSettledEvent"] & {
+            /** @enum {string} */
+            trade_type: "Settled";
+        }) | (components["schemas"]["QuestionResolvedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Resolution";
+        }) | (components["schemas"]["ConditionResolutionEvent"] & {
+            /** @enum {string} */
+            trade_type: "ConditionResolution";
+        }) | (components["schemas"]["QuestionResetEvent"] & {
+            /** @enum {string} */
+            trade_type: "Reset";
+        }) | (components["schemas"]["QuestionFlaggedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Flag";
+        }) | (components["schemas"]["QuestionUnflaggedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Unflag";
+        }) | (components["schemas"]["QuestionPausedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Pause";
+        }) | (components["schemas"]["QuestionUnpausedEvent"] & {
+            /** @enum {string} */
+            trade_type: "Unpause";
+        }) | (components["schemas"]["QuestionEmergencyResolvedEvent"] & {
+            /** @enum {string} */
+            trade_type: "ManualResolution";
+        }) | (components["schemas"]["NegRiskOutcomeReportedEvent"] & {
+            /** @enum {string} */
+            trade_type: "NegRiskOutcomeReported";
+        }) | (components["schemas"]["RegisterTokenTrade"] & {
+            /** @enum {string} */
+            trade_type: "RegisterToken";
+        }) | (components["schemas"]["ApprovalTrade"] & {
+            /** @enum {string} */
+            trade_type: "Approval";
+        }) | (components["schemas"]["ComboCreationTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboCreation";
+        }) | (components["schemas"]["ComboExecutionTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboExecution";
+        }) | (components["schemas"]["ComboStatusUpdateTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboStatusUpdate";
+        }) | (components["schemas"]["ComboPositionPairTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboPositionsSplit";
+        }) | (components["schemas"]["ComboPositionPairTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboPositionsMerged";
+        }) | (components["schemas"]["ComboConditionTransformTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboSplitOnCondition";
+        }) | (components["schemas"]["ComboConditionTransformTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboMergedOnCondition";
+        }) | (components["schemas"]["ComboConditionTransformTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboExtracted";
+        }) | (components["schemas"]["ComboConditionTransformTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboInjected";
+        }) | (components["schemas"]["ComboBasketTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboConvertedToYesBasket";
+        }) | (components["schemas"]["ComboBasketTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboMergedFromYesBasket";
+        }) | (components["schemas"]["ComboCompressedTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboCompressed";
+        }) | (components["schemas"]["ComboRedemptionTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboPositionRedeemed";
+        }) | (components["schemas"]["ComboWrapTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboWrapped";
+        }) | (components["schemas"]["ComboWrapTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboUnwrapped";
+        }) | (components["schemas"]["ComboHorizontalTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboHorizontalSplit";
+        }) | (components["schemas"]["ComboHorizontalTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboHorizontalMerge";
+        }) | (components["schemas"]["ComboPositionConvertedTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboPositionConverted";
+        }) | (components["schemas"]["ComboMigrationTrade"] & {
+            /** @enum {string} */
+            trade_type: "ComboPositionMigrated";
+        });
+        /**
+         * @description Market metadata for the market a trader's best / worst trade landed in.
+         *     Accompanies the existing flat `best_trade_pnl_usd` / `worst_trade_pnl_usd`
+         *     numerics on trader / event / category PnL summaries.
+         */
+        TradeMarketRef: {
+            /** @description Condition ID. */
+            condition_id?: string | null;
+            /** @description Market slug. */
+            market_slug?: string | null;
+            /** @description Title. */
+            title?: string | null;
+            /** @description Question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /** @enum {string} */
+        TradeSide: "0" | "1";
+        /** @enum {string} */
+        TradeType: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "22" | "23" | "24" | "25" | "26" | "27" | "28" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "39" | "40" | "41" | "42" | "43";
+        /**
+         * @description Trader profile info embedded in API responses.
+         *
+         *     Used in:
+         *     - holders endpoints (market/event holders)
+         *     - trades endpoints
+         *     - leaderboard endpoints
+         */
+        Trader: {
+            address: string;
+            name?: string | null;
+            pseudonym?: string | null;
+            profile_image?: string | null;
+            x_username?: string | null;
+            verified_badge?: boolean;
+        };
+        TraderAnalyticsDeltaTimeBucketRow: {
+            /**
+             * Format: int32
+             * @description Bucket start time as Unix seconds.
+             */
+            t: number;
+            /**
+             * Format: double
+             * @description Volume in USD.
+             */
+            v: number;
+            /**
+             * Format: double
+             * @description Buy volume in USD.
+             */
+            bv: number;
+            /**
+             * Format: double
+             * @description Sell volume in USD.
+             */
+            sv: number;
+            /**
+             * Format: int64
+             * @description Transaction count.
+             */
+            tc: number;
+            /**
+             * Format: int64
+             * @description Buy count.
+             */
+            bc: number;
+            /**
+             * Format: int64
+             * @description Sell count.
+             */
+            sc: number;
+            /**
+             * Format: int64
+             * @description Redemption count.
+             */
+            rc: number;
+            /**
+             * Format: double
+             * @description Redemption volume in USD.
+             */
+            rv: number;
+            /**
+             * Format: int64
+             * @description Merge count.
+             */
+            mc: number;
+            /**
+             * Format: double
+             * @description Merge volume in USD.
+             */
+            mv: number;
+            /**
+             * Format: int64
+             * @description Split count.
+             */
+            sp: number;
+            /**
+             * Format: double
+             * @description Split volume in USD.
+             */
+            spv: number;
+            /**
+             * Format: int64
+             * @description Converted count.
+             */
+            cc: number;
+            /**
+             * Format: double
+             * @description Converted collateral in USD.
+             */
+            ccu: number;
+            /**
+             * Format: double
+             * @description Converted shares gained.
+             */
+            csg: number;
+            /**
+             * Format: double
+             * @description Converted shares lost.
+             */
+            csl: number;
+            /**
+             * Format: int64
+             * @description Maker rebate count.
+             */
+            mrc: number;
+            /**
+             * Format: double
+             * @description Maker rebate volume in USD.
+             */
+            mrv: number;
+            /**
+             * Format: int64
+             * @description Reward count.
+             */
+            rwc: number;
+            /**
+             * Format: double
+             * @description Reward volume in USD.
+             */
+            rwv: number;
+            /**
+             * Format: int64
+             * @description Yield count.
+             */
+            ydc: number;
+            /**
+             * Format: double
+             * @description Yield volume in USD.
+             */
+            ydv: number;
+            /**
+             * Format: double
+             * @description Fees in USD.
+             */
+            f: number;
+            /**
+             * Format: double
+             * @description Shares volume.
+             */
+            sh: number;
+            /**
+             * Format: double
+             * @description Buy shares volume.
+             */
+            bsh: number;
+            /**
+             * Format: double
+             * @description Sell shares volume.
+             */
+            ssh: number;
+            /**
+             * Format: double
+             * @description Yes shares volume.
+             */
+            ysh: number;
+            /**
+             * Format: double
+             * @description No shares volume.
+             */
+            nsh: number;
+            /**
+             * Format: double
+             * @description Yes volume in USD.
+             */
+            yv: number;
+            /**
+             * Format: double
+             * @description No volume in USD.
+             */
+            nv: number;
+            /**
+             * Format: int64
+             * @description Yes count.
+             */
+            yc: number;
+            /**
+             * Format: int64
+             * @description No count.
+             */
+            nc: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the under-10 USD bucket.
+             */
+            bd_u10: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the 10-100 USD bucket.
+             */
+            bd_100: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the 100-1k USD bucket.
+             */
+            bd_1k: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the 1k-10k USD bucket.
+             */
+            bd_10k: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the 10k-50k USD bucket.
+             */
+            bd_50k: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the 50k-plus USD bucket.
+             */
+            bd_50p: number;
+            /**
+             * Format: int64
+             * @description Buy count in the 0-10 cent price bucket.
+             */
+            buy_price_cnt_0_10: number;
+            /**
+             * Format: int64
+             * @description Buy count in the 10-20 cent price bucket.
+             */
+            buy_price_cnt_10_20: number;
+            /**
+             * Format: int64
+             * @description Buy count in the 20-30 cent price bucket.
+             */
+            buy_price_cnt_20_30: number;
+            /**
+             * Format: int64
+             * @description Buy count in the 30-40 cent price bucket.
+             */
+            buy_price_cnt_30_40: number;
+            /**
+             * Format: int64
+             * @description Buy count in the 40-50 cent price bucket.
+             */
+            buy_price_cnt_40_50: number;
+            /**
+             * Format: int64
+             * @description Buy count in the 50-60 cent price bucket.
+             */
+            buy_price_cnt_50_60: number;
+            /**
+             * Format: int64
+             * @description Buy count in the 60-70 cent price bucket.
+             */
+            buy_price_cnt_60_70: number;
+            /**
+             * Format: int64
+             * @description Buy count in the 70-80 cent price bucket.
+             */
+            buy_price_cnt_70_80: number;
+            /**
+             * Format: int64
+             * @description Buy count in the 80-90 cent price bucket.
+             */
+            buy_price_cnt_80_90: number;
+            /**
+             * Format: int64
+             * @description Buy count in the 90-100 cent price bucket.
+             */
+            buy_price_cnt_90_100: number;
+            /**
+             * Format: double
+             * @description Buy price vol 0 10.
+             */
+            buy_price_vol_0_10: number;
+            /**
+             * Format: double
+             * @description Buy price vol 10 20.
+             */
+            buy_price_vol_10_20: number;
+            /**
+             * Format: double
+             * @description Buy price vol 20 30.
+             */
+            buy_price_vol_20_30: number;
+            /**
+             * Format: double
+             * @description Buy price vol 30 40.
+             */
+            buy_price_vol_30_40: number;
+            /**
+             * Format: double
+             * @description Buy price vol 40 50.
+             */
+            buy_price_vol_40_50: number;
+            /**
+             * Format: double
+             * @description Buy price vol 50 60.
+             */
+            buy_price_vol_50_60: number;
+            /**
+             * Format: double
+             * @description Buy price vol 60 70.
+             */
+            buy_price_vol_60_70: number;
+            /**
+             * Format: double
+             * @description Buy price vol 70 80.
+             */
+            buy_price_vol_70_80: number;
+            /**
+             * Format: double
+             * @description Buy price vol 80 90.
+             */
+            buy_price_vol_80_90: number;
+            /**
+             * Format: double
+             * @description Buy price vol 90 100.
+             */
+            buy_price_vol_90_100: number;
+            /**
+             * Format: int64
+             * @description Sell count in the 0-10 cent price bucket.
+             */
+            sell_price_cnt_0_10: number;
+            /**
+             * Format: int64
+             * @description Sell count in the 10-20 cent price bucket.
+             */
+            sell_price_cnt_10_20: number;
+            /**
+             * Format: int64
+             * @description Sell count in the 20-30 cent price bucket.
+             */
+            sell_price_cnt_20_30: number;
+            /**
+             * Format: int64
+             * @description Sell count in the 30-40 cent price bucket.
+             */
+            sell_price_cnt_30_40: number;
+            /**
+             * Format: int64
+             * @description Sell count in the 40-50 cent price bucket.
+             */
+            sell_price_cnt_40_50: number;
+            /**
+             * Format: int64
+             * @description Sell count in the 50-60 cent price bucket.
+             */
+            sell_price_cnt_50_60: number;
+            /**
+             * Format: int64
+             * @description Sell count in the 60-70 cent price bucket.
+             */
+            sell_price_cnt_60_70: number;
+            /**
+             * Format: int64
+             * @description Sell count in the 70-80 cent price bucket.
+             */
+            sell_price_cnt_70_80: number;
+            /**
+             * Format: int64
+             * @description Sell count in the 80-90 cent price bucket.
+             */
+            sell_price_cnt_80_90: number;
+            /**
+             * Format: int64
+             * @description Sell count in the 90-100 cent price bucket.
+             */
+            sell_price_cnt_90_100: number;
+            /**
+             * Format: double
+             * @description Sell price vol 0 10.
+             */
+            sell_price_vol_0_10: number;
+            /**
+             * Format: double
+             * @description Sell price vol 10 20.
+             */
+            sell_price_vol_10_20: number;
+            /**
+             * Format: double
+             * @description Sell price vol 20 30.
+             */
+            sell_price_vol_20_30: number;
+            /**
+             * Format: double
+             * @description Sell price vol 30 40.
+             */
+            sell_price_vol_30_40: number;
+            /**
+             * Format: double
+             * @description Sell price vol 40 50.
+             */
+            sell_price_vol_40_50: number;
+            /**
+             * Format: double
+             * @description Sell price vol 50 60.
+             */
+            sell_price_vol_50_60: number;
+            /**
+             * Format: double
+             * @description Sell price vol 60 70.
+             */
+            sell_price_vol_60_70: number;
+            /**
+             * Format: double
+             * @description Sell price vol 70 80.
+             */
+            sell_price_vol_70_80: number;
+            /**
+             * Format: double
+             * @description Sell price vol 80 90.
+             */
+            sell_price_vol_80_90: number;
+            /**
+             * Format: double
+             * @description Sell price vol 90 100.
+             */
+            sell_price_vol_90_100: number;
+        };
+        TraderAnalyticsMetricPctChange: {
+            /**
+             * Format: double
+             * @description Volume in USD.
+             */
+            volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Buy volume in USD.
+             */
+            buy_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Sell volume in USD.
+             */
+            sell_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Merge volume in USD.
+             */
+            merge_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Split volume in USD.
+             */
+            split_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Converted count.
+             */
+            converted_count?: number | null;
+            /**
+             * Format: double
+             * @description Converted collateral in USD.
+             */
+            converted_collateral_usd?: number | null;
+            /**
+             * Format: double
+             * @description Converted shares gained.
+             */
+            converted_shares_gained?: number | null;
+            /**
+             * Format: double
+             * @description Converted shares lost.
+             */
+            converted_shares_lost?: number | null;
+            /**
+             * Format: double
+             * @description Maker rebate count.
+             */
+            maker_rebate_count?: number | null;
+            /**
+             * Format: double
+             * @description Maker rebate volume in USD.
+             */
+            maker_rebate_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Reward count.
+             */
+            reward_count?: number | null;
+            /**
+             * Format: double
+             * @description Reward volume in USD.
+             */
+            reward_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Yield count.
+             */
+            yield_count?: number | null;
+            /**
+             * Format: double
+             * @description Yield volume in USD.
+             */
+            yield_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description Transaction count.
+             */
+            txn_count?: number | null;
+            /**
+             * Format: double
+             * @description Fees in USD.
+             */
+            fees_usd?: number | null;
+            /**
+             * Format: double
+             * @description Shares volume.
+             */
+            shares_volume?: number | null;
+            /**
+             * Format: double
+             * @description Buy shares volume.
+             */
+            buy_shares_volume?: number | null;
+            /**
+             * Format: double
+             * @description Sell shares volume.
+             */
+            sell_shares_volume?: number | null;
+            /**
+             * Format: double
+             * @description Yes shares volume.
+             */
+            yes_shares_volume?: number | null;
+            /**
+             * Format: double
+             * @description No shares volume.
+             */
+            no_shares_volume?: number | null;
+            /**
+             * Format: double
+             * @description Yes volume in USD.
+             */
+            yes_volume_usd?: number | null;
+            /**
+             * Format: double
+             * @description No volume in USD.
+             */
+            no_volume_usd?: number | null;
+        };
+        TraderAnalyticsTimeBucketRow: {
+            /**
+             * Format: int32
+             * @description Bucket start time as Unix seconds.
+             */
+            t: number;
+            /**
+             * Format: double
+             * @description Volume in USD.
+             */
+            v: number;
+            /**
+             * Format: double
+             * @description Buy volume in USD.
+             */
+            bv: number;
+            /**
+             * Format: double
+             * @description Sell volume in USD.
+             */
+            sv: number;
+            /**
+             * Format: int64
+             * @description Transaction count.
+             */
+            tc: number;
+            /**
+             * Format: int64
+             * @description Buy count.
+             */
+            bc: number;
+            /**
+             * Format: int64
+             * @description Sell count.
+             */
+            sc: number;
+            /**
+             * Format: int64
+             * @description Redemption count.
+             */
+            rc: number;
+            /**
+             * Format: double
+             * @description Redemption volume in USD.
+             */
+            rv: number;
+            /**
+             * Format: int64
+             * @description Merge count.
+             */
+            mc: number;
+            /**
+             * Format: double
+             * @description Merge volume in USD.
+             */
+            mv: number;
+            /**
+             * Format: int64
+             * @description Split count.
+             */
+            sp: number;
+            /**
+             * Format: double
+             * @description Split volume in USD.
+             */
+            spv: number;
+            /**
+             * Format: int64
+             * @description Converted count.
+             */
+            cc: number;
+            /**
+             * Format: double
+             * @description Converted collateral in USD.
+             */
+            ccu: number;
+            /**
+             * Format: double
+             * @description Converted shares gained.
+             */
+            csg: number;
+            /**
+             * Format: double
+             * @description Converted shares lost.
+             */
+            csl: number;
+            /**
+             * Format: int64
+             * @description Maker rebate count.
+             */
+            mrc: number;
+            /**
+             * Format: double
+             * @description Maker rebate volume in USD.
+             */
+            mrv: number;
+            /**
+             * Format: int64
+             * @description Reward count.
+             */
+            rwc: number;
+            /**
+             * Format: double
+             * @description Reward volume in USD.
+             */
+            rwv: number;
+            /**
+             * Format: int64
+             * @description Yield count.
+             */
+            ydc: number;
+            /**
+             * Format: double
+             * @description Yield volume in USD.
+             */
+            ydv: number;
+            /**
+             * Format: double
+             * @description Fees in USD.
+             */
+            f: number;
+            /**
+             * Format: double
+             * @description Shares volume.
+             */
+            sh: number;
+            /**
+             * Format: double
+             * @description Buy shares volume.
+             */
+            bsh: number;
+            /**
+             * Format: double
+             * @description Sell shares volume.
+             */
+            ssh: number;
+            /**
+             * Format: double
+             * @description Yes shares volume.
+             */
+            ysh: number;
+            /**
+             * Format: double
+             * @description No shares volume.
+             */
+            nsh: number;
+            /**
+             * Format: double
+             * @description Yes volume in USD.
+             */
+            yv: number;
+            /**
+             * Format: double
+             * @description No volume in USD.
+             */
+            nv: number;
+            /**
+             * Format: int64
+             * @description Yes count.
+             */
+            yc: number;
+            /**
+             * Format: int64
+             * @description No count.
+             */
+            nc: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the under-10 USD bucket.
+             */
+            bd_u10: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the 10-100 USD bucket.
+             */
+            bd_100: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the 100-1k USD bucket.
+             */
+            bd_1k: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the 1k-10k USD bucket.
+             */
+            bd_10k: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the 10k-50k USD bucket.
+             */
+            bd_50k: number;
+            /**
+             * Format: int64
+             * @description Buy trade count in the 50k-plus USD bucket.
+             */
+            bd_50p: number;
+        };
     };
     responses: never;
     parameters: never;
@@ -12259,7 +12437,7 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
-                /** @description Include nested holder PnL data (default: false, +1 credit) */
+                /** @description Include nested holder PnL data (default: false) */
                 include_pnl?: boolean;
             };
             header?: never;
@@ -12339,7 +12517,7 @@ export interface operations {
                 min_shares?: string;
                 /** @description Maximum shares held (decimal string) */
                 max_shares?: string;
-                /** @description Include nested holder PnL data (default: false, +1 credit) */
+                /** @description Include nested holder PnL data (default: false) */
                 include_pnl?: boolean;
             };
             header?: never;
@@ -12600,6 +12778,38 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PositionChartOutcome"][];
                 };
+            };
+        };
+    };
+    get_combo_legs: {
+        parameters: {
+            query?: {
+                /** @description Combo condition id (0x-prefixed 32-byte hex) */
+                condition_id?: string;
+                /** @description Combo position id, decimal or 0x-prefixed hex — as returned by the PnL positions endpoints */
+                position_id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Leg breakdown with market metadata. Unknown combos return 200 with `data: null` and an `unknown combo` message */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComboLegsResponse"];
+                };
+            };
+            /** @description Missing/invalid id, or not a combo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -13572,9 +13782,9 @@ export interface operations {
             query: {
                 /** @description Search query (min 2 characters). Slug-shaped values match event/market slugs. Prefix with 0x for exact wallet address lookup. */
                 q: string;
-                /** @description Comma-separated categories to search: events, markets, traders, builders (default: all four, 1 credit per type). Example: type=markets,builders */
+                /** @description Comma-separated categories to search: events, markets, traders, builders (default: all four). Example: type=markets,builders */
                 type?: string;
-                /** @description Include lifetime PnL summary for each trader (default: false, +1 credit) */
+                /** @description Include lifetime PnL summary for each trader (default: false) */
                 include_pnl?: boolean;
                 /** @description Sort field applied to both events and markets (default: volume). Fields marked events-only or markets-only fall back to volume on the other category. */
                 sort_by?: components["schemas"]["SearchSortBy"];
@@ -13747,9 +13957,9 @@ export interface operations {
                 offset?: number;
                 /** @description Cursor-based pagination key (alphabetical mode only). */
                 pagination_key?: string;
-                /** @description Sort metric. Defaults to `volume` when only `timeframe` is set. Setting either `sort` or `timeframe` adds +2 credits. */
+                /** @description Sort metric. Defaults to `volume` when only `timeframe` is set. */
                 sort?: components["schemas"]["TagSortBy"];
-                /** @description Window for the sort metric. Defaults to `24h` when only `sort` is set. Setting either `sort` or `timeframe` adds +2 credits. */
+                /** @description Window for the sort metric. Defaults to `24h` when only `sort` is set. */
                 timeframe?: components["schemas"]["TagSortTimeframe"];
                 /** @description Sort direction (default: true = highest first). Only applies to sort/timeframe mode. */
                 sort_desc?: boolean;
@@ -13816,7 +14026,7 @@ export interface operations {
     get_tag_by_id: {
         parameters: {
             query?: {
-                /** @description Attach analytics metrics. +1 credit. */
+                /** @description Attach analytics metrics. */
                 include_metrics?: boolean;
                 /** @description Metrics window. Default `1d` (= `24h`). Ignored unless `include_metrics=true`. */
                 timeframe?: components["schemas"]["TagSortTimeframe"];
@@ -14155,8 +14365,8 @@ export interface operations {
             query?: {
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Default: total_pnl_usd */
-                sort_by?: components["schemas"]["TraderPnlSortBy"];
+                /** @description Default: total_pnl_usd. Includes the fee-excluded `raw_*` PnL metrics and `combo_trade_count`. */
+                sort_by?: components["schemas"]["V31TraderPnlSortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 500 */
@@ -14297,8 +14507,8 @@ export interface operations {
             query?: {
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Default: realized_pnl_usd */
-                sort_by?: components["schemas"]["CategoryPnlSortBy"];
+                /** @description Default: realized_pnl_usd. Includes the fee-excluded `raw_*` PnL metrics. */
+                sort_by?: components["schemas"]["V31CategoryPnlSortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 500 */
@@ -14372,13 +14582,119 @@ export interface operations {
             };
         };
     };
+    get_trader_combo_pnl_v3_1: {
+        parameters: {
+            query?: {
+                /** @description Combo position id, decimal or 0x-prefixed hex — as returned by the positions endpoints */
+                position_id?: string;
+                /** @description Combo condition id (0x-prefixed 32-byte hex); alternative to position_id */
+                condition_id?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Combo breakdown with per-leg detail and position PnL. Unknown combos return 200 with `data: null` and an `unknown combo` message */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["V31ComboPnlResponse"];
+                };
+            };
+            /** @description Missing/invalid id, or not a combo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_trader_combos_pnl_v3_1: {
+        parameters: {
+            query?: {
+                /** @description Lifecycle filter; omit for all combos. `resolved` matches wins and losses; `resolved_win` also matches redeemable/redeemed */
+                status?: components["schemas"]["V31ComboStatusFilter"];
+                /** @description Default: total_pnl_usd. Aggregated across the combo's held sides */
+                sort_by?: components["schemas"]["V31ComboPnlSortBy"];
+                /** @description Default: desc */
+                sort_direction?: components["schemas"]["SortDirection"];
+                /** @description Page size (default 10, max 100) */
+                limit?: number;
+                /** @description Row skip; clamped to a max of 3500. Takes precedence over pagination_key. */
+                offset?: number;
+                /** @description Cursor from the previous page */
+                pagination_key?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Combo entries with per-leg detail and position PnL */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["V31ComboPnlResponse"][];
+                };
+            };
+            /** @description Invalid parameter */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_trader_pnl_exits_v3_1: {
         parameters: {
             query?: {
-                /** @description Filter to one market */
-                condition_id?: string;
-                /** @description Default 200, max 1000 */
+                /** @description Default: lifetime */
+                timeframe?: components["schemas"]["PnlCandleTimeframe"];
+                /** @description Start unix seconds. Overrides the timeframe lower bound. */
+                from?: number;
+                /** @description End unix seconds */
+                to?: number;
+                /** @description Return only exits with this reason */
+                reason?: components["schemas"]["PnlExitReason"];
+                /** @description Return only exits in this market category */
+                category?: components["schemas"]["PolymarketCategory"];
+                /** @description Maximum exits to return. Default 500, max 2500. */
+                count_back?: number;
+                /** @description Alias for count_back. Default 500, max 2500. */
                 limit?: number;
+                /** @description Sort field. Default exit_time. Includes the fee-excluded `raw_pnl_usd` / `raw_pnl_pct` metrics. */
+                sort_by?: components["schemas"]["V31PositionExitPnlSortBy"];
+                /** @description Sort direction for sort_by. Default desc. */
+                sort_direction?: components["schemas"]["SortDirection"];
+                /** @description Shortcut: highest or lowest. Sorts by pnl_pct desc/asc. */
+                profitability?: string;
+                /** @description Minimum realized PnL USD to include. */
+                min_pnl_usd?: number;
+                /** @description Maximum realized PnL USD to include. */
+                max_pnl_usd?: number;
+                /** @description Minimum realized PnL percent to include. */
+                min_pnl_pct?: number;
+                /** @description Maximum realized PnL percent to include. */
+                max_pnl_pct?: number;
+                /** @description Offset for ranked sort pagination. Max 3500. */
+                offset?: number;
+                /** @description Cursor from a previous response */
+                pagination_key?: string;
             };
             header?: never;
             path: {
@@ -14412,8 +14728,8 @@ export interface operations {
             query?: {
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Default: realized_pnl_usd */
-                sort_by?: components["schemas"]["MarketPnlSortBy"];
+                /** @description Default: realized_pnl_usd. Includes the fee-excluded `raw_*` PnL metrics. */
+                sort_by?: components["schemas"]["V31MarketPnlSortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 500 */
@@ -14465,8 +14781,8 @@ export interface operations {
                 won?: boolean;
                 /** @description Case-insensitive substring match on the market title. Scoped to the chosen `status` — results never cross the open/closed boundary. */
                 search?: string;
-                /** @description Default: total_pnl_usd. Valid options differ by status — see `PositionOpenPnlSortBy` and `PositionClosedPnlSortBy` for the exact lists. `title` sorts alphabetically by market title; `end_date` sorts by the market's resolution date. */
-                sort_by?: components["schemas"]["PositionPnlSortBy"];
+                /** @description Default: total_pnl_usd. Valid options differ by status — see `V31PositionOpenPnlSortBy` and `V31PositionClosedPnlSortBy` for the exact lists. Includes the fee-excluded `raw_*` PnL metrics. `title` sorts alphabetically by market title; `end_date` sorts by the market's resolution date. */
+                sort_by?: components["schemas"]["V31PositionPnlSortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 10, max 200 */

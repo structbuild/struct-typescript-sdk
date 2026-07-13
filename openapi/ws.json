@@ -3,7 +3,7 @@
   "info": {
     "title": "Polymarket WebSocket Streams API",
     "version": "1.0.0",
-    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_tag_metrics` (Tag Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_holder_metrics` (Holder Metrics) | 0.025 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n| `polymarket_oracle_events` (Oracle Events) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
+    "description": "Polymarket WebSocket streaming API.\n\n## Connection\n\n```\nwss://api.struct.to/ws\n```\n\n## Authentication\n\n**API key** — pass via header or query param:\n```\nX-Api-Key: <your-api-key>\n```\n```\nwss://api.struct.to/ws?api-key=<your-api-key>\n```\n\n**Public-key JWT** — for `pk_jwt_*` keys. Your users authenticate with a JWT you sign; credits are charged to your org.\n```\nAuthorization: Bearer <end-user-jwt>\n```\n```\nwss://api.struct.to/ws?token=<end-user-jwt>\n```\n\n## Application compression (zstd)\n\nNegotiate once at WebSocket upgrade (connection-scoped; applies to all room subscriptions on that connection):\n```\nX-Ws-Compression: zstd\n```\nPreferred. Query fallback:\n```\nwss://api.struct.to/ws?compression=zstd\n```\nOmit both for uncompressed text frames (default). Unsupported values fail the upgrade with `400`. Subscribe-body `compression` is not used. When enabled, room envelopes arrive as binary frames of zstd-compressed JSON.\n\n## Joining a room\n\n```json\n{\"type\":\"join_room\",\"payload\":{\"room_id\":\"polymarket_trades\"}}\n```\n\n## Subscribing\n\nAfter joining, send a `room_message` with room-specific filters:\n```json\n{\n\"type\": \"room_message\",\n\"payload\": {\n\"room_id\": \"polymarket_trades\",\n\"message\": {\"action\":\"subscribe\",\"condition_ids\":[\"0xabc…\"]}\n}\n}\n```\n\n## Keepalive\n\nSend `{\"type\":\"ping\"}` every 30s. Server responds with `{\"type\":\"pong\"}`. Connections idle for more than 60 seconds are closed.\n\n## Pricing\n\nBilled **per message** at different rates per room. A **1-credit hold** is charged on connect. Fractional credits accumulate and are **rounded up** on disconnect.\n\n| Room | Credits per message |\n|---|---|\n| `polymarket_trades` (Trades) | 0.002 |\n| `polymarket_order_book` (Order Book) | 0.001 |\n| `polymarket_asset_prices` (Asset Prices) | 0.005 |\n| `polymarket_asset_window_updates` (Asset Window Updates) | 0.025 |\n| `polymarket_market_metrics` (Market Metrics) | 0.025 |\n| `polymarket_event_metrics` (Event Metrics) | 0.025 |\n| `polymarket_tag_metrics` (Tag Metrics) | 0.025 |\n| `polymarket_position_metrics` (Position Metrics) | 0.025 |\n| `polymarket_trader_pnl` (Trader PnL) | 0.1 |\n| `polymarket_trader_positions` (Trader Positions) | 0.005 |\n| `polymarket_holder_metrics` (Holder Metrics) | 0.025 |\n| `polymarket_accounts` (Accounts) | 0.005 |\n| `polymarket_clob_rewards` (CLOB Rewards) | 0.01 |\n| `polymarket_events_stream` (Events Stream) | 0.025 |\n| `polymarket_markets_stream` (Markets Stream) | 0.025 |\n| `polymarket_oracle_events` (Oracle Events) | 0.025 |\n\n`pong`, `room_joined`, `room_left`, and error messages are free."
   },
   "servers": {
     "production": {
@@ -194,7 +194,7 @@
       "address": "polymarket_asset_prices",
       "title": "Asset Prices",
       "summary": "Asset prices stream",
-      "description": "Real-time crypto-asset price feed (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Delivers both raw `asset_price_tick` events on every price update and `asset_price_window_update` events at candle open/close boundaries.\n\n**Filter (optional):** `asset_symbols` — uppercase symbols to filter by. Empty array subscribes to all symbols.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time crypto-asset price feed (BTC, ETH, SOL, XRP, DOGE, BNB, HYPE). Delivers both raw `asset_price_tick` events on every price update and `asset_price_window_update` events at candle open/close boundaries.\n\n**Filter (optional):** `asset_symbols` — uppercase symbols to filter by. Empty array subscribes to all symbols (firehose).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/AssetPricesSubscribe"
@@ -214,7 +214,7 @@
       "address": "polymarket_asset_window_updates",
       "title": "Asset Window Updates",
       "summary": "Asset window updates stream",
-      "description": "Filtered stream of asset-price candle open/close events. Unlike `polymarket_asset_prices`, this room **requires** at least one filter so clients receive only the symbols and/or timeframes they care about.\n\n**Filters (at least one required):**\n- `asset_symbols` — uppercase symbols: `\"BTC\"`, `\"ETH\"`, `\"SOL\"`, `\"XRP\"`, `\"DOGE\"`, `\"BNB\"`, `\"HYPE\"`\n- `timeframes` — candle sizes: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"` / `\"24h\"`\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Filtered stream of asset-price candle open/close events. Unlike `polymarket_asset_prices`, this room **requires** at least one filter so clients receive only the symbols and/or timeframes they care about.\n\n**Filters (at least one required, unless using the firehose):**\n- `asset_symbols` — uppercase symbols: `\"BTC\"`, `\"ETH\"`, `\"SOL\"`, `\"XRP\"`, `\"DOGE\"`, `\"BNB\"`, `\"HYPE\"`\n- `timeframes` — candle sizes: `\"5m\"`, `\"15m\"`, `\"1h\"`, `\"4h\"`, `\"1d\"` / `\"24h\"`\n\n**Firehose:** Set `subscribe_all: true` to receive every window update across all symbols and timeframes. Filters are ignored when `subscribe_all` is set.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/AssetWindowUpdatesSubscribe"
@@ -231,7 +231,7 @@
       "address": "polymarket_market_metrics",
       "title": "Market Metrics",
       "summary": "Market (condition) metrics stream",
-      "description": "Real-time volume and transaction-count metrics per market condition, aggregated across multiple timeframes (`1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`). One event is pushed per timeframe window on each update.\n\n**Filter (required):** `condition_ids` — 64-char hex condition IDs. Invalid or malformed IDs are returned in `rejected`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time volume and transaction-count metrics per market condition, aggregated across multiple timeframes (`1m`, `5m`, `30m`, `1h`, `6h`, `24h`, `7d`, `30d`, `lifetime`). One event is pushed per timeframe window on each update.\n\n**Filter (required unless using the firehose):** `condition_ids` — 64-char hex condition IDs. Invalid or malformed IDs are returned in `rejected`.\n\n**Firehose:** Set `subscribe_all: true` to receive metrics updates for every market condition. `condition_ids` are ignored when set; the `timeframes` filter still applies.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/MarketMetricsSubscribe"
@@ -248,7 +248,7 @@
       "address": "polymarket_event_metrics",
       "title": "Event Metrics",
       "summary": "Event metrics stream",
-      "description": "Real-time volume and transaction-count metrics aggregated at the event (parent market group) level, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required):** `event_slugs` — event slugs (lowercase).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time volume and transaction-count metrics aggregated at the event (parent market group) level, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required unless using the firehose):** `event_slugs` — event slugs (lowercase).\n\n**Firehose:** Set `subscribe_all: true` to receive metrics updates for every event. `event_slugs` is ignored when set; the `timeframes` filter still applies.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/EventMetricsSubscribe"
@@ -265,7 +265,7 @@
       "address": "polymarket_tag_metrics",
       "title": "Tag Metrics",
       "summary": "Tag metrics stream",
-      "description": "Real-time volume and transaction-count metrics aggregated by tag, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required):** `tags` — tag labels or slugs, matched case-insensitively.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time volume and transaction-count metrics aggregated by tag, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required):** `tags` — tag labels or slugs, matched case-insensitively.\n\n**Firehose:** Set `subscribe_all: true` to receive metrics updates for every tag. The `tags` filter is ignored when set; the `timeframes` filter still applies.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TagMetricsSubscribe"
@@ -282,7 +282,7 @@
       "address": "polymarket_position_metrics",
       "title": "Position Metrics",
       "summary": "Position (outcome token) metrics stream",
-      "description": "Real-time volume, trade-count, and OHLC price/probability metrics per outcome-token position, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required):** `position_ids` — ERC-1155 token IDs (decimal or hex).\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time volume, trade-count, and OHLC price/probability metrics per outcome-token position, across multiple timeframes. One event is pushed per timeframe window on each update.\n\n**Filter (required unless using the firehose):** `position_ids` — ERC-1155 token IDs (decimal or hex).\n\n**Firehose:** Set `subscribe_all: true` to receive every metrics update across all positions. `position_ids` is ignored when set; the `timeframes` filter still applies.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/PositionMetricsSubscribe"
@@ -299,10 +299,13 @@
       "address": "polymarket_position_liquidity",
       "title": "Position Liquidity",
       "summary": "Position (outcome token) CLOB liquidity stream",
-      "description": "Real-time USD order-book liquidity per outcome-token position. An event is pushed whenever a position's liquidity changes.\n\n**Filter (optional):** `position_ids` — ERC-1155 token IDs (decimal or hex). Omit or send an empty array to receive every position's updates (firehose). When provided, up to 500 ids are accepted.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time USD order-book liquidity per outcome-token position. An event is pushed whenever a position's liquidity changes.\n\n**Filter (optional):** `position_ids` — ERC-1155 token IDs (decimal or hex). Omit or send an empty array to receive every position's updates (firehose). When provided, up to 500 ids are accepted.\n\n**Firehose:** Set `subscribe_all: true` to receive every position liquidity update. Filters are ignored when set.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/PositionLiquiditySubscribe"
+        },
+        "subscribeResponse": {
+          "$ref": "#/components/messages/PositionLiquiditySubscribeResponse"
         },
         "positionLiquidityEvent": {
           "$ref": "#/components/messages/PositionLiquidityEvent"
@@ -313,10 +316,13 @@
       "address": "polymarket_market_liquidity",
       "title": "Market Liquidity",
       "summary": "Market (condition) CLOB liquidity stream",
-      "description": "Real-time total USD order-book liquidity per market, summed across its outcome tokens. An event is pushed whenever a market's liquidity changes.\n\n**Filter (optional):** `condition_ids` — 64-char hex market IDs. Omit or send an empty array to receive every market's updates (firehose). When provided, up to 500 ids are accepted.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time total USD order-book liquidity per market, summed across its outcome tokens. An event is pushed whenever a market's liquidity changes.\n\n**Filter (optional):** `condition_ids` — 64-char hex market IDs. Omit or send an empty array, or set `subscribe_all: true`, to receive every market's updates (firehose). When provided, up to 500 ids are accepted.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/MarketLiquiditySubscribe"
+        },
+        "subscribeResponse": {
+          "$ref": "#/components/messages/MarketLiquiditySubscribeResponse"
         },
         "marketLiquidityEvent": {
           "$ref": "#/components/messages/MarketLiquidityEvent"
@@ -327,7 +333,7 @@
       "address": "polymarket_event_liquidity",
       "title": "Event Liquidity",
       "summary": "Event CLOB liquidity stream",
-      "description": "Real-time total USD order-book liquidity per event, summed across its markets. An event is pushed whenever an event's liquidity changes.\n\n**Filter (optional):** `event_slugs` — event slugs. Omit or send an empty array to receive every event's updates (firehose). When provided, up to 500 slugs are accepted.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time total USD order-book liquidity per event, summed across its markets. An event is pushed whenever an event's liquidity changes.\n\n**Filter (optional):** `event_slugs` — event slugs. Omit or send an empty array to receive every event's updates (firehose). When provided, up to 500 slugs are accepted.\n\n**Firehose:** Set `subscribe_all: true` (equivalent to sending no event_slugs) to receive every event's liquidity updates. Filters are ignored when set.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/EventLiquiditySubscribe"
@@ -341,7 +347,7 @@
       "address": "polymarket_trader_pnl",
       "title": "Trader PnL",
       "summary": "Trader PnL stream",
-      "description": "Real-time profit-and-loss updates for tracked traders. PnL is computed at three granularities — `global` (whole portfolio), `market` (per condition), `category` (per market category) — and each granularity is maintained over four rolling windows: `1d`, `7d`, `30d`, `lifetime`.\n\nUpdates are delivered **batched per block**: the server sends one envelope per (grain, family[, timeframe]) per block, carrying a `data` array of every row from that block matching the subscriber's filter. Empty batches are not sent. Each row carries a `dirty_kinds` array naming what triggered it. Full-row envelopes also carry a top-level `timeframe`.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filters:**\n• `update_types` — subset of `[\"global\", \"market\", \"category\"]`. Omit or leave empty to receive all three update types.\n• `timeframes` — subset of `[\"1d\", \"7d\", \"30d\", \"lifetime\"]`. Omit or leave empty to receive all timeframes. (Tick and resolution batches are window-agnostic and ignore this filter.)\n• `dirty_kinds` — subset of `[\"trade\", \"price\", \"window\", \"market_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Applied per-row: a row is included only if its `dirty_kinds` intersects this filter.\n\nAny unknown value in `update_types`, `timeframes`, or `dirty_kinds` rejects the entire subscription with an `error` message (values are case-insensitive and trimmed).\n\n**Full-row batches** (trade/window-driven): `trader_global_pnl_batch`, `trader_market_pnl_batch`, `trader_category_pnl_batch`.\n**Price-tick batches** (mark-to-market): `trader_global_tick_batch`, `trader_market_tick_batch`, `trader_category_tick_batch`.\n**Resolution batches** (market resolved): `trader_global_resolution_batch`, `trader_market_resolution_batch`, `trader_category_resolution_batch`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time profit-and-loss updates for tracked traders. PnL is computed at three granularities — `global` (whole portfolio), `market` (per condition), `category` (per market category) — and each granularity is maintained over four rolling windows: `1d`, `7d`, `30d`, `lifetime`.\n\nUpdates are delivered **batched per block**: the server sends one envelope per (grain, family[, timeframe]) per block, carrying a `data` array of every row from that block matching the subscriber's filter. Empty batches are not sent. Each row carries a `dirty_kinds` array naming what triggered it. Full-row envelopes also carry a top-level `timeframe`.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`. Firehose / `subscribe_all` is not supported on this room.\n\n**Optional filters:**\n• `update_types` — subset of `[\"global\", \"market\", \"category\"]`. Omit or leave empty to receive all three update types.\n• `timeframes` — subset of `[\"1d\", \"7d\", \"30d\", \"lifetime\"]`. Omit or leave empty to receive all timeframes. (Tick and resolution batches are window-agnostic and ignore this filter.)\n• `dirty_kinds` — subset of `[\"trade\", \"price\", \"window\", \"market_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Applied per-row: a row is included only if its `dirty_kinds` intersects this filter.\n\nAny unknown value in `update_types`, `timeframes`, or `dirty_kinds` rejects the entire subscription with an `error` message (values are case-insensitive and trimmed).\n\n**Full-row batches** (trade/window-driven): `trader_global_pnl_batch`, `trader_market_pnl_batch`, `trader_category_pnl_batch`.\n**Price-tick batches** (mark-to-market): `trader_global_tick_batch`, `trader_market_tick_batch`, `trader_category_tick_batch`.\n**Resolution batches** (market resolved): `trader_global_resolution_batch`, `trader_market_resolution_batch`, `trader_category_resolution_batch`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderPnlSubscribe"
@@ -382,7 +388,7 @@
       "address": "polymarket_trader_pnl_v3_1",
       "title": "Trader PnL v3.1",
       "summary": "Trader PnL v3.1 stream",
-      "description": "Real-time profit-and-loss updates for tracked traders. PnL is computed at three granularities — `global` (whole portfolio), `market` (per condition), `category` (per market category) — and each granularity is maintained over four rolling windows: `1d`, `7d`, `30d`, `lifetime`.\n\nUpdates are delivered **batched per block**: the server sends one envelope per (grain, family[, timeframe]) per block, carrying a `data` array of every row from that block matching the subscriber's filter. Empty batches are not sent. Each row carries a `dirty_kinds` array naming what triggered it. Full-row envelopes also carry a top-level `timeframe`. Every PnL row also carries the fee-excluded `raw_realized_pnl_usd` / `raw_unrealized_pnl_usd` / `raw_total_pnl_usd` fields.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filters:**\n• `update_types` — subset of `[\"global\", \"market\", \"category\"]`. Omit or leave empty to receive all three update types.\n• `timeframes` — subset of `[\"1d\", \"7d\", \"30d\", \"lifetime\"]`. Omit or leave empty to receive all timeframes. (Tick and resolution batches are window-agnostic and ignore this filter.)\n• `dirty_kinds` — subset of `[\"trade\", \"price\", \"window\", \"market_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Applied per-row: a row is included only if its `dirty_kinds` intersects this filter.\n\nAny unknown value in `update_types`, `timeframes`, or `dirty_kinds` rejects the entire subscription with an `error` message (values are case-insensitive and trimmed).\n\n**Full-row batches** (trade/window-driven): `trader_global_pnl_batch_v3_1`, `trader_market_pnl_batch_v3_1`, `trader_category_pnl_batch_v3_1`.\n**Price-tick batches** (mark-to-market): `trader_global_tick_batch_v3_1`, `trader_market_tick_batch_v3_1`, `trader_category_tick_batch_v3_1`.\n**Resolution batches** (market resolved): `trader_global_resolution_batch_v3_1`, `trader_market_resolution_batch_v3_1`, `trader_category_resolution_batch_v3_1`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time profit-and-loss updates for tracked traders. PnL is computed at three granularities — `global` (whole portfolio), `market` (per condition), `category` (per market category) — and each granularity is maintained over four rolling windows: `1d`, `7d`, `30d`, `lifetime`.\n\nUpdates are delivered **batched per block**: the server sends one envelope per (grain, family[, timeframe]) per block, carrying a `data` array of every row from that block matching the subscriber's filter. Empty batches are not sent. Each row carries a `dirty_kinds` array naming what triggered it. Full-row envelopes also carry a top-level `timeframe`. Every PnL row also carries the fee-excluded `raw_realized_pnl_usd` / `raw_unrealized_pnl_usd` / `raw_total_pnl_usd` fields.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`. Firehose / `subscribe_all` is not supported on this room.\n\n**Optional filters:**\n• `update_types` — subset of `[\"global\", \"market\", \"category\"]`. Omit or leave empty to receive all three update types.\n• `timeframes` — subset of `[\"1d\", \"7d\", \"30d\", \"lifetime\"]`. Omit or leave empty to receive all timeframes. (Tick and resolution batches are window-agnostic and ignore this filter.)\n• `dirty_kinds` — subset of `[\"trade\", \"price\", \"window\", \"market_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Applied per-row: a row is included only if its `dirty_kinds` intersects this filter.\n\nAny unknown value in `update_types`, `timeframes`, or `dirty_kinds` rejects the entire subscription with an `error` message (values are case-insensitive and trimmed).\n\n**Full-row batches** (trade/window-driven): `trader_global_pnl_batch_v3_1`, `trader_market_pnl_batch_v3_1`, `trader_category_pnl_batch_v3_1`.\n**Price-tick batches** (mark-to-market): `trader_global_tick_batch_v3_1`, `trader_market_tick_batch_v3_1`, `trader_category_tick_batch_v3_1`.\n**Resolution batches** (market resolved): `trader_global_resolution_batch_v3_1`, `trader_market_resolution_batch_v3_1`, `trader_category_resolution_batch_v3_1`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderPnlV31Subscribe"
@@ -423,7 +429,7 @@
       "address": "polymarket_trader_positions",
       "title": "Trader Positions",
       "summary": "Trader position updates — batched per-block fan-out covering trades, price ticks and resolutions",
-      "description": "Real-time position updates for tracked traders. Updates land in batches: the server sends one envelope per block, carrying every row from that block that matches the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` array names what triggered that row's update.\n\n**Envelope types** (selected per-row via `dirty_kinds`):\n- `trader_position_batch` — full rows, fired on trades.\n- `trader_position_price_batch` — compact price ticks, fired on mark-to-market moves (`dirty_kinds: [\"price\"]`).\n- `trader_position_resolution_batch` — resolution ticks, fired when a position's market resolves (`dirty_kinds: [\"position_resolved\"]`).\n\nEvery envelope includes the `block` number plus a `data` array of rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `dirty_kinds` — subset of `[\"trade\", \"price\", \"position_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Unknown values reject the subscription. The filter applies per-row: a row is included only if its `dirty_kinds` intersects the filter.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time position updates for tracked traders. Updates land in batches: the server sends one envelope per block, carrying every row from that block that matches the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` array names what triggered that row's update.\n\n**Envelope types** (selected per-row via `dirty_kinds`):\n- `trader_position_batch` — full rows, fired on trades.\n- `trader_position_price_batch` — compact price ticks, fired on mark-to-market moves (`dirty_kinds: [\"price\"]`).\n- `trader_position_resolution_batch` — resolution ticks, fired when a position's market resolves (`dirty_kinds: [\"position_resolved\"]`).\n\nEvery envelope includes the `block` number plus a `data` array of rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `dirty_kinds` — subset of `[\"trade\", \"price\", \"position_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Unknown values reject the subscription. The filter applies per-row: a row is included only if its `dirty_kinds` intersects the filter.\n\n**Firehose:** Set `subscribe_all: true` to receive position updates for every trader. `traders` is ignored when set; the `dirty_kinds` filter still applies.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderPositionsSubscribe"
@@ -446,7 +452,7 @@
       "address": "polymarket_trader_positions_v3_1",
       "title": "Trader Positions v3.1",
       "summary": "Trader position v3.1 updates — batched per-block fan-out covering trades, price ticks and resolutions",
-      "description": "Real-time position updates for tracked traders. Updates land in batches: the server sends one envelope per block, carrying every row from that block that matches the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` array names what triggered that row's update.\n\n**Envelope types** (selected per-row via `dirty_kinds`):\n- `trader_position_batch_v3_1` — full rows, fired on trades.\n- `trader_position_price_batch_v3_1` — compact price ticks, fired on mark-to-market moves (`dirty_kinds: [\"price\"]`).\n- `trader_position_resolution_batch_v3_1` — resolution ticks, fired when a position's market resolves (`dirty_kinds: [\"position_resolved\"]`).\n\nEvery envelope includes the `block` number plus a `data` array of rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `dirty_kinds` — subset of `[\"trade\", \"price\", \"position_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Unknown values reject the subscription. The filter applies per-row: a row is included only if its `dirty_kinds` intersects the filter.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time position updates for tracked traders. Updates land in batches: the server sends one envelope per block, carrying every row from that block that matches the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` array names what triggered that row's update.\n\n**Envelope types** (selected per-row via `dirty_kinds`):\n- `trader_position_batch_v3_1` — full rows, fired on trades.\n- `trader_position_price_batch_v3_1` — compact price ticks, fired on mark-to-market moves (`dirty_kinds: [\"price\"]`).\n- `trader_position_resolution_batch_v3_1` — resolution ticks, fired when a position's market resolves (`dirty_kinds: [\"position_resolved\"]`).\n\nEvery envelope includes the `block` number plus a `data` array of rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `dirty_kinds` — subset of `[\"trade\", \"price\", \"position_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Unknown values reject the subscription. The filter applies per-row: a row is included only if its `dirty_kinds` intersects the filter.\n\n**Firehose:** Set `subscribe_all: true` to receive position updates for every trader. `traders` is ignored when set; the `dirty_kinds` filter still applies.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderPositionsV31Subscribe"
@@ -469,7 +475,7 @@
       "address": "polymarket_trader_pnl_exits",
       "title": "Trader Exit Markers",
       "summary": "Position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason",
-      "description": "Real-time position exits for tracked traders, to overlay on the PnL chart. The server sends one envelope per block, carrying every exit from that block that matches the subscriber's filter. Empty batches are not sent.\n\n**Envelope type:** `trader_exit_marker_batch`. The envelope includes the `block` number plus a `data` array of exit rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `reasons` — subset of `[\"resolved_win\", \"resolved_loss\", \"sold_win\", \"sold_loss\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every reason (the default). Unknown values reject the subscription.\n\n**Exit reasons:** `resolved_win` / `resolved_loss` — held to market resolution; `sold_win` / `sold_loss` — closed before resolution, win/loss by realized PnL sign.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time position exits for tracked traders, to overlay on the PnL chart. The server sends one envelope per block, carrying every exit from that block that matches the subscriber's filter. Empty batches are not sent.\n\n**Envelope type:** `trader_exit_marker_batch`. The envelope includes the `block` number plus a `data` array of exit rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `reasons` — subset of `[\"resolved_win\", \"resolved_loss\", \"sold_win\", \"sold_loss\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every reason (the default). Unknown values reject the subscription.\n\n**Firehose:** Set `subscribe_all: true` to receive exits for every trader — the `traders` filter is ignored (and not required), while the `reasons` filter still applies.\n\n**Exit reasons:** `resolved_win` / `resolved_loss` — held to market resolution; `sold_win` / `sold_loss` — closed before resolution, win/loss by realized PnL sign.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderExitMarkersSubscribe"
@@ -486,7 +492,7 @@
       "address": "polymarket_trader_pnl_exits_v3_1",
       "title": "Trader Exit Markers v3.1",
       "summary": "Position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason. v3.1 rows add raw (fee-excluded) PnL and total fees",
-      "description": "Real-time position exits for tracked traders, to overlay on the PnL chart. The server sends one envelope per block, carrying every exit from that block that matches the subscriber's filter. Empty batches are not sent. Rows extend the legacy exit marker with `raw_pnl_usd` / `raw_pnl_pct` (fee-excluded PnL, rebased on the fee-free cost basis) and `total_fees`.\n\n**Envelope type:** `trader_exit_marker_batch_v3_1`. The envelope includes the `block` number plus a `data` array of exit rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `reasons` — subset of `[\"resolved_win\", \"resolved_loss\", \"sold_win\", \"sold_loss\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every reason (the default). Unknown values reject the subscription.\n\n**Exit reasons:** `resolved_win` / `resolved_loss` — held to market resolution; `sold_win` / `sold_loss` — closed before resolution, win/loss by realized PnL sign.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time position exits for tracked traders, to overlay on the PnL chart. The server sends one envelope per block, carrying every exit from that block that matches the subscriber's filter. Empty batches are not sent. Rows extend the legacy exit marker with `raw_pnl_usd` / `raw_pnl_pct` (fee-excluded PnL, rebased on the fee-free cost basis) and `total_fees`.\n\n**Envelope type:** `trader_exit_marker_batch_v3_1`. The envelope includes the `block` number plus a `data` array of exit rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `reasons` — subset of `[\"resolved_win\", \"resolved_loss\", \"sold_win\", \"sold_loss\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every reason (the default). Unknown values reject the subscription.\n\n**Firehose:** Set `subscribe_all: true` to receive exits for every trader — the `traders` filter is ignored (and not required), while the `reasons` filter still applies.\n\n**Exit reasons:** `resolved_win` / `resolved_loss` — held to market resolution; `sold_win` / `sold_loss` — closed before resolution, win/loss by realized PnL sign.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderExitMarkersV31Subscribe"
@@ -503,10 +509,13 @@
       "address": "polymarket_holder_metrics",
       "title": "Holder Metrics",
       "summary": "Position, condition, and event holder metrics updates",
-      "description": "Real-time holder metrics updates, batched per block. The server sends separate envelopes for position, condition, and event rows. Subscribe with at least one identifier array. Only the metric families you explicitly filter are delivered.\n\n**Envelope types:** `holder_metrics_position_batch`, `holder_metrics_condition_batch`, `holder_metrics_event_batch`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time holder metrics updates, batched per block. The server sends separate envelopes for position, condition, and event rows. Subscribe with at least one identifier array. Only the metric families you explicitly filter are delivered.\n\n**Envelope types:** `holder_metrics_position_batch`, `holder_metrics_condition_batch`, `holder_metrics_event_batch`.\n\n**Firehose:** Set `subscribe_all: true` to receive every holder metrics batch across all positions, conditions, and events. Filters are ignored when `subscribe_all` is set.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/HolderMetricsSubscribe"
+        },
+        "subscribeResponse": {
+          "$ref": "#/components/messages/HolderMetricsSubscribeResponse"
         },
         "holderMetricsPositionBatchEvent": {
           "$ref": "#/components/messages/HolderMetricsPositionBatchEvent"
@@ -523,7 +532,7 @@
       "address": "polymarket_accounts",
       "title": "Accounts",
       "summary": "Account balances stream",
-      "description": "Real-time balance updates for Polymarket wallet accounts.\n\nAlways streams ERC-1155 outcome token (shares) balance changes for subscribed wallets as `accounts_update` events. Opt in to additional token streams via boolean flags:\n- `include_usdce: true` — also receive `usdce_update` events (USDCe collateral, V1)\n- `include_pusd: true` — also receive `pusd_update` events (pUSD collateral, V2 CLOB)\n- `include_matic: true` — also receive `matic_update` events (MATIC gas balance)\n\n**Filter (required):** `wallets` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time balance updates for Polymarket wallet accounts.\n\nAlways streams ERC-1155 outcome token (shares) balance changes for subscribed wallets as `accounts_update` events. Opt in to additional token streams via boolean flags:\n- `include_usdce: true` — also receive `usdce_update` events (USDCe collateral, V1)\n- `include_pusd: true` — also receive `pusd_update` events (pUSD collateral, V2 CLOB)\n- `include_matic: true` — also receive `matic_update` events (MATIC gas balance)\n\n**Filter (required):** `wallets` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Firehose:** Set `subscribe_all: true` to receive balance updates for every wallet — the `wallets` filter is ignored, while the `include_*` flags still gate the extra token streams.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/AccountsSubscribe"
@@ -549,7 +558,7 @@
       "address": "polymarket_order_book",
       "title": "Order Book",
       "summary": "Order book snapshots stream",
-      "description": "Real-time CLOB orderbook snapshots for Polymarket outcome tokens. Each event contains the full aggregated bid/ask book plus pre-computed derived metrics (best bid/ask, mid price, spread, USD liquidity depth, level counts).\n\n**Filters (at least one required, max 500 combined):**\n- `condition_ids` — 64-char hex condition IDs (market); delivers snapshots for all positions in that market\n- `position_ids` — hex token/asset IDs (individual outcome tokens)\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time CLOB orderbook snapshots for Polymarket outcome tokens. Each event contains the full aggregated bid/ask book plus pre-computed derived metrics (best bid/ask, mid price, spread, USD liquidity depth, level counts).\n\n**Filters (max 500 combined, unless using the firehose):**\n- `condition_ids` — 64-char hex condition IDs (market); delivers snapshots for all positions in that market\n- `position_ids` — hex token/asset IDs (individual outcome tokens)\n\n**Firehose:** Set `subscribe_all: true` to receive every orderbook snapshot across all markets. Firehose delivery is batched: every 50ms, snapshots are conflated per asset (newest book wins) and sent as a single `order_book_batch` envelope whose `data` is an array of snapshots. Filters are ignored when `subscribe_all` is set.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/OrderBookSubscribe"
@@ -559,6 +568,9 @@
         },
         "orderBookUpdateEvent": {
           "$ref": "#/components/messages/OrderBookUpdateEvent"
+        },
+        "orderBookBatchEvent": {
+          "$ref": "#/components/messages/OrderBookBatchEvent"
         }
       }
     },
@@ -1452,6 +1464,9 @@
       "summary": "Receive position (outcome token) clob liquidity stream events",
       "messages": [
         {
+          "$ref": "#/channels/polymarket_position_liquidity/messages/subscribeResponse"
+        },
+        {
           "$ref": "#/channels/polymarket_position_liquidity/messages/positionLiquidityEvent"
         }
       ]
@@ -1475,6 +1490,9 @@
       },
       "summary": "Receive market (condition) clob liquidity stream events",
       "messages": [
+        {
+          "$ref": "#/channels/polymarket_market_liquidity/messages/subscribeResponse"
+        },
         {
           "$ref": "#/channels/polymarket_market_liquidity/messages/marketLiquidityEvent"
         }
@@ -1746,6 +1764,9 @@
       "summary": "Receive position, condition, and event holder metrics updates events",
       "messages": [
         {
+          "$ref": "#/channels/polymarket_holder_metrics/messages/subscribeResponse"
+        },
+        {
           "$ref": "#/channels/polymarket_holder_metrics/messages/holderMetricsPositionBatchEvent"
         },
         {
@@ -1816,6 +1837,9 @@
         },
         {
           "$ref": "#/channels/polymarket_order_book/messages/orderBookUpdateEvent"
+        },
+        {
+          "$ref": "#/channels/polymarket_order_book/messages/orderBookBatchEvent"
         }
       ]
     },
@@ -3145,6 +3169,12 @@
           "$ref": "#/components/schemas/PositionLiquidityEvent"
         }
       },
+      "PositionLiquiditySubscribeResponse": {
+        "summary": "Subscription acknowledgement for position (outcome token) clob liquidity stream",
+        "payload": {
+          "$ref": "#/components/schemas/PositionLiquiditySubscribeResponse"
+        }
+      },
       "MarketLiquiditySubscribe": {
         "summary": "Subscribe to market (condition) clob liquidity stream",
         "payload": {
@@ -3162,6 +3192,12 @@
         "summary": "latest total USD liquidity for a market",
         "payload": {
           "$ref": "#/components/schemas/MarketLiquidityEvent"
+        }
+      },
+      "MarketLiquiditySubscribeResponse": {
+        "summary": "Subscription acknowledgement for market (condition) clob liquidity stream",
+        "payload": {
+          "$ref": "#/components/schemas/MarketLiquiditySubscribeResponse"
         }
       },
       "EventLiquiditySubscribe": {
@@ -3602,6 +3638,12 @@
           "$ref": "#/components/schemas/HolderMetricsEventBatchEvent"
         }
       },
+      "HolderMetricsSubscribeResponse": {
+        "summary": "Subscription acknowledgement for position, condition, and event holder metrics updates",
+        "payload": {
+          "$ref": "#/components/schemas/HolderMetricsSubscribeResponse"
+        }
+      },
       "AccountsSubscribe": {
         "summary": "Subscribe to account balances stream",
         "payload": {
@@ -3775,6 +3817,12 @@
             }
           }
         ]
+      },
+      "OrderBookBatchEvent": {
+        "summary": "Server-pushed firehose batch: all orderbook snapshots from the last 50ms window, conflated per asset (newest book per asset)",
+        "payload": {
+          "$ref": "#/components/schemas/OrderBookBatchEvent"
+        }
       },
       "OrderBookSubscribeResponse": {
         "summary": "Subscription acknowledgement for order book snapshots stream",
@@ -14395,6 +14443,10 @@
               "type": "string"
             },
             "description": "Filter values that were rejected (invalid format or unknown type)"
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           }
         }
       },
@@ -14572,6 +14624,10 @@
               "type": "string"
             },
             "description": "Ids that failed normalization or exceeded the per-sub cap."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -14854,6 +14910,10 @@
           "subscribe_all": {
             "type": "boolean",
             "description": "Whether to subscribe to all matching events."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "rejected": {
             "type": "array",
@@ -16215,6 +16275,10 @@
               "type": "string"
             },
             "description": "Accepted symbols. Empty array means subscribed to all symbols."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           }
         }
       },
@@ -16311,7 +16375,7 @@
       },
       "AssetWindowUpdatesSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the asset window updates stream. At least one of asset_symbols or timeframes must be non-empty.",
+        "description": "Subscribe to the asset window updates stream. At least one of asset_symbols or timeframes must be non-empty, or set subscribe_all for the firehose.",
         "required": [
           "action"
         ],
@@ -16345,6 +16409,11 @@
               ]
             },
             "description": "Candle sizes to filter by. \"1d\" and \"24h\" are treated as equivalent."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive every window update across all symbols and timeframes. Filters are ignored when set."
           }
         }
       },
@@ -16366,6 +16435,14 @@
             },
             "description": "Accepted metric timeframes."
           },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
+          },
           "error": {
             "type": [
               "string",
@@ -16385,10 +16462,9 @@
       },
       "MarketMetricsSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the market metrics stream. condition_ids is required and must be non-empty.",
+        "description": "Subscribe to the market metrics stream. condition_ids is required and must be non-empty, unless subscribe_all is set.",
         "required": [
-          "action",
-          "condition_ids"
+          "action"
         ],
         "properties": {
           "action": {
@@ -16424,6 +16500,11 @@
               ]
             },
             "description": "Accepted metric timeframes."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive metrics updates for every market condition. condition_ids are ignored when set; the timeframes filter still applies."
           }
         }
       },
@@ -16458,6 +16539,14 @@
               "null"
             ],
             "description": "Set if the entire subscription was rejected"
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           }
         }
       },
@@ -16566,10 +16655,9 @@
       },
       "EventMetricsSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the event metrics stream. event_slugs is required and must be non-empty.",
+        "description": "Subscribe to the event metrics stream. event_slugs is required and must be non-empty, unless subscribe_all is set.",
         "required": [
-          "action",
-          "event_slugs"
+          "action"
         ],
         "properties": {
           "action": {
@@ -16585,7 +16673,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Event slugs (lowercase)",
+            "description": "Event slugs (lowercase). Required unless subscribe_all is set.",
             "minItems": 1
           },
           "timeframes": {
@@ -16605,8 +16693,66 @@
               ]
             },
             "description": "Accepted metric timeframes."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive every update on this stream (event_slugs is ignored when set; the timeframes filter still applies)."
           }
-        }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "action": {
+                "enum": [
+                  "unsubscribe_all"
+                ]
+              }
+            },
+            "required": [
+              "action"
+            ]
+          },
+          {
+            "properties": {
+              "action": {
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "subscribe_all": {
+                "enum": [
+                  true
+                ]
+              }
+            },
+            "required": [
+              "action",
+              "subscribe_all"
+            ]
+          },
+          {
+            "properties": {
+              "action": {
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "subscribe_all": {
+                "enum": [
+                  false
+                ]
+              },
+              "event_slugs": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "action",
+              "event_slugs"
+            ]
+          }
+        ]
       },
       "EventMetricsSubscribeResponse": {
         "type": "object",
@@ -16632,6 +16778,14 @@
               "type": "string"
             },
             "description": "Rejected filter values."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -16747,10 +16901,9 @@
       },
       "TagMetricsSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the tag metrics stream. tags is required and must be non-empty.",
+        "description": "Subscribe to the tag metrics stream. tags is required and must be non-empty, unless subscribe_all is set.",
         "required": [
-          "action",
-          "tags"
+          "action"
         ],
         "properties": {
           "action": {
@@ -16786,6 +16939,11 @@
               ]
             },
             "description": "Accepted metric timeframes."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive metrics updates for every tag on this stream. The tags filter is ignored when set; the timeframes filter still applies."
           }
         }
       },
@@ -16813,6 +16971,14 @@
               "type": "string"
             },
             "description": "Rejected filter values."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -16928,10 +17094,9 @@
       },
       "PositionMetricsSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the position metrics stream. position_ids is required and must be non-empty.",
+        "description": "Subscribe to the position metrics stream. position_ids is required and must be non-empty, unless subscribe_all is set.",
         "required": [
-          "action",
-          "position_ids"
+          "action"
         ],
         "properties": {
           "action": {
@@ -16967,6 +17132,11 @@
               ]
             },
             "description": "Accepted metric timeframes."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive every metrics update across all positions (position_ids is ignored when set; the timeframes filter still applies)."
           }
         }
       },
@@ -16994,6 +17164,14 @@
               "type": "string"
             },
             "description": "Rejected filter values."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -17267,6 +17445,46 @@
             },
             "description": "ERC-1155 outcome token IDs (decimal or hex). Empty/omitted = all positions.",
             "maxItems": 500
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive every position liquidity update on this stream (filters are ignored when set)."
+          }
+        }
+      },
+      "PositionLiquiditySubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a position liquidity subscription.",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted position IDs (empty = firehose)."
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Rejected filter values."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Subscription error message."
           }
         }
       },
@@ -17316,6 +17534,46 @@
             },
             "description": "64-char hex market IDs. Empty/omitted = all markets.",
             "maxItems": 500
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive every update on this stream (filters are ignored when set)."
+          }
+        }
+      },
+      "MarketLiquiditySubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a market liquidity subscription.",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted condition IDs (empty = firehose)."
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Rejected filter values."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Subscription error message."
           }
         }
       },
@@ -17365,6 +17623,11 @@
             },
             "description": "Event slugs. Empty/omitted = all events.",
             "maxItems": 500
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive every event's liquidity updates (filters are ignored when set)."
           }
         }
       },
@@ -17394,7 +17657,7 @@
       },
       "TraderPnlSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the trader PnL stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes.",
+        "description": "Subscribe to the trader PnL stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. Firehose / `subscribe_all` is not supported.",
         "required": [
           "action",
           "traders"
@@ -17413,7 +17676,7 @@
             "items": {
               "type": "string"
             },
-            "description": "EVM wallet addresses",
+            "description": "EVM wallet addresses. Required.",
             "minItems": 1
           },
           "update_types": {
@@ -17502,6 +17765,10 @@
               "type": "string"
             },
             "description": "Trader addresses that were rejected (invalid EVM format)."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -18727,10 +18994,9 @@
       },
       "TraderPnlV31SubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the trader PnL stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes.",
+        "description": "Subscribe to the trader PnL v3.1 stream. On `action: \"subscribe\"`, `traders` is required and must be non-empty. `unsubscribe_all` needs no traders. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. Firehose / `subscribe_all` is not supported.",
         "required": [
-          "action",
-          "traders"
+          "action"
         ],
         "properties": {
           "action": {
@@ -18746,7 +19012,7 @@
             "items": {
               "type": "string"
             },
-            "description": "EVM wallet addresses",
+            "description": "EVM wallet addresses. Required and non-empty for subscribe; omit for unsubscribe_all.",
             "minItems": 1
           },
           "update_types": {
@@ -18835,6 +19101,10 @@
               "type": "string"
             },
             "description": "Trader addresses that were rejected (invalid EVM format)."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -20168,10 +20438,9 @@
       },
       "TraderPositionsSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the trader positions stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every kind of update.",
+        "description": "Subscribe to the trader positions stream. `traders` is required and must be non-empty unless `subscribe_all` is set. `dirty_kinds` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every kind of update.",
         "required": [
-          "action",
-          "traders"
+          "action"
         ],
         "properties": {
           "action": {
@@ -20187,8 +20456,7 @@
             "items": {
               "type": "string"
             },
-            "description": "EVM wallet addresses",
-            "minItems": 1
+            "description": "EVM wallet addresses. Required and non-empty unless subscribe_all is set."
           },
           "dirty_kinds": {
             "type": "array",
@@ -20201,10 +20469,68 @@
                 "all"
               ]
             },
-            "description": "Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `[\"all\"]` to accept every kind (the default). Unknown values reject the subscription.",
+            "description": "Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `[\"all\"]` to accept every kind (the default). Unknown values reject the subscription. Also applies to firehose subscriptions.",
             "uniqueItems": true
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive every position update on this stream (`traders` is ignored when set; `dirty_kinds` still applies)."
           }
-        }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "action": {
+                "enum": [
+                  "unsubscribe_all"
+                ]
+              }
+            },
+            "required": [
+              "action"
+            ]
+          },
+          {
+            "properties": {
+              "action": {
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "subscribe_all": {
+                "enum": [
+                  true
+                ]
+              }
+            },
+            "required": [
+              "action",
+              "subscribe_all"
+            ]
+          },
+          {
+            "properties": {
+              "action": {
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "subscribe_all": {
+                "enum": [
+                  false
+                ]
+              },
+              "traders": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "action",
+              "traders"
+            ]
+          }
+        ]
       },
       "TraderPositionsSubscribeResponse": {
         "type": "object",
@@ -20235,6 +20561,14 @@
               "type": "string"
             },
             "description": "Rejected filter values."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -20809,10 +21143,9 @@
       },
       "TraderPositionsV31SubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the trader positions stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every kind of update.",
+        "description": "Subscribe to the trader positions stream. `traders` is required and must be non-empty unless `subscribe_all` is set. `dirty_kinds` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every kind of update.",
         "required": [
-          "action",
-          "traders"
+          "action"
         ],
         "properties": {
           "action": {
@@ -20828,8 +21161,7 @@
             "items": {
               "type": "string"
             },
-            "description": "EVM wallet addresses",
-            "minItems": 1
+            "description": "EVM wallet addresses. Required and non-empty unless subscribe_all is set."
           },
           "dirty_kinds": {
             "type": "array",
@@ -20842,10 +21174,68 @@
                 "all"
               ]
             },
-            "description": "Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `[\"all\"]` to accept every kind (the default). Unknown values reject the subscription.",
+            "description": "Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `[\"all\"]` to accept every kind (the default). Unknown values reject the subscription. Also applies to firehose subscriptions.",
             "uniqueItems": true
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive every position update on this stream (`traders` is ignored when set; `dirty_kinds` still applies)."
           }
-        }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "action": {
+                "enum": [
+                  "unsubscribe_all"
+                ]
+              }
+            },
+            "required": [
+              "action"
+            ]
+          },
+          {
+            "properties": {
+              "action": {
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "subscribe_all": {
+                "enum": [
+                  true
+                ]
+              }
+            },
+            "required": [
+              "action",
+              "subscribe_all"
+            ]
+          },
+          {
+            "properties": {
+              "action": {
+                "enum": [
+                  "subscribe"
+                ]
+              },
+              "subscribe_all": {
+                "enum": [
+                  false
+                ]
+              },
+              "traders": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "action",
+              "traders"
+            ]
+          }
+        ]
       },
       "TraderPositionsV31SubscribeResponse": {
         "type": "object",
@@ -20876,6 +21266,14 @@
               "type": "string"
             },
             "description": "Rejected filter values."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -21513,10 +21911,9 @@
       },
       "TraderExitMarkersSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the trader exit markers stream. `traders` is required and must be non-empty. `reasons` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every exit reason.",
+        "description": "Subscribe to the trader exit markers stream. `traders` is required and must be non-empty unless `subscribe_all` is set. `reasons` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every exit reason.",
         "required": [
-          "action",
-          "traders"
+          "action"
         ],
         "properties": {
           "action": {
@@ -21532,7 +21929,7 @@
             "items": {
               "type": "string"
             },
-            "description": "EVM wallet addresses",
+            "description": "EVM wallet addresses. Required unless subscribe_all is set.",
             "minItems": 1
           },
           "reasons": {
@@ -21549,6 +21946,11 @@
             },
             "description": "Restrict pushed exits to this subset of reasons. Omit, leave empty, or pass `[\"all\"]` to accept every reason (the default). Unknown values reject the subscription.",
             "uniqueItems": true
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive exits for every trader on this stream. The traders filter is ignored when set; reasons still applies."
           }
         }
       },
@@ -21582,6 +21984,14 @@
               "type": "string"
             },
             "description": "Rejected filter values."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -21711,10 +22121,9 @@
       },
       "TraderExitMarkersV31SubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the trader exit markers v3.1 stream. `traders` is required and must be non-empty. `reasons` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every exit reason.",
+        "description": "Subscribe to the trader exit markers v3.1 stream. `traders` is required and must be non-empty unless `subscribe_all` is set. `reasons` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every exit reason.",
         "required": [
-          "action",
-          "traders"
+          "action"
         ],
         "properties": {
           "action": {
@@ -21730,7 +22139,7 @@
             "items": {
               "type": "string"
             },
-            "description": "EVM wallet addresses",
+            "description": "EVM wallet addresses. Required unless subscribe_all is set.",
             "minItems": 1
           },
           "reasons": {
@@ -21747,6 +22156,11 @@
             },
             "description": "Restrict pushed exits to this subset of reasons. Omit, leave empty, or pass `[\"all\"]` to accept every reason (the default). Unknown values reject the subscription.",
             "uniqueItems": true
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive exits for every trader on this stream. The traders filter is ignored when set; reasons still applies."
           }
         }
       },
@@ -21780,6 +22194,14 @@
               "type": "string"
             },
             "description": "Rejected filter values."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -21928,7 +22350,7 @@
         "required": [
           "action"
         ],
-        "description": "Subscribe to holder metrics for explicit positions, conditions, or events. At least one identifier array must be non-empty. Omitted arrays receive no updates for that metric family. Up to 500 total identifiers are accepted.",
+        "description": "Subscribe to holder metrics for explicit positions, conditions, or events. At least one identifier array must be non-empty, unless subscribe_all is set. Omitted arrays receive no updates for that metric family. Up to 500 total identifiers are accepted.",
         "properties": {
           "action": {
             "type": "string",
@@ -21937,6 +22359,11 @@
               "unsubscribe_all"
             ],
             "description": "Subscription action."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive every update on this stream (filters are ignored when set)."
           },
           "position_ids": {
             "type": "array",
@@ -21961,6 +22388,48 @@
             },
             "maxItems": 500,
             "description": "Event slugs to receive event holder metrics for."
+          }
+        }
+      },
+      "HolderMetricsSubscribeResponse": {
+        "type": "object",
+        "description": "Server acknowledgement for a holder metrics subscription.",
+        "properties": {
+          "position_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted position IDs."
+          },
+          "condition_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted condition IDs."
+          },
+          "event_slugs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Accepted event slugs."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Subscription error message."
           }
         }
       },
@@ -22153,10 +22622,9 @@
       },
       "AccountsSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the accounts stream. `wallets` is required. Share balance updates (`accounts_update`) are always delivered. Set `include_usdce`, `include_pusd`, or `include_matic` to also receive those balance streams.",
+        "description": "Subscribe to the accounts stream. `wallets` is required unless `subscribe_all` is set. Share balance updates (`accounts_update`) are always delivered. Set `include_usdce`, `include_pusd`, or `include_matic` to also receive those balance streams.",
         "required": [
-          "action",
-          "wallets"
+          "action"
         ],
         "properties": {
           "action": {
@@ -22172,8 +22640,7 @@
             "items": {
               "type": "string"
             },
-            "description": "EVM wallet addresses",
-            "minItems": 1
+            "description": "EVM wallet addresses. Required unless subscribe_all is set."
           },
           "include_usdce": {
             "type": "boolean",
@@ -22189,6 +22656,11 @@
             "type": "boolean",
             "default": false,
             "description": "Also stream MATIC gas balance updates for subscribed wallets"
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive balance updates for every wallet on this stream. The wallets filter is ignored when set; the include_* flags still gate the extra token streams."
           }
         }
       },
@@ -22221,6 +22693,14 @@
           "include_matic": {
             "type": "boolean",
             "description": "Whether to include MATIC balances."
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
@@ -22375,7 +22855,7 @@
       },
       "OrderBookSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the order book stream. At least one filter is required. Maximum 500 combined condition_ids + position_ids per client. No `type` field is needed — the server routes by room_id.",
+        "description": "Subscribe to the order book stream. At least one filter is required unless `subscribe_all` is true. Maximum 500 combined condition_ids + position_ids per client. No `type` field is needed — the server routes by room_id.",
         "required": [
           "action"
         ],
@@ -22403,6 +22883,11 @@
             },
             "description": "Token / asset IDs (individual outcome positions, hex strings).",
             "maxItems": 500
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Firehose: receive every orderbook snapshot across all markets, delivered as conflated `order_book_batch` envelopes every 50ms. Filters are ignored when set."
           }
         }
       },
@@ -22430,6 +22915,57 @@
               "type": "string"
             },
             "description": "Filter values that were rejected (invalid format or limit exceeded)"
+          },
+          "subscribe_all": {
+            "type": "boolean",
+            "description": "Whether the firehose subscription is active"
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)"
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Subscription error message."
+          }
+        }
+      },
+      "OrderBookBatchEvent": {
+        "type": "object",
+        "description": "Server-pushed firehose batch: all orderbook snapshots from the last 50ms window, conflated per asset (newest book per asset). Envelope type: \"order_book_batch\". Sent only to `subscribe_all` subscribers.",
+        "required": [
+          "type",
+          "room_id",
+          "count",
+          "data"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "order_book_batch"
+            ]
+          },
+          "room_id": {
+            "type": "string",
+            "enum": [
+              "polymarket_order_book"
+            ],
+            "description": "WebSocket room ID."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of snapshots in this batch"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderBookUpdateEvent"
+            },
+            "description": "Conflated snapshots, ordered by timestamp ascending"
           }
         }
       },
@@ -22603,6 +23139,10 @@
               "type": "string"
             },
             "description": "Filter values that were rejected"
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)"
           }
         }
       },
@@ -22883,6 +23423,10 @@
               "type": "string"
             },
             "description": "Ids that failed normalization (ids mode)."
+          },
+          "compression": {
+            "type": "boolean",
+            "description": "Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake)."
           },
           "error": {
             "type": [
