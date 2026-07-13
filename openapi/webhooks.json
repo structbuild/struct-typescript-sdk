@@ -2680,6 +2680,7 @@
         "required": [
           "trader",
           "taker",
+          "trader_info",
           "position_id",
           "trade_id",
           "hash",
@@ -2701,6 +2702,10 @@
           "taker": {
             "type": "string",
             "description": "Order filler wallet address (lowercase)"
+          },
+          "trader_info": {
+            "$ref": "#/components/schemas/WebhookTraderInfo",
+            "description": "Maker trader display metadata (address + name / pseudonym / image / x / verified)"
           },
           "position_id": {
             "type": "string",
@@ -2824,6 +2829,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -2834,10 +2842,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -4268,6 +4277,7 @@
         "required": [
           "trader",
           "taker",
+          "trader_info",
           "position_id",
           "trade_id",
           "hash",
@@ -4289,6 +4299,10 @@
           "taker": {
             "type": "string",
             "description": "Order filler wallet address (lowercase)"
+          },
+          "trader_info": {
+            "$ref": "#/components/schemas/WebhookTraderInfo",
+            "description": "Maker trader display metadata (address + name / pseudonym / image / x / verified)"
           },
           "position_id": {
             "type": "string",
@@ -4422,6 +4436,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -4432,10 +4449,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -4448,7 +4466,8 @@
         "description": "Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on\nfill-style trades only.",
         "enum": [
           "OrderFilled",
-          "OrdersMatched"
+          "OrdersMatched",
+          "ComboExecution"
         ]
       },
       "NewTradePayload": {
@@ -4457,6 +4476,7 @@
         "required": [
           "trader",
           "taker",
+          "trader_info",
           "position_id",
           "trade_id",
           "hash",
@@ -4478,6 +4498,10 @@
           "taker": {
             "type": "string",
             "description": "Order filler wallet address (lowercase)"
+          },
+          "trader_info": {
+            "$ref": "#/components/schemas/WebhookTraderInfo",
+            "description": "Maker trader display metadata (address + name / pseudonym / image / x / verified)"
           },
           "position_id": {
             "type": "string",
@@ -4611,6 +4635,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -4621,10 +4648,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -8599,6 +8627,25 @@
           "Split",
           "Cancelled",
           "PositionsConverted",
+          "ComboCreation",
+          "ComboExecution",
+          "ComboStatusUpdate",
+          "ComboPositionsSplit",
+          "ComboPositionsMerged",
+          "ComboSplitOnCondition",
+          "ComboMergedOnCondition",
+          "ComboExtracted",
+          "ComboInjected",
+          "ComboConvertedToYesBasket",
+          "ComboMergedFromYesBasket",
+          "ComboCompressed",
+          "ComboPositionRedeemed",
+          "ComboWrapped",
+          "ComboUnwrapped",
+          "ComboHorizontalSplit",
+          "ComboHorizontalMerge",
+          "ComboPositionConverted",
+          "ComboPositionMigrated",
           "Initialization",
           "Proposal",
           "Dispute",
@@ -9228,10 +9275,11 @@
               "description": "Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on\nfill-style trades only.",
               "enum": [
                 "OrderFilled",
-                "OrdersMatched"
+                "OrdersMatched",
+                "ComboExecution"
               ]
             },
-            "description": "Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default).",
+            "description": "Only fire for these fill-style trade types. Empty = OrderFilled, OrdersMatched, and ComboExecution only (default).",
             "maxItems": 500
           },
           "exclude_shortterm_markets": {
@@ -9400,6 +9448,25 @@
                 "Split",
                 "Cancelled",
                 "PositionsConverted",
+                "ComboCreation",
+                "ComboExecution",
+                "ComboStatusUpdate",
+                "ComboPositionsSplit",
+                "ComboPositionsMerged",
+                "ComboSplitOnCondition",
+                "ComboMergedOnCondition",
+                "ComboExtracted",
+                "ComboInjected",
+                "ComboConvertedToYesBasket",
+                "ComboMergedFromYesBasket",
+                "ComboCompressed",
+                "ComboPositionRedeemed",
+                "ComboWrapped",
+                "ComboUnwrapped",
+                "ComboHorizontalSplit",
+                "ComboHorizontalMerge",
+                "ComboPositionConverted",
+                "ComboPositionMigrated",
                 "Initialization",
                 "Proposal",
                 "Dispute",
@@ -10216,12 +10283,59 @@
           "lifetime"
         ]
       },
+      "WebhookTraderInfo": {
+        "type": "object",
+        "description": "Trader display metadata nested into trade-fill webhook payloads.\n\nMirrors the shape used by the trade-event and PnL alert payloads. `address`\n(the lower-cased maker wallet) is always present; the remaining fields are\nsourced from the producer-enriched `trader_profile` carried on the trade and\nare omitted until that profile has been resolved.",
+        "required": [
+          "address",
+          "verified_badge"
+        ],
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Maker wallet address (lower-cased)"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Display name"
+          },
+          "pseudonym": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Polymarket pseudonym"
+          },
+          "profile_image": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Profile image URL (our CDN copy when available)"
+          },
+          "x_username": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Linked X (Twitter) username"
+          },
+          "verified_badge": {
+            "type": "boolean",
+            "description": "Whether the trader carries a verified badge"
+          }
+        }
+      },
       "WhaleTradePayload": {
         "type": "object",
         "description": "Payload delivered when a trade exceeds the configured size and probability thresholds",
         "required": [
           "trader",
           "taker",
+          "trader_info",
           "position_id",
           "trade_id",
           "hash",
@@ -10243,6 +10357,10 @@
           "taker": {
             "type": "string",
             "description": "Order filler wallet address (lowercase)"
+          },
+          "trader_info": {
+            "$ref": "#/components/schemas/WebhookTraderInfo",
+            "description": "Maker trader display metadata (address + name / pseudonym / image / x / verified)"
           },
           "position_id": {
             "type": "string",
@@ -10376,6 +10494,9 @@
                   "NegRiskAdapter",
                   "CTFExchangeV2",
                   "NegRiskExchangeV2",
+                  "ComboExchange",
+                  "ComboCombinatorialModule",
+                  "ComboNegRiskModule",
                   "Unknown"
                 ]
               }
@@ -10386,10 +10507,11 @@
             "oneOf": [
               {
                 "type": "string",
-                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled` and\n`OrdersMatched`.",
+                "description": "Trade type for trade-fill webhook payloads. Webhook events only fire on\nfill-style trades, so the only valid variants are `OrderFilled`,\n`OrdersMatched`, and `ComboExecution`.",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             ],
@@ -10458,7 +10580,7 @@
         "description": "Tagged union of trade-type variants delivered to `trader_trade_event` callbacks. Pending-only fields such as `received_at` are absent — callbacks fire only for confirmed trades.",
         "oneOf": [
           {
-            "title": "OrderFilled / OrdersMatched",
+            "title": "OrderFilled / OrdersMatched / ComboExecution",
             "description": "A confirmed buy or sell matched on the exchange.",
             "type": "object",
             "required": [
@@ -10638,7 +10760,8 @@
                 "type": "string",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched"
+                  "OrdersMatched",
+                  "ComboExecution"
                 ]
               }
             },
@@ -12600,7 +12723,7 @@
     "trader-new-trade": {
       "post": {
         "summary": "New trade callback",
-        "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.",
+        "description": "Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`, `ComboExecution`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.",
         "operationId": "trader-new-trade",
         "tags": [
           "Webhook Callbacks"

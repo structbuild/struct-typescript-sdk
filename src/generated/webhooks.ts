@@ -209,7 +209,7 @@ export interface webhooks {
         put?: never;
         /**
          * New trade callback
-         * @description Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.
+         * @description Fired on fill-style trades only (`OrderFilled`, `OrdersMatched`, `ComboExecution`). Use `wallet_addresses` to watch specific traders, `min_usd_value` to filter by size, and `min_price`/`max_price` to restrict to a probability range.
          */
         post: operations["trader-new-trade"];
         delete?: never;
@@ -1814,6 +1814,8 @@ export interface components {
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID (0x-prefixed hex) */
@@ -1870,9 +1872,9 @@ export interface components {
              */
             price: number;
             /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "ComboExchange" | "ComboCombinatorialModule" | "ComboNegRiskModule" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
         };
         /** @description Global PnL webhook payload. */
         GlobalPnlPayload: {
@@ -2543,6 +2545,8 @@ export interface components {
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID */
@@ -2604,22 +2608,24 @@ export interface components {
              */
             probability?: number | null;
             /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "ComboExchange" | "ComboCombinatorialModule" | "ComboNegRiskModule" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
         };
         /**
          * @description Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on
          *     fill-style trades only.
          * @enum {string}
          */
-        NewTradeFilterType: "OrderFilled" | "OrdersMatched";
+        NewTradeFilterType: "OrderFilled" | "OrdersMatched" | "ComboExecution";
         /** @description Payload delivered on every order-filled trade */
         NewTradePayload: {
             /** @description Limit-order maker wallet address (lowercase) */
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID */
@@ -2681,9 +2687,9 @@ export interface components {
              */
             probability?: number | null;
             /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "ComboExchange" | "ComboCombinatorialModule" | "ComboNegRiskModule" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
             /**
              * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
              *     trades; may be `0x0000…` for V2 trades placed without a builder code.
@@ -4290,7 +4296,7 @@ export interface components {
          *     full set of typed prediction-trade variants.
          * @enum {string}
          */
-        TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
+        TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "ComboCreation" | "ComboExecution" | "ComboStatusUpdate" | "ComboPositionsSplit" | "ComboPositionsMerged" | "ComboSplitOnCondition" | "ComboMergedOnCondition" | "ComboExtracted" | "ComboInjected" | "ComboConvertedToYesBasket" | "ComboMergedFromYesBasket" | "ComboCompressed" | "ComboPositionRedeemed" | "ComboWrapped" | "ComboUnwrapped" | "ComboHorizontalSplit" | "ComboHorizontalMerge" | "ComboPositionConverted" | "ComboPositionMigrated" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
         /** @description Subscription filters for the `trader_category_pnl` event. All fields are optional. */
         TraderCategoryPnlFilters: {
             /**
@@ -4550,8 +4556,8 @@ export interface components {
              * @description Only fire when outcome probability is ≤ this value.
              */
             max_price?: number | null;
-            /** @description Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default). */
-            trade_types?: ("OrderFilled" | "OrdersMatched")[] | null;
+            /** @description Only fire for these fill-style trade types. Empty = OrderFilled, OrdersMatched, and ComboExecution only (default). */
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "ComboExecution")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -4608,7 +4614,7 @@ export interface components {
              */
             max_price?: number | null;
             /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
-            trade_types?: ("OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[] | null;
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "ComboCreation" | "ComboExecution" | "ComboStatusUpdate" | "ComboPositionsSplit" | "ComboPositionsMerged" | "ComboSplitOnCondition" | "ComboMergedOnCondition" | "ComboExtracted" | "ComboInjected" | "ComboConvertedToYesBasket" | "ComboMergedFromYesBasket" | "ComboCompressed" | "ComboPositionRedeemed" | "ComboWrapped" | "ComboUnwrapped" | "ComboHorizontalSplit" | "ComboHorizontalMerge" | "ComboPositionConverted" | "ComboPositionMigrated" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -4981,12 +4987,36 @@ export interface components {
          * @enum {string}
          */
         WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime";
+        /**
+         * @description Trader display metadata nested into trade-fill webhook payloads.
+         *
+         *     Mirrors the shape used by the trade-event and PnL alert payloads. `address`
+         *     (the lower-cased maker wallet) is always present; the remaining fields are
+         *     sourced from the producer-enriched `trader_profile` carried on the trade and
+         *     are omitted until that profile has been resolved.
+         */
+        WebhookTraderInfo: {
+            /** @description Maker wallet address (lower-cased) */
+            address: string;
+            /** @description Display name */
+            name?: string | null;
+            /** @description Polymarket pseudonym */
+            pseudonym?: string | null;
+            /** @description Profile image URL (our CDN copy when available) */
+            profile_image?: string | null;
+            /** @description Linked X (Twitter) username */
+            x_username?: string | null;
+            /** @description Whether the trader carries a verified badge */
+            verified_badge: boolean;
+        };
         /** @description Payload delivered when a trade exceeds the configured size and probability thresholds */
         WhaleTradePayload: {
             /** @description Limit-order maker wallet address (lowercase) */
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID */
@@ -5048,9 +5078,9 @@ export interface components {
              */
             probability?: number | null;
             /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "ComboExchange" | "ComboCombinatorialModule" | "ComboNegRiskModule" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
             /**
              * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
              *     trades; may be `0x0000…` for V2 trades placed without a builder code.
@@ -5136,7 +5166,7 @@ export interface components {
             /** @description Builder fee in USDC. Absent when no builder code is attached. */
             builder_fee?: number;
             /** @enum {string} */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
         } | {
             id: string;
             hash: string;

@@ -162,7 +162,19 @@ export type AssertionMadeEvent = Schemas["AssertionMadeEvent"];
 export type AssertionSettledEvent = Schemas["AssertionSettledEvent"];
 export type CancelledTrade = Schemas["CancelledTrade"];
 export type ComboLeg = Schemas["ComboLeg"];
-export type ComboTrade = Schemas["ComboTrade"];
+export type ComboTrade =
+	| Schemas["ComboBasketTrade"]
+	| Schemas["ComboCompressedTrade"]
+	| Schemas["ComboConditionTransformTrade"]
+	| Schemas["ComboCreationTrade"]
+	| Schemas["ComboExecutionTrade"]
+	| Schemas["ComboHorizontalTrade"]
+	| Schemas["ComboMigrationTrade"]
+	| Schemas["ComboPositionConvertedTrade"]
+	| Schemas["ComboPositionPairTrade"]
+	| Schemas["ComboRedemptionTrade"]
+	| Schemas["ComboStatusUpdateTrade"]
+	| Schemas["ComboWrapTrade"];
 export type ConditionResolutionEvent = Schemas["ConditionResolutionEvent"];
 export type MergeTrade = Schemas["MergeTrade"];
 export type NegRiskOutcomeReportedEvent = Schemas["NegRiskOutcomeReportedEvent"];
@@ -576,6 +588,20 @@ export type PnlRiskMarketMetadata = Schemas["PnlRiskMarketMetadata"];
 export type PnlRiskMetric = Schemas["PnlRiskMetric"];
 export type PnlRiskResponse = Schemas["PnlRiskResponse"];
 
+export type ApprovalTrade = Schemas["ApprovalTrade"];
+export type ComboBasketTrade = Schemas["ComboBasketTrade"];
+export type ComboCompressedTrade = Schemas["ComboCompressedTrade"];
+export type ComboConditionTransformTrade = Schemas["ComboConditionTransformTrade"];
+export type ComboCreationTrade = Schemas["ComboCreationTrade"];
+export type ComboExecutionTrade = Schemas["ComboExecutionTrade"];
+export type ComboHorizontalTrade = Schemas["ComboHorizontalTrade"];
+export type ComboMigrationTrade = Schemas["ComboMigrationTrade"];
+export type ComboPositionConvertedTrade = Schemas["ComboPositionConvertedTrade"];
+export type ComboPositionPairTrade = Schemas["ComboPositionPairTrade"];
+export type ComboRedemptionTrade = Schemas["ComboRedemptionTrade"];
+export type ComboStatusUpdateTrade = Schemas["ComboStatusUpdateTrade"];
+export type ComboWrapTrade = Schemas["ComboWrapTrade"];
+
 export type BatchPnlRequest = Schemas["BatchPnlRequest"];
 export type BatchPnlResponse = OperationResponse<"get_trader_pnl_batch">;
 
@@ -594,10 +620,6 @@ export interface GetTraderPnlRiskParams extends OperationQuery<"get_trader_pnl_r
 }
 
 export interface GetTraderCategoryPnlParams extends OperationQuery<"get_trader_category_pnl"> {
-	address: string;
-}
-
-export interface GetTraderPnlExitsParams extends OperationQuery<"get_trader_pnl_exits"> {
 	address: string;
 }
 
@@ -782,6 +804,7 @@ export type {
 	TraderPositionResolutionBatchEvent,
 	TraderExitMarkerRow,
 	TraderExitMarkerBatchEvent,
+	OrderBookBatchEvent,
 	PositionHolderMetricsRow,
 	ConditionHolderMetricsRow,
 	EventHolderMetricsRow,

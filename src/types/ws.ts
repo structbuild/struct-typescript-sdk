@@ -104,6 +104,7 @@ export type TraderPositionResolutionRow = WsSchemas["TraderPositionResolutionRow
 export type TraderPositionResolutionBatchEvent = WsSchemas["TraderPositionResolutionBatchEvent"];
 export type TraderExitMarkerRow = WsSchemas["TraderExitMarkerRow"];
 export type TraderExitMarkerBatchEvent = WsSchemas["TraderExitMarkerBatchEvent"];
+export type OrderBookBatchEvent = WsSchemas["OrderBookBatchEvent"];
 export type PositionHolderMetricsRow = WsSchemas["PositionHolderMetricsRow"];
 export type ConditionHolderMetricsRow = WsSchemas["ConditionHolderMetricsRow"];
 export type EventHolderMetricsRow = WsSchemas["EventHolderMetricsRow"];

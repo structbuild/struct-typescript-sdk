@@ -975,6 +975,8 @@ export interface components {
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID (0x-prefixed hex) */
@@ -1031,9 +1033,9 @@ export interface components {
              */
             price: number;
             /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "ComboExchange" | "ComboCombinatorialModule" | "ComboNegRiskModule" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
         };
         /** @description Global PnL webhook payload. */
         GlobalPnlPayload: {
@@ -1704,6 +1706,8 @@ export interface components {
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID */
@@ -1765,22 +1769,24 @@ export interface components {
              */
             probability?: number | null;
             /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "ComboExchange" | "ComboCombinatorialModule" | "ComboNegRiskModule" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
         };
         /**
          * @description Trade types accepted by `trader_new_trade.trade_types`. Webhook fires on
          *     fill-style trades only.
          * @enum {string}
          */
-        NewTradeFilterType: "OrderFilled" | "OrdersMatched";
+        NewTradeFilterType: "OrderFilled" | "OrdersMatched" | "ComboExecution";
         /** @description Payload delivered on every order-filled trade */
         NewTradePayload: {
             /** @description Limit-order maker wallet address (lowercase) */
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID */
@@ -1842,9 +1848,9 @@ export interface components {
              */
             probability?: number | null;
             /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "ComboExchange" | "ComboCombinatorialModule" | "ComboNegRiskModule" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
             /**
              * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
              *     trades; may be `0x0000…` for V2 trades placed without a builder code.
@@ -3451,7 +3457,7 @@ export interface components {
          *     full set of typed prediction-trade variants.
          * @enum {string}
          */
-        TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
+        TradeEventFilterType: "OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "ComboCreation" | "ComboExecution" | "ComboStatusUpdate" | "ComboPositionsSplit" | "ComboPositionsMerged" | "ComboSplitOnCondition" | "ComboMergedOnCondition" | "ComboExtracted" | "ComboInjected" | "ComboConvertedToYesBasket" | "ComboMergedFromYesBasket" | "ComboCompressed" | "ComboPositionRedeemed" | "ComboWrapped" | "ComboUnwrapped" | "ComboHorizontalSplit" | "ComboHorizontalMerge" | "ComboPositionConverted" | "ComboPositionMigrated" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken";
         /** @description Subscription filters for the `trader_category_pnl` event. All fields are optional. */
         TraderCategoryPnlFilters: {
             /**
@@ -3710,8 +3716,8 @@ export interface components {
              * @description Only fire when outcome probability is ≤ this value.
              */
             max_price?: number | null;
-            /** @description Only fire for these fill-style trade types. Empty = OrderFilled and OrdersMatched only (default). */
-            trade_types?: ("OrderFilled" | "OrdersMatched")[] | null;
+            /** @description Only fire for these fill-style trade types. Empty = OrderFilled, OrdersMatched, and ComboExecution only (default). */
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "ComboExecution")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -3767,7 +3773,7 @@ export interface components {
              */
             max_price?: number | null;
             /** @description Only fire for these trade types. Empty = all supported trade-event variants. */
-            trade_types?: ("OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[] | null;
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "MakerRebate" | "Reward" | "Yield" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "ComboCreation" | "ComboExecution" | "ComboStatusUpdate" | "ComboPositionsSplit" | "ComboPositionsMerged" | "ComboSplitOnCondition" | "ComboMergedOnCondition" | "ComboExtracted" | "ComboInjected" | "ComboConvertedToYesBasket" | "ComboMergedFromYesBasket" | "ComboCompressed" | "ComboPositionRedeemed" | "ComboWrapped" | "ComboUnwrapped" | "ComboHorizontalSplit" | "ComboHorizontalMerge" | "ComboPositionConverted" | "ComboPositionMigrated" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[] | null;
             /** @description When `true`, suppress webhooks for short-term "updown" markets. Requires explicit `trade_types` that exclude `PositionsConverted`. Default: `false`. */
             exclude_shortterm_markets?: boolean | null;
         };
@@ -4133,12 +4139,36 @@ export interface components {
          * @enum {string}
          */
         WebhookTimeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" | "24h" | "7d" | "30d" | "lifetime";
+        /**
+         * @description Trader display metadata nested into trade-fill webhook payloads.
+         *
+         *     Mirrors the shape used by the trade-event and PnL alert payloads. `address`
+         *     (the lower-cased maker wallet) is always present; the remaining fields are
+         *     sourced from the producer-enriched `trader_profile` carried on the trade and
+         *     are omitted until that profile has been resolved.
+         */
+        WebhookTraderInfo: {
+            /** @description Maker wallet address (lower-cased) */
+            address: string;
+            /** @description Display name */
+            name?: string | null;
+            /** @description Polymarket pseudonym */
+            pseudonym?: string | null;
+            /** @description Profile image URL (our CDN copy when available) */
+            profile_image?: string | null;
+            /** @description Linked X (Twitter) username */
+            x_username?: string | null;
+            /** @description Whether the trader carries a verified badge */
+            verified_badge: boolean;
+        };
         /** @description Payload delivered when a trade exceeds the configured size and probability thresholds */
         WhaleTradePayload: {
             /** @description Limit-order maker wallet address (lowercase) */
             trader: string;
             /** @description Order filler wallet address (lowercase) */
             taker: string;
+            /** @description Maker trader display metadata (address + name / pseudonym / image / x / verified) */
+            trader_info: components["schemas"]["WebhookTraderInfo"];
             /** @description ERC-1155 outcome token ID */
             position_id: string;
             /** @description Parent market condition ID */
@@ -4200,9 +4230,9 @@ export interface components {
              */
             probability?: number | null;
             /** @description Exchange contract that processed the trade */
-            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "Unknown";
+            exchange: "CTFExchange" | "NegRiskExchange" | "ConditionalTokens" | "NegRiskAdapter" | "CTFExchangeV2" | "NegRiskExchangeV2" | "ComboExchange" | "ComboCombinatorialModule" | "ComboNegRiskModule" | "Unknown";
             /** @description Trade type (webhook events only fire on order fills) */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
             /**
              * @description CLOB V2 builder code (lower-cased `0x...` bytes32 hex). Absent on V1
              *     trades; may be `0x0000…` for V2 trades placed without a builder code.
@@ -4234,6 +4264,8 @@ export interface components {
             subscribe_all?: boolean;
             /** @description Filter values that were rejected (invalid format or unknown type) */
             rejected?: string[];
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
         };
         /** @description Subscribe to the oracle events stream. No filters = subscribe to all events. */
         OracleEventsStreamSubscribeMessage: {
@@ -4297,6 +4329,8 @@ export interface components {
             event_slugs?: string[];
             /** @description Ids that failed normalization or exceeded the per-sub cap. */
             rejected?: string[];
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Non-null when the subscribe was rejected. */
             error?: string | null;
         };
@@ -4374,7 +4408,7 @@ export interface components {
             /** @description Trader wallet addresses (lowercase 0x-prefixed) */
             traders?: string[];
             /** @description Only receive events of these types. Empty array = all types. */
-            trade_types?: ("OrderFilled" | "OrdersMatched" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "MakerRebate" | "Reward" | "Yield" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[];
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "ComboExecution" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "MakerRebate" | "Reward" | "Yield" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[];
             /**
              * @description Trade status filter: "confirmed" (default) = on-chain only, "pending" = mempool only, "all" = both
              * @enum {string}
@@ -4404,6 +4438,8 @@ export interface components {
             status?: "confirmed" | "pending" | "all";
             /** @description Whether to subscribe to all matching events. */
             subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Filter values that were rejected (invalid format or unknown type) */
             rejected?: string[];
         };
@@ -4419,7 +4455,7 @@ export interface components {
              * @description Trade type.
              * @enum {string}
              */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
             /** @description Event ID. */
             id: string;
             /** @description Transaction hash. */
@@ -4916,6 +4952,8 @@ export interface components {
         AssetPricesSubscribeResponse: {
             /** @description Accepted symbols. Empty array means subscribed to all symbols. */
             asset_symbols?: string[];
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
         };
         /** @description Server-pushed event: a crypto-asset price tick. Envelope type: "asset_price_tick". */
         AssetPriceTickEvent: {
@@ -4966,7 +5004,7 @@ export interface components {
              */
             published_at: number;
         };
-        /** @description Subscribe to the asset window updates stream. At least one of asset_symbols or timeframes must be non-empty. */
+        /** @description Subscribe to the asset window updates stream. At least one of asset_symbols or timeframes must be non-empty, or set subscribe_all for the firehose. */
         AssetWindowUpdatesSubscribeMessage: {
             /**
              * @description Subscription action.
@@ -4977,6 +5015,8 @@ export interface components {
             asset_symbols?: string[];
             /** @description Candle sizes to filter by. "1d" and "24h" are treated as equivalent. */
             timeframes?: ("5m" | "15m" | "1h" | "4h" | "1d" | "24h")[];
+            /** @description Firehose: receive every window update across all symbols and timeframes. Filters are ignored when set. */
+            subscribe_all?: boolean;
         };
         /** @description Server acknowledgement for an asset window updates subscription */
         AssetWindowUpdatesSubscribeResponse: {
@@ -4984,12 +5024,16 @@ export interface components {
             asset_symbols?: string[];
             /** @description Accepted metric timeframes. */
             timeframes?: string[];
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Set if the subscription was rejected (e.g. no filters provided) */
             error?: string | null;
         };
         /** @description Server-pushed event from the polymarket_asset_window_updates room. Same payload as AssetPriceWindowUpdateEvent. Envelope type: "asset_price_window_update". */
         AssetWindowUpdateEvent: components["schemas"]["AssetPriceWindowUpdateEvent"];
-        /** @description Subscribe to the market metrics stream. condition_ids is required and must be non-empty. */
+        /** @description Subscribe to the market metrics stream. condition_ids is required and must be non-empty, unless subscribe_all is set. */
         MarketMetricsSubscribeMessage: {
             /**
              * @description Subscription action.
@@ -4997,9 +5041,11 @@ export interface components {
              */
             action: "subscribe" | "unsubscribe_all";
             /** @description 64-char hex condition IDs (with or without 0x prefix) */
-            condition_ids: string[];
+            condition_ids?: string[];
             /** @description Accepted metric timeframes. */
             timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime")[];
+            /** @description Firehose: receive metrics updates for every market condition. condition_ids are ignored when set; the timeframes filter still applies. */
+            subscribe_all?: boolean;
         };
         /** @description Server acknowledgement for a market metrics subscription */
         MarketMetricsSubscribeResponse: {
@@ -5011,6 +5057,10 @@ export interface components {
             rejected?: string[];
             /** @description Set if the entire subscription was rejected */
             error?: string | null;
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
         };
         /** @description Server-pushed event: metrics update for one timeframe of a condition. Envelope type: "market_metrics_update". One event is emitted per timeframe window on each update. */
         MarketMetricsEvent: {
@@ -5069,18 +5119,34 @@ export interface components {
              */
             unique_builder_traders: number;
         };
-        /** @description Subscribe to the event metrics stream. event_slugs is required and must be non-empty. */
+        /** @description Subscribe to the event metrics stream. event_slugs is required and must be non-empty, unless subscribe_all is set. */
         EventMetricsSubscribeMessage: {
             /**
              * @description Subscription action.
              * @enum {string}
              */
             action: "subscribe" | "unsubscribe_all";
-            /** @description Event slugs (lowercase) */
-            event_slugs: string[];
+            /** @description Event slugs (lowercase). Required unless subscribe_all is set. */
+            event_slugs?: string[];
             /** @description Accepted metric timeframes. */
             timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime")[];
-        };
+            /** @description Firehose: receive every update on this stream (event_slugs is ignored when set; the timeframes filter still applies). */
+            subscribe_all?: boolean;
+        } & ({
+            /** @enum {unknown} */
+            action: "unsubscribe_all";
+        } | {
+            /** @enum {unknown} */
+            action: "subscribe";
+            /** @enum {unknown} */
+            subscribe_all: true;
+        } | {
+            /** @enum {unknown} */
+            action: "subscribe";
+            /** @enum {unknown} */
+            subscribe_all?: false;
+            event_slugs: unknown;
+        });
         /** @description Server acknowledgement for an event metrics subscription */
         EventMetricsSubscribeResponse: {
             /** @description Accepted event slugs. */
@@ -5089,6 +5155,10 @@ export interface components {
             timeframes?: string[];
             /** @description Rejected filter values. */
             rejected?: string[];
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Subscription error message. */
             error?: string | null;
         };
@@ -5149,7 +5219,7 @@ export interface components {
              */
             unique_builder_traders: number;
         };
-        /** @description Subscribe to the tag metrics stream. tags is required and must be non-empty. */
+        /** @description Subscribe to the tag metrics stream. tags is required and must be non-empty, unless subscribe_all is set. */
         TagMetricsSubscribeMessage: {
             /**
              * @description Subscription action.
@@ -5157,9 +5227,11 @@ export interface components {
              */
             action: "subscribe" | "unsubscribe_all";
             /** @description Tag labels or slugs, matched case-insensitively */
-            tags: string[];
+            tags?: string[];
             /** @description Accepted metric timeframes. */
             timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime")[];
+            /** @description Firehose: receive metrics updates for every tag on this stream. The tags filter is ignored when set; the timeframes filter still applies. */
+            subscribe_all?: boolean;
         };
         /** @description Server acknowledgement for a tag metrics subscription */
         TagMetricsSubscribeResponse: {
@@ -5169,6 +5241,10 @@ export interface components {
             timeframes?: string[];
             /** @description Rejected filter values. */
             rejected?: string[];
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Subscription error message. */
             error?: string | null;
         };
@@ -5229,7 +5305,7 @@ export interface components {
              */
             unique_builder_traders: number;
         };
-        /** @description Subscribe to the position metrics stream. position_ids is required and must be non-empty. */
+        /** @description Subscribe to the position metrics stream. position_ids is required and must be non-empty, unless subscribe_all is set. */
         PositionMetricsSubscribeMessage: {
             /**
              * @description Subscription action.
@@ -5237,9 +5313,11 @@ export interface components {
              */
             action: "subscribe" | "unsubscribe_all";
             /** @description ERC-1155 outcome token IDs (decimal or hex strings) */
-            position_ids: string[];
+            position_ids?: string[];
             /** @description Accepted metric timeframes. */
             timeframes?: ("1m" | "5m" | "30m" | "1h" | "6h" | "24h" | "7d" | "30d" | "lifetime")[];
+            /** @description Firehose: receive every metrics update across all positions (position_ids is ignored when set; the timeframes filter still applies). */
+            subscribe_all?: boolean;
         };
         /** @description Server acknowledgement for a position metrics subscription */
         PositionMetricsSubscribeResponse: {
@@ -5249,6 +5327,10 @@ export interface components {
             timeframes?: string[];
             /** @description Rejected filter values. */
             rejected?: string[];
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Subscription error message. */
             error?: string | null;
         };
@@ -5382,6 +5464,21 @@ export interface components {
             action: "subscribe" | "unsubscribe_all";
             /** @description ERC-1155 outcome token IDs (decimal or hex). Empty/omitted = all positions. */
             position_ids?: string[];
+            /** @description Firehose: receive every position liquidity update on this stream (filters are ignored when set). */
+            subscribe_all?: boolean;
+        };
+        /** @description Server acknowledgement for a position liquidity subscription. */
+        PositionLiquiditySubscribeResponse: {
+            /** @description Accepted position IDs (empty = firehose). */
+            ids?: string[];
+            /** @description Rejected filter values. */
+            rejected?: string[];
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
+            /** @description Subscription error message. */
+            error?: string | null;
         };
         /** @description Server-pushed event: latest USD liquidity for an outcome token. Envelope type: "position_liquidity_update". */
         PositionLiquidityEvent: {
@@ -5404,6 +5501,21 @@ export interface components {
             action: "subscribe" | "unsubscribe_all";
             /** @description 64-char hex market IDs. Empty/omitted = all markets. */
             condition_ids?: string[];
+            /** @description Firehose: receive every update on this stream (filters are ignored when set). */
+            subscribe_all?: boolean;
+        };
+        /** @description Server acknowledgement for a market liquidity subscription. */
+        MarketLiquiditySubscribeResponse: {
+            /** @description Accepted condition IDs (empty = firehose). */
+            ids?: string[];
+            /** @description Rejected filter values. */
+            rejected?: string[];
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
+            /** @description Subscription error message. */
+            error?: string | null;
         };
         /** @description Server-pushed event: latest total USD liquidity for a market. Envelope type: "market_liquidity_update". */
         MarketLiquidityEvent: {
@@ -5426,6 +5538,8 @@ export interface components {
             action: "subscribe" | "unsubscribe_all";
             /** @description Event slugs. Empty/omitted = all events. */
             event_slugs?: string[];
+            /** @description Firehose: receive every event's liquidity updates (filters are ignored when set). */
+            subscribe_all?: boolean;
         };
         /** @description Server-pushed event: latest total USD liquidity for an event. Envelope type: "event_liquidity_update". */
         EventLiquidityEvent: {
@@ -5439,14 +5553,14 @@ export interface components {
              */
             liquidity_updated_at: number;
         };
-        /** @description Subscribe to the trader PnL stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. */
+        /** @description Subscribe to the trader PnL stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. Firehose / `subscribe_all` is not supported. */
         TraderPnlSubscribeMessage: {
             /**
              * @description Subscription action.
              * @enum {string}
              */
             action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses */
+            /** @description EVM wallet addresses. Required. */
             traders: string[];
             /** @description Restrict pushed updates to this subset of PnL granularities. Empty/omitted = all four. Unknown values reject the subscription. */
             update_types?: ("global" | "market" | "category")[];
@@ -5465,6 +5579,8 @@ export interface components {
             timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
             /** @description Trader addresses that were rejected (invalid EVM format). */
             rejected?: string[];
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Set if the entire subscription was rejected (e.g. empty traders, or an invalid update_type / timeframe value). */
             error?: string | null;
         };
@@ -6033,18 +6149,34 @@ export interface components {
             block: number;
             data: components["schemas"]["TraderCategoryResolutionRow"][];
         };
-        /** @description Subscribe to the trader positions stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `["all"]` = receive every kind of update. */
+        /** @description Subscribe to the trader positions stream. `traders` is required and must be non-empty unless `subscribe_all` is set. `dirty_kinds` is an optional narrowing filter — empty/omitted or `["all"]` = receive every kind of update. */
         TraderPositionsSubscribeMessage: {
             /**
              * @description Subscription action.
              * @enum {string}
              */
             action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses */
-            traders: string[];
-            /** @description Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `["all"]` to accept every kind (the default). Unknown values reject the subscription. */
+            /** @description EVM wallet addresses. Required and non-empty unless subscribe_all is set. */
+            traders?: string[];
+            /** @description Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `["all"]` to accept every kind (the default). Unknown values reject the subscription. Also applies to firehose subscriptions. */
             dirty_kinds?: ("trade" | "price" | "position_resolved" | "all")[];
-        };
+            /** @description Firehose: receive every position update on this stream (`traders` is ignored when set; `dirty_kinds` still applies). */
+            subscribe_all?: boolean;
+        } & ({
+            /** @enum {unknown} */
+            action: "unsubscribe_all";
+        } | {
+            /** @enum {unknown} */
+            action: "subscribe";
+            /** @enum {unknown} */
+            subscribe_all: true;
+        } | {
+            /** @enum {unknown} */
+            action: "subscribe";
+            /** @enum {unknown} */
+            subscribe_all?: false;
+            traders: unknown;
+        });
         /** @description Server acknowledgement for a trader positions subscription. */
         TraderPositionsSubscribeResponse: {
             /** @description Accepted trader wallets. */
@@ -6053,6 +6185,10 @@ export interface components {
             dirty_kinds?: ("trade" | "price" | "position_resolved")[];
             /** @description Rejected filter values. */
             rejected?: string[];
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Subscription error message. */
             error?: string | null;
         };
@@ -6260,17 +6396,19 @@ export interface components {
             block: number;
             data: components["schemas"]["TraderPositionResolutionRow"][];
         };
-        /** @description Subscribe to the trader exit markers stream. `traders` is required and must be non-empty. `reasons` is an optional narrowing filter — empty/omitted or `["all"]` = receive every exit reason. */
+        /** @description Subscribe to the trader exit markers stream. `traders` is required and must be non-empty unless `subscribe_all` is set. `reasons` is an optional narrowing filter — empty/omitted or `["all"]` = receive every exit reason. */
         TraderExitMarkersSubscribeMessage: {
             /**
              * @description Subscription action.
              * @enum {string}
              */
             action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses */
-            traders: string[];
+            /** @description EVM wallet addresses. Required unless subscribe_all is set. */
+            traders?: string[];
             /** @description Restrict pushed exits to this subset of reasons. Omit, leave empty, or pass `["all"]` to accept every reason (the default). Unknown values reject the subscription. */
             reasons?: ("resolved_win" | "resolved_loss" | "sold_win" | "sold_loss" | "all")[];
+            /** @description Firehose: receive exits for every trader on this stream. The traders filter is ignored when set; reasons still applies. */
+            subscribe_all?: boolean;
         };
         /** @description Server acknowledgement for a trader exit markers subscription. */
         TraderExitMarkersSubscribeResponse: {
@@ -6280,6 +6418,10 @@ export interface components {
             reasons?: ("resolved_win" | "resolved_loss" | "sold_win" | "sold_loss")[];
             /** @description Rejected filter values. */
             rejected?: string[];
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Subscription error message. */
             error?: string | null;
         };
@@ -6342,19 +6484,36 @@ export interface components {
             block: number;
             data: components["schemas"]["TraderExitMarkerRow"][];
         };
-        /** @description Subscribe to holder metrics for explicit positions, conditions, or events. At least one identifier array must be non-empty. Omitted arrays receive no updates for that metric family. Up to 500 total identifiers are accepted. */
+        /** @description Subscribe to holder metrics for explicit positions, conditions, or events. At least one identifier array must be non-empty, unless subscribe_all is set. Omitted arrays receive no updates for that metric family. Up to 500 total identifiers are accepted. */
         HolderMetricsSubscribeMessage: {
             /**
              * @description Subscription action.
              * @enum {string}
              */
             action: "subscribe" | "unsubscribe_all";
+            /** @description Firehose: receive every update on this stream (filters are ignored when set). */
+            subscribe_all?: boolean;
             /** @description Position token IDs to receive position holder metrics for. */
             position_ids?: string[];
             /** @description Condition IDs to receive condition holder metrics for. */
             condition_ids?: string[];
             /** @description Event slugs to receive event holder metrics for. */
             event_slugs?: string[];
+        };
+        /** @description Server acknowledgement for a holder metrics subscription. */
+        HolderMetricsSubscribeResponse: {
+            /** @description Accepted position IDs. */
+            position_ids?: string[];
+            /** @description Accepted condition IDs. */
+            condition_ids?: string[];
+            /** @description Accepted event slugs. */
+            event_slugs?: string[];
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
+            /** @description Subscription error message. */
+            error?: string | null;
         };
         PositionHolderMetricsRow: {
             /** @description Unix timestamp in seconds. */
@@ -6430,21 +6589,23 @@ export interface components {
             block: number;
             data: components["schemas"]["EventHolderMetricsRow"][];
         };
-        /** @description Subscribe to the accounts stream. `wallets` is required. Share balance updates (`accounts_update`) are always delivered. Set `include_usdce`, `include_pusd`, or `include_matic` to also receive those balance streams. */
+        /** @description Subscribe to the accounts stream. `wallets` is required unless `subscribe_all` is set. Share balance updates (`accounts_update`) are always delivered. Set `include_usdce`, `include_pusd`, or `include_matic` to also receive those balance streams. */
         AccountsSubscribeMessage: {
             /**
              * @description Subscription action.
              * @enum {string}
              */
             action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses */
-            wallets: string[];
+            /** @description EVM wallet addresses. Required unless subscribe_all is set. */
+            wallets?: string[];
             /** @description Also stream USDCe collateral balance updates for subscribed wallets (V1) */
             include_usdce?: boolean;
             /** @description Also stream pUSD collateral balance updates for subscribed wallets (V2 CLOB) */
             include_pusd?: boolean;
             /** @description Also stream MATIC gas balance updates for subscribed wallets */
             include_matic?: boolean;
+            /** @description Firehose: receive balance updates for every wallet on this stream. The wallets filter is ignored when set; the include_* flags still gate the extra token streams. */
+            subscribe_all?: boolean;
         };
         /** @description Server acknowledgement for an accounts subscription */
         AccountsSubscribeResponse: {
@@ -6458,6 +6619,10 @@ export interface components {
             include_pusd?: boolean;
             /** @description Whether to include MATIC balances. */
             include_matic?: boolean;
+            /** @description Whether the firehose subscription is active. */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Subscription error message. */
             error?: string | null;
         };
@@ -6541,7 +6706,7 @@ export interface components {
              */
             updated_at: number;
         };
-        /** @description Subscribe to the order book stream. At least one filter is required. Maximum 500 combined condition_ids + position_ids per client. No `type` field is needed — the server routes by room_id. */
+        /** @description Subscribe to the order book stream. At least one filter is required unless `subscribe_all` is true. Maximum 500 combined condition_ids + position_ids per client. No `type` field is needed — the server routes by room_id. */
         OrderBookSubscribeMessage: {
             /**
              * @description Subscription action.
@@ -6552,6 +6717,8 @@ export interface components {
             condition_ids?: string[];
             /** @description Token / asset IDs (individual outcome positions, hex strings). */
             position_ids?: string[];
+            /** @description Firehose: receive every orderbook snapshot across all markets, delivered as conflated `order_book_batch` envelopes every 50ms. Filters are ignored when set. */
+            subscribe_all?: boolean;
         };
         /** @description Server acknowledgement for an order book subscription. Envelope type: "order_book_stream_subscribe_response". */
         OrderBookSubscribeResponse: {
@@ -6561,6 +6728,26 @@ export interface components {
             position_ids?: string[];
             /** @description Filter values that were rejected (invalid format or limit exceeded) */
             rejected?: string[];
+            /** @description Whether the firehose subscription is active */
+            subscribe_all?: boolean;
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake) */
+            compression?: boolean;
+            /** @description Subscription error message. */
+            error?: string | null;
+        };
+        /** @description Server-pushed firehose batch: all orderbook snapshots from the last 50ms window, conflated per asset (newest book per asset). Envelope type: "order_book_batch". Sent only to `subscribe_all` subscribers. */
+        OrderBookBatchEvent: {
+            /** @enum {string} */
+            type: "order_book_batch";
+            /**
+             * @description WebSocket room ID.
+             * @enum {string}
+             */
+            room_id: "polymarket_order_book";
+            /** @description Number of snapshots in this batch */
+            count: number;
+            /** @description Conflated snapshots, ordered by timestamp ascending */
+            data: components["schemas"]["OrderBookUpdateEvent"][];
         };
         /** @description A single order book price level. Matches the HTTP order book API's OrderbookLevel. */
         OrderBookLevel: {
@@ -6623,6 +6810,8 @@ export interface components {
             subscribe_all?: boolean;
             /** @description Filter values that were rejected */
             rejected?: string[];
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake) */
+            compression?: boolean;
         };
         /** @description Server-pushed CLOB reward change event. Envelope type: "clob_rewards_update". */
         ClobRewardsUpdateEvent: {
@@ -6740,6 +6929,8 @@ export interface components {
             event_slugs?: string[];
             /** @description Ids that failed normalization (ids mode). */
             rejected?: string[];
+            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
+            compression?: boolean;
             /** @description Non-null when the subscribe was rejected (invalid cadence, bad filter, too many subs, …). */
             error?: string | null;
         };
@@ -6792,7 +6983,7 @@ export interface components {
             event_slugs?: string[];
         };
         /**
-         * OrderFilled / OrdersMatched
+         * OrderFilled / OrdersMatched / ComboExecution
          * @description A buy/sell trade was matched on the exchange.
          */
         TradeOrderFilledEvent: {
@@ -6800,7 +6991,7 @@ export interface components {
              * @description Trade type.
              * @enum {string}
              */
-            trade_type: "OrderFilled" | "OrdersMatched";
+            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
             /** @description Event ID. */
             id: string;
             /** @description Transaction hash. */
