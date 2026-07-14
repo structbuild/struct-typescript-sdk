@@ -5534,344 +5534,344 @@ export interface components {
         ComboGlobalAnalyticsBucketRow: {
             /**
              * Format: int32
-             * @description Bucket start time as Unix seconds.
+             * @description Full field: `bucket`. Bucket start time as Unix seconds.
              */
-            bucket: number;
+            t: number;
             /**
              * Format: double
-             * @description Cumulative USD volume across combo fills (buys + sells).
+             * @description Full field: `usd_volume`. Cumulative USD volume across combo fills (buys + sells).
              */
-            usd_volume: number;
+            v: number;
             /**
              * Format: double
-             * @description Cumulative USD buy volume.
+             * @description Full field: `usd_buy_volume`. Cumulative USD buy volume.
              */
-            usd_buy_volume: number;
+            bv: number;
             /**
              * Format: double
-             * @description Cumulative USD sell volume.
+             * @description Full field: `usd_sell_volume`. Cumulative USD sell volume.
              */
-            usd_sell_volume: number;
+            sv: number;
             /**
              * Format: double
-             * @description Cumulative combo shares volume (buys + sells).
+             * @description Full field: `shares_volume`. Cumulative combo shares volume (buys + sells).
              */
-            shares_volume: number;
+            sh: number;
             /**
              * Format: double
-             * @description Cumulative combo shares buy volume.
+             * @description Full field: `shares_buy_volume`. Cumulative combo shares buy volume.
              */
-            shares_buy_volume: number;
+            bsh: number;
             /**
              * Format: double
-             * @description Cumulative combo shares sell volume.
+             * @description Full field: `shares_sell_volume`. Cumulative combo shares sell volume.
              */
-            shares_sell_volume: number;
+            ssh: number;
             /**
              * Format: double
-             * @description Cumulative fees in USD.
+             * @description Full field: `fees`. Cumulative fees in USD.
              */
-            fees: number;
+            f: number;
             /**
              * Format: double
-             * @description Cumulative builder fees in USD.
+             * @description Full field: `builder_fees`. Cumulative builder fees in USD.
              */
-            builder_fees: number;
+            bf: number;
             /**
              * Format: double
-             * @description Cumulative USD volume on builder-attributed fills.
+             * @description Full field: `builder_usd_volume`. Cumulative USD volume on builder-attributed fills.
              */
-            builder_usd_volume: number;
+            buv: number;
             /**
              * Format: double
-             * @description Cumulative builder USD buy volume.
+             * @description Full field: `builder_usd_buy_volume`. Cumulative builder USD buy volume.
              */
-            builder_usd_buy_volume: number;
+            bubv: number;
             /**
              * Format: double
-             * @description Cumulative builder USD sell volume.
+             * @description Full field: `builder_usd_sell_volume`. Cumulative builder USD sell volume.
              */
-            builder_usd_sell_volume: number;
+            busv: number;
             /**
              * Format: double
-             * @description Cumulative builder combo shares volume.
+             * @description Full field: `builder_shares_volume`. Cumulative builder combo shares volume.
              */
-            builder_shares_volume: number;
+            bsv: number;
             /**
              * Format: double
-             * @description Cumulative builder combo shares buy volume.
+             * @description Full field: `builder_shares_buy_volume`. Cumulative builder combo shares buy volume.
              */
-            builder_shares_buy_volume: number;
+            bsbv: number;
             /**
              * Format: double
-             * @description Cumulative builder combo shares sell volume.
+             * @description Full field: `builder_shares_sell_volume`. Cumulative builder combo shares sell volume.
              */
-            builder_shares_sell_volume: number;
+            bssv: number;
             /**
              * Format: int64
-             * @description Cumulative combo fill transaction count.
+             * @description Full field: `txns`. Cumulative combo fill transaction count.
              */
-            txns: number;
+            tc: number;
             /**
              * Format: int64
-             * @description Cumulative combo buy fill count.
+             * @description Full field: `buys`. Cumulative combo buy fill count.
              */
-            buys: number;
+            bc: number;
             /**
              * Format: int64
-             * @description Cumulative combo sell fill count.
+             * @description Full field: `sells`. Cumulative combo sell fill count.
              */
-            sells: number;
+            sc: number;
             /**
              * Format: int64
-             * @description Cumulative builder combo fill transaction count.
+             * @description Full field: `builder_txns`. Cumulative builder combo fill transaction count.
              */
-            builder_txns: number;
+            btc: number;
             /**
              * Format: int64
-             * @description Cumulative builder combo buy fill count.
+             * @description Full field: `builder_buys`. Cumulative builder combo buy fill count.
              */
-            builder_buys: number;
+            bbc: number;
             /**
              * Format: int64
-             * @description Cumulative builder combo sell fill count.
+             * @description Full field: `builder_sells`. Cumulative builder combo sell fill count.
              */
-            builder_sells: number;
+            bsc: number;
             /**
              * Format: int64
-             * @description Cumulative combo market creations.
+             * @description Full field: `creations`. Cumulative combo market creations.
              */
-            creations: number;
+            cre: number;
             /**
              * Format: int64
-             * @description Cumulative combo executions.
+             * @description Full field: `executions`. Cumulative combo executions.
              */
-            executions: number;
+            exe: number;
             /**
              * Format: int64
-             * @description Cumulative combo status updates.
+             * @description Full field: `status_updates`. Cumulative combo status updates.
              */
-            status_updates: number;
+            su: number;
             /**
              * Format: int64
-             * @description Cumulative positions-split lifecycle operations.
+             * @description Full field: `positions_split`. Cumulative positions-split lifecycle operations.
              */
-            positions_split: number;
+            ps: number;
             /**
              * Format: int64
-             * @description Cumulative positions-merged lifecycle operations.
+             * @description Full field: `positions_merged`. Cumulative positions-merged lifecycle operations.
              */
-            positions_merged: number;
+            pm: number;
             /**
              * Format: int64
-             * @description Cumulative split-on-condition lifecycle operations.
+             * @description Full field: `split_on_condition`. Cumulative split-on-condition lifecycle operations.
              */
-            split_on_condition: number;
+            soc: number;
             /**
              * Format: int64
-             * @description Cumulative merge-on-condition lifecycle operations.
+             * @description Full field: `merged_on_condition`. Cumulative merge-on-condition lifecycle operations.
              */
-            merged_on_condition: number;
+            moc: number;
             /**
              * Format: int64
-             * @description Cumulative extract lifecycle operations.
+             * @description Full field: `extracted`. Cumulative extract lifecycle operations.
              */
-            extracted: number;
+            ext: number;
             /**
              * Format: int64
-             * @description Cumulative inject lifecycle operations.
+             * @description Full field: `injected`. Cumulative inject lifecycle operations.
              */
-            injected: number;
+            inj: number;
             /**
              * Format: int64
-             * @description Cumulative convert-to-YES-basket lifecycle operations.
+             * @description Full field: `converted_to_yes_basket`. Cumulative convert-to-YES-basket lifecycle operations.
              */
-            converted_to_yes_basket: number;
+            ctyb: number;
             /**
              * Format: int64
-             * @description Cumulative merge-from-YES-basket lifecycle operations.
+             * @description Full field: `merged_from_yes_basket`. Cumulative merge-from-YES-basket lifecycle operations.
              */
-            merged_from_yes_basket: number;
+            mfyb: number;
             /**
              * Format: int64
-             * @description Cumulative compress lifecycle operations.
+             * @description Full field: `compressed`. Cumulative compress lifecycle operations.
              */
-            compressed: number;
+            cmp: number;
             /**
              * Format: int64
-             * @description Cumulative redemption lifecycle operations.
+             * @description Full field: `redeemed`. Cumulative redemption lifecycle operations.
              */
-            redeemed: number;
+            red: number;
             /**
              * Format: int64
-             * @description Cumulative wrap lifecycle operations.
+             * @description Full field: `wrapped`. Cumulative wrap lifecycle operations.
              */
-            wrapped: number;
+            wr: number;
             /**
              * Format: int64
-             * @description Cumulative unwrap lifecycle operations.
+             * @description Full field: `unwrapped`. Cumulative unwrap lifecycle operations.
              */
-            unwrapped: number;
+            uw: number;
             /**
              * Format: int64
-             * @description Cumulative horizontal-split lifecycle operations.
+             * @description Full field: `horizontal_split`. Cumulative horizontal-split lifecycle operations.
              */
-            horizontal_split: number;
+            hs: number;
             /**
              * Format: int64
-             * @description Cumulative horizontal-merge lifecycle operations.
+             * @description Full field: `horizontal_merge`. Cumulative horizontal-merge lifecycle operations.
              */
-            horizontal_merge: number;
+            hm: number;
             /**
              * Format: int64
-             * @description Cumulative position-converted lifecycle operations.
+             * @description Full field: `position_converted`. Cumulative position-converted lifecycle operations.
              */
-            position_converted: number;
+            pc: number;
             /**
              * Format: int64
-             * @description Cumulative migrate lifecycle operations.
+             * @description Full field: `migrated`. Cumulative migrate lifecycle operations.
              */
-            migrated: number;
+            mig: number;
             /**
              * Format: double
-             * @description Cumulative combo USD volume with binary-market legs.
+             * @description Full field: `binary_usd_volume`. Cumulative combo USD volume with binary-market legs.
              */
-            binary_usd_volume: number;
+            binv: number;
             /**
              * Format: double
-             * @description Cumulative combo USD volume with neg-risk legs.
+             * @description Full field: `negrisk_usd_volume`. Cumulative combo USD volume with neg-risk legs.
              */
-            negrisk_usd_volume: number;
+            nrv: number;
             /**
              * Format: double
-             * @description Cumulative combinatorial-module USD volume.
+             * @description Full field: `combinatorial_usd_volume`. Cumulative combinatorial-module USD volume.
              */
-            combinatorial_usd_volume: number;
+            cv: number;
             /**
              * Format: double
-             * @description Cumulative USD volume on the YES side.
+             * @description Full field: `yes_usd_volume`. Cumulative USD volume on the YES side.
              */
-            yes_usd_volume: number;
+            yv: number;
             /**
              * Format: double
-             * @description Cumulative YES shares volume (buys + sells).
+             * @description Full field: `yes_shares_volume`. Cumulative YES shares volume (buys + sells).
              */
-            yes_shares_volume: number;
+            ysh: number;
             /**
              * Format: double
-             * @description Cumulative YES shares buy volume.
+             * @description Full field: `yes_shares_buy_volume`. Cumulative YES shares buy volume.
              */
-            yes_shares_buy_volume: number;
+            ybsh: number;
             /**
              * Format: double
-             * @description Cumulative YES shares sell volume.
+             * @description Full field: `yes_shares_sell_volume`. Cumulative YES shares sell volume.
              */
-            yes_shares_sell_volume: number;
+            yssh: number;
             /**
              * Format: double
-             * @description Cumulative USD volume on the NO side.
+             * @description Full field: `no_usd_volume`. Cumulative USD volume on the NO side.
              */
-            no_usd_volume: number;
+            nv: number;
             /**
              * Format: double
-             * @description Cumulative NO shares volume.
+             * @description Full field: `no_shares_volume`. Cumulative NO shares volume.
              */
-            no_shares_volume: number;
+            nsh: number;
             /**
              * Format: int64
-             * @description Cumulative fill count on 2-leg combos.
+             * @description Full field: `legs_2_txns`. Cumulative fill count on 2-leg combos.
              */
-            legs_2_txns: number;
+            l2t: number;
             /**
              * Format: double
-             * @description Cumulative USD volume on 2-leg combos.
+             * @description Full field: `legs_2_usd_volume`. Cumulative USD volume on 2-leg combos.
              */
-            legs_2_usd_volume: number;
+            l2v: number;
             /**
              * Format: int64
-             * @description Cumulative fill count on 3-leg combos.
+             * @description Full field: `legs_3_txns`. Cumulative fill count on 3-leg combos.
              */
-            legs_3_txns: number;
+            l3t: number;
             /**
              * Format: double
-             * @description Cumulative USD volume on 3-leg combos.
+             * @description Full field: `legs_3_usd_volume`. Cumulative USD volume on 3-leg combos.
              */
-            legs_3_usd_volume: number;
+            l3v: number;
             /**
              * Format: int64
-             * @description Cumulative fill count on 4-leg combos.
+             * @description Full field: `legs_4_txns`. Cumulative fill count on 4-leg combos.
              */
-            legs_4_txns: number;
+            l4t: number;
             /**
              * Format: double
-             * @description Cumulative USD volume on 4-leg combos.
+             * @description Full field: `legs_4_usd_volume`. Cumulative USD volume on 4-leg combos.
              */
-            legs_4_usd_volume: number;
+            l4v: number;
             /**
              * Format: int64
-             * @description Cumulative fill count on combos with 5+ legs.
+             * @description Full field: `legs_5_plus_txns`. Cumulative fill count on combos with 5+ legs.
              */
-            legs_5_plus_txns: number;
+            l5t: number;
             /**
              * Format: double
-             * @description Cumulative USD volume on combos with 5+ legs.
+             * @description Full field: `legs_5_plus_usd_volume`. Cumulative USD volume on combos with 5+ legs.
              */
-            legs_5_plus_usd_volume: number;
+            l5v: number;
             /**
              * Format: double
-             * @description Cumulative sum of entry price x USD size across fills (VWAP numerator).
+             * @description Full field: `entry_price_usd_weighted_sum`. Cumulative sum of entry price x USD size across fills (VWAP numerator).
              */
-            entry_price_usd_weighted_sum: number;
+            epw: number;
             /**
              * Format: double
-             * @description Cumulative collateral locked via splits, in USD.
+             * @description Full field: `split_collateral_usd`. Cumulative collateral locked via splits, in USD.
              */
-            split_collateral_usd: number;
+            scu: number;
             /**
              * Format: double
-             * @description Cumulative collateral released via merges, in USD.
+             * @description Full field: `merge_collateral_usd`. Cumulative collateral released via merges, in USD.
              */
-            merge_collateral_usd: number;
+            mcu: number;
             /**
              * Format: double
-             * @description Cumulative redemption payouts in USD.
+             * @description Full field: `redemption_payout_usd`. Cumulative redemption payouts in USD.
              */
-            redemption_payout_usd: number;
+            rpu: number;
             /**
              * Format: double
-             * @description Cumulative shares redeemed.
+             * @description Full field: `redemption_shares`. Cumulative shares redeemed.
              */
-            redemption_shares: number;
+            rsh: number;
             /**
              * Format: double
-             * @description Cumulative collateral released via compress operations, in USD.
+             * @description Full field: `compress_collateral_usd`. Cumulative collateral released via compress operations, in USD.
              */
-            compress_collateral_usd: number;
+            ccu: number;
             /**
              * Format: int64
-             * @description Cumulative combo markets created.
+             * @description Full field: `combos_created`. Cumulative combo markets created.
              */
-            combos_created: number;
+            ccr: number;
             /**
              * Format: int64
-             * @description Cumulative combos resolved YES.
+             * @description Full field: `combos_resolved_yes`. Cumulative combos resolved YES.
              */
-            combos_resolved_yes: number;
+            cry: number;
             /**
              * Format: int64
-             * @description Cumulative combos resolved NO.
+             * @description Full field: `combos_resolved_no`. Cumulative combos resolved NO.
              */
-            combos_resolved_no: number;
+            crn: number;
             /**
              * Format: int64
-             * @description Cumulative first-time combo traders.
+             * @description Full field: `new_combo_traders`. Cumulative first-time combo traders.
              */
-            new_combo_traders: number;
+            nct: number;
             /**
              * Format: int64
-             * @description Cumulative first-time builder-attributed combo traders.
+             * @description Full field: `new_builder_combo_traders`. Cumulative first-time builder-attributed combo traders.
              */
-            new_builder_combo_traders: number;
+            nbct: number;
         };
         /** @description Builder-attributed lifetime combo totals. */
         ComboGlobalAnalyticsBuilder: {
@@ -6469,356 +6469,356 @@ export interface components {
         ComboGlobalAnalyticsDeltaBucketRow: {
             /**
              * Format: int32
-             * @description Bucket start time as Unix seconds.
+             * @description Full field: `bucket`. Bucket start time as Unix seconds.
              */
-            bucket: number;
+            t: number;
             /**
              * Format: double
-             * @description Per-bucket USD volume across combo fills (buys + sells).
+             * @description Full field: `usd_volume`. Per-bucket USD volume across combo fills (buys + sells).
              */
-            usd_volume: number;
+            v: number;
             /**
              * Format: double
-             * @description Per-bucket USD buy volume.
+             * @description Full field: `usd_buy_volume`. Per-bucket USD buy volume.
              */
-            usd_buy_volume: number;
+            bv: number;
             /**
              * Format: double
-             * @description Per-bucket USD sell volume.
+             * @description Full field: `usd_sell_volume`. Per-bucket USD sell volume.
              */
-            usd_sell_volume: number;
+            sv: number;
             /**
              * Format: double
-             * @description Per-bucket combo shares volume (buys + sells).
+             * @description Full field: `shares_volume`. Per-bucket combo shares volume (buys + sells).
              */
-            shares_volume: number;
+            sh: number;
             /**
              * Format: double
-             * @description Per-bucket combo shares buy volume.
+             * @description Full field: `shares_buy_volume`. Per-bucket combo shares buy volume.
              */
-            shares_buy_volume: number;
+            bsh: number;
             /**
              * Format: double
-             * @description Per-bucket combo shares sell volume.
+             * @description Full field: `shares_sell_volume`. Per-bucket combo shares sell volume.
              */
-            shares_sell_volume: number;
+            ssh: number;
             /**
              * Format: double
-             * @description Per-bucket fees in USD.
+             * @description Full field: `fees`. Per-bucket fees in USD.
              */
-            fees: number;
+            f: number;
             /**
              * Format: double
-             * @description Per-bucket builder fees in USD.
+             * @description Full field: `builder_fees`. Per-bucket builder fees in USD.
              */
-            builder_fees: number;
+            bf: number;
             /**
              * Format: double
-             * @description Per-bucket USD volume on builder-attributed fills.
+             * @description Full field: `builder_usd_volume`. Per-bucket USD volume on builder-attributed fills.
              */
-            builder_usd_volume: number;
+            buv: number;
             /**
              * Format: double
-             * @description Per-bucket builder USD buy volume.
+             * @description Full field: `builder_usd_buy_volume`. Per-bucket builder USD buy volume.
              */
-            builder_usd_buy_volume: number;
+            bubv: number;
             /**
              * Format: double
-             * @description Per-bucket builder USD sell volume.
+             * @description Full field: `builder_usd_sell_volume`. Per-bucket builder USD sell volume.
              */
-            builder_usd_sell_volume: number;
+            busv: number;
             /**
              * Format: double
-             * @description Per-bucket builder combo shares volume.
+             * @description Full field: `builder_shares_volume`. Per-bucket builder combo shares volume.
              */
-            builder_shares_volume: number;
+            bsv: number;
             /**
              * Format: double
-             * @description Per-bucket builder combo shares buy volume.
+             * @description Full field: `builder_shares_buy_volume`. Per-bucket builder combo shares buy volume.
              */
-            builder_shares_buy_volume: number;
+            bsbv: number;
             /**
              * Format: double
-             * @description Per-bucket builder combo shares sell volume.
+             * @description Full field: `builder_shares_sell_volume`. Per-bucket builder combo shares sell volume.
              */
-            builder_shares_sell_volume: number;
+            bssv: number;
             /**
              * Format: int64
-             * @description Per-bucket combo fill transaction count.
+             * @description Full field: `txns`. Per-bucket combo fill transaction count.
              */
-            txns: number;
+            tc: number;
             /**
              * Format: int64
-             * @description Per-bucket combo buy fill count.
+             * @description Full field: `buys`. Per-bucket combo buy fill count.
              */
-            buys: number;
+            bc: number;
             /**
              * Format: int64
-             * @description Per-bucket combo sell fill count.
+             * @description Full field: `sells`. Per-bucket combo sell fill count.
              */
-            sells: number;
+            sc: number;
             /**
              * Format: int64
-             * @description Per-bucket builder combo fill transaction count.
+             * @description Full field: `builder_txns`. Per-bucket builder combo fill transaction count.
              */
-            builder_txns: number;
+            btc: number;
             /**
              * Format: int64
-             * @description Per-bucket builder combo buy fill count.
+             * @description Full field: `builder_buys`. Per-bucket builder combo buy fill count.
              */
-            builder_buys: number;
+            bbc: number;
             /**
              * Format: int64
-             * @description Per-bucket builder combo sell fill count.
+             * @description Full field: `builder_sells`. Per-bucket builder combo sell fill count.
              */
-            builder_sells: number;
+            bsc: number;
             /**
              * Format: int64
-             * @description Per-bucket combo market creations.
+             * @description Full field: `creations`. Per-bucket combo market creations.
              */
-            creations: number;
+            cre: number;
             /**
              * Format: int64
-             * @description Per-bucket combo executions.
+             * @description Full field: `executions`. Per-bucket combo executions.
              */
-            executions: number;
+            exe: number;
             /**
              * Format: int64
-             * @description Per-bucket combo status updates.
+             * @description Full field: `status_updates`. Per-bucket combo status updates.
              */
-            status_updates: number;
+            su: number;
             /**
              * Format: int64
-             * @description Per-bucket positions-split lifecycle operations.
+             * @description Full field: `positions_split`. Per-bucket positions-split lifecycle operations.
              */
-            positions_split: number;
+            ps: number;
             /**
              * Format: int64
-             * @description Per-bucket positions-merged lifecycle operations.
+             * @description Full field: `positions_merged`. Per-bucket positions-merged lifecycle operations.
              */
-            positions_merged: number;
+            pm: number;
             /**
              * Format: int64
-             * @description Per-bucket split-on-condition lifecycle operations.
+             * @description Full field: `split_on_condition`. Per-bucket split-on-condition lifecycle operations.
              */
-            split_on_condition: number;
+            soc: number;
             /**
              * Format: int64
-             * @description Per-bucket merge-on-condition lifecycle operations.
+             * @description Full field: `merged_on_condition`. Per-bucket merge-on-condition lifecycle operations.
              */
-            merged_on_condition: number;
+            moc: number;
             /**
              * Format: int64
-             * @description Per-bucket extract lifecycle operations.
+             * @description Full field: `extracted`. Per-bucket extract lifecycle operations.
              */
-            extracted: number;
+            ext: number;
             /**
              * Format: int64
-             * @description Per-bucket inject lifecycle operations.
+             * @description Full field: `injected`. Per-bucket inject lifecycle operations.
              */
-            injected: number;
+            inj: number;
             /**
              * Format: int64
-             * @description Per-bucket convert-to-YES-basket lifecycle operations.
+             * @description Full field: `converted_to_yes_basket`. Per-bucket convert-to-YES-basket lifecycle operations.
              */
-            converted_to_yes_basket: number;
+            ctyb: number;
             /**
              * Format: int64
-             * @description Per-bucket merge-from-YES-basket lifecycle operations.
+             * @description Full field: `merged_from_yes_basket`. Per-bucket merge-from-YES-basket lifecycle operations.
              */
-            merged_from_yes_basket: number;
+            mfyb: number;
             /**
              * Format: int64
-             * @description Per-bucket compress lifecycle operations.
+             * @description Full field: `compressed`. Per-bucket compress lifecycle operations.
              */
-            compressed: number;
+            cmp: number;
             /**
              * Format: int64
-             * @description Per-bucket redemption lifecycle operations.
+             * @description Full field: `redeemed`. Per-bucket redemption lifecycle operations.
              */
-            redeemed: number;
+            red: number;
             /**
              * Format: int64
-             * @description Per-bucket wrap lifecycle operations.
+             * @description Full field: `wrapped`. Per-bucket wrap lifecycle operations.
              */
-            wrapped: number;
+            wr: number;
             /**
              * Format: int64
-             * @description Per-bucket unwrap lifecycle operations.
+             * @description Full field: `unwrapped`. Per-bucket unwrap lifecycle operations.
              */
-            unwrapped: number;
+            uw: number;
             /**
              * Format: int64
-             * @description Per-bucket horizontal-split lifecycle operations.
+             * @description Full field: `horizontal_split`. Per-bucket horizontal-split lifecycle operations.
              */
-            horizontal_split: number;
+            hs: number;
             /**
              * Format: int64
-             * @description Per-bucket horizontal-merge lifecycle operations.
+             * @description Full field: `horizontal_merge`. Per-bucket horizontal-merge lifecycle operations.
              */
-            horizontal_merge: number;
+            hm: number;
             /**
              * Format: int64
-             * @description Per-bucket position-converted lifecycle operations.
+             * @description Full field: `position_converted`. Per-bucket position-converted lifecycle operations.
              */
-            position_converted: number;
+            pc: number;
             /**
              * Format: int64
-             * @description Per-bucket migrate lifecycle operations.
+             * @description Full field: `migrated`. Per-bucket migrate lifecycle operations.
              */
-            migrated: number;
+            mig: number;
             /**
              * Format: double
-             * @description Per-bucket combo USD volume with binary-market legs.
+             * @description Full field: `binary_usd_volume`. Per-bucket combo USD volume with binary-market legs.
              */
-            binary_usd_volume: number;
+            binv: number;
             /**
              * Format: double
-             * @description Per-bucket combo USD volume with neg-risk legs.
+             * @description Full field: `negrisk_usd_volume`. Per-bucket combo USD volume with neg-risk legs.
              */
-            negrisk_usd_volume: number;
+            nrv: number;
             /**
              * Format: double
-             * @description Per-bucket combinatorial-module USD volume.
+             * @description Full field: `combinatorial_usd_volume`. Per-bucket combinatorial-module USD volume.
              */
-            combinatorial_usd_volume: number;
+            cv: number;
             /**
              * Format: double
-             * @description Per-bucket USD volume on the YES side.
+             * @description Full field: `yes_usd_volume`. Per-bucket USD volume on the YES side.
              */
-            yes_usd_volume: number;
+            yv: number;
             /**
              * Format: double
-             * @description Per-bucket YES shares volume (buys + sells).
+             * @description Full field: `yes_shares_volume`. Per-bucket YES shares volume (buys + sells).
              */
-            yes_shares_volume: number;
+            ysh: number;
             /**
              * Format: double
-             * @description Per-bucket YES shares buy volume.
+             * @description Full field: `yes_shares_buy_volume`. Per-bucket YES shares buy volume.
              */
-            yes_shares_buy_volume: number;
+            ybsh: number;
             /**
              * Format: double
-             * @description Per-bucket YES shares sell volume.
+             * @description Full field: `yes_shares_sell_volume`. Per-bucket YES shares sell volume.
              */
-            yes_shares_sell_volume: number;
+            yssh: number;
             /**
              * Format: double
-             * @description Per-bucket USD volume on the NO side.
+             * @description Full field: `no_usd_volume`. Per-bucket USD volume on the NO side.
              */
-            no_usd_volume: number;
+            nv: number;
             /**
              * Format: double
-             * @description Per-bucket NO shares volume.
+             * @description Full field: `no_shares_volume`. Per-bucket NO shares volume.
              */
-            no_shares_volume: number;
+            nsh: number;
             /**
              * Format: int64
-             * @description Per-bucket fill count on 2-leg combos.
+             * @description Full field: `legs_2_txns`. Per-bucket fill count on 2-leg combos.
              */
-            legs_2_txns: number;
+            l2t: number;
             /**
              * Format: double
-             * @description Per-bucket USD volume on 2-leg combos.
+             * @description Full field: `legs_2_usd_volume`. Per-bucket USD volume on 2-leg combos.
              */
-            legs_2_usd_volume: number;
+            l2v: number;
             /**
              * Format: int64
-             * @description Per-bucket fill count on 3-leg combos.
+             * @description Full field: `legs_3_txns`. Per-bucket fill count on 3-leg combos.
              */
-            legs_3_txns: number;
+            l3t: number;
             /**
              * Format: double
-             * @description Per-bucket USD volume on 3-leg combos.
+             * @description Full field: `legs_3_usd_volume`. Per-bucket USD volume on 3-leg combos.
              */
-            legs_3_usd_volume: number;
+            l3v: number;
             /**
              * Format: int64
-             * @description Per-bucket fill count on 4-leg combos.
+             * @description Full field: `legs_4_txns`. Per-bucket fill count on 4-leg combos.
              */
-            legs_4_txns: number;
+            l4t: number;
             /**
              * Format: double
-             * @description Per-bucket USD volume on 4-leg combos.
+             * @description Full field: `legs_4_usd_volume`. Per-bucket USD volume on 4-leg combos.
              */
-            legs_4_usd_volume: number;
+            l4v: number;
             /**
              * Format: int64
-             * @description Per-bucket fill count on combos with 5+ legs.
+             * @description Full field: `legs_5_plus_txns`. Per-bucket fill count on combos with 5+ legs.
              */
-            legs_5_plus_txns: number;
+            l5t: number;
             /**
              * Format: double
-             * @description Per-bucket USD volume on combos with 5+ legs.
+             * @description Full field: `legs_5_plus_usd_volume`. Per-bucket USD volume on combos with 5+ legs.
              */
-            legs_5_plus_usd_volume: number;
+            l5v: number;
             /**
              * Format: double
-             * @description Per-bucket sum of entry price x USD size across fills (VWAP numerator).
+             * @description Full field: `entry_price_usd_weighted_sum`. Per-bucket sum of entry price x USD size across fills (VWAP numerator).
              */
-            entry_price_usd_weighted_sum: number;
+            epw: number;
             /**
              * Format: double
-             * @description Per-bucket collateral locked via splits, in USD.
+             * @description Full field: `split_collateral_usd`. Per-bucket collateral locked via splits, in USD.
              */
-            split_collateral_usd: number;
+            scu: number;
             /**
              * Format: double
-             * @description Per-bucket collateral released via merges, in USD.
+             * @description Full field: `merge_collateral_usd`. Per-bucket collateral released via merges, in USD.
              */
-            merge_collateral_usd: number;
+            mcu: number;
             /**
              * Format: double
-             * @description Per-bucket redemption payouts in USD.
+             * @description Full field: `redemption_payout_usd`. Per-bucket redemption payouts in USD.
              */
-            redemption_payout_usd: number;
+            rpu: number;
             /**
              * Format: double
-             * @description Per-bucket shares redeemed.
+             * @description Full field: `redemption_shares`. Per-bucket shares redeemed.
              */
-            redemption_shares: number;
+            rsh: number;
             /**
              * Format: double
-             * @description Per-bucket collateral released via compress operations, in USD.
+             * @description Full field: `compress_collateral_usd`. Per-bucket collateral released via compress operations, in USD.
              */
-            compress_collateral_usd: number;
+            ccu: number;
             /**
              * Format: int64
-             * @description Per-bucket combo markets created.
+             * @description Full field: `combos_created`. Per-bucket combo markets created.
              */
-            combos_created: number;
+            ccr: number;
             /**
              * Format: int64
-             * @description Per-bucket combos resolved YES.
+             * @description Full field: `combos_resolved_yes`. Per-bucket combos resolved YES.
              */
-            combos_resolved_yes: number;
+            cry: number;
             /**
              * Format: int64
-             * @description Per-bucket combos resolved NO.
+             * @description Full field: `combos_resolved_no`. Per-bucket combos resolved NO.
              */
-            combos_resolved_no: number;
+            crn: number;
             /**
              * Format: int64
-             * @description Per-bucket first-time combo traders.
+             * @description Full field: `new_combo_traders`. Per-bucket first-time combo traders.
              */
-            new_combo_traders: number;
+            nct: number;
             /**
              * Format: int64
-             * @description Per-bucket first-time builder-attributed combo traders.
+             * @description Full field: `new_builder_combo_traders`. Per-bucket first-time builder-attributed combo traders.
              */
-            new_builder_combo_traders: number;
+            nbct: number;
             /**
              * Format: int64
-             * @description Distinct traders that filled a combo in this bucket (window-unique,
+             * @description Full field: `unique_traders`. Distinct traders that filled a combo in this bucket (window-unique,
              *     not first-time; uniqCombined approximation).
              */
-            unique_traders: number;
+            ut: number;
             /**
              * Format: int64
-             * @description Distinct combos traded in this bucket (window-unique; uniqCombined
+             * @description Full field: `distinct_combos_traded`. Distinct combos traded in this bucket (window-unique; uniqCombined
              *     approximation).
              */
-            distinct_combos_traded: number;
+            dct: number;
         };
         /**
          * @description Ratios derived at read time from the lifetime cumulative snapshot.
