@@ -33,7 +33,7 @@ const specs: SpecConfig[] = [
 		specPath: join(import.meta.dirname, "../src/generated/polymarket.ts"),
 		jsonSpecPath: join(import.meta.dirname, "../openapi/polymarket.json"),
 		venuePrefix: "/polymarket",
-		namespaceFiles: ["assets.ts", "holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "builders.ts", "search.ts", "tags.ts", "orderBook.ts", "analytics.ts"],
+		namespaceFiles: ["assets.ts", "holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "builders.ts", "search.ts", "tags.ts", "orderBook.ts", "analytics.ts", "combos.ts"],
 		schemaAccessor: "Schemas",
 		ignoredMissingRoutes: DEPRECATED_UNVERSIONED_PNL_ROUTES,
 	},

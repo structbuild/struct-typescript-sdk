@@ -352,7 +352,23 @@ export interface GetMarketBySlugParams extends OperationQuery<"get_market_by_slu
 	marketSlug: string;
 }
 
+export interface GetComboMarketsParams extends OperationQuery<"list_combo_markets"> {}
+
 export interface GetComboLegsParams extends OperationQuery<"get_combo_legs"> {}
+
+export interface GetComboCandlestickParams extends OperationQuery<"get_combo_candlestick"> {}
+
+export interface GetComboCandlesticksParams extends OperationQuery<"get_combo_and_leg_candlesticks"> {}
+
+export interface GetComboLegCandlestickParams extends OperationQuery<"get_combo_leg_candlestick"> {}
+
+export interface GetComboMetricsParams extends OperationQuery<"get_combo_metrics"> {}
+
+export interface GetComboAnalyticsChangesParams extends OperationQuery<"get_combo_analytics_changes"> {}
+
+export interface GetComboAnalyticsDeltasParams extends OperationQuery<"get_combo_analytics_deltas"> {}
+
+export interface GetComboAnalyticsTimeseriesParams extends OperationQuery<"get_combo_analytics_timeseries"> {}
 
 export interface GetCandlestickParams extends OperationQuery<"get_market_candlestick"> {}
 
@@ -611,6 +627,31 @@ export type ComboPositionPairTrade = Schemas["ComboPositionPairTrade"];
 export type ComboRedemptionTrade = Schemas["ComboRedemptionTrade"];
 export type ComboStatusUpdateTrade = Schemas["ComboStatusUpdateTrade"];
 export type ComboWrapTrade = Schemas["ComboWrapTrade"];
+
+export type ComboMarket = Schemas["ComboMarket"];
+export type ComboMarketLeg = Schemas["ComboMarketLeg"];
+export type ComboMarketSortBy = Schemas["ComboMarketSortBy"];
+export type ComboMarketStatusFilter = Schemas["ComboMarketStatusFilter"];
+export type ComboMarketTimeframe = Schemas["ComboMarketTimeframe"];
+export type ComboCandlestickBar = Schemas["ComboCandlestickBar"];
+export type ComboCandlesticksResponse = Schemas["ComboCandlesticksResponse"];
+export type ComboLegCandlestickBar = Schemas["ComboLegCandlestickBar"];
+export type ComboLegCandlestickSeries = Schemas["ComboLegCandlestickSeries"];
+export type ComboMetricsResponse = Schemas["ComboMetricsResponse"];
+export type ComboTimeframeMetrics = Schemas["ComboTimeframeMetrics"];
+export type ComboGlobalAnalyticsChanges = Schemas["ComboGlobalAnalyticsChanges"];
+export type ComboGlobalAnalyticsCountsResponse = Schemas["ComboGlobalAnalyticsCountsResponse"];
+export type ComboGlobalAnalyticsBucketRow = Schemas["ComboGlobalAnalyticsBucketRow"];
+export type ComboGlobalAnalyticsDeltaBucketRow = Schemas["ComboGlobalAnalyticsDeltaBucketRow"];
+export type ComboGlobalAnalyticsBuilder = Schemas["ComboGlobalAnalyticsBuilder"];
+export type ComboGlobalAnalyticsCombos = Schemas["ComboGlobalAnalyticsCombos"];
+export type ComboGlobalAnalyticsCurrent = Schemas["ComboGlobalAnalyticsCurrent"];
+export type ComboGlobalAnalyticsDerived = Schemas["ComboGlobalAnalyticsDerived"];
+export type ComboGlobalAnalyticsLegs = Schemas["ComboGlobalAnalyticsLegs"];
+export type ComboGlobalAnalyticsLifecycle = Schemas["ComboGlobalAnalyticsLifecycle"];
+export type ComboGlobalAnalyticsModules = Schemas["ComboGlobalAnalyticsModules"];
+export type ComboGlobalAnalyticsSides = Schemas["ComboGlobalAnalyticsSides"];
+export type ComboGlobalAnalyticsUsers = Schemas["ComboGlobalAnalyticsUsers"];
 
 export type BatchPnlRequest = Schemas["BatchPnlRequest"];
 export type BatchPnlResponse = OperationResponse<"get_trader_pnl_batch_v3_1">;

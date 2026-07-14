@@ -21,8 +21,6 @@ import type {
 	GetMarketVolumeChartParams,
 	GetMarketParams,
 	GetMarketBySlugParams,
-	GetComboLegsParams,
-	ComboLegsResponse,
 	GetPriceJumpsParams,
 	PriceJump,
 	GetOracleEventsParams,
@@ -48,10 +46,6 @@ export class MarketsNamespace extends Namespace {
 		const { marketSlug, ...query } = params;
 		const res = await this.get<MarketResponse[]>(venue, `/market/slug/${encodeURIComponent(marketSlug)}`, { params: { ...query } });
 		return { ...res, data: res.data[0]! };
-	}
-
-	async getComboLegs(params?: GetComboLegsParams, venue?: Venue): Promise<HttpResponse<ComboLegsResponse>> {
-		return this.get<ComboLegsResponse>(venue, "/market/combo_legs", { params: { ...params } });
 	}
 
 	async getMarketChart(params: GetMarketChartParams, venue?: Venue): Promise<HttpResponse<PositionChartOutcome[]>> {
