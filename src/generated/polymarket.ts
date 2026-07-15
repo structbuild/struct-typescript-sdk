@@ -1884,7 +1884,7 @@ export interface paths {
         };
         /**
          * List combo positions with legs, metadata, and PnL
-         * @description Lists a trader's combos (parlays), one entry per combo, each expanded into its legs with market metadata, live prices, won/lost/pending status, the trader's PnL row, and derived figures (implied probability, potential payout, dead flag).
+         * @description Lists a trader's combos (parlays), one entry per combo, each expanded into its legs with market metadata, live prices, won/lost/pending status, the trader's PnL row, and derived figures (implied probability, potential payout, dead flag). Supports title search and combo-level sorting.
          */
         get: operations["get_trader_combos_pnl_v3_1"];
         put?: never;
@@ -5734,21 +5734,6 @@ export interface components {
             mig: number;
             /**
              * Format: double
-             * @description Full field: `binary_usd_volume`. Cumulative combo USD volume with binary-market legs.
-             */
-            binv: number;
-            /**
-             * Format: double
-             * @description Full field: `negrisk_usd_volume`. Cumulative combo USD volume with neg-risk legs.
-             */
-            nrv: number;
-            /**
-             * Format: double
-             * @description Full field: `combinatorial_usd_volume`. Cumulative combinatorial-module USD volume.
-             */
-            cv: number;
-            /**
-             * Format: double
              * @description Full field: `yes_usd_volume`. Cumulative USD volume on the YES side.
              */
             yv: number;
@@ -5837,11 +5822,6 @@ export interface components {
              * @description Full field: `redemption_payout_usd`. Cumulative redemption payouts in USD.
              */
             rpu: number;
-            /**
-             * Format: double
-             * @description Full field: `redemption_shares`. Cumulative shares redeemed.
-             */
-            rsh: number;
             /**
              * Format: double
              * @description Full field: `compress_collateral_usd`. Cumulative collateral released via compress operations, in USD.
@@ -6130,21 +6110,6 @@ export interface components {
             migrated?: number | null;
             /**
              * Format: double
-             * @description Pct change of combo USD volume with binary-market legs.
-             */
-            binary_usd_volume?: number | null;
-            /**
-             * Format: double
-             * @description Pct change of combo USD volume with neg-risk legs.
-             */
-            negrisk_usd_volume?: number | null;
-            /**
-             * Format: double
-             * @description Pct change of combinatorial-module USD volume.
-             */
-            combinatorial_usd_volume?: number | null;
-            /**
-             * Format: double
              * @description Pct change of USD volume on the YES side.
              */
             yes_usd_volume?: number | null;
@@ -6230,11 +6195,6 @@ export interface components {
             redemption_payout_usd?: number | null;
             /**
              * Format: double
-             * @description Pct change of shares redeemed.
-             */
-            redemption_shares?: number | null;
-            /**
-             * Format: double
              * @description Pct change of collateral released via compress operations, in USD.
              */
             compress_collateral_usd?: number | null;
@@ -6307,7 +6267,7 @@ export interface components {
             hit_rate_prev?: number | null;
             /**
              * Format: double
-             * @description Current lifetime `redemption_payout_usd / combinatorial_usd_volume`.
+             * @description Current lifetime `redemption_payout_usd / usd_volume`.
              */
             payout_ratio_now?: number | null;
             /**
@@ -6416,8 +6376,6 @@ export interface components {
             entry_price_usd_weighted_sum: number;
             /** @description Builder-attributed totals. */
             builder: components["schemas"]["ComboGlobalAnalyticsBuilder"];
-            /** @description USD volume by module / leg market type. */
-            modules: components["schemas"]["ComboGlobalAnalyticsModules"];
             /** @description YES / NO side totals. */
             sides: components["schemas"]["ComboGlobalAnalyticsSides"];
             /** @description Totals by combo leg count. */
@@ -6669,21 +6627,6 @@ export interface components {
             mig: number;
             /**
              * Format: double
-             * @description Full field: `binary_usd_volume`. Per-bucket combo USD volume with binary-market legs.
-             */
-            binv: number;
-            /**
-             * Format: double
-             * @description Full field: `negrisk_usd_volume`. Per-bucket combo USD volume with neg-risk legs.
-             */
-            nrv: number;
-            /**
-             * Format: double
-             * @description Full field: `combinatorial_usd_volume`. Per-bucket combinatorial-module USD volume.
-             */
-            cv: number;
-            /**
-             * Format: double
              * @description Full field: `yes_usd_volume`. Per-bucket USD volume on the YES side.
              */
             yv: number;
@@ -6774,11 +6717,6 @@ export interface components {
             rpu: number;
             /**
              * Format: double
-             * @description Full field: `redemption_shares`. Per-bucket shares redeemed.
-             */
-            rsh: number;
-            /**
-             * Format: double
              * @description Full field: `compress_collateral_usd`. Per-bucket collateral released via compress operations, in USD.
              */
             ccu: number;
@@ -6845,8 +6783,8 @@ export interface components {
             hit_rate?: number | null;
             /**
              * Format: double
-             * @description Redemption payouts relative to combinatorial volume:
-             *     `redemption_payout_usd / combinatorial_usd_volume`.
+             * @description Redemption payouts relative to USD volume:
+             *     `redemption_payout_usd / usd_volume`.
              */
             payout_ratio?: number | null;
             /**
@@ -7012,32 +6950,9 @@ export interface components {
             redemption_payout_usd: number;
             /**
              * Format: double
-             * @description Lifetime cumulative shares redeemed.
-             */
-            redemption_shares: number;
-            /**
-             * Format: double
              * @description Lifetime cumulative collateral released via compress operations, in USD.
              */
             compress_collateral_usd: number;
-        };
-        /** @description Lifetime combo USD volume by module / leg market type. */
-        ComboGlobalAnalyticsModules: {
-            /**
-             * Format: double
-             * @description Lifetime cumulative combo USD volume with binary-market legs.
-             */
-            binary_usd_volume: number;
-            /**
-             * Format: double
-             * @description Lifetime cumulative combo USD volume with neg-risk legs.
-             */
-            negrisk_usd_volume: number;
-            /**
-             * Format: double
-             * @description Lifetime cumulative combinatorial-module USD volume.
-             */
-            combinatorial_usd_volume: number;
         };
         /** @description Lifetime combo totals split by YES / NO side. */
         ComboGlobalAnalyticsSides: {
@@ -8641,10 +8556,12 @@ export interface components {
         EventSortBy: "volume" | "txns" | "unique_traders" | "title" | "creation_date" | "start_date" | "end_date" | "relevance";
         /**
          * @description Sort keys for the v3.1 combo listing — aggregates summed (or, for the
-         *     timestamps, min/max) across a combo's held sides.
+         *     timestamps, min/max) across a combo's held sides. `title` sorts by
+         *     combo market title, `end_date` by market resolution date, and
+         *     `redeemable` by whether a winning held side still has shares.
          * @enum {string}
          */
-        V31ComboPnlSortBy: "total_pnl_usd" | "realized_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "total_buy_usd" | "first_trade_at" | "last_trade_at";
+        V31ComboPnlSortBy: "total_pnl_usd" | "realized_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "total_buy_usd" | "first_trade_at" | "last_trade_at" | "title" | "end_date" | "redeemable";
         /**
          * @description One tag's stats aggregated across every builder routing activity into it.
          *
@@ -14467,7 +14384,7 @@ export interface operations {
             query?: {
                 /** @description Combo condition id (0x-prefixed 32-byte hex) */
                 condition_id?: string;
-                /** @description Combo position id, decimal or 0x-prefixed hex — as returned by the PnL positions endpoints */
+                /** @description Combo position id, decimal or 0x-prefixed hex */
                 position_id?: string;
             };
             header?: never;
@@ -17128,7 +17045,9 @@ export interface operations {
             query?: {
                 /** @description Lifecycle filter; omit for all combos. `resolved` matches wins and losses; `resolved_win` also matches redeemable/redeemed */
                 status?: components["schemas"]["V31ComboStatusFilter"];
-                /** @description Default: total_pnl_usd. Aggregated across the combo's held sides */
+                /** @description Case-insensitive substring match on the combo market title. */
+                search?: string;
+                /** @description Default: total_pnl_usd. Aggregated across the combo's held sides. `title` sorts alphabetically by market title; `end_date` sorts by the market resolution date; `redeemable` surfaces combos with redeemable winning shares. */
                 sort_by?: components["schemas"]["V31ComboPnlSortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];

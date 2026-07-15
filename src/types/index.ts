@@ -649,7 +649,6 @@ export type ComboGlobalAnalyticsCurrent = Schemas["ComboGlobalAnalyticsCurrent"]
 export type ComboGlobalAnalyticsDerived = Schemas["ComboGlobalAnalyticsDerived"];
 export type ComboGlobalAnalyticsLegs = Schemas["ComboGlobalAnalyticsLegs"];
 export type ComboGlobalAnalyticsLifecycle = Schemas["ComboGlobalAnalyticsLifecycle"];
-export type ComboGlobalAnalyticsModules = Schemas["ComboGlobalAnalyticsModules"];
 export type ComboGlobalAnalyticsSides = Schemas["ComboGlobalAnalyticsSides"];
 export type ComboGlobalAnalyticsUsers = Schemas["ComboGlobalAnalyticsUsers"];
 
