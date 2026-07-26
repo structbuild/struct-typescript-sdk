@@ -15,19 +15,6 @@ interface SpecConfig {
 	ignoredMissingRoutes?: string[];
 }
 
-const DEPRECATED_UNVERSIONED_PNL_ROUTES = [
-	"/trader/pnl/{param}",
-	"/trader/pnl/{param}/markets",
-	"/trader/pnl/{param}/candles",
-	"/trader/pnl/{param}/categories",
-	"/trader/pnl/{param}/category-candles",
-	"/trader/pnl/{param}/exits",
-	"/trader/pnl/{param}/positions",
-	"/trader/pnl/batch",
-	"/trader/top_trades_markets",
-	"/trader/global_pnl",
-];
-
 const specs: SpecConfig[] = [
 	{
 		specPath: join(import.meta.dirname, "../src/generated/polymarket.ts"),
@@ -35,7 +22,6 @@ const specs: SpecConfig[] = [
 		venuePrefix: "/polymarket",
 		namespaceFiles: ["assets.ts", "holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "builders.ts", "search.ts", "tags.ts", "orderBook.ts", "analytics.ts", "combos.ts"],
 		schemaAccessor: "Schemas",
-		ignoredMissingRoutes: DEPRECATED_UNVERSIONED_PNL_ROUTES,
 	},
 	{
 		specPath: join(import.meta.dirname, "../src/generated/webhooks.ts"),

@@ -3,7 +3,7 @@ import {
 	StructClient,
 	StructWebSocket,
 	type Event as StructEvent,
-	type GlobalEntry,
+	type TraderPnl,
 	type MarketResponse,
 	type WsRoomId,
 } from "../src/index.js";
@@ -164,7 +164,7 @@ function getEventSlug(event: StructEvent | undefined): string | null {
 	return isNonEmptyString(event?.event_slug) ? event.event_slug : null;
 }
 
-function getLeaderboardTraderAddress(entry: GlobalEntry | undefined): string | null {
+function getLeaderboardTraderAddress(entry: TraderPnl | undefined): string | null {
 	return isNonEmptyString(entry?.trader?.address) ? entry.trader.address : null;
 }
 

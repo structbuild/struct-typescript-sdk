@@ -404,17 +404,17 @@ export interface GetMarketChartParams extends OperationQuery<"get_chart"> {}
 
 export interface GetPriceJumpsParams extends OperationQuery<"get_price_jumps"> {}
 
-export interface GetGlobalPnlParams extends OperationQuery<"get_global_pnl_v3_1"> {}
+export interface GetGlobalPnlParams extends OperationQuery<"get_global_pnl"> {}
 
-export interface GetTraderPnlParams extends OperationQuery<"get_trader_pnl_v3_1"> {
+export interface GetTraderPnlParams extends OperationQuery<"get_trader_pnl"> {
 	address: string;
 }
 
-export interface GetTraderPnlBreakdownParams extends OperationQuery<"get_trader_market_pnl_v3_1"> {
+export interface GetTraderPnlBreakdownParams extends OperationQuery<"get_trader_market_pnl"> {
 	address: string;
 }
 
-export interface GetTraderPositionPnlParams extends OperationQuery<"get_trader_position_pnl_v3_1"> {
+export interface GetTraderPositionPnlParams extends OperationQuery<"get_trader_position_pnl"> {
 	address: string;
 }
 
@@ -422,11 +422,11 @@ export interface GetTraderPnlCalendarParams extends OperationQuery<"get_trader_p
 	address: string;
 }
 
-export interface GetTraderPnlCandlesParams extends OperationQuery<"get_trader_pnl_candles_v3_1"> {
+export interface GetTraderPnlCandlesParams extends OperationQuery<"get_trader_pnl_candles"> {
 	address: string;
 }
 
-export interface GetTraderCategoryPnlCandlesParams extends OperationQuery<"get_trader_category_pnl_candles_v3_1"> {
+export interface GetTraderCategoryPnlCandlesParams extends OperationQuery<"get_trader_category_pnl_candles"> {
 	address: string;
 }
 
@@ -574,11 +574,6 @@ export interface GetOracleEventsParams extends OperationQuery<"get_oracle_events
 
 export type TraderProfile = Schemas["TraderProfile"];
 export type TradeMarketRef = Schemas["TradeMarketRef"];
-export type CategoryEntry = Schemas["CategoryEntry"];
-export type EventEntry = Schemas["EventEntry"];
-export type GlobalEntry = Schemas["GlobalEntry"];
-export type MarketEntry = Schemas["MarketEntry"];
-export type PositionEntry = Schemas["PositionEntry"];
 export type PolymarketCategory = Schemas["PolymarketCategory"];
 
 export type CategoryPnlSortBy = Schemas["CategoryPnlSortBy"];
@@ -596,21 +591,15 @@ export type PnlPeriodsResponse = Schemas["PnlPeriodsResponse"];
 export type PnlRiskMarketMetadata = Schemas["PnlRiskMarketMetadata"];
 export type PnlRiskMetric = Schemas["PnlRiskMetric"];
 export type PnlRiskResponse = Schemas["PnlRiskResponse"];
-export type V31TraderPnl = Schemas["V31TraderPnl"];
-export type V31MarketPnl = Schemas["V31MarketPnl"];
-export type V31CategoryPnl = Schemas["V31CategoryPnl"];
-export type V31PositionPnl = Schemas["V31PositionPnl"];
-export type V31TraderPnlSortBy = Schemas["V31TraderPnlSortBy"];
-export type V31MarketPnlSortBy = Schemas["V31MarketPnlSortBy"];
-export type V31CategoryPnlSortBy = Schemas["V31CategoryPnlSortBy"];
-export type V31PositionPnlSortBy = Schemas["V31PositionPnlSortBy"];
-export type V31PositionOpenPnlSortBy = Schemas["V31PositionOpenPnlSortBy"];
-export type V31PositionClosedPnlSortBy = Schemas["V31PositionClosedPnlSortBy"];
-export type V31PositionExitPnlSortBy = Schemas["V31PositionExitPnlSortBy"];
-export type V31ComboPnlSortBy = Schemas["V31ComboPnlSortBy"];
-export type V31ComboStatus = Schemas["V31ComboStatus"];
-export type V31ComboStatusFilter = Schemas["V31ComboStatusFilter"];
-export type V31ComboPnlResponse = Schemas["V31ComboPnlResponse"];
+export type TraderPnl = Schemas["TraderPnl"];
+export type MarketPnl = Schemas["MarketPnl"];
+export type CategoryPnl = Schemas["CategoryPnl"];
+export type PositionPnl = Schemas["PositionPnl"];
+export type ComboPnlSortBy = Schemas["ComboPnlSortBy"];
+export type ComboStatus = Schemas["ComboStatus"];
+export type ComboStatusFilter = Schemas["ComboStatusFilter"];
+export type ComboPnlResponse = Schemas["ComboPnlResponse"];
+export type ComboFilter = Schemas["ComboFilter"];
 export type ComboLegDetail = Schemas["ComboLegDetail"];
 export type ComboLegMarketType = Schemas["ComboLegMarketType"];
 export type ComboLegsResponse = Schemas["ComboLegsResponse"];
@@ -652,8 +641,26 @@ export type ComboGlobalAnalyticsLifecycle = Schemas["ComboGlobalAnalyticsLifecyc
 export type ComboGlobalAnalyticsSides = Schemas["ComboGlobalAnalyticsSides"];
 export type ComboGlobalAnalyticsUsers = Schemas["ComboGlobalAnalyticsUsers"];
 
+export type ComboHolder = Schemas["ComboHolder"];
+export type ComboHoldersResponse = Schemas["ComboHoldersResponse"];
+export type ComboHolderStatsResponse = Schemas["ComboHolderStatsResponse"];
+export type ComboConditionHoldersResponse = Schemas["ComboConditionHoldersResponse"];
+export type ComboConditionPositionHolders = Schemas["ComboConditionPositionHolders"];
+
+export interface GetComboHoldersParams extends OperationQuery<"get_combo_holders"> {
+	position_id: string;
+}
+
+export interface GetComboHolderStatsParams {
+	position_id: string;
+}
+
+export interface GetComboConditionHoldersParams extends OperationQuery<"get_combo_condition_holders"> {
+	condition_id: string;
+}
+
 export type BatchPnlRequest = Schemas["BatchPnlRequest"];
-export type BatchPnlResponse = OperationResponse<"get_trader_pnl_batch_v3_1">;
+export type BatchPnlResponse = OperationResponse<"get_trader_pnl_batch">;
 
 export type GetTraderPnlBatchParams = BatchPnlRequest;
 
@@ -669,21 +676,21 @@ export interface GetTraderPnlRiskParams extends OperationQuery<"get_trader_pnl_r
 	address: string;
 }
 
-export interface GetTraderCategoryPnlParams extends OperationQuery<"get_trader_category_pnl_v3_1"> {
+export interface GetTraderCategoryPnlParams extends OperationQuery<"get_trader_category_pnl"> {
 	address: string;
 }
 
-export interface GetTraderPnlExitsParams extends OperationQuery<"get_trader_pnl_exits_v3_1"> {
+export interface GetTraderPnlExitsParams extends OperationQuery<"get_trader_pnl_exits"> {
 	address: string;
 }
 
-export interface GetTopTradesMarketsParams extends OperationQuery<"get_top_trades_markets_v3_1"> {}
+export interface GetTopTradesMarketsParams extends OperationQuery<"get_top_trades_markets"> {}
 
-export interface GetTraderComboPnlParams extends OperationQuery<"get_trader_combo_pnl_v3_1"> {
+export interface GetTraderComboPnlParams extends OperationQuery<"get_trader_combo_pnl"> {
 	address: string;
 }
 
-export interface GetTraderCombosPnlParams extends OperationQuery<"get_trader_combos_pnl_v3_1"> {
+export interface GetTraderCombosPnlParams extends OperationQuery<"get_trader_combos_pnl"> {
 	address: string;
 }
 

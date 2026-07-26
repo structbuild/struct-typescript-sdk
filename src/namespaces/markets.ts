@@ -26,8 +26,8 @@ import type {
 	GetOracleEventsParams,
 	GetMarketTopTradersParams,
 	GetPositionTopTradersParams,
-	MarketEntry,
-	PositionEntry,
+	MarketPnl,
+	PositionPnl,
 	TradeEvent,
 } from "../types/index.js";
 
@@ -88,11 +88,11 @@ export class MarketsNamespace extends Namespace {
 		return this.get<TradeEvent[]>(venue, "/market/oracle-events", { params: { ...params } });
 	}
 
-	async getMarketTopTraders(params?: GetMarketTopTradersParams, venue?: Venue): Promise<HttpResponse<MarketEntry[]>> {
-		return this.get<MarketEntry[]>(venue, "/market/top-traders", { params: { ...params } });
+	async getMarketTopTraders(params?: GetMarketTopTradersParams, venue?: Venue): Promise<HttpResponse<MarketPnl[]>> {
+		return this.get<MarketPnl[]>(venue, "/market/top-traders", { params: { ...params } });
 	}
 
-	async getPositionTopTraders(params: GetPositionTopTradersParams, venue?: Venue): Promise<HttpResponse<PositionEntry[]>> {
-		return this.get<PositionEntry[]>(venue, "/market/position/top-traders", { params: { ...params } });
+	async getPositionTopTraders(params: GetPositionTopTradersParams, venue?: Venue): Promise<HttpResponse<PositionPnl[]>> {
+		return this.get<PositionPnl[]>(venue, "/market/position/top-traders", { params: { ...params } });
 	}
 }

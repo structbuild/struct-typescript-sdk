@@ -6444,15 +6444,15 @@ export interface components {
              */
             liquidity_updated_at: number;
         };
-        /** @description Subscribe to the trader PnL stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. Firehose / `subscribe_all` is not supported. */
+        /** @description Subscribe to the trader PnL stream. On `action: "subscribe"`, `traders` is required and must be non-empty. `unsubscribe_all` needs no traders. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. Firehose / `subscribe_all` is not supported. */
         TraderPnlSubscribeMessage: {
             /**
              * @description Subscription action.
              * @enum {string}
              */
             action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses. Required. */
-            traders: string[];
+            /** @description EVM wallet addresses. Required and non-empty for subscribe; omit for unsubscribe_all. */
+            traders?: string[];
             /** @description Restrict pushed updates to this subset of PnL granularities. Empty/omitted = all four. Unknown values reject the subscription. */
             update_types?: ("global" | "market" | "category")[];
             /** @description Restrict pushed updates to these aggregation timeframes. Empty/omitted = all four. Unknown values reject the subscription. Ignored by window-agnostic tick / resolution events. */
@@ -6485,6 +6485,12 @@ export interface components {
             timeframe?: string | null;
             /** @description Realized PnL for the timeframe */
             realized_pnl_usd: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Events traded.
@@ -6617,6 +6623,12 @@ export interface components {
             condition_id: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /** @description Current shares balance. */
             current_shares_balance?: number;
             /** @description Category label. */
@@ -6690,6 +6702,12 @@ export interface components {
             category: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Markets in this category.
@@ -6795,6 +6813,12 @@ export interface components {
             trader: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /** @description Open positions value. */
             open_positions_value?: number;
             /**
@@ -6817,6 +6841,12 @@ export interface components {
             condition_id: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Last block number.
@@ -6837,6 +6867,12 @@ export interface components {
             category: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Last block number.
@@ -6855,6 +6891,12 @@ export interface components {
             trader: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Markets won.
@@ -6898,6 +6940,12 @@ export interface components {
             won?: boolean | null;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Last block number.
@@ -6918,6 +6966,12 @@ export interface components {
             category: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Markets won.
@@ -7040,656 +7094,6 @@ export interface components {
             block: number;
             data: components["schemas"]["TraderCategoryResolutionRow"][];
         };
-        /** @description Subscribe to the trader PnL v3.1 stream. On `action: "subscribe"`, `traders` is required and must be non-empty. `unsubscribe_all` needs no traders. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. Firehose / `subscribe_all` is not supported. */
-        TraderPnlV31SubscribeMessage: {
-            /**
-             * @description Subscription action.
-             * @enum {string}
-             */
-            action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses. Required and non-empty for subscribe; omit for unsubscribe_all. */
-            traders?: string[];
-            /** @description Restrict pushed updates to this subset of PnL granularities. Empty/omitted = all four. Unknown values reject the subscription. */
-            update_types?: ("global" | "market" | "category")[];
-            /** @description Restrict pushed updates to these aggregation timeframes. Empty/omitted = all four. Unknown values reject the subscription. Ignored by window-agnostic tick / resolution events. */
-            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
-            /** @description Restrict pushed updates to events whose `dirty_kinds` intersects this set. Empty/omitted or `["all"]` = every kind. Unknown values reject the subscription. */
-            dirty_kinds?: ("trade" | "price" | "window" | "market_resolved" | "all")[];
-        };
-        /** @description Server acknowledgement for a trader PnL subscription. Echoes the accepted (normalized) filter sets so clients can confirm the active subscription. */
-        TraderPnlV31SubscribeResponse: {
-            /** @description Accepted trader wallets. */
-            traders?: string[];
-            /** @description Accepted update types. Empty = all. */
-            update_types?: ("global" | "market" | "category")[];
-            /** @description Accepted timeframes. Empty = all. */
-            timeframes?: ("1d" | "7d" | "30d" | "lifetime")[];
-            /** @description Trader addresses that were rejected (invalid EVM format). */
-            rejected?: string[];
-            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
-            compression?: boolean;
-            /** @description Set if the entire subscription was rejected (e.g. empty traders, or an invalid update_type / timeframe value). */
-            error?: string | null;
-        };
-        /** @description One global (portfolio-level) PnL row inside a `trader_global_pnl_batch_v3_1` envelope's `data` array. */
-        TraderGlobalPnlV31Row: {
-            /** @description Trader EVM wallet address */
-            trader: string;
-            /** @description Dirty update kinds included in this event. */
-            dirty_kinds?: ("trade" | "price" | "window" | "market_resolved")[];
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-            /** @description Realized PnL for the timeframe */
-            realized_pnl_usd: number;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number;
-            /**
-             * Format: int64
-             * @description Events traded.
-             */
-            events_traded?: number;
-            /**
-             * Format: int64
-             * @description Markets traded.
-             */
-            markets_traded?: number;
-            /**
-             * Format: int64
-             * @description Total buy count.
-             */
-            total_buys?: number;
-            /**
-             * Format: int64
-             * @description Total sell count.
-             */
-            total_sells?: number;
-            /**
-             * Format: int64
-             * @description Total redemption count.
-             */
-            total_redemptions?: number;
-            /**
-             * Format: int64
-             * @description Total merge count.
-             */
-            total_merges?: number;
-            /**
-             * Format: int64
-             * @description Total split count.
-             */
-            total_splits?: number;
-            /** @description Total volume in USD. */
-            total_volume_usd?: number;
-            /** @description Buy volume in USD. */
-            buy_volume_usd?: number;
-            /** @description Sell volume in USD. */
-            sell_volume_usd?: number;
-            /** @description Redemption volume in USD. */
-            redemption_volume_usd?: number;
-            /** @description Merge volume in USD. */
-            merge_volume_usd?: number;
-            /** @description Split volume in USD. */
-            split_volume_usd?: number;
-            /**
-             * Format: int64
-             * @description Maker rebate count.
-             */
-            maker_rebate_count?: number;
-            /** @description Maker rebates in USD. */
-            maker_rebate_usd?: number;
-            /**
-             * Format: int64
-             * @description Reward count.
-             */
-            reward_count?: number;
-            /** @description Rewards in USD. */
-            reward_usd?: number;
-            /**
-             * Format: int64
-             * @description Yield count.
-             */
-            yield_count?: number;
-            /** @description Yield in USD. */
-            yield_usd?: number;
-            /**
-             * Format: int64
-             * @description Total credit count.
-             */
-            total_credit_count?: number;
-            /** @description Total credits in USD. */
-            total_credit_usd?: number;
-            /**
-             * Format: int64
-             * @description Markets won.
-             */
-            markets_won?: number;
-            /**
-             * Format: int64
-             * @description Markets lost.
-             */
-            markets_lost?: number;
-            /** @description Market win rate percent. */
-            market_win_rate_pct?: number;
-            /** @description Total wins in USD. */
-            total_wins_usd?: number;
-            /** @description Total losses in USD. */
-            total_losses_usd?: number;
-            /** @description Average win in USD. */
-            avg_win_usd?: number | null;
-            /** @description Average loss in USD. */
-            avg_loss_usd?: number | null;
-            /** @description Profit factor. */
-            profit_factor?: number | null;
-            /** @description Average hold time in seconds. */
-            avg_hold_time_seconds?: number;
-            /** @description Total fees. */
-            total_fees?: number;
-            /** @description Best trade PnL in USD. */
-            best_trade_pnl_usd?: number | null;
-            /** @description Best trade condition ID. */
-            best_trade_condition_id?: string | null;
-            /** @description Worst trade PnL in USD. */
-            worst_trade_pnl_usd?: number | null;
-            /** @description Worst trade condition ID. */
-            worst_trade_condition_id?: string | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-        };
-        /** @description One per-market PnL row inside a `trader_market_pnl_batch_v3_1` envelope's `data` array. */
-        TraderMarketPnlV31Row: {
-            /** @description Trader wallet address. */
-            trader: string;
-            /** @description Dirty update kinds included in this event. */
-            dirty_kinds?: ("trade" | "price" | "window" | "market_resolved")[];
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-            /** @description 64-char hex condition ID */
-            condition_id: string;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number;
-            /** @description Current shares balance. */
-            current_shares_balance?: number;
-            /** @description Category label. */
-            category?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
-            /**
-             * Format: int64
-             * @description Outcomes traded.
-             */
-            outcomes_traded?: number;
-            /**
-             * Format: int64
-             * @description Total buy count.
-             */
-            total_buys?: number;
-            /**
-             * Format: int64
-             * @description Total sell count.
-             */
-            total_sells?: number;
-            /**
-             * Format: int64
-             * @description Total redemption count.
-             */
-            total_redemptions?: number;
-            /**
-             * Format: int64
-             * @description Total merge count.
-             */
-            total_merges?: number;
-            /**
-             * Format: int64
-             * @description Total split count.
-             */
-            total_splits?: number;
-            /** @description Buy volume in USD. */
-            buy_usd?: number;
-            /** @description Sell volume in USD. */
-            sell_usd?: number;
-            /** @description Redemption volume in USD. */
-            redemption_usd?: number;
-            /** @description Merge volume in USD. */
-            merge_usd?: number;
-            /** @description Split volume in USD. */
-            split_volume_usd?: number;
-            /** @description Total fees. */
-            total_fees?: number;
-            /** @description Total shares bought. */
-            total_shares_bought?: number;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-        };
-        /** @description One per-category PnL row inside a `trader_category_pnl_batch_v3_1` envelope's `data` array. */
-        TraderCategoryPnlV31Row: {
-            /** @description Trader wallet address. */
-            trader: string;
-            /** @description Dirty update kinds included in this event. */
-            dirty_kinds?: ("trade" | "price" | "window" | "market_resolved")[];
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-            /** @description Category label. */
-            category: string;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number;
-            /**
-             * Format: int64
-             * @description Markets in this category.
-             */
-            markets_in_category?: number;
-            /**
-             * Format: int64
-             * @description Markets traded.
-             */
-            markets_traded?: number;
-            /**
-             * Format: int64
-             * @description Outcomes traded.
-             */
-            outcomes_traded?: number;
-            /**
-             * Format: int64
-             * @description Total buy count.
-             */
-            total_buys?: number;
-            /**
-             * Format: int64
-             * @description Total sell count.
-             */
-            total_sells?: number;
-            /**
-             * Format: int64
-             * @description Total redemption count.
-             */
-            total_redemptions?: number;
-            /**
-             * Format: int64
-             * @description Total merge count.
-             */
-            total_merges?: number;
-            /**
-             * Format: int64
-             * @description Total split count.
-             */
-            total_splits?: number;
-            /** @description Total volume in USD. */
-            total_volume_usd?: number;
-            /** @description Buy volume in USD. */
-            buy_usd?: number;
-            /** @description Sell volume in USD. */
-            sell_usd?: number;
-            /** @description Redemption volume in USD. */
-            redemption_usd?: number;
-            /** @description Merge volume in USD. */
-            merge_usd?: number;
-            /** @description Split volume in USD. */
-            split_volume_usd?: number;
-            /** @description Total fees. */
-            total_fees?: number;
-            /** @description Total shares bought. */
-            total_shares_bought?: number;
-            /**
-             * Format: int64
-             * @description Markets won.
-             */
-            markets_won?: number;
-            /**
-             * Format: int64
-             * @description Markets lost.
-             */
-            markets_lost?: number;
-            /** @description Market win rate percent. */
-            market_win_rate_pct?: number;
-            /** @description Average hold time in seconds. */
-            avg_hold_time_seconds?: number;
-            /** @description Best trade PnL in USD. */
-            best_trade_pnl_usd?: number | null;
-            /** @description Best trade condition ID. */
-            best_trade_condition_id?: string | null;
-            /** @description Worst trade PnL in USD. */
-            worst_trade_pnl_usd?: number | null;
-            /** @description Worst trade condition ID. */
-            worst_trade_condition_id?: string | null;
-            /** @description Total wins in USD. */
-            total_wins_usd?: number;
-            /** @description Total losses in USD. */
-            total_losses_usd?: number;
-            /** @description Average win in USD. */
-            avg_win_usd?: number | null;
-            /** @description Average loss in USD. */
-            avg_loss_usd?: number | null;
-            /** @description Profit factor. */
-            profit_factor?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-        };
-        /** @description Row carried by `trader_global_tick_batch_v3_1` (price-only trader aggregate). */
-        TraderGlobalTickV31Row: {
-            /** @description Trader wallet address. */
-            trader: string;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number;
-            /** @description Open positions value. */
-            open_positions_value?: number;
-            /**
-             * Format: int64
-             * @description Last block number.
-             */
-            last_block?: number;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            dirty_kinds?: "price"[];
-        };
-        /** @description Row carried by `trader_market_tick_batch_v3_1` (price-only per-market). */
-        TraderMarketTickV31Row: {
-            /** @description Trader wallet address. */
-            trader: string;
-            /** @description Market condition ID. */
-            condition_id: string;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number;
-            /**
-             * Format: int64
-             * @description Last block number.
-             */
-            last_block?: number;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            dirty_kinds?: "price"[];
-        };
-        /** @description Row carried by `trader_category_tick_batch_v3_1` (price-only per-category). */
-        TraderCategoryTickV31Row: {
-            /** @description Trader wallet address. */
-            trader: string;
-            /** @description Category label. */
-            category: string;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number;
-            /**
-             * Format: int64
-             * @description Last block number.
-             */
-            last_block?: number;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            dirty_kinds?: "price"[];
-        };
-        /** @description Row carried by `trader_global_resolution_batch_v3_1` (trader-aggregate resolution). */
-        TraderGlobalResolutionV31Row: {
-            /** @description Trader wallet address. */
-            trader: string;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number;
-            /**
-             * Format: int64
-             * @description Markets won.
-             */
-            markets_won?: number;
-            /**
-             * Format: int64
-             * @description Markets lost.
-             */
-            markets_lost?: number;
-            /**
-             * Format: int64
-             * @description Markets resolved.
-             */
-            markets_resolved?: number;
-            /** @description Total wins usd lifetime. */
-            total_wins_usd_lifetime?: number;
-            /** @description Total losses usd lifetime. */
-            total_losses_usd_lifetime?: number;
-            /**
-             * Format: int64
-             * @description Last block number.
-             */
-            last_block?: number;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            dirty_kinds?: "market_resolved"[];
-        };
-        /** @description Row carried by `trader_market_resolution_batch_v3_1` (per-market resolution). */
-        TraderMarketResolutionV31Row: {
-            /** @description Trader wallet address. */
-            trader: string;
-            /** @description Market condition ID. */
-            condition_id: string;
-            /** @description Whether the market is resolved. */
-            resolved?: boolean;
-            /** @description Whether the position won. */
-            won?: boolean | null;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number;
-            /**
-             * Format: int64
-             * @description Last block number.
-             */
-            last_block?: number;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            dirty_kinds?: "market_resolved"[];
-        };
-        /** @description Row carried by `trader_category_resolution_batch_v3_1` (per-category resolution). */
-        TraderCategoryResolutionV31Row: {
-            /** @description Trader wallet address. */
-            trader: string;
-            /** @description Category label. */
-            category: string;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number;
-            /**
-             * Format: int64
-             * @description Markets won.
-             */
-            markets_won?: number;
-            /**
-             * Format: int64
-             * @description Markets lost.
-             */
-            markets_lost?: number;
-            /** @description Total wins usd lifetime. */
-            total_wins_usd_lifetime?: number;
-            /** @description Total losses usd lifetime. */
-            total_losses_usd_lifetime?: number;
-            /**
-             * Format: int64
-             * @description Last block number.
-             */
-            last_block?: number;
-            /**
-             * Format: int64
-             * @description Unix seconds
-             */
-            last_trade_at?: number | null;
-            dirty_kinds?: "market_resolved"[];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_global_pnl_batch_v3_1`. `data` carries every matching row from the block. */
-        TraderGlobalPnlV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_global_pnl_batch_v3_1";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3_1";
-            /** Format: int64 */
-            block: number;
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-            data: components["schemas"]["TraderGlobalPnlV31Row"][];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_market_pnl_batch_v3_1`. `data` carries every matching row from the block. */
-        TraderMarketPnlV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_market_pnl_batch_v3_1";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3_1";
-            /** Format: int64 */
-            block: number;
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-            data: components["schemas"]["TraderMarketPnlV31Row"][];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_category_pnl_batch_v3_1`. `data` carries every matching row from the block. */
-        TraderCategoryPnlV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_category_pnl_batch_v3_1";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3_1";
-            /** Format: int64 */
-            block: number;
-            /** @description "1d", "7d", "30d", or "lifetime" */
-            timeframe?: string | null;
-            data: components["schemas"]["TraderCategoryPnlV31Row"][];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_global_tick_batch_v3_1`. `data` carries every matching row from the block. */
-        TraderGlobalTickV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_global_tick_batch_v3_1";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3_1";
-            /** Format: int64 */
-            block: number;
-            data: components["schemas"]["TraderGlobalTickV31Row"][];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_market_tick_batch_v3_1`. `data` carries every matching row from the block. */
-        TraderMarketTickV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_market_tick_batch_v3_1";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3_1";
-            /** Format: int64 */
-            block: number;
-            data: components["schemas"]["TraderMarketTickV31Row"][];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_category_tick_batch_v3_1`. `data` carries every matching row from the block. */
-        TraderCategoryTickV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_category_tick_batch_v3_1";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3_1";
-            /** Format: int64 */
-            block: number;
-            data: components["schemas"]["TraderCategoryTickV31Row"][];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_global_resolution_batch_v3_1`. `data` carries every matching row from the block. */
-        TraderGlobalResolutionV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_global_resolution_batch_v3_1";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3_1";
-            /** Format: int64 */
-            block: number;
-            data: components["schemas"]["TraderGlobalResolutionV31Row"][];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_market_resolution_batch_v3_1`. `data` carries every matching row from the block. */
-        TraderMarketResolutionV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_market_resolution_batch_v3_1";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3_1";
-            /** Format: int64 */
-            block: number;
-            data: components["schemas"]["TraderMarketResolutionV31Row"][];
-        };
-        /** @description Server-pushed per-block batch. Envelope type: `trader_category_resolution_batch_v3_1`. `data` carries every matching row from the block. */
-        TraderCategoryResolutionV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_category_resolution_batch_v3_1";
-            /** @enum {string} */
-            room_id: "polymarket_trader_pnl_v3_1";
-            /** Format: int64 */
-            block: number;
-            data: components["schemas"]["TraderCategoryResolutionV31Row"][];
-        };
         /** @description Subscribe to the trader positions stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `["all"]` = receive every kind of update. */
         TraderPositionsSubscribeMessage: {
             /**
@@ -7784,6 +7188,12 @@ export interface components {
             avg_price?: number | null;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number | null;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number | null;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number | null;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number | null;
             /** @description Realized PnL percent. */
             realized_pnl_pct?: number | null;
             /** @description Total fees. */
@@ -7850,6 +7260,12 @@ export interface components {
             current_value?: number | null;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number | null;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number | null;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number | null;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number | null;
             /** @description Realized PnL percent. */
             realized_pnl_pct?: number | null;
             /**
@@ -7895,6 +7311,12 @@ export interface components {
             won?: boolean | null;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number | null;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number | null;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number | null;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number | null;
             /** @description Realized PnL percent. */
             realized_pnl_pct?: number | null;
             /**
@@ -7925,260 +7347,6 @@ export interface components {
              */
             block: number;
             data: components["schemas"]["TraderPositionResolutionRow"][];
-        };
-        /** @description Subscribe to the trader positions stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `["all"]` = receive every kind of update. */
-        TraderPositionsV31SubscribeMessage: {
-            /**
-             * @description Subscription action.
-             * @enum {string}
-             */
-            action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses. Required and non-empty. */
-            traders?: string[];
-            /** @description Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `["all"]` to accept every kind (the default). Unknown values reject the subscription. */
-            dirty_kinds?: ("trade" | "price" | "position_resolved" | "all")[];
-        } & ({
-            /** @enum {unknown} */
-            action: "unsubscribe_all";
-        } | {
-            /** @enum {unknown} */
-            action: "subscribe";
-            traders: unknown;
-        });
-        /** @description Server acknowledgement for a trader positions subscription. */
-        TraderPositionsV31SubscribeResponse: {
-            /** @description Accepted trader wallets. */
-            traders?: string[];
-            /** @description Echoed accepted dirty_kinds filter. Empty = all. */
-            dirty_kinds?: ("trade" | "price" | "position_resolved")[];
-            /** @description Rejected filter values. */
-            rejected?: string[];
-            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
-            compression?: boolean;
-            /** @description Subscription error message. */
-            error?: string | null;
-        };
-        /** @description One position-update row inside a `trader_position_batch_v3_1` envelope's `data` array. */
-        TraderPositionV31Row: {
-            /** @description ERC-1155 token ID (decimal string) */
-            position_id?: string | null;
-            /** @description Market condition ID. */
-            condition_id?: string | null;
-            /** @description Market slug. */
-            market_slug?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
-            title?: string | null;
-            /** @description Market question. */
-            question?: string | null;
-            /** @description Image URL. */
-            image_url?: string | null;
-            /** @description Outcome name (e.g. "Yes") */
-            outcome?: string | null;
-            /** @description Outcome index. */
-            outcome_index?: number | null;
-            /** @description Whether the position is open. */
-            open?: boolean | null;
-            /** @description Resolution outcome — present once the market resolved */
-            won?: boolean | null;
-            /**
-             * Format: int64
-             * @description Total buy count.
-             */
-            total_buys?: number | null;
-            /**
-             * Format: int64
-             * @description Total sell count.
-             */
-            total_sells?: number | null;
-            /**
-             * Format: int64
-             * @description Conversion count.
-             */
-            converted_count?: number | null;
-            /** @description Converted shares gained. */
-            converted_shares_gained?: number | null;
-            /** @description Converted shares lost. */
-            converted_shares_lost?: number | null;
-            /** @description Total shares bought. */
-            total_shares_bought?: number | null;
-            /** @description Total shares sold. */
-            total_shares_sold?: number | null;
-            /** @description Total buys in USD. */
-            total_buy_usd?: number | null;
-            /** @description Total sells in USD. */
-            total_sell_usd?: number | null;
-            /** @description Redemption volume in USD. */
-            redemption_usd?: number | null;
-            /** @description Merge volume in USD. */
-            merge_usd?: number | null;
-            /** @description 0–1 */
-            avg_entry_price?: number | null;
-            /** @description Average exit price. */
-            avg_exit_price?: number | null;
-            /** @description Volume-weighted across buys + sells */
-            avg_price?: number | null;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number | null;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number | null;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number | null;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number | null;
-            /** @description Realized PnL percent. */
-            realized_pnl_pct?: number | null;
-            /** @description Total fees. */
-            total_fees?: number | null;
-            /**
-             * Format: int64
-             * @description Unix milliseconds
-             */
-            first_trade_at?: number | null;
-            /**
-             * Format: int64
-             * @description Unix milliseconds
-             */
-            last_trade_at?: number | null;
-            /** @description Latest on-chain mark for the outcome token */
-            current_price?: number | null;
-            /** @description Current shares balance. */
-            current_shares_balance?: number | null;
-            /** @description current_price × current_shares_balance */
-            current_value?: number | null;
-            /** @description Last traded price. */
-            last_traded_price?: number | null;
-            /**
-             * Format: int64
-             * @description Market resolution deadline (Unix seconds)
-             */
-            end_date?: number | null;
-            /** @description True for multi-outcome NegRisk markets */
-            is_neg_risk?: boolean | null;
-            /** @description Market resolved AND trader still holds shares */
-            redeemable?: boolean | null;
-            /** @description NegRisk market, unresolved, trader holds shares */
-            mergeable?: boolean | null;
-            /** @description What kind of activity triggered this update. One or more of: `trade` (a buy, sell, merge, split, redemption, or NegRisk convert landed), `price` (outcome price moved), `position_resolved` (the position's market resolved on this update). */
-            dirty_kinds?: ("trade" | "price" | "position_resolved")[];
-        };
-        /** @description Server-pushed per-block batch of position updates. Envelope type: `trader_position_batch_v3_1`. Carries every row from the named block that matched the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` field describes what triggered that row's update — including resolutions (`position_resolved`). */
-        TraderPositionV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_position_batch_v3_1";
-            /**
-             * @description WebSocket room ID.
-             * @enum {string}
-             */
-            room_id: "polymarket_trader_positions_v3_1";
-            /**
-             * Format: int64
-             * @description Block number these rows were computed at.
-             */
-            block: number;
-            data: components["schemas"]["TraderPositionV31Row"][];
-        };
-        /** @description One price-tick row inside a `trader_position_price_batch_v3_1` envelope's `data` array. */
-        TraderPositionPriceV31Row: {
-            /** @description Trader wallet address. */
-            trader?: string | null;
-            /** @description ERC-1155 token ID (decimal string) */
-            position_id?: string | null;
-            /** @description Market condition ID. */
-            condition_id?: string | null;
-            /** @description Latest on-chain mark for the outcome token */
-            current_price?: number | null;
-            /** @description Current position value. */
-            current_value?: number | null;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number | null;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number | null;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number | null;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number | null;
-            /** @description Realized PnL percent. */
-            realized_pnl_pct?: number | null;
-            /**
-             * Format: int64
-             * @description Last block number.
-             */
-            last_block?: number | null;
-            /**
-             * Format: int64
-             * @description Unix milliseconds
-             */
-            last_trade_at?: number | null;
-            /** @description Dirty update kinds included in this event. */
-            dirty_kinds?: "price"[];
-        };
-        /** @description Server-pushed per-block batch of position price ticks (mark-to-market refreshes). Envelope type: `trader_position_price_batch_v3_1`. */
-        TraderPositionPriceV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_position_price_batch_v3_1";
-            /**
-             * @description WebSocket room ID.
-             * @enum {string}
-             */
-            room_id: "polymarket_trader_positions_v3_1";
-            /**
-             * Format: int64
-             * @description Block number.
-             */
-            block: number;
-            data: components["schemas"]["TraderPositionPriceV31Row"][];
-        };
-        /** @description One resolution row inside a `trader_position_resolution_batch_v3_1` envelope's `data` array. */
-        TraderPositionResolutionV31Row: {
-            /** @description Trader wallet address. */
-            trader?: string | null;
-            /** @description ERC-1155 token ID (decimal string) */
-            position_id?: string | null;
-            /** @description Market condition ID. */
-            condition_id?: string | null;
-            /** @description Whether the market is resolved. */
-            resolved?: boolean | null;
-            /** @description Whether the position won. */
-            won?: boolean | null;
-            /** @description Realized PnL in USD. */
-            realized_pnl_usd?: number | null;
-            /** @description Fee-excluded realized PnL in USD. */
-            raw_realized_pnl_usd?: number | null;
-            /** @description Fee-excluded unrealized PnL in USD. */
-            raw_unrealized_pnl_usd?: number | null;
-            /** @description Fee-excluded total PnL in USD. */
-            raw_total_pnl_usd?: number | null;
-            /** @description Realized PnL percent. */
-            realized_pnl_pct?: number | null;
-            /**
-             * Format: int64
-             * @description Last block number.
-             */
-            last_block?: number | null;
-            /**
-             * Format: int64
-             * @description Unix milliseconds
-             */
-            last_trade_at?: number | null;
-            /** @description Dirty update kinds included in this event. */
-            dirty_kinds?: "position_resolved"[];
-        };
-        /** @description Server-pushed per-block batch of position resolutions. Envelope type: `trader_position_resolution_batch_v3_1`. */
-        TraderPositionResolutionV31BatchEvent: {
-            /** @enum {string} */
-            type: "trader_position_resolution_batch_v3_1";
-            /**
-             * @description WebSocket room ID.
-             * @enum {string}
-             */
-            room_id: "polymarket_trader_positions_v3_1";
-            /**
-             * Format: int64
-             * @description Block number.
-             */
-            block: number;
-            data: components["schemas"]["TraderPositionResolutionV31Row"][];
         };
         /** @description Subscribe to the trader exit markers stream. `traders` is required and must be non-empty unless `subscribe_all` is set. `reasons` is an optional narrowing filter — empty/omitted or `["all"]` = receive every exit reason. */
         TraderExitMarkersSubscribeMessage: {
@@ -8234,94 +7402,6 @@ export interface components {
             pnl_usd?: number;
             /** @description Realized PnL at exit, percent */
             pnl_pct?: number;
-            /** @description Cost basis in USD. */
-            cost_basis_usd?: number;
-            /**
-             * @description Why the position closed: `resolved_*` held to market resolution (win/loss by verdict); `sold_*` closed before resolution (win/loss by realized PnL sign).
-             * @enum {string}
-             */
-            reason?: "resolved_win" | "resolved_loss" | "sold_win" | "sold_loss";
-            /**
-             * Format: int64
-             * @description Block the exit was recorded at
-             */
-            block?: number;
-            /**
-             * Format: int64
-             * @description Exit time, Unix seconds
-             */
-            ts?: number;
-        };
-        /** @description Server-pushed per-block batch of position exits. Envelope type: `trader_exit_marker_batch`. Carries every exit from the named block that matched the subscriber's filter. Empty batches are not sent. */
-        TraderExitMarkerBatchEvent: {
-            /** @enum {string} */
-            type: "trader_exit_marker_batch";
-            /**
-             * @description WebSocket room ID.
-             * @enum {string}
-             */
-            room_id: "polymarket_trader_pnl_exits";
-            /**
-             * Format: int64
-             * @description Block number these exits were recorded at.
-             */
-            block: number;
-            data: components["schemas"]["TraderExitMarkerRow"][];
-        };
-        /** @description Subscribe to the trader exit markers v3.1 stream. `traders` is required and must be non-empty unless `subscribe_all` is set. `reasons` is an optional narrowing filter — empty/omitted or `["all"]` = receive every exit reason. */
-        TraderExitMarkersV31SubscribeMessage: {
-            /**
-             * @description Subscription action.
-             * @enum {string}
-             */
-            action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses. Required unless subscribe_all is set. */
-            traders?: string[];
-            /** @description Restrict pushed exits to this subset of reasons. Omit, leave empty, or pass `["all"]` to accept every reason (the default). Unknown values reject the subscription. */
-            reasons?: ("resolved_win" | "resolved_loss" | "sold_win" | "sold_loss" | "all")[];
-            /** @description Firehose: receive exits for every trader on this stream. The traders filter is ignored when set; reasons still applies. */
-            subscribe_all?: boolean;
-        };
-        /** @description Server acknowledgement for a trader exit markers v3.1 subscription. */
-        TraderExitMarkersV31SubscribeResponse: {
-            /** @description Accepted trader wallets. */
-            traders?: string[];
-            /** @description Echoed accepted reasons filter. Empty = all. */
-            reasons?: ("resolved_win" | "resolved_loss" | "sold_win" | "sold_loss")[];
-            /** @description Rejected filter values. */
-            rejected?: string[];
-            /** @description Whether the firehose subscription is active. */
-            subscribe_all?: boolean;
-            /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
-            compression?: boolean;
-            /** @description Subscription error message. */
-            error?: string | null;
-        };
-        /** @description One exit row inside a `trader_exit_marker_batch_v3_1` envelope's `data` array. */
-        TraderExitMarkerV31Row: {
-            /** @description EVM wallet address */
-            trader?: string;
-            /** @description ERC-1155 token ID (decimal string) */
-            position_id?: string;
-            /** @description Market condition ID. */
-            condition_id?: string;
-            /** @description Event slug. */
-            event_slug?: string;
-            /** @description Market slug. */
-            market_slug?: string;
-            title?: string;
-            /** @description Full market question text */
-            question?: string;
-            /** @description Image URL. */
-            image_url?: string;
-            /** @description Outcome name (e.g. "Yes") */
-            outcome?: string;
-            /** @description Outcome index. */
-            outcome_index?: number | null;
-            /** @description Realized PnL at exit, USD */
-            pnl_usd?: number;
-            /** @description Realized PnL at exit, percent */
-            pnl_pct?: number;
             /** @description Fee-excluded PnL at exit, USD */
             raw_pnl_usd?: number;
             /** @description Fee-excluded PnL at exit, percent (rebased on the fee-free cost basis) */
@@ -8348,21 +7428,21 @@ export interface components {
             /** @description Polymarket top-level category (e.g. "Politics"); empty when unresolved */
             category?: string;
         };
-        /** @description Server-pushed per-block batch of position exits. Envelope type: `trader_exit_marker_batch_v3_1`. Carries every exit from the named block that matched the subscriber's filter. Empty batches are not sent. */
-        TraderExitMarkerV31BatchEvent: {
+        /** @description Server-pushed per-block batch of position exits. Envelope type: `trader_exit_marker_batch`. Carries every exit from the named block that matched the subscriber's filter. Empty batches are not sent. */
+        TraderExitMarkerBatchEvent: {
             /** @enum {string} */
-            type: "trader_exit_marker_batch_v3_1";
+            type: "trader_exit_marker_batch";
             /**
              * @description WebSocket room ID.
              * @enum {string}
              */
-            room_id: "polymarket_trader_pnl_exits_v3_1";
+            room_id: "polymarket_trader_pnl_exits";
             /**
              * Format: int64
              * @description Block number these exits were recorded at.
              */
             block: number;
-            data: components["schemas"]["TraderExitMarkerV31Row"][];
+            data: components["schemas"]["TraderExitMarkerRow"][];
         };
         /** @description Subscribe to holder metrics for explicit positions, conditions, or events. At least one identifier array must be non-empty, unless subscribe_all is set. Omitted arrays receive no updates for that metric family. Up to 500 total identifiers are accepted. */
         HolderMetricsSubscribeMessage: {

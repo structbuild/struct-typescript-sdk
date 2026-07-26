@@ -12,6 +12,12 @@ import type {
 	ComboGlobalAnalyticsChanges,
 	ComboGlobalAnalyticsDeltaBucketRow,
 	ComboGlobalAnalyticsBucketRow,
+	ComboHoldersResponse,
+	ComboHolderStatsResponse,
+	ComboConditionHoldersResponse,
+	GetComboHoldersParams,
+	GetComboHolderStatsParams,
+	GetComboConditionHoldersParams,
 	GetComboMarketsParams,
 	GetComboLegsParams,
 	GetComboCandlestickParams,
@@ -46,6 +52,20 @@ export class CombosNamespace extends Namespace {
 
 	async getMetrics(params: GetComboMetricsParams, venue?: Venue): Promise<HttpResponse<ComboMetricsResponse>> {
 		return this.get<ComboMetricsResponse>(venue, "/combos/metrics", { params: { ...params } });
+	}
+
+	async getHolders(params: GetComboHoldersParams, venue?: Venue): Promise<HttpResponse<ComboHoldersResponse>> {
+		const { position_id, ...query } = params;
+		return this.get<ComboHoldersResponse>(venue, `/combos/${encodeURIComponent(position_id)}/holders`, { params: query });
+	}
+
+	async getHolderStats(params: GetComboHolderStatsParams, venue?: Venue): Promise<HttpResponse<ComboHolderStatsResponse>> {
+		return this.get<ComboHolderStatsResponse>(venue, `/combos/${encodeURIComponent(params.position_id)}/holders/stats`);
+	}
+
+	async getConditionHolders(params: GetComboConditionHoldersParams, venue?: Venue): Promise<HttpResponse<ComboConditionHoldersResponse>> {
+		const { condition_id, ...query } = params;
+		return this.get<ComboConditionHoldersResponse>(venue, `/combos/conditions/${encodeURIComponent(condition_id)}/holders`, { params: query });
 	}
 
 	async getAnalyticsCounts(venue?: Venue): Promise<HttpResponse<ComboGlobalAnalyticsCountsResponse>> {
