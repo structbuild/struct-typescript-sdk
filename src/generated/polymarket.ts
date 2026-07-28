@@ -15742,8 +15742,20 @@ export interface operations {
     get_trader_pnl_candles: {
         parameters: {
             query?: {
+                /** @description Candle bucket size. `auto` picks the finest resolution that fits the whole span within max `count_back` (2500) and overrides any caller-supplied `count_back`. Default: 1m for 1d, 1d otherwise. */
+                resolution?: components["schemas"]["PnlCandleResolution"];
                 /** @description Default: lifetime */
-                timeframe?: components["schemas"]["PnlTimeframe"];
+                timeframe?: components["schemas"]["PnlCandleTimeframe"];
+                /** @description Start unix seconds. Overrides the timeframe lower bound. Ignored when `count_back` and `to` are both supplied — that combination walks `count_back` buckets back from `to`. */
+                from?: number;
+                /** @description End unix seconds. Defaults to now. Synthetic buckets are never emitted past now. */
+                to?: number;
+                /** @description Number of candle buckets to return. Default 500, max 2500. Ignored when `resolution=auto` (forced to 2500). */
+                count_back?: number;
+                /** @description Cursor from a previous response */
+                pagination_key?: string;
+                /** @description Forward-fill buckets the trader had no activity in, carrying the previous close through to `to` (or now). Default: true. When false, only buckets with activity are returned — no synthetic buckets at all, so the series ends at the trader's last activity rather than at `to`. */
+                fill_gaps?: boolean;
             };
             header?: never;
             path: {
@@ -15820,10 +15832,22 @@ export interface operations {
     get_trader_category_pnl_candles: {
         parameters: {
             query: {
-                /** @description Category name */
-                category: string;
+                /** @description Category to scope candles to. Required. */
+                category: components["schemas"]["PolymarketCategory"];
+                /** @description Candle bucket size. `auto` picks the finest resolution that fits the whole span within max `count_back` (2500) and overrides any caller-supplied `count_back`. Default: 1m for 1d, 1d otherwise. */
+                resolution?: components["schemas"]["PnlCandleResolution"];
                 /** @description Default: lifetime */
-                timeframe?: components["schemas"]["PnlTimeframe"];
+                timeframe?: components["schemas"]["PnlCandleTimeframe"];
+                /** @description Start unix seconds. Overrides the timeframe lower bound. Ignored when `count_back` and `to` are both supplied — that combination walks `count_back` buckets back from `to`. */
+                from?: number;
+                /** @description End unix seconds. Defaults to now. Synthetic buckets are never emitted past now. */
+                to?: number;
+                /** @description Number of candle buckets to return. Default 500, max 2500. Ignored when `resolution=auto` (forced to 2500). */
+                count_back?: number;
+                /** @description Cursor from a previous response */
+                pagination_key?: string;
+                /** @description Forward-fill buckets the trader had no activity in, carrying the previous close through to `to` (or now). Default: true. When false, only buckets with activity are returned — no synthetic buckets at all, so the series ends at the trader's last activity rather than at `to`. */
+                fill_gaps?: boolean;
             };
             header?: never;
             path: {
