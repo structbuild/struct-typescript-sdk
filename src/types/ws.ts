@@ -210,6 +210,7 @@ export interface WebSocketEventMap {
 	matic_update: MaticUpdateEvent;
 	pusd_update: PusdUpdateEvent;
 	order_book_update: OrderBookUpdateEvent;
+	order_book_batch: OrderBookBatchEvent;
 	clob_rewards_update: ClobRewardsUpdateEvent;
 	events_stream_update: EventsStreamUpdateRows;
 	markets_stream_update: MarketsStreamUpdateRows;

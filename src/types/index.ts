@@ -365,6 +365,24 @@ export interface GetMarketBySlugParams extends OperationQuery<"get_market_by_slu
 	marketSlug: string;
 }
 
+export interface GetComboMarketsParams extends OperationQuery<"list_combo_markets"> {}
+
+export interface GetComboLegsParams extends OperationQuery<"get_combo_legs"> {}
+
+export interface GetComboCandlestickParams extends OperationQuery<"get_combo_candlestick"> {}
+
+export interface GetComboCandlesticksParams extends OperationQuery<"get_combo_and_leg_candlesticks"> {}
+
+export interface GetComboLegCandlestickParams extends OperationQuery<"get_combo_leg_candlestick"> {}
+
+export interface GetComboMetricsParams extends OperationQuery<"get_combo_metrics"> {}
+
+export interface GetComboAnalyticsChangesParams extends OperationQuery<"get_combo_analytics_changes"> {}
+
+export interface GetComboAnalyticsDeltasParams extends OperationQuery<"get_combo_analytics_deltas"> {}
+
+export interface GetComboAnalyticsTimeseriesParams extends OperationQuery<"get_combo_analytics_timeseries"> {}
+
 export interface GetCandlestickParams extends OperationQuery<"get_market_candlestick"> {}
 
 export interface GetPositionCandlestickParams extends OperationQuery<"get_position_candlestick"> {}
@@ -418,6 +436,10 @@ export interface GetTraderPnlCalendarParams extends OperationQuery<"get_trader_p
 }
 
 export interface GetTraderPnlCandlesParams extends OperationQuery<"get_trader_pnl_candles"> {
+	address: string;
+}
+
+export interface GetTraderCategoryPnlCandlesParams extends OperationQuery<"get_trader_category_pnl_candles"> {
 	address: string;
 }
 
@@ -565,11 +587,6 @@ export interface GetOracleEventsParams extends OperationQuery<"get_oracle_events
 
 export type TraderProfile = Schemas["TraderProfile"];
 export type TradeMarketRef = Schemas["TradeMarketRef"];
-export type CategoryEntry = Schemas["CategoryEntry"];
-export type EventEntry = Schemas["EventEntry"];
-export type GlobalEntry = Schemas["GlobalEntry"];
-export type MarketEntry = Schemas["MarketEntry"];
-export type PositionEntry = Schemas["PositionEntry"];
 export type PolymarketCategory = Schemas["PolymarketCategory"];
 
 export type CategoryPnlSortBy = Schemas["CategoryPnlSortBy"];
@@ -587,7 +604,18 @@ export type PnlPeriodsResponse = Schemas["PnlPeriodsResponse"];
 export type PnlRiskMarketMetadata = Schemas["PnlRiskMarketMetadata"];
 export type PnlRiskMetric = Schemas["PnlRiskMetric"];
 export type PnlRiskResponse = Schemas["PnlRiskResponse"];
-
+export type TraderPnl = Schemas["TraderPnl"];
+export type MarketPnl = Schemas["MarketPnl"];
+export type CategoryPnl = Schemas["CategoryPnl"];
+export type PositionPnl = Schemas["PositionPnl"];
+export type ComboPnlSortBy = Schemas["ComboPnlSortBy"];
+export type ComboStatus = Schemas["ComboStatus"];
+export type ComboStatusFilter = Schemas["ComboStatusFilter"];
+export type ComboPnlResponse = Schemas["ComboPnlResponse"];
+export type ComboFilter = Schemas["ComboFilter"];
+export type ComboLegDetail = Schemas["ComboLegDetail"];
+export type ComboLegMarketType = Schemas["ComboLegMarketType"];
+export type ComboLegsResponse = Schemas["ComboLegsResponse"];
 export type ApprovalTrade = Schemas["ApprovalTrade"];
 export type ComboBasketTrade = Schemas["ComboBasketTrade"];
 export type ComboCompressedTrade = Schemas["ComboCompressedTrade"];
@@ -601,6 +629,48 @@ export type ComboPositionPairTrade = Schemas["ComboPositionPairTrade"];
 export type ComboRedemptionTrade = Schemas["ComboRedemptionTrade"];
 export type ComboStatusUpdateTrade = Schemas["ComboStatusUpdateTrade"];
 export type ComboWrapTrade = Schemas["ComboWrapTrade"];
+
+export type ComboMarket = Schemas["ComboMarket"];
+export type ComboMarketLeg = Schemas["ComboMarketLeg"];
+export type ComboMarketSortBy = Schemas["ComboMarketSortBy"];
+export type ComboMarketStatusFilter = Schemas["ComboMarketStatusFilter"];
+export type ComboMarketTimeframe = Schemas["ComboMarketTimeframe"];
+export type ComboCandlestickBar = Schemas["ComboCandlestickBar"];
+export type ComboCandlesticksResponse = Schemas["ComboCandlesticksResponse"];
+export type ComboLegCandlestickBar = Schemas["ComboLegCandlestickBar"];
+export type ComboLegCandlestickSeries = Schemas["ComboLegCandlestickSeries"];
+export type ComboMetricsResponse = Schemas["ComboMetricsResponse"];
+export type ComboTimeframeMetrics = Schemas["ComboTimeframeMetrics"];
+export type ComboGlobalAnalyticsChanges = Schemas["ComboGlobalAnalyticsChanges"];
+export type ComboGlobalAnalyticsCountsResponse = Schemas["ComboGlobalAnalyticsCountsResponse"];
+export type ComboGlobalAnalyticsBucketRow = Schemas["ComboGlobalAnalyticsBucketRow"];
+export type ComboGlobalAnalyticsDeltaBucketRow = Schemas["ComboGlobalAnalyticsDeltaBucketRow"];
+export type ComboGlobalAnalyticsBuilder = Schemas["ComboGlobalAnalyticsBuilder"];
+export type ComboGlobalAnalyticsCombos = Schemas["ComboGlobalAnalyticsCombos"];
+export type ComboGlobalAnalyticsCurrent = Schemas["ComboGlobalAnalyticsCurrent"];
+export type ComboGlobalAnalyticsDerived = Schemas["ComboGlobalAnalyticsDerived"];
+export type ComboGlobalAnalyticsLegs = Schemas["ComboGlobalAnalyticsLegs"];
+export type ComboGlobalAnalyticsLifecycle = Schemas["ComboGlobalAnalyticsLifecycle"];
+export type ComboGlobalAnalyticsSides = Schemas["ComboGlobalAnalyticsSides"];
+export type ComboGlobalAnalyticsUsers = Schemas["ComboGlobalAnalyticsUsers"];
+
+export type ComboHolder = Schemas["ComboHolder"];
+export type ComboHoldersResponse = Schemas["ComboHoldersResponse"];
+export type ComboHolderStatsResponse = Schemas["ComboHolderStatsResponse"];
+export type ComboConditionHoldersResponse = Schemas["ComboConditionHoldersResponse"];
+export type ComboConditionPositionHolders = Schemas["ComboConditionPositionHolders"];
+
+export interface GetComboHoldersParams extends OperationQuery<"get_combo_holders"> {
+	position_id: string;
+}
+
+export interface GetComboHolderStatsParams {
+	position_id: string;
+}
+
+export interface GetComboConditionHoldersParams extends OperationQuery<"get_combo_condition_holders"> {
+	condition_id: string;
+}
 
 export type BatchPnlRequest = Schemas["BatchPnlRequest"];
 export type BatchPnlResponse = OperationResponse<"get_trader_pnl_batch">;
@@ -629,6 +699,14 @@ export interface GetTraderPnlExitsParams extends OperationQuery<"get_trader_pnl_
 
 export interface GetTopTradesMarketsParams extends OperationQuery<"get_top_trades_markets"> {}
 
+export interface GetTraderComboPnlParams extends OperationQuery<"get_trader_combo_pnl"> {
+	address: string;
+}
+
+export interface GetTraderCombosPnlParams extends OperationQuery<"get_trader_combos_pnl"> {
+	address: string;
+}
+
 export interface GetCategoryTopTradersParams extends OperationQuery<"get_category_top_traders"> {}
 
 export type WebhookResponse = WebhookSchemas["WebhookResponse"];
@@ -639,6 +717,7 @@ export type WebhookLogsResponseBody = WebhookSchemas["WebhookLogsResponseBody"];
 export type CreateWebhookRequestBody = WebhookSchemas["CreateWebhookRequestBody"];
 export type UpdateWebhookRequestBody = WebhookSchemas["UpdateWebhookRequestBody"];
 export type WebhookFiltersBody = WebhookSchemas["WebhookFiltersBody"];
+export type WebhookTraderInfo = WebhookSchemas["WebhookTraderInfo"];
 export type WebhookStatusBody = WebhookSchemas["WebhookStatusBody"];
 export type PolymarketWebhookEvent = WebhookSchemas["PolymarketWebhookEvent"];
 export type PolymarketWebhookFilter = WebhookSchemas["PolymarketWebhookFilter"];

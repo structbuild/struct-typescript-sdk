@@ -4408,7 +4408,7 @@ export interface components {
             /** @description Trader wallet addresses (lowercase 0x-prefixed) */
             traders?: string[];
             /** @description Only receive events of these types. Empty array = all types. */
-            trade_types?: ("OrderFilled" | "OrdersMatched" | "ComboExecution" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "MakerRebate" | "Reward" | "Yield" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken")[];
+            trade_types?: ("OrderFilled" | "OrdersMatched" | "ComboExecution" | "Redemption" | "Merge" | "Split" | "Cancelled" | "PositionsConverted" | "MakerRebate" | "Reward" | "Yield" | "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported" | "RegisterToken" | "ComboCreation" | "ComboStatusUpdate" | "ComboPositionsSplit" | "ComboPositionsMerged" | "ComboSplitOnCondition" | "ComboMergedOnCondition" | "ComboExtracted" | "ComboInjected" | "ComboConvertedToYesBasket" | "ComboMergedFromYesBasket" | "ComboCompressed" | "ComboPositionRedeemed" | "ComboWrapped" | "ComboUnwrapped" | "ComboHorizontalSplit" | "ComboHorizontalMerge" | "ComboPositionConverted" | "ComboPositionMigrated")[];
             /**
              * @description Trade status filter: "confirmed" (default) = on-chain only, "pending" = mempool only, "all" = both
              * @enum {string}
@@ -4443,6 +4443,897 @@ export interface components {
             /** @description Filter values that were rejected (invalid format or unknown type) */
             rejected?: string[];
         };
+        ComboLeg: {
+            /** @description Leg outcome token ID. */
+            position_id?: string;
+            /** @description Leg market condition ID. */
+            condition_id?: string | null;
+            /** @description Leg outcome name. */
+            outcome?: string | null;
+            /** @description Leg outcome index. */
+            outcome_index?: number | null;
+            /** @description Leg market question. */
+            question?: string | null;
+            /** @description Leg market slug. */
+            slug?: string | null;
+            /** @description Leg image URL. */
+            image_url?: string | null;
+            /** @description Leg market title. */
+            title?: string | null;
+        };
+        /**
+         * ComboCreationTrade
+         * @description New combo market metadata.
+         */
+        ComboCreationTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboCreation";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader?: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Combo event ID. */
+            event_id?: string | null;
+            /** @description Combo position ID. */
+            position_id?: string | null;
+            /** @description Markets that make up the combo. */
+            legs?: components["schemas"]["ComboLeg"][];
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /**
+         * ComboExecutionTrade
+         * @description Executed combo trade.
+         */
+        ComboExecutionTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboExecution";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Order hash for the filled combo order. */
+            order_hash?: string | null;
+            /** @description Counterparty or taker address. */
+            taker?: string | null;
+            /** @description Fill side from the trader's perspective. */
+            side: string;
+            /** @description Combo position ID traded. */
+            position_id: string;
+            /** @description Outcome name. */
+            outcome?: string | null;
+            /** @description Outcome index. */
+            outcome_index?: number | null;
+            /** @description Combo trade notional in USDC. */
+            usd_amount: number;
+            /** @description Combo shares traded. */
+            shares_amount: number;
+            /** @description Fill price per combo share. */
+            price: number;
+            /** @description Implied probability. */
+            probability?: number | null;
+            /** @description Fee in USDC. */
+            fee?: number | null;
+            /** @description Share-denominated fee for buy fills. */
+            fee_shares?: number | null;
+            /** @description Fee rate as a percent value. */
+            fee_pct?: number | null;
+            /** @description Markets that make up the combo. */
+            legs?: components["schemas"]["ComboLeg"][];
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+            /** @description Builder code attached to the combo order. */
+            builder_code?: string | null;
+            /** @description Builder fee in USDC. */
+            builder_fee?: number | null;
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /**
+         * ComboStatusUpdateTrade
+         * @description Combo status or result update.
+         */
+        ComboStatusUpdateTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboStatusUpdate";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Combo event ID. */
+            event_id?: string | null;
+            /** @description Result values for the combo status update. */
+            result?: string[];
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /**
+         * ComboPositionPairTrade
+         * @description Binary combo position split or merge.
+         */
+        ComboPositionPairTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboPositionsSplit" | "ComboPositionsMerged";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Recipient for merged collateral or output positions. */
+            recipient?: string | null;
+            /** @description Recipient of outcome index 0 in split events. */
+            recipient0?: string | null;
+            /** @description Recipient of outcome index 1 in split events. */
+            recipient1?: string | null;
+            /** @description Collateral amount represented by the split or merge, in USDC. */
+            usd_amount: number;
+            /** @description Combo shares moved by the split or merge. */
+            shares_amount: number;
+            /** @description Markets that make up the combo. */
+            legs?: components["schemas"]["ComboLeg"][];
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /**
+         * ComboConditionTransformTrade
+         * @description Combo condition transformation, such as splitting, merging, extracting, or adding legs.
+         */
+        ComboConditionTransformTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboSplitOnCondition" | "ComboMergedOnCondition" | "ComboExtracted" | "ComboInjected";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Primary combo position ID. */
+            position_id: string;
+            /** @description Parent condition for split or merge transformations. */
+            parent_condition_id?: string | null;
+            /** @description YES-side child condition for split or merge transformations. */
+            child_yes_condition_id?: string | null;
+            /** @description NO-side child condition for split or merge transformations. */
+            child_no_condition_id?: string | null;
+            /** @description Reduced condition after extracting or adding a leg. */
+            reduced_condition_id?: string | null;
+            /** @description Residual condition after extracting or adding a leg. */
+            residual_condition_id?: string | null;
+            /** @description Combo shares transformed. */
+            shares_amount: number;
+            /** @description Markets that make up the combo. */
+            legs?: components["schemas"]["ComboLeg"][];
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /**
+         * ComboBasketTrade
+         * @description Combo basket conversion or merge.
+         */
+        ComboBasketTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboConvertedToYesBasket" | "ComboMergedFromYesBasket";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Primary combo position for the basket action. */
+            position_id: string;
+            /** @description Combo shares converted or merged. */
+            shares_amount: number;
+            /** @description Markets that make up the combo. */
+            legs?: components["schemas"]["ComboLeg"][];
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /**
+         * ComboCompressedTrade
+         * @description Combo position compression into a new position and/or collateral.
+         */
+        ComboCompressedTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboCompressed";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Input combo position ID. */
+            position_id: string;
+            /** @description Input combo position ID. */
+            old_position_id?: string | null;
+            /** @description Output combo position ID. */
+            new_position_id?: string | null;
+            /** @description Collateral released by compression, in USDC. */
+            usd_amount: number;
+            /** @description Input combo shares compressed. */
+            shares_amount: number;
+            /** @description Output position amount in base units. */
+            position_amount?: string | null;
+            /** @description Collateral output in base units. */
+            collateral_out?: string | null;
+            /** @description Markets that make up the combo. */
+            legs?: components["schemas"]["ComboLeg"][];
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /**
+         * ComboRedemptionTrade
+         * @description Combo position redemption.
+         */
+        ComboRedemptionTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboPositionRedeemed";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Combo position ID redeemed. */
+            position_id: string;
+            /** @description Address receiving the redemption payout. */
+            recipient?: string | null;
+            /** @description Payout amount in USDC. */
+            usd_amount: number;
+            /** @description Combo shares redeemed. */
+            shares_amount: number;
+            /** @description Payout amount in base units. */
+            payout?: string | null;
+            /** @description Markets that make up the combo. */
+            legs?: components["schemas"]["ComboLeg"][];
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /**
+         * ComboWrapTrade
+         * @description Combo wrap or unwrap between an underlying position and combo position.
+         */
+        ComboWrapTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboWrapped" | "ComboUnwrapped";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Underlying market position ID involved in the wrap or unwrap. */
+            underlying_position_id?: string | null;
+            /** @description Combo position ID involved in the wrap or unwrap. */
+            combinatorial_position_id?: string | null;
+            /** @description Input position ID for the wrap or unwrap. */
+            old_position_id?: string | null;
+            /** @description Output position ID for the wrap or unwrap. */
+            new_position_id?: string | null;
+            /** @description Shares wrapped or unwrapped. */
+            shares_amount: number;
+            /** @description Markets that make up the combo. */
+            legs?: components["schemas"]["ComboLeg"][];
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /**
+         * ComboHorizontalTrade
+         * @description Event-wide combo split or merge.
+         */
+        ComboHorizontalTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboHorizontalSplit" | "ComboHorizontalMerge";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Combo event ID associated with the split or merge. */
+            event_id?: string | null;
+            /** @description Recipient for positions or collateral produced by the operation. */
+            recipient?: string | null;
+            /** @description Collateral amount represented by the action, in USDC. */
+            usd_amount: number;
+            /** @description Combo shares moved by the action. */
+            shares_amount: number;
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+        };
+        /**
+         * ComboPositionConvertedTrade
+         * @description Combo position conversion.
+         */
+        ComboPositionConvertedTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboPositionConverted";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Position ID consumed by the conversion. */
+            position_id: string;
+            /** @description Combo event ID associated with the conversion. */
+            event_id?: string | null;
+            /** @description Market index within the combo event. */
+            condition_index?: string | null;
+            /** @description Recipient for converted positions or collateral. */
+            recipient?: string | null;
+            /** @description Input position ID consumed by the conversion. */
+            old_position_id?: string | null;
+            /** @description Shares converted. */
+            shares_amount: number;
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
+        /**
+         * ComboMigrationTrade
+         * @description Combo position migration.
+         */
+        ComboMigrationTrade: {
+            /**
+             * @description Combo event type.
+             * @enum {string}
+             */
+            trade_type: "ComboPositionMigrated";
+            /** @description Event ID. */
+            id: string;
+            /** @description Transaction hash. */
+            hash: string;
+            /** @description Absent for pending trades */
+            block?: number;
+            /** @description Unix seconds. Absent for pending trades */
+            confirmed_at?: number;
+            /** @description Unix milliseconds. Present for pending trades only */
+            received_at?: number;
+            /** @description Absent for pending trades */
+            log_index?: number;
+            /** @description Absent for pending trades */
+            block_index?: number;
+            trader: {
+                /** @description Wallet address. */
+                address?: string;
+                /** @description Display name. */
+                name?: string | null;
+                /** @description Pseudonym. */
+                pseudonym?: string | null;
+                /** @description Profile image URL. */
+                profile_image?: string | null;
+                /** @description X username. */
+                x_username?: string | null;
+                /** @description Whether the profile is verified. */
+                verified_badge?: boolean;
+            };
+            /** @description Combo condition ID. */
+            condition_id?: string | null;
+            /** @description Source address. */
+            source_contract?: string | null;
+            /** @description Exchange identifier. */
+            exchange: number;
+            /** @description Migrated combo position ID. */
+            position_id: string;
+            /** @description Migrated outcome label. */
+            outcome?: string | null;
+            /** @description Migrated outcome index. */
+            outcome_index?: number | null;
+            /** @description New combo position ID created by the migration. */
+            new_position_id?: string | null;
+            /** @description Shares migrated. */
+            shares_amount: number;
+            /** @description Position details. */
+            position_details?: {
+                /** @description Outcome token ID. */
+                position_id?: string;
+                /** @description Outcome index. */
+                outcome_index?: number;
+                /** @description Amount as a decimal string. */
+                amount?: string;
+            }[];
+            /** @description Market question. */
+            question?: string | null;
+            /** @description Image URL. */
+            image_url?: string | null;
+            /** @description Market slug. */
+            slug?: string | null;
+            /** @description Event slug. */
+            event_slug?: string | null;
+        };
         /**
          * @description Server-pushed event. Discriminated by `trade_type` — each variant only includes relevant fields.
          *
@@ -4455,7 +5346,7 @@ export interface components {
              * @description Trade type.
              * @enum {string}
              */
-            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
+            trade_type: "OrderFilled" | "OrdersMatched";
             /** @description Event ID. */
             id: string;
             /** @description Transaction hash. */
@@ -4529,7 +5420,7 @@ export interface components {
             builder_code?: string;
             /** @description Builder fee in USDC. Absent when no builder code is attached. */
             builder_fee?: number;
-        } | {
+        } | components["schemas"]["ComboCreationTrade"] | components["schemas"]["ComboExecutionTrade"] | components["schemas"]["ComboStatusUpdateTrade"] | components["schemas"]["ComboPositionPairTrade"] | components["schemas"]["ComboConditionTransformTrade"] | components["schemas"]["ComboBasketTrade"] | components["schemas"]["ComboCompressedTrade"] | components["schemas"]["ComboRedemptionTrade"] | components["schemas"]["ComboWrapTrade"] | components["schemas"]["ComboHorizontalTrade"] | components["schemas"]["ComboPositionConvertedTrade"] | components["schemas"]["ComboMigrationTrade"] | {
             /**
              * @description Trade type.
              * @enum {string}
@@ -5553,15 +6444,15 @@ export interface components {
              */
             liquidity_updated_at: number;
         };
-        /** @description Subscribe to the trader PnL stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. Firehose / `subscribe_all` is not supported. */
+        /** @description Subscribe to the trader PnL stream. On `action: "subscribe"`, `traders` is required and must be non-empty. `unsubscribe_all` needs no traders. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. Firehose / `subscribe_all` is not supported. */
         TraderPnlSubscribeMessage: {
             /**
              * @description Subscription action.
              * @enum {string}
              */
             action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses. Required. */
-            traders: string[];
+            /** @description EVM wallet addresses. Required and non-empty for subscribe; omit for unsubscribe_all. */
+            traders?: string[];
             /** @description Restrict pushed updates to this subset of PnL granularities. Empty/omitted = all four. Unknown values reject the subscription. */
             update_types?: ("global" | "market" | "category")[];
             /** @description Restrict pushed updates to these aggregation timeframes. Empty/omitted = all four. Unknown values reject the subscription. Ignored by window-agnostic tick / resolution events. */
@@ -5594,6 +6485,12 @@ export interface components {
             timeframe?: string | null;
             /** @description Realized PnL for the timeframe */
             realized_pnl_usd: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Events traded.
@@ -5726,6 +6623,12 @@ export interface components {
             condition_id: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /** @description Current shares balance. */
             current_shares_balance?: number;
             /** @description Category label. */
@@ -5799,6 +6702,12 @@ export interface components {
             category: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Markets in this category.
@@ -5904,6 +6813,12 @@ export interface components {
             trader: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /** @description Open positions value. */
             open_positions_value?: number;
             /**
@@ -5926,6 +6841,12 @@ export interface components {
             condition_id: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Last block number.
@@ -5946,6 +6867,12 @@ export interface components {
             category: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Last block number.
@@ -5964,6 +6891,12 @@ export interface components {
             trader: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Markets won.
@@ -6007,6 +6940,12 @@ export interface components {
             won?: boolean | null;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Last block number.
@@ -6027,6 +6966,12 @@ export interface components {
             category: string;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number;
             /**
              * Format: int64
              * @description Markets won.
@@ -6149,32 +7094,23 @@ export interface components {
             block: number;
             data: components["schemas"]["TraderCategoryResolutionRow"][];
         };
-        /** @description Subscribe to the trader positions stream. `traders` is required and must be non-empty unless `subscribe_all` is set. `dirty_kinds` is an optional narrowing filter — empty/omitted or `["all"]` = receive every kind of update. */
+        /** @description Subscribe to the trader positions stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `["all"]` = receive every kind of update. */
         TraderPositionsSubscribeMessage: {
             /**
              * @description Subscription action.
              * @enum {string}
              */
             action: "subscribe" | "unsubscribe_all";
-            /** @description EVM wallet addresses. Required and non-empty unless subscribe_all is set. */
+            /** @description EVM wallet addresses. Required and non-empty. */
             traders?: string[];
-            /** @description Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `["all"]` to accept every kind (the default). Unknown values reject the subscription. Also applies to firehose subscriptions. */
+            /** @description Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `["all"]` to accept every kind (the default). Unknown values reject the subscription. */
             dirty_kinds?: ("trade" | "price" | "position_resolved" | "all")[];
-            /** @description Firehose: receive every position update on this stream (`traders` is ignored when set; `dirty_kinds` still applies). */
-            subscribe_all?: boolean;
         } & ({
             /** @enum {unknown} */
             action: "unsubscribe_all";
         } | {
             /** @enum {unknown} */
             action: "subscribe";
-            /** @enum {unknown} */
-            subscribe_all: true;
-        } | {
-            /** @enum {unknown} */
-            action: "subscribe";
-            /** @enum {unknown} */
-            subscribe_all?: false;
             traders: unknown;
         });
         /** @description Server acknowledgement for a trader positions subscription. */
@@ -6185,8 +7121,6 @@ export interface components {
             dirty_kinds?: ("trade" | "price" | "position_resolved")[];
             /** @description Rejected filter values. */
             rejected?: string[];
-            /** @description Whether the firehose subscription is active. */
-            subscribe_all?: boolean;
             /** @description Whether zstd-compressed binary delivery is active for this connection (negotiated at handshake). */
             compression?: boolean;
             /** @description Subscription error message. */
@@ -6254,6 +7188,12 @@ export interface components {
             avg_price?: number | null;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number | null;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number | null;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number | null;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number | null;
             /** @description Realized PnL percent. */
             realized_pnl_pct?: number | null;
             /** @description Total fees. */
@@ -6320,6 +7260,12 @@ export interface components {
             current_value?: number | null;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number | null;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number | null;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number | null;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number | null;
             /** @description Realized PnL percent. */
             realized_pnl_pct?: number | null;
             /**
@@ -6365,6 +7311,12 @@ export interface components {
             won?: boolean | null;
             /** @description Realized PnL in USD. */
             realized_pnl_usd?: number | null;
+            /** @description Fee-excluded realized PnL in USD. */
+            raw_realized_pnl_usd?: number | null;
+            /** @description Fee-excluded unrealized PnL in USD. */
+            raw_unrealized_pnl_usd?: number | null;
+            /** @description Fee-excluded total PnL in USD. */
+            raw_total_pnl_usd?: number | null;
             /** @description Realized PnL percent. */
             realized_pnl_pct?: number | null;
             /**
@@ -6450,8 +7402,14 @@ export interface components {
             pnl_usd?: number;
             /** @description Realized PnL at exit, percent */
             pnl_pct?: number;
+            /** @description Fee-excluded PnL at exit, USD */
+            raw_pnl_usd?: number;
+            /** @description Fee-excluded PnL at exit, percent (rebased on the fee-free cost basis) */
+            raw_pnl_pct?: number;
             /** @description Cost basis in USD. */
             cost_basis_usd?: number;
+            /** @description Total fees paid on the position, USD */
+            total_fees?: number;
             /**
              * @description Why the position closed: `resolved_*` held to market resolution (win/loss by verdict); `sold_*` closed before resolution (win/loss by realized PnL sign).
              * @enum {string}
@@ -6467,6 +7425,8 @@ export interface components {
              * @description Exit time, Unix seconds
              */
             ts?: number;
+            /** @description Polymarket top-level category (e.g. "Politics"); empty when unresolved */
+            category?: string;
         };
         /** @description Server-pushed per-block batch of position exits. Envelope type: `trader_exit_marker_batch`. Carries every exit from the named block that matched the subscriber's filter. Empty batches are not sent. */
         TraderExitMarkerBatchEvent: {
@@ -6983,7 +7943,7 @@ export interface components {
             event_slugs?: string[];
         };
         /**
-         * OrderFilled / OrdersMatched / ComboExecution
+         * OrderFilled / OrdersMatched
          * @description A buy/sell trade was matched on the exchange.
          */
         TradeOrderFilledEvent: {
@@ -6991,7 +7951,7 @@ export interface components {
              * @description Trade type.
              * @enum {string}
              */
-            trade_type: "OrderFilled" | "OrdersMatched" | "ComboExecution";
+            trade_type: "OrderFilled" | "OrdersMatched";
             /** @description Event ID. */
             id: string;
             /** @description Transaction hash. */
@@ -7066,413 +8026,13 @@ export interface components {
             /** @description Builder fee in USDC. Absent when no builder code is attached. */
             builder_fee?: number;
         };
-        /**
-         * MakerRebate / Reward / Yield
-         * @description pUSD credit paid directly to the trader wallet.
-         */
-        TradeRedemptionEvent: {
-            /**
-             * @description Trade type.
-             * @enum {string}
-             */
-            trade_type: "MakerRebate" | "Reward" | "Yield";
-            /** @description Event ID. */
-            id: string;
-            /** @description Transaction hash. */
-            hash: string;
-            /** @description Block number. */
-            block?: number;
-            /** @description Confirmation timestamp. */
-            confirmed_at?: number;
-            /** @description Receive timestamp. */
-            received_at?: number;
-            /** @description Log index. */
-            log_index?: number;
-            /** @description Block index. */
-            block_index?: number;
-            trader: {
-                /** @description Wallet address. */
-                address?: string;
-                /** @description Display name. */
-                name?: string | null;
-                /** @description Pseudonym. */
-                pseudonym?: string | null;
-                /** @description Profile image URL. */
-                profile_image?: string | null;
-                /** @description X username. */
-                x_username?: string | null;
-                /** @description Whether the profile is verified. */
-                verified_badge?: boolean;
-            };
-            /** @description Payout distributor address */
-            taker?: string;
-            /** @description Trade amount in USD. */
-            usd_amount?: number;
-            /** @description Always 0 for payout credits */
-            shares_amount?: number;
-            /** @description Always 0 for payout credits */
-            price?: number;
-            /** @description Always 0 for payout credits */
-            fee?: number;
-            /** @description Always 0 for payout credits */
-            fee_shares?: number;
-            /** @description Always 0 for payout credits */
-            fee_pct?: number;
-            /** @description Unknown/non-exchange credit source */
-            exchange: number;
-        };
-        /**
-         * Redemption
-         * @description Positions redeemed after market resolution.
-         */
-        TradeMergeEvent: {
-            /**
-             * @description Trade type.
-             * @enum {string}
-             */
-            trade_type: "Redemption";
-            /** @description Event ID. */
-            id: string;
-            /** @description Transaction hash. */
-            hash: string;
-            /** @description Block number. */
-            block?: number;
-            /** @description Confirmation timestamp. */
-            confirmed_at?: number;
-            /** @description Receive timestamp. */
-            received_at?: number;
-            /** @description Log index. */
-            log_index?: number;
-            /** @description Block index. */
-            block_index?: number;
-            trader: {
-                /** @description Wallet address. */
-                address?: string;
-                /** @description Display name. */
-                name?: string | null;
-                /** @description Pseudonym. */
-                pseudonym?: string | null;
-                /** @description Profile image URL. */
-                profile_image?: string | null;
-                /** @description X username. */
-                x_username?: string | null;
-                /** @description Whether the profile is verified. */
-                verified_badge?: boolean;
-            };
-            /** @description Market condition ID. */
-            condition_id?: string | null;
-            /** @description Outcome name. */
-            outcome?: string | null;
-            /** @description Outcome index. */
-            outcome_index?: number | null;
-            /** @description Market question. */
-            question?: string | null;
-            /** @description Image URL. */
-            image_url?: string | null;
-            /** @description Market slug. */
-            slug?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
-            /** @description Trade amount in USD. */
-            usd_amount?: number;
-            /** @description Winning outcome index. */
-            winning_outcome_index?: number | null;
-            /** @description Position details. */
-            position_details?: {
-                /** @description Outcome token ID. */
-                position_id?: string;
-                /** @description Outcome index. */
-                outcome_index?: number;
-                /** @description Amount as a decimal string. */
-                amount?: string;
-            }[];
-            /** @description Exchange identifier. */
-            exchange: number;
-        };
-        /**
-         * Merge
-         * @description Outcome tokens burned to receive collateral.
-         */
-        TradeSplitEvent: {
-            /**
-             * @description Trade type.
-             * @enum {string}
-             */
-            trade_type: "Merge";
-            /** @description Event ID. */
-            id: string;
-            /** @description Transaction hash. */
-            hash: string;
-            /** @description Block number. */
-            block?: number;
-            /** @description Confirmation timestamp. */
-            confirmed_at?: number;
-            /** @description Receive timestamp. */
-            received_at?: number;
-            /** @description Log index. */
-            log_index?: number;
-            /** @description Block index. */
-            block_index?: number;
-            trader: {
-                /** @description Wallet address. */
-                address?: string;
-                /** @description Display name. */
-                name?: string | null;
-                /** @description Pseudonym. */
-                pseudonym?: string | null;
-                /** @description Profile image URL. */
-                profile_image?: string | null;
-                /** @description X username. */
-                x_username?: string | null;
-                /** @description Whether the profile is verified. */
-                verified_badge?: boolean;
-            };
-            /** @description Market condition ID. */
-            condition_id?: string | null;
-            /** @description Market question. */
-            question?: string | null;
-            /** @description Image URL. */
-            image_url?: string | null;
-            /** @description Market slug. */
-            slug?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
-            /** @description Trade amount in USD. */
-            usd_amount?: number;
-            /** @description Position details. */
-            position_details?: {
-                /** @description Outcome token ID. */
-                position_id?: string;
-                /** @description Outcome index. */
-                outcome_index?: number;
-                /** @description Amount as a decimal string. */
-                amount?: string;
-            }[];
-            /** @description Exchange identifier. */
-            exchange: number;
-        };
-        /**
-         * Split
-         * @description Collateral deposited to receive outcome tokens.
-         */
-        TradePositionsConvertedEvent: {
-            /**
-             * @description Trade type.
-             * @enum {string}
-             */
-            trade_type: "Split";
-            /** @description Event ID. */
-            id: string;
-            /** @description Transaction hash. */
-            hash: string;
-            /** @description Block number. */
-            block?: number;
-            /** @description Confirmation timestamp. */
-            confirmed_at?: number;
-            /** @description Receive timestamp. */
-            received_at?: number;
-            /** @description Log index. */
-            log_index?: number;
-            /** @description Block index. */
-            block_index?: number;
-            trader: {
-                /** @description Wallet address. */
-                address?: string;
-                /** @description Display name. */
-                name?: string | null;
-                /** @description Pseudonym. */
-                pseudonym?: string | null;
-                /** @description Profile image URL. */
-                profile_image?: string | null;
-                /** @description X username. */
-                x_username?: string | null;
-                /** @description Whether the profile is verified. */
-                verified_badge?: boolean;
-            };
-            /** @description Market condition ID. */
-            condition_id?: string | null;
-            /** @description Market question. */
-            question?: string | null;
-            /** @description Image URL. */
-            image_url?: string | null;
-            /** @description Market slug. */
-            slug?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
-            /** @description Trade amount in USD. */
-            usd_amount?: number;
-            /** @description Position details. */
-            position_details?: {
-                /** @description Outcome token ID. */
-                position_id?: string;
-                /** @description Outcome index. */
-                outcome_index?: number;
-                /** @description Amount as a decimal string. */
-                amount?: string;
-            }[];
-            /** @description Exchange identifier. */
-            exchange: number;
-        };
-        /**
-         * PositionsConverted
-         * @description NegRisk NO tokens converted to YES tokens + collateral.
-         */
-        TradeCancelledEvent: {
-            /**
-             * @description Trade type.
-             * @enum {string}
-             */
-            trade_type: "PositionsConverted";
-            /** @description Event ID. */
-            id: string;
-            /** @description Transaction hash. */
-            hash: string;
-            /** @description Block number. */
-            block?: number;
-            /** @description Confirmation timestamp. */
-            confirmed_at?: number;
-            /** @description Receive timestamp. */
-            received_at?: number;
-            /** @description Log index. */
-            log_index?: number;
-            /** @description Block index. */
-            block_index?: number;
-            trader: {
-                /** @description Wallet address. */
-                address?: string;
-                /** @description Display name. */
-                name?: string | null;
-                /** @description Pseudonym. */
-                pseudonym?: string | null;
-                /** @description Profile image URL. */
-                profile_image?: string | null;
-                /** @description X username. */
-                x_username?: string | null;
-                /** @description Whether the profile is verified. */
-                verified_badge?: boolean;
-            };
-            /** @description Market id. */
-            market_id?: string;
-            /** @description Index set. */
-            index_set?: string;
-            /** @description Trade size in shares. */
-            shares_amount?: number;
-            /** @description Fee. */
-            fee?: number;
-            /** @description Fee percent. */
-            fee_pct?: number;
-            /** @description Per-position conversion amounts */
-            position_details?: {
-                /** @description Outcome token ID. */
-                position_id?: string;
-                /** @description Outcome index. */
-                outcome_index?: number;
-                /** @description Amount as a decimal string. */
-                amount?: string;
-            }[];
-            /** @description Exchange identifier. */
-            exchange: number;
-        };
-        /**
-         * Cancelled
-         * @description Order cancelled on-chain.
-         */
-        TradeOracleLifecycleEvent: {
-            /**
-             * @description Trade type.
-             * @enum {string}
-             */
-            trade_type: "Cancelled";
-            /** @description Event ID. */
-            id: string;
-            /** @description Transaction hash. */
-            hash: string;
-            /** @description Block number. */
-            block?: number;
-            /** @description Confirmation timestamp. */
-            confirmed_at?: number;
-            /** @description Receive timestamp. */
-            received_at?: number;
-            /** @description Log index. */
-            log_index?: number;
-            /** @description Block index. */
-            block_index?: number;
-            /** @description Order hash. */
-            order_hash?: string;
-            /** @description Market question. */
-            question?: string | null;
-            /** @description Image URL. */
-            image_url?: string | null;
-            /** @description Market slug. */
-            slug?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
-            /** @description Exchange identifier. */
-            exchange: number;
-        };
-        /**
-         * Oracle Lifecycle Event
-         * @description Market lifecycle events: Initialization, Proposal, Dispute, Settled, Resolution, ConditionResolution, Reset, Flag, Unflag, Pause, Unpause, ManualResolution, NegRiskOutcomeReported.
-         */
-        TradeRegisterTokenEvent: {
-            /**
-             * @description Oracle lifecycle event type.
-             * @enum {string}
-             */
-            trade_type: "Initialization" | "Proposal" | "Dispute" | "Settled" | "Resolution" | "ConditionResolution" | "Reset" | "Flag" | "Unflag" | "Pause" | "Unpause" | "ManualResolution" | "NegRiskOutcomeReported";
-            /** @description Event ID. */
-            id: string;
-            /** @description Transaction hash. */
-            hash: string;
-            /** @description Block number. */
-            block?: number;
-            /** @description Confirmation timestamp. */
-            confirmed_at?: number;
-            /** @description Receive timestamp. */
-            received_at?: number;
-            /** @description Log index. */
-            log_index?: number;
-            /** @description Block index. */
-            block_index?: number;
-            /** @description Oracle contract. */
-            oracle_contract: string;
-            /** @description Market condition ID. */
-            condition_id: string;
-            /** @description Market question. */
-            question?: string | null;
-            /** @description Image URL. */
-            image_url?: string | null;
-            /** @description Market slug. */
-            slug?: string | null;
-            /** @description Event slug. */
-            event_slug?: string | null;
-            /** @description Assertion id. */
-            assertion_id?: string | null;
-            /** @description Proposer. */
-            proposer?: string | null;
-            /** @description Disputer. */
-            disputer?: string | null;
-            /** @description Proposed outcome. */
-            proposed_outcome?: string | null;
-            /** @description Settled price. */
-            settled_price?: number | null;
-            /** @description Disputed. */
-            disputed?: boolean | null;
-            /** @description Settlement resolution. */
-            settlement_resolution?: boolean | null;
-            /** @description Bond. */
-            bond?: string | null;
-            /** @description Expiration time. */
-            expiration_time?: number | null;
-            /** @description Creator. */
-            creator?: string | null;
-            /** @description Reward token. */
-            reward_token?: string | null;
-            /** @description Reward details. */
-            reward?: string | null;
-            /** @description Proposal bond. */
-            proposal_bond?: string | null;
-        };
+        TradeRedemptionEvent: components["schemas"]["ComboCreationTrade"];
+        TradeMergeEvent: components["schemas"]["ComboExecutionTrade"];
+        TradeSplitEvent: components["schemas"]["ComboStatusUpdateTrade"];
+        TradePositionsConvertedEvent: components["schemas"]["ComboPositionPairTrade"];
+        TradeCancelledEvent: components["schemas"]["ComboConditionTransformTrade"];
+        TradeOracleLifecycleEvent: components["schemas"]["ComboBasketTrade"];
+        TradeRegisterTokenEvent: components["schemas"]["ComboCompressedTrade"];
     };
     responses: never;
     parameters: never;

@@ -17,6 +17,7 @@ import type {
 	GetTraderPnlBreakdownParams,
 	GetTraderPnlCalendarParams,
 	GetTraderPnlCandlesParams,
+	GetTraderCategoryPnlCandlesParams,
 	GetGlobalPnlParams,
 	GetTraderPositionPnlParams,
 	GetTraderPnlChangesParams,
@@ -24,15 +25,18 @@ import type {
 	GetTraderPnlRiskParams,
 	GetTraderCategoryPnlParams,
 	GetTopTradesMarketsParams,
+	GetTraderComboPnlParams,
+	GetTraderCombosPnlParams,
+	ComboPnlResponse,
 	GetTraderPnlExitsParams,
 	PnlExitMarker,
 	PnlChangesResponse,
 	PnlPeriodsResponse,
 	PnlRiskResponse,
-	GlobalEntry,
-	MarketEntry,
-	CategoryEntry,
-	PositionEntry,
+	TraderPnl,
+	MarketPnl,
+	CategoryPnl,
+	PositionPnl,
 } from "../types/index.js";
 
 export class TraderNamespace extends Namespace {
@@ -58,14 +62,14 @@ export class TraderNamespace extends Namespace {
 		return this.get<TraderVolumeDataPoint[]>(venue, `/trader/volume-chart/${encodeURIComponent(address)}`, { params: query });
 	}
 
-	async getTraderPnl(params: GetTraderPnlParams, venue?: Venue): Promise<HttpResponse<GlobalEntry>> {
+	async getTraderPnl(params: GetTraderPnlParams, venue?: Venue): Promise<HttpResponse<TraderPnl>> {
 		const { address, ...query } = params;
-		return this.get<GlobalEntry>(venue, `/trader/pnl/${encodeURIComponent(address)}`, { params: query });
+		return this.get<TraderPnl>(venue, `/trader/pnl/${encodeURIComponent(address)}`, { params: query });
 	}
 
-	async getTraderMarketPnl(params: GetTraderPnlBreakdownParams, venue?: Venue): Promise<HttpResponse<MarketEntry[]>> {
+	async getTraderMarketPnl(params: GetTraderPnlBreakdownParams, venue?: Venue): Promise<HttpResponse<MarketPnl[]>> {
 		const { address, ...query } = params;
-		return this.get<MarketEntry[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/markets`, { params: query });
+		return this.get<MarketPnl[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/markets`, { params: query });
 	}
 
 	async getTraderPnlCalendar(params: GetTraderPnlCalendarParams, venue?: Venue): Promise<HttpResponse<PnlCandleEntry[]>> {
@@ -78,13 +82,18 @@ export class TraderNamespace extends Namespace {
 		return this.get<PnlCandlestickBar[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/candles`, { params: query });
 	}
 
-	async getTraderOutcomePnl(params: GetTraderPositionPnlParams, venue?: Venue): Promise<HttpResponse<PositionEntry[]>> {
+	async getTraderCategoryPnlCandles(params: GetTraderCategoryPnlCandlesParams, venue?: Venue): Promise<HttpResponse<PnlCandlestickBar[]>> {
 		const { address, ...query } = params;
-		return this.get<PositionEntry[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/positions`, { params: query });
+		return this.get<PnlCandlestickBar[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/category-candles`, { params: query });
 	}
 
-	async getGlobalPnl(params?: GetGlobalPnlParams, venue?: Venue): Promise<HttpResponse<GlobalEntry[]>> {
-		return this.get<GlobalEntry[]>(venue, "/trader/global_pnl", { params: { ...params } });
+	async getTraderOutcomePnl(params: GetTraderPositionPnlParams, venue?: Venue): Promise<HttpResponse<PositionPnl[]>> {
+		const { address, ...query } = params;
+		return this.get<PositionPnl[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/positions`, { params: query });
+	}
+
+	async getGlobalPnl(params?: GetGlobalPnlParams, venue?: Venue): Promise<HttpResponse<TraderPnl[]>> {
+		return this.get<TraderPnl[]>(venue, "/trader/global_pnl", { params: { ...params } });
 	}
 
 	async getTraderPnlChanges(params: GetTraderPnlChangesParams, venue?: Venue): Promise<HttpResponse<PnlChangesResponse>> {
@@ -101,9 +110,9 @@ export class TraderNamespace extends Namespace {
 		return this.get<PnlRiskResponse>(venue, `/trader/pnl/${encodeURIComponent(address)}/risk`, { params: query });
 	}
 
-	async getTraderCategoryPnl(params: GetTraderCategoryPnlParams, venue?: Venue): Promise<HttpResponse<CategoryEntry[]>> {
+	async getTraderCategoryPnl(params: GetTraderCategoryPnlParams, venue?: Venue): Promise<HttpResponse<CategoryPnl[]>> {
 		const { address, ...query } = params;
-		return this.get<CategoryEntry[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/categories`, { params: query });
+		return this.get<CategoryPnl[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/categories`, { params: query });
 	}
 
 	async getTraderPnlExits(params: GetTraderPnlExitsParams, venue?: Venue): Promise<HttpResponse<PnlExitMarker[]>> {
@@ -111,7 +120,17 @@ export class TraderNamespace extends Namespace {
 		return this.get<PnlExitMarker[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/exits`, { params: query });
 	}
 
-	async getTopTradesMarkets(params?: GetTopTradesMarketsParams, venue?: Venue): Promise<HttpResponse<MarketEntry[]>> {
-		return this.get<MarketEntry[]>(venue, "/trader/top_trades_markets", { params: { ...params } });
+	async getTopTradesMarkets(params?: GetTopTradesMarketsParams, venue?: Venue): Promise<HttpResponse<MarketPnl[]>> {
+		return this.get<MarketPnl[]>(venue, "/trader/top_trades_markets", { params: { ...params } });
+	}
+
+	async getTraderComboPnl(params: GetTraderComboPnlParams, venue?: Venue): Promise<HttpResponse<ComboPnlResponse>> {
+		const { address, ...query } = params;
+		return this.get<ComboPnlResponse>(venue, `/trader/pnl/${encodeURIComponent(address)}/combo`, { params: query });
+	}
+
+	async getTraderCombosPnl(params: GetTraderCombosPnlParams, venue?: Venue): Promise<HttpResponse<ComboPnlResponse[]>> {
+		const { address, ...query } = params;
+		return this.get<ComboPnlResponse[]>(venue, `/trader/pnl/${encodeURIComponent(address)}/combos`, { params: query });
 	}
 }

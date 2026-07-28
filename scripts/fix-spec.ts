@@ -18,6 +18,12 @@ const inlineSchemas: Record<string, object> = {
     type: "string" as const,
     enum: ["1h", "24h", "7d", "30d", "1mo", "1y"],
   },
+  "#/components/schemas/ComboFilter": {
+    anyOf: [
+      { type: "boolean" as const },
+      { type: "string" as const, enum: ["binary", "negrisk", "combinatorial"] },
+    ],
+  },
 };
 
 let polymarketFixed = 0;

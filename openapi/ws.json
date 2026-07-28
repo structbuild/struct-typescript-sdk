@@ -347,7 +347,7 @@
       "address": "polymarket_trader_pnl",
       "title": "Trader PnL",
       "summary": "Trader PnL stream",
-      "description": "Real-time profit-and-loss updates for tracked traders. PnL is computed at three granularities — `global` (whole portfolio), `market` (per condition), `category` (per market category) — and each granularity is maintained over four rolling windows: `1d`, `7d`, `30d`, `lifetime`.\n\nUpdates are delivered **batched per block**: the server sends one envelope per (grain, family[, timeframe]) per block, carrying a `data` array of every row from that block matching the subscriber's filter. Empty batches are not sent. Each row carries a `dirty_kinds` array naming what triggered it. Full-row envelopes also carry a top-level `timeframe`.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`. Firehose / `subscribe_all` is not supported on this room.\n\n**Optional filters:**\n• `update_types` — subset of `[\"global\", \"market\", \"category\"]`. Omit or leave empty to receive all three update types.\n• `timeframes` — subset of `[\"1d\", \"7d\", \"30d\", \"lifetime\"]`. Omit or leave empty to receive all timeframes. (Tick and resolution batches are window-agnostic and ignore this filter.)\n• `dirty_kinds` — subset of `[\"trade\", \"price\", \"window\", \"market_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Applied per-row: a row is included only if its `dirty_kinds` intersects this filter.\n\nAny unknown value in `update_types`, `timeframes`, or `dirty_kinds` rejects the entire subscription with an `error` message (values are case-insensitive and trimmed).\n\n**Full-row batches** (trade/window-driven): `trader_global_pnl_batch`, `trader_market_pnl_batch`, `trader_category_pnl_batch`.\n**Price-tick batches** (mark-to-market): `trader_global_tick_batch`, `trader_market_tick_batch`, `trader_category_tick_batch`.\n**Resolution batches** (market resolved): `trader_global_resolution_batch`, `trader_market_resolution_batch`, `trader_category_resolution_batch`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time profit-and-loss updates for tracked traders. PnL is computed at three granularities — `global` (whole portfolio), `market` (per condition), `category` (per market category) — and each granularity is maintained over four rolling windows: `1d`, `7d`, `30d`, `lifetime`.\n\nUpdates are delivered **batched per block**: the server sends one envelope per (grain, family[, timeframe]) per block, carrying a `data` array of every row from that block matching the subscriber's filter. Empty batches are not sent. Each row carries a `dirty_kinds` array naming what triggered it. Full-row envelopes also carry a top-level `timeframe`. Every PnL row also carries the fee-excluded `raw_realized_pnl_usd` / `raw_unrealized_pnl_usd` / `raw_total_pnl_usd` fields.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`. Firehose / `subscribe_all` is not supported on this room.\n\n**Optional filters:**\n• `update_types` — subset of `[\"global\", \"market\", \"category\"]`. Omit or leave empty to receive all three update types.\n• `timeframes` — subset of `[\"1d\", \"7d\", \"30d\", \"lifetime\"]`. Omit or leave empty to receive all timeframes. (Tick and resolution batches are window-agnostic and ignore this filter.)\n• `dirty_kinds` — subset of `[\"trade\", \"price\", \"window\", \"market_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Applied per-row: a row is included only if its `dirty_kinds` intersects this filter.\n\nAny unknown value in `update_types`, `timeframes`, or `dirty_kinds` rejects the entire subscription with an `error` message (values are case-insensitive and trimmed).\n\n**Full-row batches** (trade/window-driven): `trader_global_pnl_batch`, `trader_market_pnl_batch`, `trader_category_pnl_batch`.\n**Price-tick batches** (mark-to-market): `trader_global_tick_batch`, `trader_market_tick_batch`, `trader_category_tick_batch`.\n**Resolution batches** (market resolved): `trader_global_resolution_batch`, `trader_market_resolution_batch`, `trader_category_resolution_batch`.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderPnlSubscribe"
@@ -388,7 +388,7 @@
       "address": "polymarket_trader_positions",
       "title": "Trader Positions",
       "summary": "Trader position updates — batched per-block fan-out covering trades, price ticks and resolutions",
-      "description": "Real-time position updates for tracked traders. Updates land in batches: the server sends one envelope per block, carrying every row from that block that matches the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` array names what triggered that row's update.\n\n**Envelope types** (selected per-row via `dirty_kinds`):\n- `trader_position_batch` — full rows, fired on trades.\n- `trader_position_price_batch` — compact price ticks, fired on mark-to-market moves (`dirty_kinds: [\"price\"]`).\n- `trader_position_resolution_batch` — resolution ticks, fired when a position's market resolves (`dirty_kinds: [\"position_resolved\"]`).\n\nEvery envelope includes the `block` number plus a `data` array of rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `dirty_kinds` — subset of `[\"trade\", \"price\", \"position_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Unknown values reject the subscription. The filter applies per-row: a row is included only if its `dirty_kinds` intersects the filter.\n\n**Firehose:** Set `subscribe_all: true` to receive position updates for every trader. `traders` is ignored when set; the `dirty_kinds` filter still applies.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "description": "Real-time position updates for tracked traders. Updates land in batches: the server sends one envelope per block, carrying every row from that block that matches the subscriber's filter. Empty batches are not sent. Each row's `dirty_kinds` array names what triggered that row's update.\n\n**Envelope types** (selected per-row via `dirty_kinds`):\n- `trader_position_batch` — full rows, fired on trades.\n- `trader_position_price_batch` — compact price ticks, fired on mark-to-market moves (`dirty_kinds: [\"price\"]`).\n- `trader_position_resolution_batch` — resolution ticks, fired when a position's market resolves (`dirty_kinds: [\"position_resolved\"]`).\n\nEvery envelope includes the `block` number plus a `data` array of rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `dirty_kinds` — subset of `[\"trade\", \"price\", \"position_resolved\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every kind (the default). Unknown values reject the subscription. The filter applies per-row: a row is included only if its `dirty_kinds` intersects the filter.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderPositionsSubscribe"
@@ -410,8 +410,8 @@
     "polymarket_trader_pnl_exits": {
       "address": "polymarket_trader_pnl_exits",
       "title": "Trader Exit Markers",
-      "summary": "Position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason",
-      "description": "Real-time position exits for tracked traders, to overlay on the PnL chart. The server sends one envelope per block, carrying every exit from that block that matches the subscriber's filter. Empty batches are not sent.\n\n**Envelope type:** `trader_exit_marker_batch`. The envelope includes the `block` number plus a `data` array of exit rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `reasons` — subset of `[\"resolved_win\", \"resolved_loss\", \"sold_win\", \"sold_loss\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every reason (the default). Unknown values reject the subscription.\n\n**Firehose:** Set `subscribe_all: true` to receive exits for every trader — the `traders` filter is ignored (and not required), while the `reasons` filter still applies.\n\n**Exit reasons:** `resolved_win` / `resolved_loss` — held to market resolution; `sold_win` / `sold_loss` — closed before resolution, win/loss by realized PnL sign.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
+      "summary": "Position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason. rows include raw (fee-excluded) PnL and total fees",
+      "description": "Real-time position exits for tracked traders, to overlay on the PnL chart. The server sends one envelope per block, carrying every exit from that block that matches the subscriber's filter. Empty batches are not sent. Rows extend the legacy exit marker with `raw_pnl_usd` / `raw_pnl_pct` (fee-excluded PnL, rebased on the fee-free cost basis) and `total_fees`.\n\n**Envelope type:** `trader_exit_marker_batch`. The envelope includes the `block` number plus a `data` array of exit rows.\n\n**Filter (required):** `traders` — EVM wallet addresses. Invalid addresses are returned in `rejected`.\n\n**Optional filter:** `reasons` — subset of `[\"resolved_win\", \"resolved_loss\", \"sold_win\", \"sold_loss\"]`. Omit, leave empty, or pass `[\"all\"]` to receive every reason (the default). Unknown values reject the subscription.\n\n**Firehose:** Set `subscribe_all: true` to receive exits for every trader — the `traders` filter is ignored (and not required), while the `reasons` filter still applies.\n\n**Exit reasons:** `resolved_win` / `resolved_loss` — held to market resolution; `sold_win` / `sold_loss` — closed before resolution, win/loss by realized PnL sign.\n\n**Unsubscribe:** Send `action: \"unsubscribe_all\"`.",
       "messages": {
         "subscribe": {
           "$ref": "#/components/messages/TraderExitMarkersSubscribe"
@@ -1530,7 +1530,7 @@
       "channel": {
         "$ref": "#/channels/polymarket_trader_pnl_exits"
       },
-      "summary": "Subscribe to position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason",
+      "summary": "Subscribe to position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason. rows include raw (fee-excluded) pnl and total fees",
       "messages": [
         {
           "$ref": "#/channels/polymarket_trader_pnl_exits/messages/subscribe"
@@ -1542,7 +1542,7 @@
       "channel": {
         "$ref": "#/channels/polymarket_trader_pnl_exits"
       },
-      "summary": "Receive position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason events",
+      "summary": "Receive position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason. rows include raw (fee-excluded) pnl and total fees events",
       "messages": [
         {
           "$ref": "#/channels/polymarket_trader_pnl_exits/messages/subscribeResponse"
@@ -3256,7 +3256,7 @@
         ]
       },
       "TraderExitMarkersSubscribe": {
-        "summary": "Subscribe to position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason",
+        "summary": "Subscribe to position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason. rows include raw (fee-excluded) pnl and total fees",
         "payload": {
           "$ref": "#/components/schemas/TraderExitMarkersSubscribeMessage"
         },
@@ -3275,7 +3275,7 @@
         }
       },
       "TraderExitMarkersSubscribeResponse": {
-        "summary": "Subscription acknowledgement for position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason",
+        "summary": "Subscription acknowledgement for position exit events for tracked traders — one marker per position close, batched per block, labelled with the exit reason. rows include raw (fee-excluded) pnl and total fees",
         "payload": {
           "$ref": "#/components/schemas/TraderExitMarkersSubscribeResponse"
         }
@@ -14503,7 +14503,25 @@
                 "Unpause",
                 "ManualResolution",
                 "NegRiskOutcomeReported",
-                "RegisterToken"
+                "RegisterToken",
+                "ComboCreation",
+                "ComboStatusUpdate",
+                "ComboPositionsSplit",
+                "ComboPositionsMerged",
+                "ComboSplitOnCondition",
+                "ComboMergedOnCondition",
+                "ComboExtracted",
+                "ComboInjected",
+                "ComboConvertedToYesBasket",
+                "ComboMergedFromYesBasket",
+                "ComboCompressed",
+                "ComboPositionRedeemed",
+                "ComboWrapped",
+                "ComboUnwrapped",
+                "ComboHorizontalSplit",
+                "ComboHorizontalMerge",
+                "ComboPositionConverted",
+                "ComboPositionMigrated"
               ]
             },
             "description": "Only receive events of these types. Empty array = all types."
@@ -14597,11 +14615,2374 @@
           }
         }
       },
+      "ComboLeg": {
+        "type": "object",
+        "properties": {
+          "position_id": {
+            "type": "string",
+            "description": "Leg outcome token ID."
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Leg market condition ID."
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Leg outcome name."
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Leg outcome index."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Leg market question."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Leg market slug."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Leg image URL."
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Leg market title."
+          }
+        }
+      },
+      "ComboCreationTrade": {
+        "title": "ComboCreationTrade",
+        "description": "New combo market metadata.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboCreation"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "event_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo event ID."
+          },
+          "position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo position ID."
+          },
+          "legs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComboLeg"
+            },
+            "description": "Markets that make up the combo."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
+      "ComboExecutionTrade": {
+        "title": "ComboExecutionTrade",
+        "description": "Executed combo trade.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "side",
+          "position_id",
+          "usd_amount",
+          "shares_amount",
+          "price",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboExecution"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "order_hash": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Order hash for the filled combo order."
+          },
+          "taker": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Counterparty or taker address."
+          },
+          "side": {
+            "type": "string",
+            "description": "Fill side from the trader's perspective."
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Combo position ID traded."
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Outcome name."
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Outcome index."
+          },
+          "usd_amount": {
+            "type": "number",
+            "description": "Combo trade notional in USDC."
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Combo shares traded."
+          },
+          "price": {
+            "type": "number",
+            "description": "Fill price per combo share."
+          },
+          "probability": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Implied probability."
+          },
+          "fee": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee in USDC."
+          },
+          "fee_shares": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Share-denominated fee for buy fills."
+          },
+          "fee_pct": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee rate as a percent value."
+          },
+          "legs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComboLeg"
+            },
+            "description": "Markets that make up the combo."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          },
+          "builder_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Builder code attached to the combo order."
+          },
+          "builder_fee": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Builder fee in USDC."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
+      "ComboStatusUpdateTrade": {
+        "title": "ComboStatusUpdateTrade",
+        "description": "Combo status or result update.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboStatusUpdate"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "event_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo event ID."
+          },
+          "result": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Result value."
+            },
+            "description": "Result values for the combo status update."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
+      "ComboPositionPairTrade": {
+        "title": "ComboPositionPairTrade",
+        "description": "Binary combo position split or merge.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "usd_amount",
+          "shares_amount",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboPositionsSplit",
+              "ComboPositionsMerged"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "recipient": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Recipient for merged collateral or output positions."
+          },
+          "recipient0": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Recipient of outcome index 0 in split events."
+          },
+          "recipient1": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Recipient of outcome index 1 in split events."
+          },
+          "usd_amount": {
+            "type": "number",
+            "description": "Collateral amount represented by the split or merge, in USDC."
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Combo shares moved by the split or merge."
+          },
+          "legs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComboLeg"
+            },
+            "description": "Markets that make up the combo."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
+      "ComboConditionTransformTrade": {
+        "title": "ComboConditionTransformTrade",
+        "description": "Combo condition transformation, such as splitting, merging, extracting, or adding legs.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "position_id",
+          "shares_amount",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboSplitOnCondition",
+              "ComboMergedOnCondition",
+              "ComboExtracted",
+              "ComboInjected"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Primary combo position ID."
+          },
+          "parent_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Parent condition for split or merge transformations."
+          },
+          "child_yes_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "YES-side child condition for split or merge transformations."
+          },
+          "child_no_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "NO-side child condition for split or merge transformations."
+          },
+          "reduced_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Reduced condition after extracting or adding a leg."
+          },
+          "residual_condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Residual condition after extracting or adding a leg."
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Combo shares transformed."
+          },
+          "legs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComboLeg"
+            },
+            "description": "Markets that make up the combo."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
+      "ComboBasketTrade": {
+        "title": "ComboBasketTrade",
+        "description": "Combo basket conversion or merge.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "position_id",
+          "shares_amount",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboConvertedToYesBasket",
+              "ComboMergedFromYesBasket"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Primary combo position for the basket action."
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Combo shares converted or merged."
+          },
+          "legs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComboLeg"
+            },
+            "description": "Markets that make up the combo."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
+      "ComboCompressedTrade": {
+        "title": "ComboCompressedTrade",
+        "description": "Combo position compression into a new position and/or collateral.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "position_id",
+          "usd_amount",
+          "shares_amount",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboCompressed"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Input combo position ID."
+          },
+          "old_position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Input combo position ID."
+          },
+          "new_position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Output combo position ID."
+          },
+          "usd_amount": {
+            "type": "number",
+            "description": "Collateral released by compression, in USDC."
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Input combo shares compressed."
+          },
+          "position_amount": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Output position amount in base units."
+          },
+          "collateral_out": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Collateral output in base units."
+          },
+          "legs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComboLeg"
+            },
+            "description": "Markets that make up the combo."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
+      "ComboRedemptionTrade": {
+        "title": "ComboRedemptionTrade",
+        "description": "Combo position redemption.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "position_id",
+          "usd_amount",
+          "shares_amount",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboPositionRedeemed"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Combo position ID redeemed."
+          },
+          "recipient": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address receiving the redemption payout."
+          },
+          "usd_amount": {
+            "type": "number",
+            "description": "Payout amount in USDC."
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Combo shares redeemed."
+          },
+          "payout": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Payout amount in base units."
+          },
+          "legs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComboLeg"
+            },
+            "description": "Markets that make up the combo."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
+      "ComboWrapTrade": {
+        "title": "ComboWrapTrade",
+        "description": "Combo wrap or unwrap between an underlying position and combo position.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "shares_amount",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboWrapped",
+              "ComboUnwrapped"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "underlying_position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Underlying market position ID involved in the wrap or unwrap."
+          },
+          "combinatorial_position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo position ID involved in the wrap or unwrap."
+          },
+          "old_position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Input position ID for the wrap or unwrap."
+          },
+          "new_position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Output position ID for the wrap or unwrap."
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Shares wrapped or unwrapped."
+          },
+          "legs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComboLeg"
+            },
+            "description": "Markets that make up the combo."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
+      "ComboHorizontalTrade": {
+        "title": "ComboHorizontalTrade",
+        "description": "Event-wide combo split or merge.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "usd_amount",
+          "shares_amount",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboHorizontalSplit",
+              "ComboHorizontalMerge"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "event_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo event ID associated with the split or merge."
+          },
+          "recipient": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Recipient for positions or collateral produced by the operation."
+          },
+          "usd_amount": {
+            "type": "number",
+            "description": "Collateral amount represented by the action, in USDC."
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Combo shares moved by the action."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          }
+        }
+      },
+      "ComboPositionConvertedTrade": {
+        "title": "ComboPositionConvertedTrade",
+        "description": "Combo position conversion.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "position_id",
+          "shares_amount",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboPositionConverted"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Position ID consumed by the conversion."
+          },
+          "event_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo event ID associated with the conversion."
+          },
+          "condition_index": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market index within the combo event."
+          },
+          "recipient": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Recipient for converted positions or collateral."
+          },
+          "old_position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Input position ID consumed by the conversion."
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Shares converted."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
+      "ComboMigrationTrade": {
+        "title": "ComboMigrationTrade",
+        "description": "Combo position migration.",
+        "type": "object",
+        "required": [
+          "trade_type",
+          "id",
+          "hash",
+          "trader",
+          "position_id",
+          "shares_amount",
+          "exchange"
+        ],
+        "properties": {
+          "trade_type": {
+            "type": "string",
+            "enum": [
+              "ComboPositionMigrated"
+            ],
+            "description": "Combo event type."
+          },
+          "id": {
+            "type": "string",
+            "description": "Event ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Transaction hash."
+          },
+          "block": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "confirmed_at": {
+            "type": "integer",
+            "description": "Unix seconds. Absent for pending trades"
+          },
+          "received_at": {
+            "type": "integer",
+            "description": "Unix milliseconds. Present for pending trades only"
+          },
+          "log_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "block_index": {
+            "type": "integer",
+            "description": "Absent for pending trades"
+          },
+          "trader": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "description": "Wallet address."
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Display name."
+              },
+              "pseudonym": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pseudonym."
+              },
+              "profile_image": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Profile image URL."
+              },
+              "x_username": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "X username."
+              },
+              "verified_badge": {
+                "type": "boolean",
+                "description": "Whether the profile is verified."
+              }
+            }
+          },
+          "condition_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Combo condition ID."
+          },
+          "source_contract": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source address."
+          },
+          "exchange": {
+            "type": "integer",
+            "description": "Exchange identifier."
+          },
+          "position_id": {
+            "type": "string",
+            "description": "Migrated combo position ID."
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Migrated outcome label."
+          },
+          "outcome_index": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Migrated outcome index."
+          },
+          "new_position_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "New combo position ID created by the migration."
+          },
+          "shares_amount": {
+            "type": "number",
+            "description": "Shares migrated."
+          },
+          "position_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "position_id": {
+                  "type": "string",
+                  "description": "Outcome token ID."
+                },
+                "outcome_index": {
+                  "type": "integer",
+                  "description": "Outcome index."
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Amount as a decimal string."
+                }
+              }
+            },
+            "description": "Position details."
+          },
+          "question": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market question."
+          },
+          "image_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Image URL."
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Market slug."
+          },
+          "event_slug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Event slug."
+          }
+        }
+      },
       "TradeStreamEvent": {
         "description": "Server-pushed event. Discriminated by `trade_type` — each variant only includes relevant fields.\n\nEnvelope: `{\"type\": \"trade_stream_update\", \"room_id\": \"polymarket_trades\", \"status\": \"confirmed\"|\"pending\", \"data\": {...}}`\n\n**Pending trades:** `block`, `confirmed_at`, `log_index`, `block_index` are absent. `received_at` (milliseconds) is included instead. For OrderFilled/OrdersMatched, `order_hash`, `taker`, `fee`, `fee_shares`, `fee_pct` are also absent.",
         "oneOf": [
           {
-            "title": "OrderFilled / OrdersMatched / ComboExecution",
+            "title": "OrderFilled / OrdersMatched",
             "description": "A buy/sell trade was matched on the exchange.",
             "type": "object",
             "required": [
@@ -14616,8 +16997,7 @@
                 "type": "string",
                 "enum": [
                   "OrderFilled",
-                  "OrdersMatched",
-                  "ComboExecution"
+                  "OrdersMatched"
                 ],
                 "description": "Trade type."
               },
@@ -14803,6 +17183,42 @@
                 "description": "Builder fee in USDC. Absent when no builder code is attached."
               }
             }
+          },
+          {
+            "$ref": "#/components/schemas/ComboCreationTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboExecutionTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboStatusUpdateTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboPositionPairTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboConditionTransformTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboBasketTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboCompressedTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboRedemptionTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboWrapTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboHorizontalTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboPositionConvertedTrade"
+          },
+          {
+            "$ref": "#/components/schemas/ComboMigrationTrade"
           },
           {
             "title": "MakerRebate / Reward / Yield",
@@ -17330,10 +19746,9 @@
       },
       "TraderPnlSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the trader PnL stream. `traders` is required and must be non-empty. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. Firehose / `subscribe_all` is not supported.",
+        "description": "Subscribe to the trader PnL stream. On `action: \"subscribe\"`, `traders` is required and must be non-empty. `unsubscribe_all` needs no traders. `update_types` and `timeframes` are optional narrowing filters — omit or leave empty to receive all update types / timeframes. Firehose / `subscribe_all` is not supported.",
         "required": [
-          "action",
-          "traders"
+          "action"
         ],
         "properties": {
           "action": {
@@ -17349,7 +19764,7 @@
             "items": {
               "type": "string"
             },
-            "description": "EVM wallet addresses. Required.",
+            "description": "EVM wallet addresses. Required and non-empty for subscribe; omit for unsubscribe_all.",
             "minItems": 1
           },
           "update_types": {
@@ -17487,6 +19902,18 @@
           "realized_pnl_usd": {
             "type": "number",
             "description": "Realized PnL for the timeframe"
+          },
+          "raw_realized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded total PnL in USD."
           },
           "events_traded": {
             "type": "integer",
@@ -17720,6 +20147,18 @@
             "type": "number",
             "description": "Realized PnL in USD."
           },
+          "raw_realized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded total PnL in USD."
+          },
           "current_shares_balance": {
             "type": "number",
             "description": "Current shares balance."
@@ -17853,6 +20292,18 @@
           "realized_pnl_usd": {
             "type": "number",
             "description": "Realized PnL in USD."
+          },
+          "raw_realized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded total PnL in USD."
           },
           "markets_in_category": {
             "type": "integer",
@@ -18034,6 +20485,18 @@
             "type": "number",
             "description": "Realized PnL in USD."
           },
+          "raw_realized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded total PnL in USD."
+          },
           "open_positions_value": {
             "type": "number",
             "description": "Open positions value."
@@ -18082,6 +20545,18 @@
             "type": "number",
             "description": "Realized PnL in USD."
           },
+          "raw_realized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded total PnL in USD."
+          },
           "last_block": {
             "type": "integer",
             "format": "int64",
@@ -18126,6 +20601,18 @@
             "type": "number",
             "description": "Realized PnL in USD."
           },
+          "raw_realized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded total PnL in USD."
+          },
           "last_block": {
             "type": "integer",
             "format": "int64",
@@ -18164,6 +20651,18 @@
           "realized_pnl_usd": {
             "type": "number",
             "description": "Realized PnL in USD."
+          },
+          "raw_realized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded total PnL in USD."
           },
           "markets_won": {
             "type": "integer",
@@ -18243,6 +20742,18 @@
             "type": "number",
             "description": "Realized PnL in USD."
           },
+          "raw_realized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded total PnL in USD."
+          },
           "last_block": {
             "type": "integer",
             "format": "int64",
@@ -18286,6 +20797,18 @@
           "realized_pnl_usd": {
             "type": "number",
             "description": "Realized PnL in USD."
+          },
+          "raw_realized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded total PnL in USD."
           },
           "markets_won": {
             "type": "integer",
@@ -18667,7 +21190,7 @@
       },
       "TraderPositionsSubscribeMessage": {
         "type": "object",
-        "description": "Subscribe to the trader positions stream. `traders` is required and must be non-empty unless `subscribe_all` is set. `dirty_kinds` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every kind of update.",
+        "description": "Subscribe to the trader positions stream. `traders` is required and must be non-empty. `dirty_kinds` is an optional narrowing filter — empty/omitted or `[\"all\"]` = receive every kind of update.",
         "required": [
           "action"
         ],
@@ -18685,7 +21208,7 @@
             "items": {
               "type": "string"
             },
-            "description": "EVM wallet addresses. Required and non-empty unless subscribe_all is set."
+            "description": "EVM wallet addresses. Required and non-empty."
           },
           "dirty_kinds": {
             "type": "array",
@@ -18698,13 +21221,8 @@
                 "all"
               ]
             },
-            "description": "Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `[\"all\"]` to accept every kind (the default). Unknown values reject the subscription. Also applies to firehose subscriptions.",
+            "description": "Restrict pushed updates to this subset of update kinds. Omit, leave empty, or pass `[\"all\"]` to accept every kind (the default). Unknown values reject the subscription.",
             "uniqueItems": true
-          },
-          "subscribe_all": {
-            "type": "boolean",
-            "default": false,
-            "description": "Firehose: receive every position update on this stream (`traders` is ignored when set; `dirty_kinds` still applies)."
           }
         },
         "oneOf": [
@@ -18725,29 +21243,6 @@
               "action": {
                 "enum": [
                   "subscribe"
-                ]
-              },
-              "subscribe_all": {
-                "enum": [
-                  true
-                ]
-              }
-            },
-            "required": [
-              "action",
-              "subscribe_all"
-            ]
-          },
-          {
-            "properties": {
-              "action": {
-                "enum": [
-                  "subscribe"
-                ]
-              },
-              "subscribe_all": {
-                "enum": [
-                  false
                 ]
               },
               "traders": {
@@ -18790,10 +21285,6 @@
               "type": "string"
             },
             "description": "Rejected filter values."
-          },
-          "subscribe_all": {
-            "type": "boolean",
-            "description": "Whether the firehose subscription is active."
           },
           "compression": {
             "type": "boolean",
@@ -18996,6 +21487,27 @@
             ],
             "description": "Realized PnL in USD."
           },
+          "raw_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee-excluded total PnL in USD."
+          },
           "realized_pnl_pct": {
             "type": [
               "number",
@@ -19180,6 +21692,27 @@
             ],
             "description": "Realized PnL in USD."
           },
+          "raw_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee-excluded total PnL in USD."
+          },
           "realized_pnl_pct": {
             "type": [
               "number",
@@ -19297,6 +21830,27 @@
               "null"
             ],
             "description": "Realized PnL in USD."
+          },
+          "raw_realized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee-excluded realized PnL in USD."
+          },
+          "raw_unrealized_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee-excluded unrealized PnL in USD."
+          },
+          "raw_total_pnl_usd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Fee-excluded total PnL in USD."
           },
           "realized_pnl_pct": {
             "type": [
@@ -19517,9 +22071,21 @@
             "type": "number",
             "description": "Realized PnL at exit, percent"
           },
+          "raw_pnl_usd": {
+            "type": "number",
+            "description": "Fee-excluded PnL at exit, USD"
+          },
+          "raw_pnl_pct": {
+            "type": "number",
+            "description": "Fee-excluded PnL at exit, percent (rebased on the fee-free cost basis)"
+          },
           "cost_basis_usd": {
             "type": "number",
             "description": "Cost basis in USD."
+          },
+          "total_fees": {
+            "type": "number",
+            "description": "Total fees paid on the position, USD"
           },
           "reason": {
             "type": "string",
@@ -19540,6 +22106,10 @@
             "type": "integer",
             "format": "int64",
             "description": "Exit time, Unix seconds"
+          },
+          "category": {
+            "type": "string",
+            "description": "Polymarket top-level category (e.g. \"Politics\"); empty when unresolved"
           }
         }
       },
@@ -20785,7 +23355,7 @@
         }
       },
       "TradeOrderFilledEvent": {
-        "title": "OrderFilled / OrdersMatched / ComboExecution",
+        "title": "OrderFilled / OrdersMatched",
         "description": "A buy/sell trade was matched on the exchange.",
         "type": "object",
         "required": [
@@ -20800,8 +23370,7 @@
             "type": "string",
             "enum": [
               "OrderFilled",
-              "OrdersMatched",
-              "ComboExecution"
+              "OrdersMatched"
             ],
             "description": "Trade type."
           },
@@ -20989,1018 +23558,25 @@
         }
       },
       "TradeRedemptionEvent": {
-        "title": "MakerRebate / Reward / Yield",
-        "description": "pUSD credit paid directly to the trader wallet.",
-        "type": "object",
-        "required": [
-          "trade_type",
-          "id",
-          "hash",
-          "trader",
-          "exchange"
-        ],
-        "properties": {
-          "trade_type": {
-            "type": "string",
-            "enum": [
-              "MakerRebate",
-              "Reward",
-              "Yield"
-            ],
-            "description": "Trade type."
-          },
-          "id": {
-            "type": "string",
-            "description": "Event ID."
-          },
-          "hash": {
-            "type": "string",
-            "description": "Transaction hash."
-          },
-          "block": {
-            "type": "integer",
-            "description": "Block number."
-          },
-          "confirmed_at": {
-            "type": "integer",
-            "description": "Confirmation timestamp."
-          },
-          "received_at": {
-            "type": "integer",
-            "description": "Receive timestamp."
-          },
-          "log_index": {
-            "type": "integer",
-            "description": "Log index."
-          },
-          "block_index": {
-            "type": "integer",
-            "description": "Block index."
-          },
-          "trader": {
-            "type": "object",
-            "properties": {
-              "address": {
-                "type": "string",
-                "description": "Wallet address."
-              },
-              "name": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Display name."
-              },
-              "pseudonym": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Pseudonym."
-              },
-              "profile_image": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Profile image URL."
-              },
-              "x_username": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "X username."
-              },
-              "verified_badge": {
-                "type": "boolean",
-                "description": "Whether the profile is verified."
-              }
-            }
-          },
-          "taker": {
-            "type": "string",
-            "description": "Payout distributor address"
-          },
-          "usd_amount": {
-            "type": "number",
-            "description": "Trade amount in USD."
-          },
-          "shares_amount": {
-            "type": "number",
-            "description": "Always 0 for payout credits"
-          },
-          "price": {
-            "type": "number",
-            "description": "Always 0 for payout credits"
-          },
-          "fee": {
-            "type": "number",
-            "description": "Always 0 for payout credits"
-          },
-          "fee_shares": {
-            "type": "number",
-            "description": "Always 0 for payout credits"
-          },
-          "fee_pct": {
-            "type": "number",
-            "description": "Always 0 for payout credits"
-          },
-          "exchange": {
-            "type": "integer",
-            "description": "Unknown/non-exchange credit source"
-          }
-        }
+        "$ref": "#/components/schemas/ComboCreationTrade"
       },
       "TradeMergeEvent": {
-        "title": "Redemption",
-        "description": "Positions redeemed after market resolution.",
-        "type": "object",
-        "required": [
-          "trade_type",
-          "id",
-          "hash",
-          "trader",
-          "exchange"
-        ],
-        "properties": {
-          "trade_type": {
-            "type": "string",
-            "enum": [
-              "Redemption"
-            ],
-            "description": "Trade type."
-          },
-          "id": {
-            "type": "string",
-            "description": "Event ID."
-          },
-          "hash": {
-            "type": "string",
-            "description": "Transaction hash."
-          },
-          "block": {
-            "type": "integer",
-            "description": "Block number."
-          },
-          "confirmed_at": {
-            "type": "integer",
-            "description": "Confirmation timestamp."
-          },
-          "received_at": {
-            "type": "integer",
-            "description": "Receive timestamp."
-          },
-          "log_index": {
-            "type": "integer",
-            "description": "Log index."
-          },
-          "block_index": {
-            "type": "integer",
-            "description": "Block index."
-          },
-          "trader": {
-            "type": "object",
-            "properties": {
-              "address": {
-                "type": "string",
-                "description": "Wallet address."
-              },
-              "name": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Display name."
-              },
-              "pseudonym": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Pseudonym."
-              },
-              "profile_image": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Profile image URL."
-              },
-              "x_username": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "X username."
-              },
-              "verified_badge": {
-                "type": "boolean",
-                "description": "Whether the profile is verified."
-              }
-            }
-          },
-          "condition_id": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market condition ID."
-          },
-          "outcome": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Outcome name."
-          },
-          "outcome_index": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "Outcome index."
-          },
-          "question": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market question."
-          },
-          "image_url": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Image URL."
-          },
-          "slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market slug."
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Event slug."
-          },
-          "usd_amount": {
-            "type": "number",
-            "description": "Trade amount in USD."
-          },
-          "winning_outcome_index": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "Winning outcome index."
-          },
-          "position_details": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "position_id": {
-                  "type": "string",
-                  "description": "Outcome token ID."
-                },
-                "outcome_index": {
-                  "type": "integer",
-                  "description": "Outcome index."
-                },
-                "amount": {
-                  "type": "string",
-                  "description": "Amount as a decimal string."
-                }
-              }
-            },
-            "description": "Position details."
-          },
-          "exchange": {
-            "type": "integer",
-            "description": "Exchange identifier."
-          }
-        }
+        "$ref": "#/components/schemas/ComboExecutionTrade"
       },
       "TradeSplitEvent": {
-        "title": "Merge",
-        "description": "Outcome tokens burned to receive collateral.",
-        "type": "object",
-        "required": [
-          "trade_type",
-          "id",
-          "hash",
-          "trader",
-          "exchange"
-        ],
-        "properties": {
-          "trade_type": {
-            "type": "string",
-            "enum": [
-              "Merge"
-            ],
-            "description": "Trade type."
-          },
-          "id": {
-            "type": "string",
-            "description": "Event ID."
-          },
-          "hash": {
-            "type": "string",
-            "description": "Transaction hash."
-          },
-          "block": {
-            "type": "integer",
-            "description": "Block number."
-          },
-          "confirmed_at": {
-            "type": "integer",
-            "description": "Confirmation timestamp."
-          },
-          "received_at": {
-            "type": "integer",
-            "description": "Receive timestamp."
-          },
-          "log_index": {
-            "type": "integer",
-            "description": "Log index."
-          },
-          "block_index": {
-            "type": "integer",
-            "description": "Block index."
-          },
-          "trader": {
-            "type": "object",
-            "properties": {
-              "address": {
-                "type": "string",
-                "description": "Wallet address."
-              },
-              "name": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Display name."
-              },
-              "pseudonym": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Pseudonym."
-              },
-              "profile_image": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Profile image URL."
-              },
-              "x_username": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "X username."
-              },
-              "verified_badge": {
-                "type": "boolean",
-                "description": "Whether the profile is verified."
-              }
-            }
-          },
-          "condition_id": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market condition ID."
-          },
-          "question": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market question."
-          },
-          "image_url": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Image URL."
-          },
-          "slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market slug."
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Event slug."
-          },
-          "usd_amount": {
-            "type": "number",
-            "description": "Trade amount in USD."
-          },
-          "position_details": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "position_id": {
-                  "type": "string",
-                  "description": "Outcome token ID."
-                },
-                "outcome_index": {
-                  "type": "integer",
-                  "description": "Outcome index."
-                },
-                "amount": {
-                  "type": "string",
-                  "description": "Amount as a decimal string."
-                }
-              }
-            },
-            "description": "Position details."
-          },
-          "exchange": {
-            "type": "integer",
-            "description": "Exchange identifier."
-          }
-        }
+        "$ref": "#/components/schemas/ComboStatusUpdateTrade"
       },
       "TradePositionsConvertedEvent": {
-        "title": "Split",
-        "description": "Collateral deposited to receive outcome tokens.",
-        "type": "object",
-        "required": [
-          "trade_type",
-          "id",
-          "hash",
-          "trader",
-          "exchange"
-        ],
-        "properties": {
-          "trade_type": {
-            "type": "string",
-            "enum": [
-              "Split"
-            ],
-            "description": "Trade type."
-          },
-          "id": {
-            "type": "string",
-            "description": "Event ID."
-          },
-          "hash": {
-            "type": "string",
-            "description": "Transaction hash."
-          },
-          "block": {
-            "type": "integer",
-            "description": "Block number."
-          },
-          "confirmed_at": {
-            "type": "integer",
-            "description": "Confirmation timestamp."
-          },
-          "received_at": {
-            "type": "integer",
-            "description": "Receive timestamp."
-          },
-          "log_index": {
-            "type": "integer",
-            "description": "Log index."
-          },
-          "block_index": {
-            "type": "integer",
-            "description": "Block index."
-          },
-          "trader": {
-            "type": "object",
-            "properties": {
-              "address": {
-                "type": "string",
-                "description": "Wallet address."
-              },
-              "name": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Display name."
-              },
-              "pseudonym": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Pseudonym."
-              },
-              "profile_image": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Profile image URL."
-              },
-              "x_username": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "X username."
-              },
-              "verified_badge": {
-                "type": "boolean",
-                "description": "Whether the profile is verified."
-              }
-            }
-          },
-          "condition_id": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market condition ID."
-          },
-          "question": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market question."
-          },
-          "image_url": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Image URL."
-          },
-          "slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market slug."
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Event slug."
-          },
-          "usd_amount": {
-            "type": "number",
-            "description": "Trade amount in USD."
-          },
-          "position_details": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "position_id": {
-                  "type": "string",
-                  "description": "Outcome token ID."
-                },
-                "outcome_index": {
-                  "type": "integer",
-                  "description": "Outcome index."
-                },
-                "amount": {
-                  "type": "string",
-                  "description": "Amount as a decimal string."
-                }
-              }
-            },
-            "description": "Position details."
-          },
-          "exchange": {
-            "type": "integer",
-            "description": "Exchange identifier."
-          }
-        }
+        "$ref": "#/components/schemas/ComboPositionPairTrade"
       },
       "TradeCancelledEvent": {
-        "title": "PositionsConverted",
-        "description": "NegRisk NO tokens converted to YES tokens + collateral.",
-        "type": "object",
-        "required": [
-          "trade_type",
-          "id",
-          "hash",
-          "trader",
-          "exchange"
-        ],
-        "properties": {
-          "trade_type": {
-            "type": "string",
-            "enum": [
-              "PositionsConverted"
-            ],
-            "description": "Trade type."
-          },
-          "id": {
-            "type": "string",
-            "description": "Event ID."
-          },
-          "hash": {
-            "type": "string",
-            "description": "Transaction hash."
-          },
-          "block": {
-            "type": "integer",
-            "description": "Block number."
-          },
-          "confirmed_at": {
-            "type": "integer",
-            "description": "Confirmation timestamp."
-          },
-          "received_at": {
-            "type": "integer",
-            "description": "Receive timestamp."
-          },
-          "log_index": {
-            "type": "integer",
-            "description": "Log index."
-          },
-          "block_index": {
-            "type": "integer",
-            "description": "Block index."
-          },
-          "trader": {
-            "type": "object",
-            "properties": {
-              "address": {
-                "type": "string",
-                "description": "Wallet address."
-              },
-              "name": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Display name."
-              },
-              "pseudonym": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Pseudonym."
-              },
-              "profile_image": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Profile image URL."
-              },
-              "x_username": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "X username."
-              },
-              "verified_badge": {
-                "type": "boolean",
-                "description": "Whether the profile is verified."
-              }
-            }
-          },
-          "market_id": {
-            "type": "string",
-            "description": "Market id."
-          },
-          "index_set": {
-            "type": "string",
-            "description": "Index set."
-          },
-          "shares_amount": {
-            "type": "number",
-            "description": "Trade size in shares."
-          },
-          "fee": {
-            "type": "number",
-            "description": "Fee."
-          },
-          "fee_pct": {
-            "type": "number",
-            "description": "Fee percent."
-          },
-          "position_details": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "position_id": {
-                  "type": "string",
-                  "description": "Outcome token ID."
-                },
-                "outcome_index": {
-                  "type": "integer",
-                  "description": "Outcome index."
-                },
-                "amount": {
-                  "type": "string",
-                  "description": "Amount as a decimal string."
-                }
-              }
-            },
-            "description": "Per-position conversion amounts"
-          },
-          "exchange": {
-            "type": "integer",
-            "description": "Exchange identifier."
-          }
-        }
+        "$ref": "#/components/schemas/ComboConditionTransformTrade"
       },
       "TradeOracleLifecycleEvent": {
-        "title": "Cancelled",
-        "description": "Order cancelled on-chain.",
-        "type": "object",
-        "required": [
-          "trade_type",
-          "id",
-          "hash",
-          "exchange"
-        ],
-        "properties": {
-          "trade_type": {
-            "type": "string",
-            "enum": [
-              "Cancelled"
-            ],
-            "description": "Trade type."
-          },
-          "id": {
-            "type": "string",
-            "description": "Event ID."
-          },
-          "hash": {
-            "type": "string",
-            "description": "Transaction hash."
-          },
-          "block": {
-            "type": "integer",
-            "description": "Block number."
-          },
-          "confirmed_at": {
-            "type": "integer",
-            "description": "Confirmation timestamp."
-          },
-          "received_at": {
-            "type": "integer",
-            "description": "Receive timestamp."
-          },
-          "log_index": {
-            "type": "integer",
-            "description": "Log index."
-          },
-          "block_index": {
-            "type": "integer",
-            "description": "Block index."
-          },
-          "order_hash": {
-            "type": "string",
-            "description": "Order hash."
-          },
-          "question": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market question."
-          },
-          "image_url": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Image URL."
-          },
-          "slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market slug."
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Event slug."
-          },
-          "exchange": {
-            "type": "integer",
-            "description": "Exchange identifier."
-          }
-        }
+        "$ref": "#/components/schemas/ComboBasketTrade"
       },
       "TradeRegisterTokenEvent": {
-        "title": "Oracle Lifecycle Event",
-        "description": "Market lifecycle events: Initialization, Proposal, Dispute, Settled, Resolution, ConditionResolution, Reset, Flag, Unflag, Pause, Unpause, ManualResolution, NegRiskOutcomeReported.",
-        "type": "object",
-        "required": [
-          "trade_type",
-          "id",
-          "hash",
-          "oracle_contract",
-          "condition_id"
-        ],
-        "properties": {
-          "trade_type": {
-            "type": "string",
-            "enum": [
-              "Initialization",
-              "Proposal",
-              "Dispute",
-              "Settled",
-              "Resolution",
-              "ConditionResolution",
-              "Reset",
-              "Flag",
-              "Unflag",
-              "Pause",
-              "Unpause",
-              "ManualResolution",
-              "NegRiskOutcomeReported"
-            ],
-            "description": "Oracle lifecycle event type."
-          },
-          "id": {
-            "type": "string",
-            "description": "Event ID."
-          },
-          "hash": {
-            "type": "string",
-            "description": "Transaction hash."
-          },
-          "block": {
-            "type": "integer",
-            "description": "Block number."
-          },
-          "confirmed_at": {
-            "type": "integer",
-            "description": "Confirmation timestamp."
-          },
-          "received_at": {
-            "type": "integer",
-            "description": "Receive timestamp."
-          },
-          "log_index": {
-            "type": "integer",
-            "description": "Log index."
-          },
-          "block_index": {
-            "type": "integer",
-            "description": "Block index."
-          },
-          "oracle_contract": {
-            "type": "string",
-            "description": "Oracle contract."
-          },
-          "condition_id": {
-            "type": "string",
-            "description": "Market condition ID."
-          },
-          "question": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market question."
-          },
-          "image_url": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Image URL."
-          },
-          "slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Market slug."
-          },
-          "event_slug": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Event slug."
-          },
-          "assertion_id": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Assertion id."
-          },
-          "proposer": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Proposer."
-          },
-          "disputer": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Disputer."
-          },
-          "proposed_outcome": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Proposed outcome."
-          },
-          "settled_price": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "Settled price."
-          },
-          "disputed": {
-            "type": [
-              "boolean",
-              "null"
-            ],
-            "description": "Disputed."
-          },
-          "settlement_resolution": {
-            "type": [
-              "boolean",
-              "null"
-            ],
-            "description": "Settlement resolution."
-          },
-          "bond": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Bond."
-          },
-          "expiration_time": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "Expiration time."
-          },
-          "creator": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Creator."
-          },
-          "reward_token": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Reward token."
-          },
-          "reward": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Reward details."
-          },
-          "proposal_bond": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Proposal bond."
-          }
-        }
+        "$ref": "#/components/schemas/ComboCompressedTrade"
       }
     },
     "securitySchemes": {

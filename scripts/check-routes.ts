@@ -12,6 +12,7 @@ interface SpecConfig {
 	venuePrefix: string | null;
 	namespaceFiles: string[];
 	schemaAccessor: string;
+	ignoredMissingRoutes?: string[];
 }
 
 const specs: SpecConfig[] = [
@@ -19,7 +20,7 @@ const specs: SpecConfig[] = [
 		specPath: join(import.meta.dirname, "../src/generated/polymarket.ts"),
 		jsonSpecPath: join(import.meta.dirname, "../openapi/polymarket.json"),
 		venuePrefix: "/polymarket",
-		namespaceFiles: ["assets.ts", "holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "builders.ts", "search.ts", "tags.ts", "orderBook.ts", "analytics.ts"],
+		namespaceFiles: ["assets.ts", "holders.ts", "events.ts", "markets.ts", "series.ts", "trader.ts", "bonds.ts", "builders.ts", "search.ts", "tags.ts", "orderBook.ts", "analytics.ts", "combos.ts"],
 		schemaAccessor: "Schemas",
 	},
 	{
@@ -182,9 +183,10 @@ for (const config of specs) {
 
 	const sdkNormalized = new Set(sdkRoutes.map((r) => r.normalized));
 
+	const ignoredMissing = new Set(config.ignoredMissingRoutes ?? []);
 	const phantomRoutes = sdkRoutes.filter((r) => !specRoutes.has(r.normalized));
 	const missingRoutes = [...specRoutes.entries()]
-		.filter(([normalized]) => !sdkNormalized.has(normalized))
+		.filter(([normalized]) => !sdkNormalized.has(normalized) && !ignoredMissing.has(normalized))
 		.sort(([a], [b]) => a.localeCompare(b));
 
 	if (phantomRoutes.length > 0) {
