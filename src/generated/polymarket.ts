@@ -1244,7 +1244,7 @@ export interface paths {
         };
         /**
          * Get top traders for a position
-         * @description Top traders for a position.
+         * @description Top traders for a position, ranked by total PnL desc.
          */
         get: operations["get_position_top_traders"];
         put?: never;
@@ -1324,7 +1324,7 @@ export interface paths {
         };
         /**
          * Get top traders for a market
-         * @description Top traders for a market, ranked by realized PnL desc.
+         * @description Top traders for a market, ranked by total PnL desc.
          */
         get: operations["get_market_top_traders"];
         put?: never;
@@ -1644,7 +1644,7 @@ export interface paths {
         };
         /**
          * Get top traders for a category
-         * @description Top traders for a category.
+         * @description Top traders for a category. Default ranking is total PnL desc.
          */
         get: operations["get_category_top_traders"];
         put?: never;
@@ -1995,6 +1995,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/polymarket/trader/pnl/{address}/position_counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader open/closed position counts
+         * @description Returns the number of open positions, closed positions, and the total for a trader. Counts match the positions endpoint: a position is open while the trader still holds shares in it, and closed once it has been fully exited or redeemed.
+         */
+        get: operations["get_trader_position_counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/polymarket/trader/pnl/{address}/positions": {
         parameters: {
             query?: never;
@@ -2047,6 +2067,26 @@ export interface paths {
          * @description Retrieve a trader's profile including stats and trading history summary
          */
         get: operations["get_trader_profile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/polymarket/trader/profile/{address}/username-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get trader username history
+         * @description Retrieve the ordered name and pseudonym history observed for a Polymarket trader
+         */
+        get: operations["get_trader_username_history"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3145,22 +3185,37 @@ export interface components {
             categories_traded: number;
             /**
              * Format: int64
-             * @description Markets traded.
+             * @description Distinct markets (condition_ids) with at least one buy or sell by
+             *     this trader. NOTE: `markets_won + markets_lost` uses a DIFFERENT
+             *     denominator (decided markets — see those fields) and can exceed
+             *     this count: positions acquired without a trade (e.g. NegRisk
+             *     conversions, transfers) never increment `markets_traded` but can
+             *     still produce a win/loss verdict once closed or resolved. These
+             *     fields are not subsets of each other and do not reconcile.
              */
             markets_traded: number;
             /**
              * Format: int64
-             * @description Markets won.
+             * @description Markets with a DECIDED winning verdict: the market's position was
+             *     fully closed (sold/redeemed to zero) or resolved, and the summed
+             *     realized PnL for that market is positive. Open/undecided markets
+             *     are not counted; re-entering a market reverses its verdict until
+             *     it is decided again. Denominator differs from `markets_traded`
+             *     (see that field).
              */
             markets_won: number;
             /**
              * Format: int64
-             * @description Markets lost.
+             * @description Markets with a DECIDED losing verdict (summed realized PnL
+             *     negative at close/resolution). See `markets_won` for the
+             *     decided-market semantics.
              */
             markets_lost: number;
             /**
              * Format: double
-             * @description Market win rate percent.
+             * @description `100 × markets_won / (markets_won + markets_lost)` — the
+             *     denominator is DECIDED markets only (won + lost), not
+             *     `markets_traded`. 0 when no market is decided yet.
              */
             market_win_rate_pct: number;
             /**
@@ -10589,6 +10644,17 @@ export interface components {
             is_mod: boolean;
             created_at?: string | null;
         };
+        PolymarketUsernameHistoryEntry: {
+            name?: string | null;
+            pseudonym?: string | null;
+            first_seen_at: string;
+            last_seen_at: string;
+        };
+        PolymarketUsernameHistoryResponse: {
+            proxy_wallet: string;
+            count: number;
+            history: components["schemas"]["PolymarketUsernameHistoryEntry"][];
+        };
         PositionChartDataPoint: {
             /**
              * Format: double
@@ -10619,6 +10685,25 @@ export interface components {
          * @enum {string}
          */
         PositionClosedPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "raw_total_pnl_pct" | "raw_realized_pnl_pct" | "raw_unrealized_pnl_pct" | "merge_usd" | "convert_collateral_usd" | "converted_count" | "converted_shares_gained" | "converted_shares_lost" | "last_traded_price" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "realized_pnl_pct" | "total_pnl_pct" | "title" | "merge_count" | "split_count" | "end_date" | "is_neg_risk";
+        /** @description Open/closed position counts for one trader. */
+        PositionCounts: {
+            /**
+             * Format: int64
+             * @description Positions currently open (redeemable winners included, matching
+             *     the `/positions?status=open` filter).
+             */
+            open: number;
+            /**
+             * Format: int64
+             * @description Fully closed positions (sold/redeemed to zero, losers, dust).
+             */
+            closed: number;
+            /**
+             * Format: int64
+             * @description `open + closed`.
+             */
+            total: number;
+        };
         /** @description Per-position detail for Split/Merge/Redemption trades. */
         PositionDetail: {
             /** @description Market condition ID for this ERC1155 position. */
@@ -11123,9 +11208,9 @@ export interface components {
             mergeable?: boolean | null;
         };
         /**
-         * @description Sort field for position PnL results. Includes fee-excluded (`raw_*`)
-         *     PnL metrics — see `PositionOpenPnlSortBy` and `PositionClosedPnlSortBy`
-         *     for the per-status whitelists.
+         * @description Sort field for per-trader position PnL results. Includes fee-excluded
+         *     (`raw_*`) PnL metrics — see `PositionOpenPnlSortBy` and
+         *     `PositionClosedPnlSortBy` for the per-status whitelists.
          * @enum {string}
          */
         PositionPnlSortBy: "realized_pnl_usd" | "total_pnl_usd" | "unrealized_pnl_usd" | "raw_total_pnl_usd" | "raw_realized_pnl_usd" | "raw_unrealized_pnl_usd" | "raw_total_pnl_pct" | "raw_realized_pnl_pct" | "raw_unrealized_pnl_pct" | "merge_usd" | "convert_collateral_usd" | "converted_count" | "converted_shares_gained" | "converted_shares_lost" | "last_traded_price" | "total_buy_usd" | "total_sell_usd" | "redemption_usd" | "total_buys" | "total_sells" | "total_shares_bought" | "total_shares_sold" | "avg_entry_price" | "avg_exit_price" | "avg_price" | "total_fees" | "first_trade_at" | "last_trade_at" | "current_value" | "realized_pnl_pct" | "total_pnl_pct" | "current_price" | "current_shares_balance" | "merge_count" | "split_count" | "title" | "end_date" | "is_neg_risk" | "redeemable" | "mergeable";
@@ -14348,10 +14433,6 @@ export interface operations {
             query: {
                 /** @description Outcome-token ID */
                 position_id: string;
-                /** @description Default: realized_pnl_usd */
-                sort_by?: components["schemas"]["PositionPnlSortBy"];
-                /** @description Default: desc */
-                sort_direction?: components["schemas"]["SortDirection"];
                 /** @description Default 50, max 200 */
                 limit?: number;
                 /** @description Row skip; clamped to a max of 3500. Takes precedence over pagination_key. */
@@ -15384,7 +15465,7 @@ export interface operations {
                 category: components["schemas"]["PolymarketCategory"];
                 /** @description Default: lifetime */
                 timeframe?: components["schemas"]["PnlTimeframe"];
-                /** @description Default: realized_pnl_usd */
+                /** @description Default: total_pnl_usd */
                 sort_by?: components["schemas"]["CategoryPnlSortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];
@@ -15799,8 +15880,6 @@ export interface operations {
                 offset?: number;
                 /** @description Cursor from a previous response */
                 pagination_key?: string;
-                /** @description Filter to a single category */
-                category?: components["schemas"]["PolymarketCategory"];
             };
             header?: never;
             path: {
@@ -16064,10 +16143,6 @@ export interface operations {
                 offset?: number;
                 /** @description Cursor from a previous response */
                 pagination_key?: string;
-                /** @description Filter to a single market */
-                condition_id?: string;
-                /** @description Filter to markets inside this event */
-                event_slug?: string;
                 /** @description Filter by combo classification: `true` for any combo market, `false` for standard markets only, or a specific combo type — `binary`, `negrisk`, or `combinatorial` (parlays). Omit for all markets. */
                 combo?: boolean | ("binary" | "negrisk" | "combinatorial");
             };
@@ -16131,6 +16206,36 @@ export interface operations {
             };
         };
     };
+    get_trader_position_counts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Position counts */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PositionCounts"];
+                };
+            };
+            /** @description Invalid params */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_trader_position_pnl: {
         parameters: {
             query: {
@@ -16140,7 +16245,7 @@ export interface operations {
                 won?: boolean;
                 /** @description Case-insensitive substring match on the market title. Scoped to the chosen `status` — results never cross the open/closed boundary. */
                 search?: string;
-                /** @description Sort field. Default: total_pnl_usd. status=open accepts: realized_pnl_usd, total_pnl_usd, unrealized_pnl_usd, merge_usd, convert_collateral_usd, converted_count, converted_shares_gained, converted_shares_lost, last_traded_price, total_buy_usd, total_sell_usd, total_buys, total_sells, total_shares_bought, total_shares_sold, avg_entry_price, avg_exit_price, avg_price, total_fees, first_trade_at, last_trade_at, current_value, realized_pnl_pct, total_pnl_pct, title, current_price, current_shares_balance, merge_count, split_count, end_date, is_neg_risk, redeemable, mergeable. status=closed accepts: realized_pnl_usd, total_pnl_usd, unrealized_pnl_usd, merge_usd, convert_collateral_usd, converted_count, converted_shares_gained, converted_shares_lost, last_traded_price, total_buy_usd, total_sell_usd, redemption_usd, total_buys, total_sells, total_shares_bought, total_shares_sold, avg_entry_price, avg_exit_price, avg_price, total_fees, first_trade_at, last_trade_at, realized_pnl_pct, total_pnl_pct, title, merge_count, split_count, end_date, is_neg_risk. */
+                /** @description Sort field. Default: total_pnl_usd. status=open accepts: realized_pnl_usd, total_pnl_usd, unrealized_pnl_usd, raw_total_pnl_usd, raw_realized_pnl_usd, raw_unrealized_pnl_usd, raw_total_pnl_pct, raw_realized_pnl_pct, raw_unrealized_pnl_pct, merge_usd, convert_collateral_usd, converted_count, converted_shares_gained, converted_shares_lost, last_traded_price, total_buy_usd, total_sell_usd, total_buys, total_sells, total_shares_bought, total_shares_sold, avg_entry_price, avg_exit_price, avg_price, total_fees, first_trade_at, last_trade_at, current_value, realized_pnl_pct, total_pnl_pct, title, current_price, current_shares_balance, merge_count, split_count, end_date, is_neg_risk, redeemable, mergeable. status=closed accepts: realized_pnl_usd, total_pnl_usd, unrealized_pnl_usd, raw_total_pnl_usd, raw_realized_pnl_usd, raw_unrealized_pnl_usd, raw_total_pnl_pct, raw_realized_pnl_pct, raw_unrealized_pnl_pct, merge_usd, convert_collateral_usd, converted_count, converted_shares_gained, converted_shares_lost, last_traded_price, total_buy_usd, total_sell_usd, redemption_usd, total_buys, total_sells, total_shares_bought, total_shares_sold, avg_entry_price, avg_exit_price, avg_price, total_fees, first_trade_at, last_trade_at, realized_pnl_pct, total_pnl_pct, title, merge_count, split_count, end_date, is_neg_risk. */
                 sort_by?: components["schemas"]["PositionPnlSortBy"];
                 /** @description Default: desc */
                 sort_direction?: components["schemas"]["SortDirection"];
@@ -16243,6 +16348,36 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PolymarketUserProfile"];
                 };
+            };
+        };
+    };
+    get_trader_username_history: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Trader wallet address */
+                address: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Trader username history */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolymarketUsernameHistoryResponse"];
+                };
+            };
+            /** @description Invalid address format */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

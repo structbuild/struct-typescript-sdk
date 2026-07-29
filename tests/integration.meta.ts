@@ -154,6 +154,16 @@ export const methodMeta: Record<string, MethodConfig> = {
 		params: { address: "$address" },
 		operationId: "get_trader_profile",
 	},
+	"trader.getTraderUsernameHistory": {
+		params: { address: "$address" },
+		operationId: "get_trader_username_history",
+		shape: "object",
+	},
+	"trader.getTraderPositionCounts": {
+		params: { address: "$address" },
+		operationId: "get_trader_position_counts",
+		shape: "object",
+	},
 	"trader.getTraderProfilesBatch": {
 		params: { addresses: "$address" },
 		operationId: "get_trader_profiles_batch",

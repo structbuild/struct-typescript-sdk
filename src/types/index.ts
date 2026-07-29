@@ -451,6 +451,14 @@ export interface GetTraderProfileParams {
 	address: string;
 }
 
+export interface GetTraderUsernameHistoryParams {
+	address: string;
+}
+
+export interface GetTraderPositionCountsParams {
+	address: string;
+}
+
 export interface GetTraderProfilesBatchParams {
 	addresses: string;
 }
@@ -604,6 +612,9 @@ export type PnlPeriodsResponse = Schemas["PnlPeriodsResponse"];
 export type PnlRiskMarketMetadata = Schemas["PnlRiskMarketMetadata"];
 export type PnlRiskMetric = Schemas["PnlRiskMetric"];
 export type PnlRiskResponse = Schemas["PnlRiskResponse"];
+export type PositionCounts = Schemas["PositionCounts"];
+export type PolymarketUsernameHistoryEntry = Schemas["PolymarketUsernameHistoryEntry"];
+export type PolymarketUsernameHistoryResponse = Schemas["PolymarketUsernameHistoryResponse"];
 export type TraderPnl = Schemas["TraderPnl"];
 export type MarketPnl = Schemas["MarketPnl"];
 export type CategoryPnl = Schemas["CategoryPnl"];

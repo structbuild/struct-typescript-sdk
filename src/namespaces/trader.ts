@@ -9,6 +9,10 @@ import type {
 	PnlCandlestickBar,
 	GetTraderTradesParams,
 	GetTraderProfileParams,
+	GetTraderUsernameHistoryParams,
+	GetTraderPositionCountsParams,
+	PolymarketUsernameHistoryResponse,
+	PositionCounts,
 	GetTraderProfilesBatchParams,
 	GetTraderPnlBatchParams,
 	BatchPnlResponse,
@@ -47,6 +51,14 @@ export class TraderNamespace extends Namespace {
 
 	async getTraderProfile(params: GetTraderProfileParams, venue?: Venue): Promise<HttpResponse<UserProfile>> {
 		return this.get<UserProfile>(venue, `/trader/profile/${encodeURIComponent(params.address)}`);
+	}
+
+	async getTraderUsernameHistory(params: GetTraderUsernameHistoryParams, venue?: Venue): Promise<HttpResponse<PolymarketUsernameHistoryResponse>> {
+		return this.get<PolymarketUsernameHistoryResponse>(venue, `/trader/profile/${encodeURIComponent(params.address)}/username-history`);
+	}
+
+	async getTraderPositionCounts(params: GetTraderPositionCountsParams, venue?: Venue): Promise<HttpResponse<PositionCounts>> {
+		return this.get<PositionCounts>(venue, `/trader/pnl/${encodeURIComponent(params.address)}/position_counts`);
 	}
 
 	async getTraderProfilesBatch(params: GetTraderProfilesBatchParams, venue?: Venue): Promise<HttpResponse<UserProfile[]>> {
