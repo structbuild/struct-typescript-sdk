@@ -684,7 +684,7 @@ export interface paths {
         };
         /**
          * Get combo holders by condition
-         * @description Retrieve holders for all combo position IDs associated with a combo condition ID. Each returned position has its own holder page and pagination cursor.
+         * @description Retrieve holders for the combo yes/no side position IDs associated with a combo condition ID. The returned position IDs are the values to use as `{position_id}` in `/polymarket/combos/{position_id}/holders`; they are not leg position IDs. Set `include_pnl=true` to include a per-holder `pnl` object for each combo side.
          */
         get: operations["get_combo_condition_holders"];
         put?: never;
@@ -764,7 +764,7 @@ export interface paths {
         };
         /**
          * Get combo holders
-         * @description Retrieve holders of a combo position from the Polymarket holders engine. Combo holder state is stored separately from normal position holder state and is sorted by combo position balance descending.
+         * @description Retrieve holders of one combo side position from the Polymarket holders engine. Pass the combo row's `yes_position_id` or `no_position_id` from `/polymarket/combos` or `/polymarket/combos/metrics`; do not pass a leg `position_id` or `condition_id`. Set `include_pnl=true` to include a per-holder `pnl` object for this combo side. Combo holder state is stored separately from normal position holder state and is sorted by combo position balance descending.
          */
         get: operations["get_combo_holders"];
         put?: never;
@@ -784,7 +784,7 @@ export interface paths {
         };
         /**
          * Get combo holder stats
-         * @description Retrieve total holder count and snapshot block for a combo position from the Polymarket holders engine.
+         * @description Retrieve total holder count and snapshot block for one combo side position from the Polymarket holders engine. Pass the combo row's `yes_position_id` or `no_position_id`, not a leg `position_id` or `condition_id`.
          */
         get: operations["get_combo_holder_stats"];
         put?: never;
@@ -4910,21 +4910,30 @@ export interface components {
         ComboConditionHoldersResponse: {
             /** @description Normalized combo condition ID. */
             condition_id: string;
-            /** @description Combo position IDs associated with this condition. */
+            /** @description Combo side position IDs associated with this condition (`yes_position_id` and `no_position_id`). */
             position_ids: string[];
             /** @description Holder pages for each associated combo position. */
             positions: components["schemas"]["ComboConditionPositionHolders"][];
         };
         ComboConditionPositionHolders: {
-            /** @description Combo position ID for this side. */
+            /** @description Combo side position ID (`yes_position_id` or `no_position_id`) for this side. */
             position_id: string;
+            /** @description Combo condition ID this side position belongs to. */
+            condition_id?: string | null;
+            /** @description Outcome name (`Yes` or `No`). */
+            outcome_name?: string | null;
+            /**
+             * Format: int32
+             * @description Outcome index (`0` = Yes, `1` = No).
+             */
+            outcome_index?: number | null;
             /** @description Total unique holders for this combo position. */
             total_holders: number;
             /** @description Holders sorted by combo position balance descending. */
             holders: components["schemas"]["ComboHolder"][];
             /** @description Whether this position has more holders available. */
             has_more: boolean;
-            /** @description Cursor for paging this specific position via `/polymarket/combos/{position_id}/holders`. */
+            /** @description Cursor for paging this side via `/polymarket/combos/{position_id}/holders`. */
             pagination_key?: string | null;
         };
         /** @description Combo condition transformation, such as splitting, merging, extracting, or adding legs. */
@@ -6597,16 +6606,35 @@ export interface components {
             balance: number;
             /** @description Raw combo position balance before decimals. */
             balance_raw: string;
+            pnl?: null | components["schemas"]["PositionHolderPnl"];
         };
         ComboHolderStatsResponse: {
-            /** @description Combo position ID. */
+            /** @description Combo side position ID that was queried (`yes_position_id` or `no_position_id`). */
             position_id: string;
+            /** @description Combo condition ID this side position belongs to. */
+            condition_id?: string | null;
+            /** @description Outcome name (`Yes` or `No`). */
+            outcome_name?: string | null;
+            /**
+             * Format: int32
+             * @description Outcome index (`0` = Yes, `1` = No).
+             */
+            outcome_index?: number | null;
             /** @description Total unique holders for this combo position. */
             total_holders: number;
         };
         ComboHoldersResponse: {
-            /** @description Combo position ID. */
+            /** @description Combo side position ID that was queried (`yes_position_id` or `no_position_id`). */
             position_id: string;
+            /** @description Combo condition ID this side position belongs to. */
+            condition_id?: string | null;
+            /** @description Outcome name (`Yes` or `No`). */
+            outcome_name?: string | null;
+            /**
+             * Format: int32
+             * @description Outcome index (`0` = Yes, `1` = No).
+             */
+            outcome_index?: number | null;
             /** @description Total unique holders for this combo position. */
             total_holders: number;
             /** @description Holders sorted by combo position balance descending. */
@@ -6779,9 +6807,9 @@ export interface components {
             timeframe: string;
             /** @description Combo type. */
             combo_type: string;
-            /** @description Yes-side position id. */
+            /** @description Yes-side combo position id. Use this as `{position_id}` for combo holder endpoints. */
             yes_position_id: string;
-            /** @description No-side position id. */
+            /** @description No-side combo position id. Use this as `{position_id}` for combo holder endpoints. */
             no_position_id: string;
             /**
              * Format: int64
@@ -6979,9 +7007,9 @@ export interface components {
             creator?: string | null;
             /** @description Combo type. */
             combo_type?: string | null;
-            /** @description Yes-side position id. */
+            /** @description Yes-side combo position id. Use this as `{position_id}` for combo holder endpoints. */
             yes_position_id?: string | null;
-            /** @description No-side position id. */
+            /** @description No-side combo position id. Use this as `{position_id}` for combo holder endpoints. */
             no_position_id?: string | null;
             /** Format: int64 */
             created_block?: number | null;
@@ -13344,6 +13372,12 @@ export interface operations {
             query?: {
                 /** @description Per-position results limit (default: 50, max: 500) */
                 limit?: number;
+                /** @description Minimum combo balance held, in decimal shares */
+                min_shares?: string;
+                /** @description Maximum combo balance held, in decimal shares */
+                max_shares?: string;
+                /** @description Include nested holder PnL data for each combo side (default: false) */
+                include_pnl?: boolean;
             };
             header?: never;
             path: {
@@ -13491,10 +13525,16 @@ export interface operations {
                 limit?: number;
                 /** @description Cursor from the previous response */
                 pagination_key?: string;
+                /** @description Minimum combo balance held, in decimal shares */
+                min_shares?: string;
+                /** @description Maximum combo balance held, in decimal shares */
+                max_shares?: string;
+                /** @description Include nested holder PnL data for this combo side (default: false) */
+                include_pnl?: boolean;
             };
             header?: never;
             path: {
-                /** @description Combo position ID (ERC1155 token ID, decimal or 0x-prefixed hex) */
+                /** @description Combo side position ID: the `yes_position_id` or `no_position_id` returned by `/polymarket/combos` or `/polymarket/combos/metrics` (ERC1155 token ID, decimal or 0x-prefixed hex). Do not use leg position IDs. */
                 position_id: string;
             };
             cookie?: never;
@@ -13524,7 +13564,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description Combo position ID (ERC1155 token ID, decimal or 0x-prefixed hex) */
+                /** @description Combo side position ID: the `yes_position_id` or `no_position_id` returned by `/polymarket/combos` or `/polymarket/combos/metrics` (ERC1155 token ID, decimal or 0x-prefixed hex). Do not use leg position IDs. */
                 position_id: string;
             };
             cookie?: never;
