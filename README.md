@@ -47,10 +47,16 @@ const market = await client.markets.getMarket({ conditionId: "0x..." });
 const marketBySlug = await client.markets.getMarketBySlug({ marketSlug: "will-x-happen" });
 const trades = await client.markets.getTrades({ condition_ids: "0x..." });
 const candles = await client.markets.getCandlestick({ condition_id: "0x...", resolution: "1h" });
+const positionCandles = await client.markets.getPositionCandlestick({ position_id: "123", resolution: "1h" });
 const chart = await client.markets.getMarketChart({ condition_id: "0x..." });
 const metrics = await client.markets.getMarketMetrics({ condition_id: "0x..." });
+const positionMetrics = await client.markets.getPositionMetrics({ position_id: "123", timeframe: "24h" });
 const volumeChart = await client.markets.getMarketVolumeChart({ condition_id: "0x..." });
+const positionVolumeChart = await client.markets.getPositionVolumeChart({ position_id: "123" });
 const priceJumps = await client.markets.getPriceJumps();
+const oracleEvents = await client.markets.getOracleEvents({ condition_ids: "0x..." });
+const topTraders = await client.markets.getMarketTopTraders({ condition_id: "0x..." });
+const positionTopTraders = await client.markets.getPositionTopTraders({ position_id: "123" });
 ```
 
 ### Events
@@ -71,12 +77,18 @@ const trades = await client.trader.getTraderTrades({ address: "0x..." });
 const profile = await client.trader.getTraderProfile({ address: "0x..." });
 const profiles = await client.trader.getTraderProfilesBatch({ addresses: "0x...,0x..." });
 const pnl = await client.trader.getTraderPnl({ address: "0x..." });
+const pnlBatch = await client.trader.getTraderPnlBatch({ addresses: ["0x...", "0x..."] });
 const marketPnl = await client.trader.getTraderMarketPnl({ address: "0x..." });
-const eventPnl = await client.trader.getTraderEventPnl({ address: "0x..." });
 const outcomePnl = await client.trader.getTraderOutcomePnl({ address: "0x..." });
+const categoryPnl = await client.trader.getTraderCategoryPnl({ address: "0x..." });
 const pnlCandles = await client.trader.getTraderPnlCandles({ address: "0x..." });
 const pnlCalendar = await client.trader.getTraderPnlCalendar({ address: "0x..." });
+const pnlChanges = await client.trader.getTraderPnlChanges({ address: "0x..." });
+const pnlPeriods = await client.trader.getTraderPnlPeriods({ address: "0x..." });
+const pnlRisk = await client.trader.getTraderPnlRisk({ address: "0x..." });
+const pnlExits = await client.trader.getTraderPnlExits({ address: "0x..." });
 const volumeChart = await client.trader.getTraderVolumeChart({ address: "0x..." });
+const topTradesMarkets = await client.trader.getTopTradesMarkets();
 const leaderboard = await client.trader.getGlobalPnl();
 ```
 
@@ -87,6 +99,7 @@ const marketHolders = await client.holders.getMarketHolders({ condition_id: "0x.
 const positionHolders = await client.holders.getPositionHolders({ positionId: "123" });
 const history = await client.holders.getMarketHoldersHistory({ condition_id: "0x..." });
 const posHistory = await client.holders.getPositionHoldersHistory({ positionId: "123" });
+const eventHistory = await client.holders.getEventHoldersHistory({ event_slug: "us-election" });
 ```
 
 ### Order Book
@@ -103,16 +116,56 @@ const spreads = await client.orderBook.getSpreadHistory();
 ```typescript
 const series = await client.series.getSeriesList();
 const outcomes = await client.series.getSeriesOutcomes({ series_slug: "my-series" });
-const assetHistory = await client.assets.getAssetHistory({ symbol: "BTC", variant: "1d" });
+const seriesEvents = await client.series.getSeriesEvents({ series_slug: "my-series" });
+const assetHistory = await client.assets.getAssetHistory({ asset_symbol: "BTC", variant: "1d" });
+const assetCandles = await client.assets.getAssetCandlestick({ asset_symbol: "BTC", resolution: "1h" });
 const results = await client.search.search({ query: "election" });
 const tags = await client.tags.getTags();
 const tag = await client.tags.getTag({ identifier: "politics" });
+const categoryTopTraders = await client.tags.getCategoryTopTraders({ category: "Politics" });
 const bonds = await client.bonds.getBonds();
 ```
 
+### Analytics
+
+Platform-wide and scoped analytics (deltas, percent changes, and time series):
+
+```typescript
+const counts = await client.analytics.getCounts();
+const deltas = await client.analytics.getDeltas({ resolution: "1h" });
+const changes = await client.analytics.getChanges({ timeframe: "24h" });
+const timeseries = await client.analytics.getTimeseries({ resolution: "1h" });
+
+const eventDeltas = await client.analytics.getEventDeltas({ event_slug: "us-election", resolution: "1h" });
+const marketChanges = await client.analytics.getMarketChanges({ condition_id: "0x...", timeframe: "24h" });
+const tagTimeseries = await client.analytics.getTagTimeseries({ tag: "politics", resolution: "1h" });
+const traderDeltas = await client.analytics.getTraderDeltas({ address: "0x...", resolution: "1h" });
+```
+
+Each scope (`event`, `market`, `tag`, `trader`) exposes `get*Deltas`, `get*Changes`, and `get*Timeseries`.
+
+### Builders
+
+Builder leaderboard, metadata, fees, retention, and analytics:
+
+```typescript
+const builders = await client.builders.getBuilders();
+const builder = await client.builders.getBuilder({ builder_code: "0x..." });
+const metadata = await client.builders.getBuilderMetadata({ builder_code: "0x..." });
+const searchResults = await client.builders.searchBuilders({ q: "poly" });
+const composition = await client.builders.getComposition();
+const global = await client.builders.getGlobal();
+const topTraders = await client.builders.getBuilderTopTraders({ builder_code: "0x..." });
+const fees = await client.builders.getBuilderFees({ builder_code: "0x..." });
+const retention = await client.builders.getBuilderRetention({ builder_code: "0x..." });
+const tagBuilders = await client.builders.getTagBuilders({ tag: "politics" });
+```
+
+Each builder also has `getBuilderDeltas`, `getBuilderChanges`, and `getBuilderTimeseries`. Global builder stats expose `getGlobalDeltas`, `getGlobalChanges`, and `getGlobalTimeseries`.
+
 ### Trade Types
 
-Trade endpoints (`getTrades`, `getTraderTrades`) return a discriminated union of all on-chain event types. Use the `trade_type` field to narrow:
+Trade endpoints (`getTrades`, `getTraderTrades`, `getOracleEvents`) return a discriminated union of all on-chain event types. Use the `trade_type` field to narrow:
 
 ```typescript
 import type { Trade, MarketTrade, OracleEvent, TradeEventType } from "@structbuild/sdk";
@@ -141,31 +194,39 @@ for (const trade of trades) {
 
 The SDK exports convenience sub-unions for common filtering:
 
-- **`MarketTrade`** — actual on-chain trades: `OrderFilled`, `OrdersMatched`, `Redemption`, `Merge`, `Split`, `PositionsConverted`, `Cancelled`, `RegisterToken`, `Approval`
+- **`MarketTrade`** — actual on-chain trades: `OrderFilled`, `OrdersMatched`, `Redemption`, `Merge`, `Split`, `PositionsConverted`, `Cancelled`, `RegisterToken`, `MakerRebate`, `Reward`, `Yield`
 - **`OracleEvent`** — protocol lifecycle events: `Initialization`, `Proposal`, `Dispute`, `Settled`, `Resolution`, `ConditionResolution`, `Reset`, `Flag`, `Unflag`, `Pause`, `Unpause`, `ManualResolution`, `NegRiskOutcomeReported`
 - **`TradeEventType`** — string literal union of all `trade_type` values for autocomplete
 
-Individual schemas are also exported: `OrderFilledTrade`, `RedemptionTrade`, `MergeTrade`, `SplitTrade`, `CancelledTrade`, `PositionsConvertedTrade`, `RegisterTokenTrade`, `ApprovalTrade`, and all oracle event types.
+Individual schemas are also exported: `OrderFilledTrade`, `RedemptionTrade`, `MergeTrade`, `SplitTrade`, `CancelledTrade`, `PositionsConvertedTrade`, `RegisterTokenTrade`, and all oracle event types.
 
 ### Webhooks
 
-Manage webhook subscriptions for real-time event notifications:
+Manage webhook subscriptions for real-time event notifications. Each webhook subscribes to a single event type:
 
 ```typescript
 const webhooks = await client.webhooks.list();
 const webhook = await client.webhooks.create({
   url: "https://example.com/webhook",
-  events: ["first_trade", "probability_spike"],
+  event: "trader_first_trade",
   filters: {
     condition_ids: ["0x..."],
     min_usd_value: 100,
   },
 });
+const existing = await client.webhooks.getWebhook({ webhookId: webhook.data.id });
+await client.webhooks.update({
+  webhookId: webhook.data.id,
+  url: "https://example.com/webhook-v2",
+});
 await client.webhooks.test({ webhookId: webhook.data.id });
 await client.webhooks.rotateSecret({ webhookId: webhook.data.id });
 await client.webhooks.deleteWebhook({ webhookId: webhook.data.id });
 const events = await client.webhooks.listEvents();
+const logs = await client.webhooks.getLogs({ webhookId: webhook.data.id });
 ```
+
+HTTP webhooks support additional event types not available on the alerts WebSocket, such as `probability_spike`.
 
 ## WebSocket API
 
@@ -188,10 +249,15 @@ const res = await ws.subscribe("polymarket_trades", {
 });
 
 await ws.subscribe("polymarket_order_book", {
-  asset_ids: ["0xabc123"],
+  position_ids: ["0xabc123"],
 });
 
-// Some rooms have optional filters
+await ws.subscribe("polymarket_events_stream", {
+  mode: "filter",
+  interval_ms: 1000,
+  filter: { tags: ["politics"] },
+});
+
 await ws.subscribe("polymarket_asset_prices");
 await ws.subscribe("polymarket_clob_rewards", { subscribe_all: true });
 ```
@@ -212,10 +278,24 @@ ws.on("order_book_update", (event) => {
   event.asks;
 });
 
+ws.on("trader_global_pnl_batch", (event) => {
+  event.block;
+  event.data;
+});
+
+ws.on("trader_position_batch", (event) => {
+  event.block;
+  event.data;
+});
+
 ws.on("clob_rewards_update", (event) => {
-  event.event_type;    // "added" | "removed" | "updated"
+  event.event_type;
   event.condition_id;
   event.reward;
+});
+
+ws.on("events_stream_update", (events) => {
+  events[0]?.slug;
 });
 ```
 
@@ -234,9 +314,9 @@ await alerts.subscribe("trader_whale_trade", {
   min_usd_value: 10000,
 });
 
-await alerts.subscribe("probability_spike", {
+await alerts.subscribe("price_spike", {
   spike_direction: "up",
-  min_probability_change_pct: 5,
+  min_price_change_pct: 5,
 });
 
 alerts.on("trader_whale_trade", (payload) => {
@@ -244,27 +324,38 @@ alerts.on("trader_whale_trade", (payload) => {
   payload.data.amount_usd;
 });
 
-alerts.on("probability_spike", (payload) => {
+alerts.on("price_spike", (payload) => {
   payload.data.spike_direction;
   payload.data.spike_pct;
 });
 ```
 
+Use `client.webhooks.listEvents()` for the full set of HTTP webhook events. The alerts WebSocket supports a overlapping subset (for example `price_spike`, not `probability_spike`).
+
 ### Available rooms
 
-| Room | Filters | Event |
-|------|---------|-------|
+| Room | Filters | Events |
+|------|---------|--------|
 | `polymarket_trades` | `condition_ids?`, `market_slugs?`, `event_slugs?`, `position_ids?`, `traders?`, `trade_types?`, `status?`, `subscribe_all?` | `trade_stream_update` |
 | `polymarket_asset_prices` | `asset_symbols?` | `asset_price_tick`, `asset_price_window_update` |
 | `polymarket_asset_window_updates` | `asset_symbols?`, `timeframes?` | `asset_window_update` |
-| `polymarket_market_metrics` | `condition_ids` | `market_metrics_update` |
-| `polymarket_event_metrics` | `event_slugs` | `event_metrics_update` |
-| `polymarket_position_metrics` | `position_ids` | `position_metrics_update` |
-| `polymarket_trader_pnl` | `traders` | `trader_global_pnl_update`, `trader_market_pnl_update`, `trader_event_pnl_update` |
-| `polymarket_trader_positions` | `traders` | `trader_position_update` |
-| `polymarket_accounts` | `wallets`, `include_usdce?`, `include_matic?` | `accounts_update`, `usdce_update`, `matic_update` |
+| `polymarket_market_metrics` | `condition_ids`, `timeframes?` | `market_metrics_update` |
+| `polymarket_event_metrics` | `event_slugs`, `timeframes?` | `event_metrics_update` |
+| `polymarket_position_metrics` | `position_ids`, `timeframes?` | `position_metrics_update` |
+| `polymarket_tag_metrics` | `tags`, `timeframes?` | `tag_metrics_update` |
+| `polymarket_trader_pnl` | `traders`, `update_types?`, `timeframes?`, `dirty_kinds?` | `trader_global_pnl_batch`, `trader_market_pnl_batch`, `trader_category_pnl_batch`, `trader_*_tick_batch`, `trader_*_resolution_batch` |
+| `polymarket_trader_positions` | `traders`, `dirty_kinds?` | `trader_position_batch`, `trader_position_price_batch`, `trader_position_resolution_batch` |
+| `polymarket_trader_pnl_exits` | `traders`, `reasons?` | `trader_exit_marker_batch` |
+| `polymarket_holder_metrics` | `position_ids?`, `condition_ids?`, `event_slugs?` | `holder_metrics_position_batch`, `holder_metrics_condition_batch`, `holder_metrics_event_batch` |
+| `polymarket_accounts` | `wallets`, `include_usdce?`, `include_pusd?`, `include_matic?` | `accounts_update`, `usdce_update`, `pusd_update`, `matic_update` |
 | `polymarket_order_book` | `condition_ids?`, `position_ids?` | `order_book_update` |
 | `polymarket_clob_rewards` | `condition_ids?`, `subscribe_all?` | `clob_rewards_update` |
+| `polymarket_events_stream` | `mode?`, `interval_ms?`, `filter?`, `event_slugs?`, `event_ids?` | `events_stream_update` |
+| `polymarket_markets_stream` | `mode?`, `interval_ms?`, `filter?`, `condition_ids?`, `market_slugs?`, `event_slugs?` | `markets_stream_update` |
+| `polymarket_oracle_events` | `condition_ids?`, `market_slugs?`, `event_slugs?`, `oracle_event_types?`, `status?`, `subscribe_all?` | `oracle_event_update` |
+| `polymarket_position_liquidity` | `position_ids?` | `position_liquidity_update` |
+| `polymarket_market_liquidity` | `condition_ids?` | `market_liquidity_update` |
+| `polymarket_event_liquidity` | `event_slugs?` | `event_liquidity_update` |
 
 ### Lifecycle events
 
@@ -336,7 +427,7 @@ for await (const market of paginate(
 ## Error Handling
 
 ```typescript
-import { HttpError, TimeoutError, NetworkError } from "@structbuild/sdk";
+import { HttpError, TimeoutError, NetworkError, WebSocketError } from "@structbuild/sdk";
 
 try {
   await client.markets.getMarket({ conditionId: "0x..." });
